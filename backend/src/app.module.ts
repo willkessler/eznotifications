@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { LoggerMiddleware } from './loggerMiddleware';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EZNotificationModule } from './ezNotification/ezNotification.module';
@@ -23,4 +24,11 @@ import { EZNotification } from './ezNotification/entities/ezNotification.entity'
     controllers: [AppController],
     providers: [AppService],
 })
-export class AppModule {}
+
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*'); // Apply for all routes or specify certain routes
+  }
+}

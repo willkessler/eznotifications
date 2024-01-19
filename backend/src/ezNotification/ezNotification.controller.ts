@@ -4,6 +4,9 @@ import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common'
 import { EZNotification } from './entities/ezNotification.entity';
 import { EZNotificationService } from './ezNotification.service';
 
+import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Request, Response, NextFunction } from 'express';
+
 @Controller('ezNotifications')
 export class EZNotificationController {
   constructor(private readonly ezNotificationService: EZNotificationService) {}
@@ -19,4 +22,13 @@ export class EZNotificationController {
   }
 
   // Add other endpoints for update, delete, etc.
+}
+
+
+@Injectable()
+export class LoggerMiddleware implements NestMiddleware {
+  use(req: Request, res: Response, next: NextFunction) {
+    console.log('Request body:', req.body);
+    next();
+  }
 }
