@@ -2,7 +2,7 @@ import React from 'react';
 
 const NotificationList = ({ notifications }) => {
   return (
-    <div>
+    <div class="Notifications-List">
       {notifications.map(notification => (
         <div key={notification.id}>
           {notification.content}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const NotificationForm = ({ onSubmit }) => {
   const [notificationData, setNotificationData] = useState({
-    text: '',
+    content: '',
     pageId: '',
     startDate: '',
     endDate: '',
@@ -21,10 +21,10 @@ const NotificationForm = ({ onSubmit }) => {
   return (
     <form onSubmit={handleSubmit}>
       <input 
-        name="text" 
+        name="content" 
         value={notificationData.text} 
         onChange={handleChange} 
-        placeholder="Notification Text" 
+        placeholder="Enter notification text here" 
       />
       {/* Other fields for pageId, startDate, endDate */}
       <button type="submit">Submit</button>
