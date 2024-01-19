@@ -1,0 +1,96 @@
+openapi: 3.0.0
+info:
+  title: Notification Service API
+  version: 1.0.0
+paths:
+  /notifications:
+    post:
+      summary: Create a new notification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notification'
+      responses:
+        '201':
+          description: Notification created
+
+    get:
+      summary: Retrieve notifications
+      parameters:
+        - in: query
+          name: pageId
+          schema:
+            type: string
+          required: false
+          description: Optional page ID to filter notifications
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: false
+          description: Optional user ID to filter notifications
+      responses:
+        '200':
+          description: A list of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+
+  /notifications/{id}:
+    put:
+      summary: Update a specific notification
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notification'
+      responses:
+        '200':
+          description: Notification updated
+
+    delete:
+      summary: Delete a specific notification
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Notification deleted
+
+components:
+  schemas:
+    Notification:
+      type: object
+      required:
+        - text
+        - pageId
+      properties:
+        text:
+          type: string
+        pageId:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+          nullable: true
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+        canceled:
+          type: boolean

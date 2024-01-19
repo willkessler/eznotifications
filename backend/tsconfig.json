@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "outDir" : "./dist",
+    "rootDir" : "./src",
+    "experimentalDecorators" : true,
+    "strictPropertyInitialization" : false,
+    "emitDecoratorMetadata": true,
+    "target" : "es2017",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "types": ["node","jest"],
+  },
+  "include":  ["./src/**/*"],
+  "exclude" : ["node_modules", "dist"],
+}
