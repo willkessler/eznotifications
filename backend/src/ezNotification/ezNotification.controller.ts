@@ -21,7 +21,20 @@ export class EZNotificationController {
     return this.ezNotificationService.findAll();
   }
 
-  // Add other endpoints for update, delete, etc.
+ @Get(':id')
+  findOne(@Param('id') id: string): Promise<EZNotification> {
+    return this.ezNotificationService.findOne(id);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateData: Partial<EZNotification>): Promise<EZNotification> {
+    return this.ezNotificationService.update(id, updateData);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string): Promise<void> {
+    return this.ezNotificationService.delete(id);
+  }
 }
 
 
