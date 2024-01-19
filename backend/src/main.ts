@@ -8,6 +8,11 @@ async function bootstrap() {
     dotenv.config();
     const app = await NestFactory.create(AppModule);
 
+    app.enableCors({
+        origin: 'http://' + process.env.HOST + ':' + process.env.INBOUND_PORT, // Allow only your front-end origin
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Adjust as needed
+    });
+
     const config = new DocumentBuilder()
         .setTitle('EZNotifications API')
         .setDescription('The ezNotifications API description')
