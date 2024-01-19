@@ -1,4 +1,5 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerMiddleware } from './loggerMiddleware';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,16 +8,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { EZNotification } from './ezNotification/entities/ezNotification.entity';
 
 @Module({
-//    imports: [EZNotificationModule],
     imports: [
         EZNotificationModule,
+        ConfigModule.forRoot({
+        }),
         TypeOrmModule.forRoot({
             type: 'postgres',
-            host: 'localhost',
-            port: 5432,
-            username: 'postgres',
-            password: 'postgres',
-            database: 'notifications_dev',
+            host:     process.env.DB_HOST,
+            port:     parseInt(process.env.DB_PORT),
+            username: process.env.DB_USERNAME,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE,
             entities: [EZNotification],
             synchronize: false,
         }),
