@@ -12,8 +12,8 @@ export function NotificationsList(parameters) {
     <Table.Tr key={row.id || index}>
       <Table.Td>{row.content}</Table.Td>
       <Table.Td>{row.pageId}</Table.Td>
-      <Table.Td>{row.startDate}</Table.Td>
-      <Table.Td>{row.endtDate}</Table.Td>
+      <Table.Td>{row.startTime}</Table.Td>
+      <Table.Td>{row.endtTime}</Table.Td>
       <Table.Td>{row.canceled ? 'X' : ''}</Table.Td>
     </Table.Tr>
   ));

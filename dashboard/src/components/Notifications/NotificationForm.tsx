@@ -9,8 +9,8 @@ const NotificationForm = ({ onSubmit }) => {
   const [notificationData, setNotificationData] = useState({
     content: '',
     pageId: '',
-    startDate: '',
-    endDate: '',
+    startTime: null,
+    endTime: null,
     canceled: false
   });
 
@@ -20,6 +20,11 @@ const NotificationForm = ({ onSubmit }) => {
 
   const handleChange = e => {
     setNotificationData({ ...notificationData, [e.target.name]: e.target.value });
+  };
+
+  const handleDateChange = (value, name) => {
+    console.log("date change:", name, value);
+    setNotificationData({ ...notificationData, [name]: value });
   };
 
   const handleSubmit = e => {
@@ -42,15 +47,17 @@ const NotificationForm = ({ onSubmit }) => {
         description="Enter anything you want to show your users. You must parse whatever format you use on your end, for instance, markdown."
       />
         <DateTimePicker 
-          name="startDate"
-          onChange={handleChange}
+          name="startTime"
+          value={notificationData.startTime}
+          onChange={(value) => handleDateChange(value, 'startTime')}
           clearable 
           placeholder="(Optional) Choose start date/time" 
           style={{marginTop:'10px'}}
           />
         <DateTimePicker 
-          name="endDate"
-          onChange={handleChange}
+          name="endTime"
+          value={notificationData.endTime}
+          onChange={(value) => handleDateChange(value, 'endTime')}
           clearable 
           placeholder="(Optional) Choose end date/time (if start date set)" 
           style={{marginTop:'10px'}}
