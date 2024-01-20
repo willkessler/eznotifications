@@ -20,7 +20,7 @@ export function NotificationsList(parameters) {
 
   return (
     <ScrollArea h={700} onScrollPositionChange={({ y }) => setScrolled(y !== 0)}>
-      <Table miw={700} verticalSpacing="md">
+      <Table miw={1000} verticalSpacing="md">
         <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
           <Table.Tr>
             <Table.Th>Contents</Table.Th>

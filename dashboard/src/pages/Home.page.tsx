@@ -81,18 +81,21 @@ return (
       <nav className={classes.navbar}>
         <div className={classes.navbarMain}>
           <Group className={classes.header} justify="space-between">
-            <Code fw={700}>v3.1.2</Code>
+            <h3>EZNotifications</h3>
+            <Code fw={700}>v1.0</Code>
           </Group>
           {links}
         </div>
 
         <div className={classes.footer}>
-          {/* ... footer links ... */}
+          <Anchor component="button" type="button" >
+            Log out
+          </Anchor>
         </div>
       </nav>
 
       <div className={classes.content}> {/* Main content area */}
-        <h1>EZNotifications Dashboard</h1>
+        <h1>Dashboard</h1>
         <div>
           <Button onClick={goToNewNotification}>+ Add Notification</Button>
           <NotificationsList
