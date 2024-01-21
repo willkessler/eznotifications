@@ -19,11 +19,12 @@ import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeTo
 import { Home } from '../components/Home/Home';
 import { NotificationsList } from '../components/Notifications/NotificationsList';
 import NotificationModal from '../components/Notifications/NotificationModal'; // Adjust the path as needed
+import { NotificationsProvider } from '../components/Notifications/NotificationsContext';
 
 import { Textarea, Button, Anchor } from '@mantine/core';
 
 export function HomePage() {
-  const [notifications, setNotifications] = useState([]);
+
   const navigate = useNavigate();
 
   const navBarData = [
@@ -36,17 +37,17 @@ export function HomePage() {
     { link: '', label: 'Other Settings', icon: IconSettings },
   ];
 
-  const [active, setActive] = useState('Notifications');
+  const [activeLink, setActiveLink] = useState('Notifications');
 
   const links = navBarData.map((item) => (
     <a
       className={classes.link}
-      data-active={item.label === active || undefined}
+      data-active={item.label === activeLink || undefined}
       href={item.link}
       key={item.label}
       onClick={(event) => {
         event.preventDefault();
-        setActive(item.label);
+        setActiveLink(item.label);
       }}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
@@ -58,15 +59,6 @@ export function HomePage() {
     navigate('/new-notification'); // Use the path you've defined for the new notification form
   };
 
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications`)
-      .then((response) => response.json())
-      .then((data) => {
-        setNotifications(data);
-      })
-      .catch((error) => console.error('Error fetching notifications:', error));
-  }, []);
-
   const handleEdit = (notificationId, updatedData) => {
     // Call API to update the notification
     // Then update the state or re-fetch notifications
@@ -77,6 +69,22 @@ export function HomePage() {
     // Then update the state or re-fetch notifications
   };
 
+  const handleNewNotificationSubmit = (notificationData) => {
+    fetch(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(notificationData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Notification created:', data);
+        // Redirect to notifications list or show a success message
+      })
+      .then((data) => {
+        navigate('/');
+      })        
+      .catch((error) => console.error('Error creating notification:', error));
+  };
 
 return (
     <div className={classes.mainContainer}> {/* Main container */}
@@ -99,12 +107,13 @@ return (
       <div className={classes.content}> {/* Main content area */}
         <h1>Notifications</h1>
         <div>
-          <NotificationsList
-            notifications={notifications}
-            onEdit={handleEdit}
-            onCancel={handleCancel}
-          />
-          <NotificationModal />
+          <NotificationsProvider>
+            <NotificationsList
+              onEdit={handleEdit}
+              onCancel={handleCancel}
+            />
+            <NotificationModal onSubmit={handleNewNotificationSubmit} />
+          </NotificationsProvider>
         </div>
       </div>
     </div>

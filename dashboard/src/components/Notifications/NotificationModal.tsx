@@ -5,9 +5,11 @@ import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import UserHint from './UserHint';
+import { useNotifications } from './NotificationsContext';
 
-const NotificationModal: React.FC = () => {
+const NotificationModal: React.FC = ({ onSubmit }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { refreshNotifications } = useNotifications();
 
   const openModal = () => {
     setIsOpen(true);
@@ -15,6 +17,7 @@ const NotificationModal: React.FC = () => {
 
   const closeModal = () => {
     setIsOpen(false);
+    refreshNotifications(); // Refresh the notifications list
   };
 
   const navigate = useNavigate();
@@ -50,6 +53,8 @@ const NotificationModal: React.FC = () => {
   };
 
   const handleSubmit = e => {
+    console.log('Type of onSubmit:', typeof onSubmit);
+
     e.preventDefault();
 
     console.log('before, NotificationData:', notificationData);
@@ -75,6 +80,7 @@ const NotificationModal: React.FC = () => {
     }
     console.log('after, NotificationData.startDate:', notificationData.startDate, 'notificationData.endDate:', notificationData.endDate);
     onSubmit(notificationData);
+    closeModal();
   };
 
   useEffect(() => {
@@ -104,7 +110,7 @@ const NotificationModal: React.FC = () => {
 
   return (
     <div>
-      <Button onClick={openModal}>+ Create notification</Button>
+      <Button onClick={openModal} style={{ marginTop: '15px' }}>+ Create new notification</Button>
 
       <Modal title="Create a new notification" opened={isOpen} onClose={closeModal} size="auto" centered>
         <form onSubmit={handleSubmit} style={{margin:'10px'}} >

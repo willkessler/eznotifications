@@ -1,14 +1,31 @@
 import cx from 'clsx';
 import { Table, ScrollArea } from '@mantine/core';
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
 import classes from './TableScrollArea.module.css';
 
-export function NotificationsList(parameters) {
-  const [scrolled, setScrolled] = useState(false);
+import { useNotifications } from './NotificationsContext';
 
-  const notifications = parameters.notifications;
-  const rows = notifications.map((row, index) => (
+export function NotificationsList(parameters) {
+    const [scrolled, setScrolled] = useState(false);
+    const { refreshToken } = useNotifications();
+
+    const [notifications, setNotifications] = useState([]);
+
+    // Fetch the notifications list on component mount
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            // Fetch records from the API
+            fetch(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications`)
+                .then((response) => response.json())
+                .then((data) => {
+                    setNotifications(data);
+                })
+                .catch((error) => console.error('Error fetching notifications:', error));
+        };
+        fetchNotifications();
+    }, [refreshToken]);
+
+    const rows = notifications.map((row, index) => (
     <Table.Tr key={row.id || index}>
       <Table.Td>{row.content}</Table.Td>
       <Table.Td>{row.startDate == null ? '' : new Date(row.startDate).toLocaleString() }</Table.Td>
@@ -20,7 +37,7 @@ export function NotificationsList(parameters) {
 
   return (
     <ScrollArea h={700} onScrollPositionChange={({ y }) => setScrolled(y !== 0)}>
-      <Table miw={1000} verticalSpacing="md">
+      <Table miw={1000} verticalSpacing="md" highlightOnHover >
         <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
           <Table.Tr>
             <Table.Th>Contents</Table.Th>
