@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Textarea, Button, Anchor } from '@mantine/core';
+import { Textarea, TextInput, Button, Anchor } from '@mantine/core';
 import { DateTimePicker, DatePickerInput, TimeInput } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
@@ -16,6 +16,7 @@ const NotificationForm = ({ onSubmit }) => {
     dateRange: [null, null],
     startTime: '00:00',
     endTime: '00:00',
+    pageId: '',
     canceled: false
   });
 
@@ -141,6 +142,13 @@ const NotificationForm = ({ onSubmit }) => {
           disabled={timeInputsDisabled}
         />
       </div>
+      <TextInput
+        name="pageId"
+        onChange={handleTextChange}
+        label="Page ID"
+        placeholder="Enter URL path"
+        description="(Optional) Enter a url path or prefix to target this notification."
+      />
 
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
         <Button variant="filled" type="submit">+ Create new notification</Button>

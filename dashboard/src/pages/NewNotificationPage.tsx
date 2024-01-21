@@ -26,7 +26,7 @@ export function NewNotificationPage () {
 
   return (
     <div>
-      <h1>Add a new notification</h1>
+      <h1>New notification</h1>
       <NotificationForm onSubmit={handleSubmit} />
     </div>
   );
