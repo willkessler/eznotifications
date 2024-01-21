@@ -18,6 +18,8 @@ import { Welcome } from '../components/Welcome/Welcome';
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
 import { Home } from '../components/Home/Home';
 import { NotificationsList } from '../components/Notifications/NotificationsList';
+import NotificationModal from '../components/Notifications/NotificationModal'; // Adjust the path as needed
+
 import { Textarea, Button, Anchor } from '@mantine/core';
 
 export function HomePage() {
@@ -95,14 +97,14 @@ return (
       </nav>
 
       <div className={classes.content}> {/* Main content area */}
-        <h1>Dashboard</h1>
+        <h1>Notifications</h1>
         <div>
-          <Button onClick={goToNewNotification}>+ Add Notification</Button>
           <NotificationsList
             notifications={notifications}
             onEdit={handleEdit}
             onCancel={handleCancel}
           />
+          <NotificationModal />
         </div>
       </div>
     </div>

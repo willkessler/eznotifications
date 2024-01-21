@@ -1,11 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Textarea, TextInput, Button, Anchor } from '@mantine/core';
+import { Modal, Paper, Textarea, TextInput, Button, Anchor } from '@mantine/core';
 import { DateTimePicker, DatePickerInput, TimeInput } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
+import UserHint from './UserHint';
 
-const NotificationForm = ({ onSubmit }) => {
+const NotificationModal: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
   const navigate = useNavigate();
 
   const [timeInputsDisabled, setTimeInputsDisabled] = useState(true);
@@ -21,7 +32,7 @@ const NotificationForm = ({ onSubmit }) => {
   });
 
   const handleCancel = () => {
-    navigate('/');
+    closeModal();
   };
 
   const handleTextChange = e => {
@@ -41,7 +52,7 @@ const NotificationForm = ({ onSubmit }) => {
   const handleSubmit = e => {
     e.preventDefault();
 
-    //console.log('before, NotificationData:', notificationData);
+    console.log('before, NotificationData:', notificationData);
     [notificationData.startDate, notificationData.endDate] = notificationData.dateRange;
     if (notificationData.startDate != null) {
 
@@ -62,7 +73,7 @@ const NotificationForm = ({ onSubmit }) => {
       notificationData.startDate.setHours(startHours, startMinutes);
       notificationData.endDate.setHours(endHours, endMinutes);
     }
-    //console.log('after, NotificationData.startDate:', notificationData.startDate, 'notificationData.endDate:', notificationData.endDate);
+    console.log('after, NotificationData.startDate:', notificationData.startDate, 'notificationData.endDate:', notificationData.endDate);
     onSubmit(notificationData);
   };
 
@@ -92,72 +103,81 @@ const NotificationForm = ({ onSubmit }) => {
                        ];
 
   return (
-    <form onSubmit={handleSubmit} style={{margin:'10px'}} >
+    <div>
+      <Button onClick={openModal}>+ Create notification</Button>
 
-      <Textarea
-        name="content"
-        radius="md"
-        autosize
-        minRows={2}
-        maxRows={10}
-        onChange={handleTextChange}
-        label="Contents of your notification"
-        placeholder="Enter notification text"
-        description="Enter anything you want to show your users. You must parse whatever format you use on your end, for instance, markdown."
-      />
-      <div style={{ display: 'flex', width: '90%' }}>
-        <DatePickerInput
-          type="range"
-          name="dateRange"
-          value={notificationData.dateRange}
-          onChange={(value) => handleDateRangeChange(value, 'dateRange')}
-          clearable
-          placeholder="(Optional) Choose end date/time (if start date set)"
-          style={{marginTop:'10px'}}
-          label="(Optional) Choose a date range for when the notification will be displayed."
-          onBlur={() => {
-            if (!notificationData.dateRange[0] && !notificationData.dateRange[1]) {
-              setTimeInputsDisabled(true); // Disable time inputs if date range is cleared
-            }
-          }}
-          />
-        <TimeInput
-          name="startTime"
-          value={notificationData.startTime}
-          label="(Optional) Set a time after which the notification is shown."
-          onChange={(value) => handleDateTimeChange(value, 'startTime')}
-          ref={ref1}
-          rightSection={pickerControls[0]}
-          style={{marginTop:'10px', marginLeft:'10px'}}
-          disabled={timeInputsDisabled}
-        />
-        <TimeInput
-          name="endTime"
-          value={notificationData.endTime}
-          label="(Optional) Set time after which the notification no longer be shown."
-          onChange={(value) => handleDateTimeChange(value, 'endTime')}
-          ref={ref2}
-          rightSection={pickerControls[1]}
-          style={{marginTop:'10px', marginLeft:'10px'}}
-          disabled={timeInputsDisabled}
-        />
-      </div>
-      <TextInput
-        name="pageId"
-        onChange={handleTextChange}
-        label="Page ID"
-        placeholder="Enter page ID"
-        description="(Optional) Enter a page ID you can use to target this notification."
-      />
-
+      <Modal title="Create a new notification" opened={isOpen} onClose={closeModal} size="auto" centered>
+        <form onSubmit={handleSubmit} style={{margin:'10px'}} >
+          <Paper padding="md">
+            <Textarea
+              name="content"
+              radius="md"
+              autosize
+              minRows={4}
+              maxRows={10}
+              onChange={handleTextChange}
+              label="Notification's contents"
+              placeholder="Enter notification text"
+              description="Enter anything you want to show your users. You must parse whatever format you use on your end (for instance, markdown)."
+            />
+            <div style={{ display: 'flex', width: '90%' }}>
+              <UserHint hintText="Optionally, choose start and end dates during which time your notification will be returned via the API.">
+                <DatePickerInput
+                  type="range"
+                  name="dateRange"
+                  value={notificationData.dateRange}
+                  onChange={(value) => handleDateRangeChange(value, 'dateRange')}
+                  clearable
+                  style={{marginTop:'10px'}}
+                  label="Notification's display dates (optional)."
+                  onBlur={() => {
+                    if (!notificationData.dateRange[0] && !notificationData.dateRange[1]) {
+                      setTimeInputsDisabled(true); // Disable time inputs if date range is cleared
+                    }
+                  }}
+                />
+                </UserHint>
+              <TimeInput
+                name="startTime"
+                value={notificationData.startTime}
+                label="Notification's display start time (optional)."
+                onChange={(value) => handleDateTimeChange(value, 'startTime')}
+                ref={ref1}
+                rightSection={pickerControls[0]}
+                style={{marginTop:'10px', marginLeft:'10px'}}
+                disabled={timeInputsDisabled}
+              />
+              <TimeInput
+                name="endTime"
+                value={notificationData.endTime}
+                label="Notification's display end time."
+                onChange={(value) => handleDateTimeChange(value, 'endTime')}
+                ref={ref2}
+                rightSection={pickerControls[1]}
+                style={{marginTop:'10px', marginLeft:'10px'}}
+                disabled={timeInputsDisabled}
+              />
+            </div>
+            <TextInput
+              name="pageId"
+              onChange={handleTextChange}
+              label="Page ID"
+              style={{marginTop:'15px'}}
+              placeholder="Enter page ID"
+              description="(Optional) Enter a page ID you can use to target this notification."
+            />
+          </Paper>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
         <Button variant="filled" type="submit">+ Create new notification</Button>
         <Anchor component="button" type="button" onClick={handleCancel} style={{marginLeft:'10px', color:'#999'}} >
           Cancel
         </Anchor>
       </div>
-    </form>
+        </form>
+      </Modal>
+    </div>
   );
 };
 
-export default NotificationForm;
+export default NotificationModal;
+                       
