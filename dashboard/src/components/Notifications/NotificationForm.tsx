@@ -146,8 +146,8 @@ const NotificationForm = ({ onSubmit }) => {
         name="pageId"
         onChange={handleTextChange}
         label="Page ID"
-        placeholder="Enter URL path"
-        description="(Optional) Enter a url path or prefix to target this notification."
+        placeholder="Enter page ID"
+        description="(Optional) Enter a page ID you can use to target this notification."
       />
 
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
