@@ -9,7 +9,7 @@ export const AppDataSource = new DataSource({
     password: 'postgres',
     database: 'notifications_dev',
     entities: [EZNotification],
-    synchronize: true,
+    synchronize: false,
     migrations: ["migration/*.ts"],
     // other options
 });

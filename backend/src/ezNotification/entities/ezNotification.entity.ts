@@ -12,16 +12,16 @@ export class EZNotification {
 
   @Column({ default: false })
   scheduled: boolean;
-
-  @Column({ name: 'start_time', nullable: true })
-  startTime: Date;
-
-  @Column({ name: 'end_time', nullable: true })
-  endTime: Date;
-
+    
   @Column({ default: false })
   canceled: boolean;
 
   @Column({ name: 'page_id' })
   pageId: string;
+
+  @Column({ name: 'start_date', nullable: true })
+  startDate: Date;
+
+  @Column({ name: 'end_date', nullable: true })
+  endDate: Date;
 }
