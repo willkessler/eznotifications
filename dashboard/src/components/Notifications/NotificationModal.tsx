@@ -127,7 +127,7 @@ const NotificationModal: React.FC = ({ onSubmit }) => {
               description="Enter anything you want to show your users. You must parse whatever format you use on your end (for instance, markdown)."
             />
             <div style={{ display: 'flex', width: '90%' }}>
-              <UserHint hintText="Optionally, choose start and end dates during which time your notification will be returned via the API.">
+              <UserHint hintText="Select a calendar period during which your notification will be returned via the API. (Optional)">
                 <DatePickerInput
                   type="range"
                   name="dateRange"
@@ -135,7 +135,7 @@ const NotificationModal: React.FC = ({ onSubmit }) => {
                   onChange={(value) => handleDateRangeChange(value, 'dateRange')}
                   clearable
                   style={{marginTop:'10px'}}
-                  label="Notification's display dates (optional)."
+                  label="Notification's display dates"
                   onBlur={() => {
                     if (!notificationData.dateRange[0] && !notificationData.dateRange[1]) {
                       setTimeInputsDisabled(true); // Disable time inputs if date range is cleared
@@ -143,26 +143,30 @@ const NotificationModal: React.FC = ({ onSubmit }) => {
                   }}
                 />
                 </UserHint>
-              <TimeInput
-                name="startTime"
-                value={notificationData.startTime}
-                label="Notification's display start time (optional)."
-                onChange={(value) => handleDateTimeChange(value, 'startTime')}
-                ref={ref1}
-                rightSection={pickerControls[0]}
-                style={{marginTop:'10px', marginLeft:'10px'}}
-                disabled={timeInputsDisabled}
-              />
-              <TimeInput
-                name="endTime"
-                value={notificationData.endTime}
-                label="Notification's display end time."
-                onChange={(value) => handleDateTimeChange(value, 'endTime')}
-                ref={ref2}
-                rightSection={pickerControls[1]}
-                style={{marginTop:'10px', marginLeft:'10px'}}
-                disabled={timeInputsDisabled}
-              />
+              <UserHint hintText="If you provided display dates, you can optionally set the notification's display starting time on the first day.">
+                <TimeInput
+                  name="startTime"
+                  value={notificationData.startTime}
+                  label="Notification's display start time (optional)."
+                  onChange={(value) => handleDateTimeChange(value, 'startTime')}
+                  ref={ref1}
+                  rightSection={pickerControls[0]}
+                  style={{marginTop:'10px', marginLeft:'10px'}}
+                  disabled={timeInputsDisabled}
+                />
+              </UserHint>
+              <UserHint hintText="If you provided display dates, you can optionally set the notification's last display time on the last day.">
+                <TimeInput
+                  name="endTime"
+                  value={notificationData.endTime}
+                  label="Notification's display end time."
+                  onChange={(value) => handleDateTimeChange(value, 'endTime')}
+                  ref={ref2}
+                  rightSection={pickerControls[1]}
+                  style={{marginTop:'10px', marginLeft:'10px'}}
+                  disabled={timeInputsDisabled}
+                />
+              </UserHint>
             </div>
             <TextInput
               name="pageId"

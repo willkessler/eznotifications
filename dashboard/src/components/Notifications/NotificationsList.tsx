@@ -5,6 +5,31 @@ import classes from './TableScrollArea.module.css';
 
 import { useNotifications } from './NotificationsContext';
 
+const sortNotifications = (data) => {
+  return data.sort((a, b) => {
+    // Group 1: Non-null startDate and not canceled
+    if (a.startDate !== null && !a.canceled && (b.startDate === null || b.canceled)) {
+      return -1;
+    }
+    if (b.startDate !== null && !b.canceled && (a.startDate === null || a.canceled)) {
+      return 1;
+    }
+
+    // Group 2: Null startDate and not canceled
+    if (a.startDate === null && !a.canceled && b.canceled) {
+      return -1;
+    }
+    if (b.startDate === null && !b.canceled && a.canceled) {
+      return 1;
+    }
+
+    // Group 3: Canceled notifications
+    // For items within the same group, sort by content alphabetically
+    return a.content.localeCompare(b.content);
+  });
+};
+
+
 export function NotificationsList(parameters) {
     const [scrolled, setScrolled] = useState(false);
     const { refreshToken } = useNotifications();
@@ -25,9 +50,11 @@ export function NotificationsList(parameters) {
         fetchNotifications();
     }, [refreshToken]);
 
-    const rows = notifications.map((row, index) => (
+
+    const sortedNotifications = sortNotifications(notifications);
+    const rows = sortedNotifications.map((row, index) => (
     <Table.Tr key={row.id || index}>
-      <Table.Td>{row.content}</Table.Td>
+      <Table.Td>{row.content.length > 100 ? row.content.substr(0,100) + '...' : (row.content.length == 0 ? '(Not set)' : row.content) }</Table.Td>
       <Table.Td>{row.startDate == null ? '' : new Date(row.startDate).toLocaleString() }</Table.Td>
       <Table.Td>{row.endDate == null   ? '' : new Date(row.endDate).toLocaleString()}</Table.Td>
       <Table.Td>{row.pageId}</Table.Td>
