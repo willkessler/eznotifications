@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import classes from './TableScrollArea.module.css';
 import toast, { Toaster } from 'react-hot-toast';
 
+
 import { useNotifications } from './NotificationsContext';
 
 const sortNotifications = (data) => {
@@ -34,9 +35,12 @@ const sortNotifications = (data) => {
 export function NotificationsList(parameters) {
     const [scrolled, setScrolled] = useState(false);
     const { refreshToken } = useNotifications();
+    const displayBanner = parameters.displayBanner;
 
     const [notifications, setNotifications] = useState([]);
-    const notify = (message) => { 
+
+    // Set up the demo toaster
+    const toastNotify = (message) => { 
         toast.success(message, {
             duration: 4000,
             position: 'top-center',
@@ -87,11 +91,13 @@ export function NotificationsList(parameters) {
     <Table.Tr key={row.id || index}>
       <Table.Td>{row.content.length > 100 ? row.content.substr(0,100) + '...' : (row.content.length == 0 ? '(Not set)' : row.content) }</Table.Td>
       <Table.Td>{row.pageId}</Table.Td>
+      <Table.Td>{row.notificationType}</Table.Td>
       <Table.Td>{row.startDate == null ? '' : new Date(row.startDate).toLocaleString() }</Table.Td>
       <Table.Td>{row.endDate == null   ? '' : new Date(row.endDate).toLocaleString()}</Table.Td>
       <Table.Td>{row.canceled ? 'X' : ''}</Table.Td>
       <Table.Th>
-            <Anchor component="button" type="button" onClick={(event) => { event.preventDefault(); notify(row.content); }}>Preview</Anchor>
+            <Anchor component="button" type="button" onClick={(event) => { event.preventDefault(); toastNotify(row.content); }}>Toast</Anchor>&nbsp;&nbsp;
+            <Anchor component="button" type="button" onClick={(event) => { event.preventDefault(); displayBanner(row.content); }}>Banner</Anchor>
        </Table.Th>
     </Table.Tr>
   ));
@@ -103,6 +109,7 @@ export function NotificationsList(parameters) {
           <Table.Tr>
             <Table.Th>Contents</Table.Th>
             <Table.Th>Page ID</Table.Th>
+            <Table.Th>Notification type</Table.Th>
             <Table.Th>Starts</Table.Th>
             <Table.Th>Ends</Table.Th>
             <Table.Th>Canceled?</Table.Th>

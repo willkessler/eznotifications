@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Code, Group, Textarea } from '@mantine/core';
 import toast, { Toaster } from 'react-hot-toast';
+import FlexBanner from "flex-banner";
 
 import {
   IconBellRinging,
@@ -36,6 +37,8 @@ export function HomePage() {
   ];
 
   const [activeLink, setActiveLink] = useState('Notifications');
+  const [showBanner, setShowBanner] = useState(false);
+  const [bannerContent, setBannerContent] = useState('Default banner message');
 
   const links = navBarData.map((item) => (
     <a
@@ -66,6 +69,15 @@ export function HomePage() {
     // Call API to cancel the notification
     // Then update the state or re-fetch notifications
   };
+
+  // Set up the demo banner
+  const displayBanner = (bannerText) => {
+    setBannerContent(bannerText);
+    setShowBanner(true);
+    setTimeout(() => {
+      setShowBanner(false);
+    }, 5000); // ms
+  };    
 
   const handleNewNotificationSubmit = (notificationData) => {
     fetch(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications`, {
@@ -105,12 +117,24 @@ export function HomePage() {
       </nav>
 
       <div className={classes.content}> {/* Main content area */}
+      <div>
+          {showBanner && <FlexBanner
+                           title={bannerContent}
+                           ctaLink="https://github.com/willkessler/eznotifications"
+                           ctaTitle=" "
+                           delayToShowBanner={0}
+                           animationTime={0}
+                           isCenter={true}
+                         />
+          }
+      </div>
         <h1>Notifications</h1>
         <div>
           <NotificationsProvider>
             <NotificationsList
               onEdit={handleEdit}
               onCancel={handleCancel}
+              displayBanner={displayBanner}
             />
             <NotificationModal onSubmit={handleNewNotificationSubmit} />
           </NotificationsProvider>

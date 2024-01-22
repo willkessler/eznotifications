@@ -37,6 +37,7 @@
     "@tiptap/starter-kit": "^2.1.16",
     "dayjs": "^1.11.10",
     "embla-carousel-react": "^8.0.0-rc19",
+    "flex-banner": "^2.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
