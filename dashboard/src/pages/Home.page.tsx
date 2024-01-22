@@ -18,7 +18,7 @@ import { Welcome } from '../components/Welcome/Welcome';
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
 import { Home } from '../components/Home/Home';
 import { NotificationsList } from '../components/Notifications/NotificationsList';
-import NotificationModal from '../components/Notifications/NotificationModal'; // Adjust the path as needed
+import { NotificationModal }  from '../components/Notifications/NotificationModal'; // Adjust the path as needed
 import { NotificationsProvider } from '../components/Notifications/NotificationsContext';
 
 import { Textarea, Button, Anchor } from '@mantine/core';
@@ -28,13 +28,10 @@ export function HomePage() {
   const navigate = useNavigate();
 
   const navBarData = [
-    { link: '', label: 'Notifications', icon: IconBellRinging },
+    { link: '', label: 'All Notifications', icon: IconBellRinging },
     { link: '', label: 'Billing', icon: IconReceipt2 },
-    { link: '', label: 'Security', icon: IconFingerprint },
-    { link: '', label: 'SSH Keys', icon: IconKey },
-    { link: '', label: 'Databases', icon: IconDatabaseImport },
-    { link: '', label: 'Authentication', icon: Icon2fa },
-    { link: '', label: 'Other Settings', icon: IconSettings },
+    { link: '', label: 'API Keys', icon: IconKey },
+    { link: '', label: 'Account and Settings', icon: IconSettings },
   ];
 
   const [activeLink, setActiveLink] = useState('Notifications');
@@ -98,8 +95,9 @@ return (
         </div>
 
         <div className={classes.footer}>
-          <Anchor component="button" type="button" >
-            Log out
+          <Anchor component="button" type="button" style={{color:'#aaa'}}>
+            <IconLogout className={classes.linkIcon} stroke={1.5} />
+            <span>Log out</span>
           </Anchor>
         </div>
       </nav>

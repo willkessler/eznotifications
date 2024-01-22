@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import UserHint from './UserHint';
 import { useNotifications } from './NotificationsContext';
 
-const NotificationModal: React.FC = ({ onSubmit }) => {
+export const NotificationModal: React.FC = ({ onSubmit }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { refreshNotifications } = useNotifications();
 
@@ -188,6 +188,3 @@ const NotificationModal: React.FC = ({ onSubmit }) => {
     </div>
   );
 };
-
-export default NotificationModal;
-                       

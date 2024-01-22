@@ -55,9 +55,9 @@ export function NotificationsList(parameters) {
     const rows = sortedNotifications.map((row, index) => (
     <Table.Tr key={row.id || index}>
       <Table.Td>{row.content.length > 100 ? row.content.substr(0,100) + '...' : (row.content.length == 0 ? '(Not set)' : row.content) }</Table.Td>
+      <Table.Td>{row.pageId}</Table.Td>
       <Table.Td>{row.startDate == null ? '' : new Date(row.startDate).toLocaleString() }</Table.Td>
       <Table.Td>{row.endDate == null   ? '' : new Date(row.endDate).toLocaleString()}</Table.Td>
-      <Table.Td>{row.pageId}</Table.Td>
       <Table.Td>{row.canceled ? 'X' : ''}</Table.Td>
     </Table.Tr>
   ));
@@ -68,9 +68,9 @@ export function NotificationsList(parameters) {
         <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
           <Table.Tr>
             <Table.Th>Contents</Table.Th>
+            <Table.Th>Page ID</Table.Th>
             <Table.Th>Starts</Table.Th>
             <Table.Th>Ends</Table.Th>
-            <Table.Th>Page ID</Table.Th>
             <Table.Th>Canceled?</Table.Th>
           </Table.Tr>
         </Table.Thead>
