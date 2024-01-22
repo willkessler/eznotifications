@@ -5,6 +5,7 @@ import classes from './TableScrollArea.module.css';
 import toast, { Toaster } from 'react-hot-toast';
 
 
+
 import { useNotifications } from './NotificationsContext';
 
 const sortNotifications = (data) => {
@@ -96,8 +97,8 @@ export function NotificationsList(parameters) {
       <Table.Td>{row.endDate == null   ? '' : new Date(row.endDate).toLocaleString()}</Table.Td>
       <Table.Td>{row.canceled ? 'X' : ''}</Table.Td>
       <Table.Th>
-            <Anchor component="button" type="button" onClick={(event) => { event.preventDefault(); toastNotify(row.content); }}>Toast</Anchor>&nbsp;&nbsp;
-            <Anchor component="button" type="button" onClick={(event) => { event.preventDefault(); displayBanner(row.content); }}>Banner</Anchor>
+            <Anchor component="button" type="button" onClick={(event) => { event.preventDefault(); toastNotify(row.content.length == 0 ? '(Not set)' : row.content); }}>Toast</Anchor>&nbsp;&nbsp;
+            <Anchor component="button" type="button" onClick={(event) => { event.preventDefault(); displayBanner(row.content.length == 0 ? '(Not set)' : row.content); }}>Banner</Anchor>
        </Table.Th>
     </Table.Tr>
   ));
