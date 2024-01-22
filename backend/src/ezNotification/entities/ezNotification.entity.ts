@@ -10,6 +10,9 @@ export class EZNotification {
   @Column()
   content: string;
 
+  @Column({ name: 'notification_type', nullable: true })
+  notificationType: string;
+
   @Column({ default: false })
   scheduled: boolean;
     
