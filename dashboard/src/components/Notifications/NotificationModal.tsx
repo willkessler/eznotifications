@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Modal, Paper, Textarea, TextInput, Button, Anchor } from '@mantine/core';
+import { Anchor, Button, Modal, Paper, Textarea, TextInput } from '@mantine/core';
 import { DateTimePicker, DatePickerInput, TimeInput } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
@@ -30,7 +30,6 @@ export const NotificationModal: React.FC = ({ onSubmit }) => {
     dateRange: [null, null],
     startTime: '00:00',
     endTime: '00:00',
-    pageId: '',
     canceled: false
   });
 

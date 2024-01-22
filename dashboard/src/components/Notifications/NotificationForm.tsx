@@ -16,7 +16,6 @@ const NotificationForm = ({ onSubmit }) => {
     dateRange: [null, null],
     startTime: '00:00',
     endTime: '00:00',
-    pageId: '',
     canceled: false
   });
 

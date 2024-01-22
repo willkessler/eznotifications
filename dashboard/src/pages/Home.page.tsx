@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Group, Code } from '@mantine/core';
+import { Anchor, Button, Code, Group, Textarea } from '@mantine/core';
+import toast, { Toaster } from 'react-hot-toast';
+
 import {
   IconBellRinging,
   IconFingerprint,
@@ -21,7 +23,6 @@ import { NotificationsList } from '../components/Notifications/NotificationsList
 import { NotificationModal }  from '../components/Notifications/NotificationModal'; // Adjust the path as needed
 import { NotificationsProvider } from '../components/Notifications/NotificationsContext';
 
-import { Textarea, Button, Anchor } from '@mantine/core';
 
 export function HomePage() {
 
@@ -83,8 +84,9 @@ export function HomePage() {
       .catch((error) => console.error('Error creating notification:', error));
   };
 
-return (
+  return (
     <div className={classes.mainContainer}> {/* Main container */}
+      <Toaster />
       <nav className={classes.navbar}>
         <div className={classes.navbarMain}>
           <Group className={classes.header} justify="space-between">

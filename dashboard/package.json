@@ -28,7 +28,6 @@
     "@mantine/form": "^7.4.2",
     "@mantine/hooks": "^7.4.2",
     "@mantine/modals": "^7.4.2",
-    "@mantine/notifications": "^7.4.2",
     "@mantine/nprogress": "^7.4.2",
     "@mantine/spotlight": "^7.4.2",
     "@mantine/tiptap": "^7.4.2",
@@ -40,6 +39,7 @@
     "embla-carousel-react": "^8.0.0-rc19",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.21.0",
     "recharts": "2"
   },
