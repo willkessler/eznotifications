@@ -1,5 +1,5 @@
 import cx from 'clsx';
-import { Anchor, Button, ScrollArea, Table } from '@mantine/core';
+import { Anchor, Box, Button, ScrollArea, Table, Text } from '@mantine/core';
 import { useState, useEffect } from 'react';
 import classes from './TableScrollArea.module.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -89,7 +89,7 @@ export function NotificationsList(parameters) {
     const sortedNotifications = sortNotifications(notifications);
     const rows = sortedNotifications.map((row, index) => (
     <Table.Tr key={row.id || index}>
-      <Table.Td>{row.content.length > 100 ? row.content.substr(0,100) + '...' : (row.content.length == 0 ? '(Not set)' : row.content) }</Table.Td>
+      <Table.Td><Box w="300"><Text truncate="end">{row.content.length == 0 ? '(Not set)' : row.content }</Text></Box></Table.Td>
       <Table.Td>{row.pageId}</Table.Td>
       <Table.Td>{row.notificationType}</Table.Td>
       <Table.Td>{row.startDate == null ? '' : new Date(row.startDate).toLocaleString() }</Table.Td>
@@ -113,7 +113,7 @@ export function NotificationsList(parameters) {
             <Table.Th>Starts</Table.Th>
             <Table.Th>Ends</Table.Th>
             <Table.Th>Canceled?</Table.Th>
-            <Table.Td>Preview</Table.Td>
+            <Table.Th>Preview</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>

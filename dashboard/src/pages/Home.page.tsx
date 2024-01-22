@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Anchor, Button, Code, Group, Textarea } from '@mantine/core';
+import { Anchor, Button, Code, Group, Image, Textarea, Text } from '@mantine/core';
 import toast, { Toaster } from 'react-hot-toast';
 import FlexBanner from "flex-banner";
 
@@ -102,7 +102,10 @@ export function HomePage() {
       <nav className={classes.navbar}>
         <div className={classes.navbarMain}>
           <Group className={classes.header} justify="space-between">
-            <h3>EZNotifications</h3>
+            <Anchor href="/"><Image src="/eznotifications_logo.png" h={60} radius="md"/></Anchor>
+            <Text span size="xl" fs="italic" ta="left" fw={800} variant="gradient" gradient={{ from: 'cyan', to: 'green', deg: 197 }}>
+              EZ Notifications
+            </Text>
             <Code fw={700}>v1.0</Code>
           </Group>
           {links}
@@ -128,7 +131,7 @@ export function HomePage() {
                          />
           }
       </div>
-        <h1>Notifications</h1>
+        <h1>Your Notifications</h1>
         <div>
           <NotificationsProvider>
             <NotificationsList
