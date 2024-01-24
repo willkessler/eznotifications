@@ -39,6 +39,7 @@ export function HomePage() {
   const [activeLink, setActiveLink] = useState('Notifications');
   const [showBanner, setShowBanner] = useState(false);
   const [bannerContent, setBannerContent] = useState('');
+  const [modalData, setModalData] = useState(null);
 
   const links = navBarData.map((item) => (
     <a

@@ -186,7 +186,7 @@ export const NotificationModal: React.FC = ({ onSubmit }) => {
             />
           </Paper>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-        <Button variant="filled" type="submit">+ Create new notification</Button>
+        <Button variant="filled" type="submit">Create</Button>
         <Anchor component="button" type="button" onClick={handleCancel} style={{marginLeft:'10px', color:'#999'}} >
           Cancel
         </Anchor>
