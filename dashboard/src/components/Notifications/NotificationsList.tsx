@@ -4,48 +4,45 @@ import { useState, useEffect } from 'react';
 import classes from './TableScrollArea.module.css';
 import toast, { Toaster } from 'react-hot-toast';
 
-
-
 import { useNotifications } from './NotificationsContext';
 
-export function NotificationsList(parameters) {
-    const [scrolled, setScrolled] = useState(false);
-    const { refreshToken } = useNotifications();
-    const displayBanner = parameters.displayBanner;
+export function NotificationsList({onEdit, onCancel, displayBanner}) {
+  const [scrolled, setScrolled] = useState(false);
+  const { refreshToken } = useNotifications();
 
-    const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
-    // Set up the demo toaster
-    const toastNotify = (message) => { 
-        toast.success(message, {
-            duration: 4000,
-            position: 'top-center',
+  // Set up the demo toaster
+  const toastNotify = (message) => { 
+    toast.success(message, {
+      duration: 4000,
+      position: 'top-center',
 
-            // Styling
-            style: {
-                minWidth:'1000px',
-                transition: "all 0.5s ease-out"
-            },
-            className: '',
-
+      // Styling
+      style: {
+        minWidth:'1000px',
+        transition: "all 0.5s ease-out"
+      },
+      className: '',
 
 
-            // Custom Icon
-            icon: '👏',
 
-            // Change colors of success/error/loading icon
-            iconTheme: {
-                primary: '#000',
-                secondary: '#fff',
-            },
+      // Custom Icon
+      icon: '👏',
 
-            // Aria
-            ariaProps: {
-                role: 'status',
-                'aria-live': 'polite',
-            },
-        });
-    };
+      // Change colors of success/error/loading icon
+      iconTheme: {
+        primary: '#000',
+        secondary: '#fff',
+      },
+
+      // Aria
+      ariaProps: {
+        role: 'status',
+        'aria-live': 'polite',
+      },
+    });
+  };
 
   const sortNotifications = (data) => {
     return data.sort((a, b) => {
@@ -87,8 +84,10 @@ export function NotificationsList(parameters) {
     }, [refreshToken]);
 
 
-    const editNotification = (data) => {
-      console.log('Editing record with id:', data.id);
+    const editNotification = (notificationData) => {
+      console.log('Editing record with id:', notificationData.id);
+      console.log(typeof onEdit);
+      onEdit(notificationData);
     };
 
     const sortedNotifications = sortNotifications(notifications);

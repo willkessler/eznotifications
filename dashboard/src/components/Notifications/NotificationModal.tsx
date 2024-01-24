@@ -7,18 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import UserHint from './UserHint';
 import { useNotifications } from './NotificationsContext';
 
-export const NotificationModal: React.FC = ({ onSubmit }) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onClose }) => {
   const { refreshNotifications } = useNotifications();
-
-  const openModal = () => {
-    setIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsOpen(false);
-    refreshNotifications(); // Refresh the notifications list
-  };
+  const editing = (initialData != null);
+  console.log('initialData:', initialData, ' editing:', editing);
 
   const navigate = useNavigate();
 
@@ -33,9 +25,19 @@ export const NotificationModal: React.FC = ({ onSubmit }) => {
     canceled: false
   });
 
-  const handleCancel = () => {
-    closeModal();
-  };
+/*
+  if (editing) {
+    const [notificationData, setNotificationData] = useState({
+      content: initialData.content,
+      pageId: initialData.pageId,
+      dateRange: [initialData.startDate, initialData.endDate],
+      startTime: `${initialData.startDate.getHours()}:${initialData.startDate.getMinutes().toString().padStart(2, '0')}`,
+      endTime: `${initialData.endDate.getHours()}:${initialData.endDate.getMinutes().toString().padStart(2, '0')}`,
+      canceled: false
+    });
+  } else {
+  }
+*/
 
   const handleTextChange = e => {
     setNotificationData({ ...notificationData, [e.target.name]: e.target.value });
@@ -52,34 +54,39 @@ export const NotificationModal: React.FC = ({ onSubmit }) => {
   };
 
   const handleSubmit = e => {
-    console.log('Type of onSubmit:', typeof onSubmit);
-
     e.preventDefault();
 
-    console.log('before, NotificationData:', notificationData);
-    [notificationData.startDate, notificationData.endDate] = notificationData.dateRange;
-    if (notificationData.startDate != null) {
+    // Create a copy of notificationData
+    const formData = { ...notificationData };
 
+    // Destructure the dateRange to get startDate and endDate
+    const [startDate, endDate] = formData.dateRange;
+
+    if (startDate && endDate) {
       // Check if startTime and endTime are provided; if not, set them to midnight
-      if (!notificationData.startTime) {
-        notificationData.startTime = '00:00'; // Default to midnight
-      }
-
-      if (!notificationData.endTime) {
-        notificationData.endTime = '00:00'; // Default to midnight
-      }
+      formData.startTime = formData.startTime || '00:00';
+      formData.endTime = formData.endTime || '00:00';
 
       // Parse the time strings into hours and minutes
-      const [startHours, startMinutes] = notificationData.startTime.split(':').map(Number);
-      const [endHours, endMinutes] = notificationData.endTime.split(':').map(Number);
+      const [startHours, startMinutes] = formData.startTime.split(':').map(Number);
+      const [endHours, endMinutes] = formData.endTime.split(':').map(Number);
+
+      // Create new Date objects to avoid mutating the original date objects
+      formData.startDate = new Date(startDate);
+      formData.endDate = new Date(endDate);
 
       // Set the time portion of the date objects to the parsed hours and minutes
-      notificationData.startDate.setHours(startHours, startMinutes);
-      notificationData.endDate.setHours(endHours, endMinutes);
+      formData.startDate.setHours(startHours, startMinutes);
+      formData.endDate.setHours(endHours, endMinutes);
     }
-    console.log('after, NotificationData.startDate:', notificationData.startDate, 'notificationData.endDate:', notificationData.endDate);
-    onSubmit(notificationData);
-    closeModal();
+
+    console.log('Processed form data:', formData);
+
+    // Use formData for submission or further processing
+    onSubmit(formData);
+
+    // Other necessary actions like closing the modal
+    onClose();
   };
 
   const CustomLabelWithHint = ({ text, hintText }) => (
@@ -92,13 +99,44 @@ export const NotificationModal: React.FC = ({ onSubmit }) => {
   );
 
   useEffect(() => {
-    if (notificationData.dateRange[0] && notificationData.dateRange[1]) {
-      setTimeInputsDisabled(false); // Enable time inputs when date range is set
-    } else {
-      setTimeInputsDisabled(true); // Disable time inputs when date range is cleared
-    }
-  }, [notificationData.dateRange])
+    let setDateRange = false;
+    if (initialData != null) {
+      console.log('useEffect, initialState=', initialData);
+      const startDate = new Date(initialData.startDate);
+      const endDate = new Date(initialData.endDate);
+      console.log('startDate type:', typeof startDate, 'endDate type:', typeof endDate);
 
+      console.log('pre-iso');
+      const startTime = `${startDate.getHours()}:${startDate.getMinutes().toString().padStart(2, '0')}`;
+      console.log('post-iso1');
+      const endTime = `${endDate.getHours()}:${endDate.getMinutes().toString().padStart(2, '0')}`;
+      console.log('post-iso2');
+
+      setNotificationData({
+        ...initialData, // Spread the initialData
+        dateRange: [startDate, endDate],
+        startTime: startTime,
+        endTime: endTime
+      });
+      console.log('post setnotif');
+      setDateRange = true;
+    } else {
+      setNotificationData({
+        content: '',
+        pageId: '',
+        dateRange: [null, null],
+        startTime: '00:00',
+        endTime: '00:00',
+        canceled: false
+      });
+    }
+  }, [initialData]);
+
+  useEffect(() => {
+    // Enable or disable time inputs based on the dateRange
+    const hasDateRange = notificationData.dateRange[0] && notificationData.dateRange[1];
+    setTimeInputsDisabled(!hasDateRange);
+  }, [notificationData.dateRange]);
 
   const customLabel1 = 
         (<CustomLabelWithHint text="Notification Display Dates" hintText="Select a calendar period during which your notification will be returned via the API. (Optional)" />);
@@ -124,15 +162,14 @@ export const NotificationModal: React.FC = ({ onSubmit }) => {
 
   return (
     <div>
-      <Button onClick={openModal} style={{ marginTop: '15px' }}>+ Create new notification</Button>
-
-      <Modal title="Create a new notification" opened={isOpen} onClose={closeModal} size="auto" centered>
+      <Modal title={editing ? 'Update this notification' : 'Create a new notification'} opened={opened} onClose={onClose} size="auto" centered>
         <form onSubmit={handleSubmit} style={{margin:'10px'}} >
           <Paper padding="md">
             <Textarea
               name="content"
               radius="md"
               autosize
+              value={notificationData.content}
               minRows={4}
               maxRows={10}
               onChange={handleTextChange}
@@ -144,7 +181,7 @@ export const NotificationModal: React.FC = ({ onSubmit }) => {
                 <DatePickerInput
                   type="range"
                   name="dateRange"
-                  value={notificationData.dateRange}
+                  value={[notificationData.dateRange[0], notificationData.dateRange[1]]}
                   onChange={(value) => handleDateRangeChange(value, 'dateRange')}
                   clearable
                   style={{marginTop:'10px'}}
@@ -178,6 +215,7 @@ export const NotificationModal: React.FC = ({ onSubmit }) => {
             </div>
             <TextInput
               name="pageId"
+              value={editing ? initialData.pageId : ''}
               onChange={handleTextChange}
               label="Page ID"
               style={{marginTop:'15px'}}
@@ -186,8 +224,8 @@ export const NotificationModal: React.FC = ({ onSubmit }) => {
             />
           </Paper>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-        <Button variant="filled" type="submit">Create</Button>
-        <Anchor component="button" type="button" onClick={handleCancel} style={{marginLeft:'10px', color:'#999'}} >
+        <Button variant="filled" type="submit">{editing ? 'Update' : 'Create'}</Button>
+        <Anchor component="button" type="button" onClick={onClose} style={{marginLeft:'10px', color:'#999'}} >
           Cancel
         </Anchor>
       </div>

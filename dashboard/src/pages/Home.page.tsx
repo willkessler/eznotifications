@@ -24,7 +24,6 @@ import { NotificationsList } from '../components/Notifications/NotificationsList
 import { NotificationModal }  from '../components/Notifications/NotificationModal'; // Adjust the path as needed
 import { NotificationsProvider } from '../components/Notifications/NotificationsContext';
 
-
 export function HomePage() {
 
   const navigate = useNavigate();
@@ -39,6 +38,7 @@ export function HomePage() {
   const [activeLink, setActiveLink] = useState('Notifications');
   const [showBanner, setShowBanner] = useState(false);
   const [bannerContent, setBannerContent] = useState('');
+  const [isModalOpen, setModalIsOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
 
   const links = navBarData.map((item) => (
@@ -61,9 +61,11 @@ export function HomePage() {
     navigate('/new-notification'); // Use the path you've defined for the new notification form
   };
 
-  const handleEdit = (notificationId, updatedData) => {
+  const handleEdit = (notificationData) => {
     // Call API to update the notification
     // Then update the state or re-fetch notifications
+    console.log('notificationData=',notificationData);
+    openModal(notificationData);
   };
 
   const handleCancel = (notificationId) => {
@@ -80,6 +82,16 @@ export function HomePage() {
   const closeBanner = () => {
       setShowBanner(false);
   }
+
+  const openModal = (notificationData = null) => {
+    setModalData(notificationData);
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setModalData(null);
+  };
 
   const handleNewNotificationSubmit = (notificationData) => {
     fetch(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications`, {
@@ -131,7 +143,15 @@ export function HomePage() {
               onCancel={handleCancel}
               displayBanner={displayBanner}
             />
-            <NotificationModal onSubmit={handleNewNotificationSubmit} />
+            {isModalOpen && (
+              <NotificationModal
+                opened={isModalOpen}
+                initialData={modalData}
+                onSubmit={handleNewNotificationSubmit}
+                onClose={closeModal}
+              />
+            )}
+            <Button onClick={() => { openModal(null) }} style={{ marginTop: '15px' }}>+ Create new notification</Button>
           </NotificationsProvider>
         </div>
       </div>
