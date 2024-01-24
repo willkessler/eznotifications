@@ -103,7 +103,7 @@ export function HomePage() {
       <nav className={classes.navbar}>
         <div className={classes.navbarMain}>
           <Group className={classes.header} justify="space-between">
-            <Anchor href="/"><Image src="/eznotifications_logo.png" h={60} radius="md"/></Anchor>
+            <Anchor href="/"><Image src="/megaphone_logo2a.png" h={150} /></Anchor>
             <Text span size="xl" fs="italic" ta="left" fw={800} variant="gradient" gradient={{ from: 'cyan', to: 'green', deg: 197 }}>
               EZ Notifications
             </Text>

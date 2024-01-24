@@ -24,3 +24,4 @@ const Banner: React.FC<BannerProps> = ({ message, onClose }) => {
 };
 
 export default Banner;
+
