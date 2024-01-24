@@ -20,24 +20,18 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
     content: '',
     pageId: '',
     dateRange: [null, null],
-    startTime: '00:00',
-    endTime: '00:00',
+    startTime: '',
+    endTime: '',
     canceled: false
   });
 
-/*
-  if (editing) {
-    const [notificationData, setNotificationData] = useState({
-      content: initialData.content,
-      pageId: initialData.pageId,
-      dateRange: [initialData.startDate, initialData.endDate],
-      startTime: `${initialData.startDate.getHours()}:${initialData.startDate.getMinutes().toString().padStart(2, '0')}`,
-      endTime: `${initialData.endDate.getHours()}:${initialData.endDate.getMinutes().toString().padStart(2, '0')}`,
-      canceled: false
-    });
-  } else {
+  function formatTime(date) {
+    if (!date) return '';
+
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
   }
-*/
 
   const handleTextChange = e => {
     setNotificationData({ ...notificationData, [e.target.name]: e.target.value });
@@ -100,23 +94,27 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
 
   useEffect(() => {
     let setDateRange = false;
-    if (initialData != null) {
+    if (editing) {
       console.log('useEffect, initialState=', initialData);
-      const startDate = new Date(initialData.startDate);
-      const endDate = new Date(initialData.endDate);
+      const formattedStartDate = new Date(initialData.startDate);
+      const formattedEndDate = new Date(initialData.endDate);
+      const formattedStartTime = formatTime(formattedStartDate);
+      const formattedEndTime = formatTime(formattedEndDate);
       console.log('startDate type:', typeof startDate, 'endDate type:', typeof endDate);
 
       console.log('pre-iso');
-      const startTime = `${startDate.getHours()}:${startDate.getMinutes().toString().padStart(2, '0')}`;
+/*
+      const startTime = `${formattedStartDate.getHours()}:${formattedStartDate.getMinutes().toString().padStart(2, '0')}`;
       console.log('post-iso1');
       const endTime = `${endDate.getHours()}:${endDate.getMinutes().toString().padStart(2, '0')}`;
       console.log('post-iso2');
+*/
 
       setNotificationData({
         ...initialData, // Spread the initialData
-        dateRange: [startDate, endDate],
-        startTime: startTime,
-        endTime: endTime
+        dateRange: [formattedStartDate, formattedEndDate],
+        startTime: formattedStartTime,
+        endTime: formattedEndTime
       });
       console.log('post setnotif');
       setDateRange = true;
@@ -130,7 +128,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
         canceled: false
       });
     }
-  }, [initialData]);
+  }, [initialData, editing]);
 
   useEffect(() => {
     // Enable or disable time inputs based on the dateRange
@@ -192,6 +190,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                     }
                   }}
                 />
+              {notificationData.startTime &&
                 <TimeInput
                   name="startTime"
                   value={notificationData.startTime}
@@ -202,6 +201,8 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                   style={{marginTop:'10px', marginLeft:'10px'}}
                   disabled={timeInputsDisabled}
                 />
+              }
+              {notificationData.endTime &&
                 <TimeInput
                   name="endTime"
                   value={notificationData.endTime}
@@ -212,10 +213,11 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                   style={{marginTop:'10px', marginLeft:'10px'}}
                   disabled={timeInputsDisabled}
                 />
+              }
             </div>
             <TextInput
               name="pageId"
-              value={editing ? initialData.pageId : ''}
+              value={notificationData.pageId}
               onChange={handleTextChange}
               label="Page ID"
               style={{marginTop:'15px'}}
