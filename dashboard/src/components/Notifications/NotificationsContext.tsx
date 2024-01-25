@@ -15,11 +15,10 @@ export const NotificationsProvider = ({ children }) => {
   }, []);
 
   const highlightNotification = useCallback((id) => {
-    console.log('setting highlight for id: ', id);
     setHighlightedId(id);
 
     // Remove highlight after 5 seconds
-//    setTimeout(() => setHighlightedId(null), 5000);
+    setTimeout(() => setHighlightedId(null), 5000);
   }, []);
   
 

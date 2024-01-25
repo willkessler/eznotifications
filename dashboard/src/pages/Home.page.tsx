@@ -109,7 +109,7 @@ export function HomePage() {
       .then((data) => {
         console.log('Notification ' + action, data);
 
-        highlightNotification(notificationData.id);
+        highlightNotification(data.id);
         refreshNotifications();
       })        
       .catch((error) => console.error('Error creating notification:', error));

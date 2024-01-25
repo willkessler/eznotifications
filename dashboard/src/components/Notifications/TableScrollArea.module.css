@@ -21,7 +21,7 @@
 
 .highlighted-row {
   background-color: yellow; /* Starting color */
-  animation: fadeOutHighlight 5s forwards; /* Animation over 5 seconds */
+  animation: fadeOutHighlight 4s forwards; /* Animation over 4 seconds */
 }
 
 @keyframes fadeOutHighlight {
