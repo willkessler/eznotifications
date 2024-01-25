@@ -69,24 +69,23 @@ export function NotificationsList({onEdit, onCancel, displayBanner}) {
   };
 
 
-    // Fetch the notifications list on component mount
-    useEffect(() => {
-        const fetchNotifications = async () => {
-            // Fetch records from the API
-            fetch(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications`)
-                .then((response) => response.json())
-                .then((data) => {
-                    setNotifications(data);
-                })
-                .catch((error) => console.error('Error fetching notifications:', error));
-        };
-        fetchNotifications();
-    }, [refreshToken]);
+  // Fetch the notifications list on component mount
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      // Fetch records from the API
+      fetch(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications`)
+        .then((response) => response.json())
+        .then((data) => {
+          setNotifications(data);
+        })
+        .catch((error) => console.error('Error fetching notifications:', error));
+    };
+    fetchNotifications();
+  }, [refreshToken]);
 
 
     const editNotification = (notificationData) => {
       console.log('Editing record with id:', notificationData.id);
-      console.log(typeof onEdit);
       onEdit(notificationData);
     };
 

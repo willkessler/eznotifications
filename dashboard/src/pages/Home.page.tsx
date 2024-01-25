@@ -22,7 +22,7 @@ import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeTo
 import { Home } from '../components/Home/Home';
 import { NotificationsList } from '../components/Notifications/NotificationsList';
 import { NotificationModal }  from '../components/Notifications/NotificationModal'; // Adjust the path as needed
-import { NotificationsProvider } from '../components/Notifications/NotificationsContext';
+import { useNotifications } from '../components/Notifications/NotificationsContext';
 
 export function HomePage() {
 
@@ -40,6 +40,7 @@ export function HomePage() {
   const [bannerContent, setBannerContent] = useState('');
   const [isModalOpen, setModalIsOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
+  const { refreshNotifications } = useNotifications();
 
   const links = navBarData.map((item) => (
     <a
@@ -93,19 +94,22 @@ export function HomePage() {
     setModalData(null);
   };
 
-  const handleNewNotificationSubmit = (notificationData) => {
-    fetch(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications`, {
-      method: 'POST',
+  const handleNotificationSubmit = (notificationData) => {
+    const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
+    const action = (notificationData.editing ? 'updated' : 'created' );
+    const apiUrl = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications` +
+          (notificationData.editing ? '/' + notificationData.id : '');
+    fetch(apiUrl, {
+      method: method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(notificationData),
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Notification created:', data);
+        console.log('Notification ' + action, data);
         // Redirect to notifications list or show a success message
-      })
-      .then((data) => {
-        navigate('/');
+        refreshNotifications();
+        //navigate('/');
       })        
       .catch((error) => console.error('Error creating notification:', error));
   };
@@ -137,7 +141,6 @@ export function HomePage() {
         <div> { showBanner && <Banner message={bannerContent} onClose={closeBanner} /> } </div>
         <h1>Your Notifications</h1>
         <div>
-          <NotificationsProvider>
             <NotificationsList
               onEdit={handleEdit}
               onCancel={handleCancel}
@@ -147,12 +150,11 @@ export function HomePage() {
               <NotificationModal
                 opened={isModalOpen}
                 initialData={modalData}
-                onSubmit={handleNewNotificationSubmit}
+                onSubmit={handleNotificationSubmit}
                 onClose={closeModal}
               />
             )}
             <Button onClick={() => { openModal(null) }} style={{ marginTop: '15px' }}>+ Create new notification</Button>
-          </NotificationsProvider>
         </div>
       </div>
     </div>

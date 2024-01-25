@@ -4,7 +4,7 @@ import { DateTimePicker, DatePickerInput, TimeInput } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
-import UserHint from './UserHint';
+import UserHint from '../../lib/UserHint';
 import { useNotifications } from './NotificationsContext';
 
 export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onClose }) => {
@@ -103,15 +103,9 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
       console.log('startDate type:', typeof startDate, 'endDate type:', typeof endDate);
 
       console.log('pre-iso');
-/*
-      const startTime = `${formattedStartDate.getHours()}:${formattedStartDate.getMinutes().toString().padStart(2, '0')}`;
-      console.log('post-iso1');
-      const endTime = `${endDate.getHours()}:${endDate.getMinutes().toString().padStart(2, '0')}`;
-      console.log('post-iso2');
-*/
-
       setNotificationData({
         ...initialData, // Spread the initialData
+        editing: true,
         dateRange: [formattedStartDate, formattedEndDate],
         startTime: formattedStartTime,
         endTime: formattedEndTime
@@ -120,6 +114,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
       setDateRange = true;
     } else {
       setNotificationData({
+        editing:false,
         content: '',
         pageId: '',
         dateRange: [null, null],

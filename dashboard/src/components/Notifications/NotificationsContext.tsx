@@ -10,6 +10,7 @@ export const NotificationsProvider = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState(0);
 
   const refreshNotifications = useCallback(() => {
+    console.log('increasing refresh token');
     setRefreshToken((prev) => prev + 1); // Increment the token to trigger a refresh
   }, []);
 

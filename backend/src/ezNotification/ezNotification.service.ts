@@ -13,6 +13,9 @@ export class EZNotificationService {
     ) {}
 
     async create(ezNotificationData: Partial<EZNotification>): Promise<EZNotification> {
+        if (ezNotificationData.id) {
+            throw new NotFoundException('Do not pass an ID to create a new EZNotification.');
+        }
         const ezNotification = this.ezNotificationRepository.create(ezNotificationData);
         return this.ezNotificationRepository.save(ezNotification);
     }
@@ -22,14 +25,16 @@ export class EZNotificationService {
     }
 
     findOne(id: string): Promise<EZNotification> {
-        return this.ezNotificationRepository.findOneBy({ id: Number(id) });
+        return this.ezNotificationRepository.findOneBy({ id: id });
     }
 
     async update(id: string, updateData: Partial<EZNotification>): Promise<EZNotification> {
-        const ezNotification = await this.ezNotificationRepository.findOneBy({ id: Number(id) });
+        const ezNotification = await this.ezNotificationRepository.findOneBy({ id: id });
         if (ezNotification) {
             Object.assign(ezNotification, updateData);
             return this.ezNotificationRepository.save(ezNotification);
+        } else {
+            throw new NotFoundException(`EZNotification with ID ${id} not found.`);
         }
         return null;
     }
