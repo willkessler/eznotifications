@@ -1,7 +1,7 @@
 import cx from 'clsx';
 import { Anchor, Box, Button, Menu, ScrollArea, Table, Text } from '@mantine/core';
 import { useState, useEffect } from 'react';
-import classes from './TableScrollArea.module.css';
+import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
 
 import { useNotifications } from './NotificationsContext';
