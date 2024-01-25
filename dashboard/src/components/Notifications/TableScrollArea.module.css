@@ -18,3 +18,17 @@
 .scrolled {
   box-shadow: var(--mantine-shadow-sm);
 }
+
+.highlighted-row {
+  background-color: yellow; /* Starting color */
+  animation: fadeOutHighlight 5s forwards; /* Animation over 5 seconds */
+}
+
+@keyframes fadeOutHighlight {
+  from {
+    background-color: yellow; /* Starting color */
+  }
+  to {
+    background-color: white; /* Final color */
+  }
+}

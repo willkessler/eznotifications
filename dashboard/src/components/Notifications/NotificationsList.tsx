@@ -8,7 +8,7 @@ import { useNotifications } from './NotificationsContext';
 
 export function NotificationsList({onEdit, onCancel, displayBanner}) {
   const [scrolled, setScrolled] = useState(false);
-  const { refreshToken } = useNotifications();
+  const { refreshToken, highlightedId } = useNotifications();
 
   const [notifications, setNotifications] = useState([]);
 
@@ -91,7 +91,7 @@ export function NotificationsList({onEdit, onCancel, displayBanner}) {
 
     const sortedNotifications = sortNotifications(notifications);
     const rows = sortedNotifications.map((row, index) => (
-    <Table.Tr key={row.id || index}>
+    <Table.Tr key={row.id || index} className={row.id === highlightedId ? classes['highlighted-row'] : ''}>
       <Table.Td><Box w="300"><Text truncate="end">{row.content.length == 0 ? '(Not set)' : row.content }</Text></Box></Table.Td>
       <Table.Td>{row.pageId}</Table.Td>
       <Table.Td>{row.notificationType}</Table.Td>

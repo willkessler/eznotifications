@@ -40,7 +40,8 @@ export function HomePage() {
   const [bannerContent, setBannerContent] = useState('');
   const [isModalOpen, setModalIsOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
-  const { refreshNotifications } = useNotifications();
+
+  const { highlightNotification, refreshNotifications } = useNotifications();
 
   const links = navBarData.map((item) => (
     <a
@@ -107,9 +108,9 @@ export function HomePage() {
       .then((response) => response.json())
       .then((data) => {
         console.log('Notification ' + action, data);
-        // Redirect to notifications list or show a success message
+
+        highlightNotification(notificationData.id);
         refreshNotifications();
-        //navigate('/');
       })        
       .catch((error) => console.error('Error creating notification:', error));
   };
