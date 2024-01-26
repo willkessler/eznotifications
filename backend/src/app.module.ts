@@ -3,9 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerMiddleware } from './loggerMiddleware';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { EZNotificationModule } from './ezNotification/ezNotification.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EZNotification } from './ezNotification/entities/ezNotification.entity';
+import { EZNotificationModule } from './EZNotification/EZNotification.module';
+import { EZNotification } from './EZNotification/entities/EZNotification.entity';
 
 @Module({
     imports: [
@@ -13,7 +13,7 @@ import { EZNotification } from './ezNotification/entities/ezNotification.entity'
         ConfigModule.forRoot({
         }),
         TypeOrmModule.forRoot({
-            type: 'postgres',
+            type:     'postgres',
             host:     process.env.DB_HOST,
             port:     parseInt(process.env.DB_PORT,10),
             username: process.env.DB_USERNAME,

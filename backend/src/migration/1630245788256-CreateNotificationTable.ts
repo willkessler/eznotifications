@@ -15,7 +15,6 @@ export class CreateNotificationTable1630245788256 implements MigrationInterface 
                 { name: 'page_id', type: 'text' },
             ],
         }));
-        //await queryRunner.query(`CREATE TABLE "notification" (...define columns here...)`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { EZNotification } from './ezNotification/entities/ezNotification.entity';
+import { EZNotification } from './EZNotification/entities/EZNotification.entity';
 
 export const AppDataSource = new DataSource({
     type: 'postgres',

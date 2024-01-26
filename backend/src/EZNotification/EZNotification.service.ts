@@ -3,7 +3,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EZNotification } from './entities/ezNotification.entity';
+import { EZNotification } from './entities/EZNotification.entity';
 
 @Injectable()
 export class EZNotificationService {

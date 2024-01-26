@@ -15,7 +15,7 @@ async function bootstrap() {
 
     const config = new DocumentBuilder()
         .setTitle('EZNotifications API')
-        .setDescription('The ezNotifications API description')
+        .setDescription('The EZNotifications API description')
         .setVersion('1.0')
         .addTag('notifications')
         .build();
