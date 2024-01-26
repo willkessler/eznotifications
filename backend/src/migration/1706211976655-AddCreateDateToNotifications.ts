@@ -7,7 +7,7 @@ export class AddCreateDateToNotifications1706211976655 implements MigrationInter
         await queryRunner.addColumn(
             'notifications',
             new TableColumn({
-                name: 'created__date',
+                name: 'created_at',
                 type: 'timestamp',
                 isNullable: false,
                 default: 'NOW()'

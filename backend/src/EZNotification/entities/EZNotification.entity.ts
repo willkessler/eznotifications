@@ -1,11 +1,15 @@
 // src/ezNotification/entities/ezNotification.entity.ts
 
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { EndUsersServed } from './EndUsersServed.entity';
 
 @Entity('notifications')
 export class EZNotification {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({ name: 'created_at', type: 'timestamp', nullable: false })
+  createdAt: Date;
 
   @Column()
   content: string;
@@ -27,4 +31,8 @@ export class EZNotification {
 
   @Column({ name: 'end_date', nullable: true })
   endDate: Date;
+
+  @OneToMany(() => EndUsersServed, endUsersServed => endUsersServed.notification)
+  endUsersServed: EndUsersServed[];
+    
 }

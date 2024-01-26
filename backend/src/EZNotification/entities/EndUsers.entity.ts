@@ -6,13 +6,13 @@ export class EndUser {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'timestamp', nullable: false })
-  created_at: Date;
+  @Column({ name: 'created_at', type: 'timestamp', nullable: false })
+  createdAt: Date;
 
-  @Column({ type: 'varchar', length: '256', nullable: false })
+  @Column({ name: 'end_user_id', type: 'varchar', length: '256', nullable: false })
   endUserId: string;
 
   // Relationship: One EndUser can have multiple EndUsersServed records
-  @OneToMany(() => EndUsersServed, endUsersServed => endUsersServed.endUserId)
+  @OneToMany(() => EndUsersServed, endUsersServed => endUsersServed.endUser)
   endUsersServed: EndUsersServed[];
 }

@@ -24,6 +24,10 @@ export class EZNotificationService {
         return this.ezNotificationRepository.find();
     }
 
+    async findAllForUserId(userId: string): Promise<EZNotification[]> {
+        return this.ezNotificationRepository.find();
+    }
+
     findOne(id: string): Promise<EZNotification> {
         return this.ezNotificationRepository.findOneBy({ id: id });
     }

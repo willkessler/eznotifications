@@ -4,6 +4,8 @@ import { LoggerMiddleware } from './loggerMiddleware';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { EndUser } from './EZNotification/entities/EndUsers.entity';
+import { EndUsersServed } from './EZNotification/entities/EndUsersServed.entity';
 import { EZNotificationModule } from './EZNotification/EZNotification.module';
 import { EZNotification } from './EZNotification/entities/EZNotification.entity';
 
@@ -19,7 +21,7 @@ import { EZNotification } from './EZNotification/entities/EZNotification.entity'
             username: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE,
-            entities: [EZNotification],
+            entities: [EZNotification, EndUser, EndUsersServed],
             synchronize: false,
         }),
     ],
