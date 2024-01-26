@@ -18,10 +18,7 @@ export class EZNotification {
   notificationType: string;
 
   @Column({ default: false })
-  scheduled: boolean;
-    
-  @Column({ default: false })
-  canceled: boolean;
+  live: boolean;
 
   @Column({ name: 'page_id' })
   pageId: string;

@@ -1,5 +1,5 @@
 import cx from 'clsx';
-import { Anchor, Box, Button, Menu, ScrollArea, Table, Text } from '@mantine/core';
+import { Anchor, Box, Button, Menu, ScrollArea, Switch, Table, Text } from '@mantine/core';
 import { useState, useEffect } from 'react';
 import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -9,8 +9,7 @@ import { useNotifications } from './NotificationsContext';
 export function NotificationsList({onEdit, onCancel, displayBanner}) {
   const [scrolled, setScrolled] = useState(false);
   const { refreshToken, highlightedId } = useNotifications();
-
-  const [notifications, setNotifications] = useState([]);
+  const [notificationsState, setNotificationsState] = useState([]);
 
   // Set up the demo toaster
   const toastNotify = (message) => { 
@@ -44,54 +43,115 @@ export function NotificationsList({onEdit, onCancel, displayBanner}) {
     });
   };
 
+  const updateNotificationStatus = async (notification, status) => {
+    try {
+      const modifiedNotification = {
+        ...notification,
+        live: status
+      };
+      const apiUrl = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}` +
+            `/eznotifications/${notification.id}`;
+      const response =
+            await fetch(apiUrl, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(modifiedNotification),
+            });
+      if (!response.ok) {
+        throw new Error (`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error(`Error updating notification ${notification.id}: `, error);
+      throw error;
+    }
+  };
+
+  const handleSwitchChange = async (notification, checked) => {
+    // Update local state
+    const notificationId = notification.id;
+    const savedCurrentNotifications = [...notificationsState];
+    const updatedNotifications = notificationsState.map(notification => 
+      notification.id === notificationId ? { ...notification, live: checked } : notification
+    );
+    setNotificationsState(updatedNotifications);
+
+    // Update database
+    try {
+      const statusChangeResult = await updateNotificationStatus(notification, checked);
+    } catch (error) {
+      console.error('Failed to update notification status', error);
+      // Revert the change in local state if the database update fails
+      setNotificationsState(savedNotifications);      
+    }
+  };
+
   const sortNotifications = (data) => {
-    return data.sort((a, b) => {
+    return [...data].sort((a, b) => {
       // Group 1: Non-null startDate and not canceled
-      if (a.startDate !== null && !a.canceled && (b.startDate === null || b.canceled)) {
+      if ((a.startDate !== null && a.live) && (b.startDate === null || !b.live)) {
         return -1;
       }
-      if (b.startDate !== null && !b.canceled && (a.startDate === null || a.canceled)) {
+      if ((b.startDate !== null && b.live) && (a.startDate === null || !a.live)) {
         return 1;
       }
 
-      // Group 2: Null startDate and not canceled
-      if (a.startDate === null && !a.canceled && b.canceled) {
+      // Group 2: Null startDate and not live
+      if (a.startDate === null && a.live && !b.live) {
         return -1;
       }
-      if (b.startDate === null && !b.canceled && a.canceled) {
+      if (b.startDate === null && b.live && !a.live) {
         return 1;
       }
 
-      // Group 3: Canceled notifications
+      // Group 3: Not Live notifications
       // For items within the same group, sort by content alphabetically
       return a.content.localeCompare(b.content);
     });
   };
 
+  const getNotifications = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications`);
+      const data = await response.json();
+      return data; // Return the fetched data
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      return []; // Return empty array in case of error
+    }
+  };
 
   // Fetch the notifications list on component mount
   useEffect(() => {
-    const fetchNotifications = async () => {
-      // Fetch records from the API
-      fetch(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications`)
-        .then((response) => response.json())
-        .then((data) => {
-          setNotifications(data);
-        })
-        .catch((error) => console.error('Error fetching notifications:', error));
+    const acquireNotifications = async () => {
+      try {
+        const notifications = await getNotifications();
+        const sortedNotifications = sortNotifications([...notifications]);
+        setNotificationsState(sortedNotifications);
+      } catch(error) {
+        console.error('Error fetching notifications:', error);
+      }
     };
-    fetchNotifications();
+
+    acquireNotifications();
   }, [refreshToken]);
 
 
-    const editNotification = (notificationData) => {
-      console.log('Editing record with id:', notificationData.id);
-      onEdit(notificationData);
-    };
+  const editNotification = (notificationData) => {
+    onEdit(notificationData);
+  };
 
-    const sortedNotifications = sortNotifications(notifications);
-    const rows = sortedNotifications.map((row, index) => (
+  const rows = notificationsState.map((row, index) => (
     <Table.Tr key={row.id || index} className={row.id === highlightedId ? classes['highlighted-row'] : ''}>
+      <Table.Td>
+        <Switch
+          color="lime"
+          checked={row.live}
+          size="md"
+          onLabel="ON"
+          offLabel="OFF"
+          onChange={(event) => handleSwitchChange(row, event.currentTarget.checked)}
+        />
+      </Table.Td>
       <Table.Td><Box w="300"><Text truncate="end">{row.content.length == 0 ? '(Not set)' : row.content }</Text></Box></Table.Td>
       <Table.Td>{row.pageId}</Table.Td>
       <Table.Td>{row.notificationType}</Table.Td>
@@ -125,7 +185,6 @@ export function NotificationsList({onEdit, onCancel, displayBanner}) {
             </Menu.Dropdown>
           </Menu>
         </Table.Td>
-        <Table.Td>{row.canceled ? 'X' : ''}</Table.Td>
     </Table.Tr>
   ));
 
@@ -134,13 +193,13 @@ export function NotificationsList({onEdit, onCancel, displayBanner}) {
       <Table miw={1300} verticalSpacing="md" highlightOnHover >
         <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
           <Table.Tr>
+            <Table.Th> </Table.Th>
             <Table.Th>Contents</Table.Th>
-            <Table.Th>Page ID</Table.Th>
-            <Table.Th>Notification type</Table.Th>
-            <Table.Th>Starts</Table.Th>
-            <Table.Th>Ends</Table.Th>
+            <Table.Th>Page</Table.Th>
+            <Table.Th>Type</Table.Th>
+            <Table.Th>Starts on</Table.Th>
+            <Table.Th>Ends on</Table.Th>
             <Table.Th>Action</Table.Th>
-            <Table.Th>Canceled</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>
