@@ -1,5 +1,5 @@
 import cx from 'clsx';
-import { Anchor, Box, Button, Menu, Pill, ScrollArea, Spoiler, Switch, Table, Text, rem } from '@mantine/core';
+import { Anchor, Box, Button, Menu, Modal, Pill, ScrollArea, Spoiler, Switch, Table, Text, rem } from '@mantine/core';
 import { IconArrowRight } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import classes from './Notifications.module.css';
@@ -7,7 +7,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 import { useNotifications } from './NotificationsContext';
 
-export function NotificationsList({onEdit, onCancel, displayBanner}) {
+export function NotificationsList({onEdit, onCancel, displayBanner, displayPreviewModal, closePreviewModal }) {
   const [scrolled, setScrolled] = useState(false);
   const { refreshToken, highlightedId } = useNotifications();
   const [notificationsState, setNotificationsState] = useState([]);
@@ -168,8 +168,8 @@ export function NotificationsList({onEdit, onCancel, displayBanner}) {
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}><Box w="400"><Spoiler maxHeight={50} showLabel="Show more" hideLabel="Hide"><Text>{row.content.length == 0 ? '(Not set)' : row.content }</Text></Spoiler></Box></Table.Td>
       <Table.Td className={classes.tableCellToTop}>
-          Page: {(row.pageId ? <Text size="sm" style={{ padding:'2px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '<not set>')}<br/>
-        Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy' }} radius="sm">{row.environment ? row.environment : 'All'}</Pill><br/>
+          Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'1px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '(not set)')}<br/>
+          Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy' }} radius="xs">{row.environment ? row.environment : 'All'}</Pill><br/>
         Type:<Pill radius="sm">{row.notificationType ? row.notificationType : 'Any'}</Pill>
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
@@ -184,18 +184,18 @@ export function NotificationsList({onEdit, onCancel, displayBanner}) {
             </Menu.Target>
   
             <Menu.Dropdown>
-              <Menu.Label>Preview It</Menu.Label>
+              <Menu.Label>Preview Notifications</Menu.Label>
+              <Menu.Item onClick={ () => { displayPreviewModal(row.content.length==0 ? '(Not set)' : row.content) }}>
+                <Text>As a modal</Text>
+              </Menu.Item>
               <Menu.Item onClick={ () => { displayBanner(row.content.length==0 ? '(Not set)' : row.content) }}>
-                <Text>Banner</Text>
+                <Text>As a banner</Text>
               </Menu.Item>
               <Menu.Item onClick={ () => { toastNotify(row.content.length==0 ? '(Not set)' : row.content) }}>
-                <Text>Toast</Text>
-              </Menu.Item>
-              <Menu.Item onClick={ () => { displayModal(row.content.length==0 ? '(Not set)' : row.content) }}>
-                <Text>Modal</Text>
+                <Text>As a toast</Text>
               </Menu.Item>
               <Menu.Divider />
-              <Menu.Label>Change It</Menu.Label>
+              <Menu.Label>Updates to this Notification</Menu.Label>
               <Menu.Item onClick= { () => { editNotification(row); }}>
                 <Text>Edit</Text>
               </Menu.Item>

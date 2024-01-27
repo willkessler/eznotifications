@@ -3,12 +3,13 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 50px;
-  background-color: #44f; /* Customize as needed */
+  height: 100px;
+  background-color: #888; /* Customize as needed */
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
+  opacity:95%;
   z-index: 1000; /* Ensure it's above other content */
 }
 

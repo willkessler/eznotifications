@@ -27,7 +27,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
     endTime: '',
     live: false,
     notificationType: 'info',
-    environment: '',
+    environment: [],
   });
 
   const handleNotificationTypeChange = (type) => {

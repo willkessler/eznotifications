@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Anchor, Button, Code, Group, Image, Textarea, Text } from '@mantine/core';
+import { Anchor, Button, Code, Group, Image, Modal, Textarea, Text } from '@mantine/core';
 import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner/Banner';
 
@@ -40,6 +40,8 @@ export function HomePage() {
   const [bannerContent, setBannerContent] = useState('');
   const [isModalOpen, setModalIsOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
+  const [previewModalOpened, setPreviewModalOpened] = useState(false);
+  const [previewModalContents, setPreviewModalContents] = useState('');
 
   const { highlightNotification, refreshNotifications } = useNotifications();
 
@@ -85,6 +87,17 @@ export function HomePage() {
       setShowBanner(false);
   }
 
+  // preview of a notification modal (for the operator to see what their notification might look like in a modal)
+  const displayPreviewModal = (contents) => {
+    setPreviewModalContents(contents);
+    setPreviewModalOpened(true);
+  };
+
+  const closePreviewModal = () => {
+    setPreviewModalOpened(false);
+  };
+
+  // New notification modal
   const openModal = (notificationData = null) => {
     setModalData(notificationData);
     setModalIsOpen(true);
@@ -147,6 +160,8 @@ export function HomePage() {
               onEdit={handleEdit}
               onCancel={handleCancel}
               displayBanner={displayBanner}
+              displayPreviewModal={displayPreviewModal}
+              closePreviewModal={closePreviewModal}
             />
             {isModalOpen && (
               <NotificationModal
@@ -157,8 +172,20 @@ export function HomePage() {
               />
             )}
             <Button onClick={() => { openModal(null) }} style={{ marginTop: '15px' }}>+ Create new notification</Button>
+          <Modal 
+            size="60%"
+            opened={previewModalOpened} 
+            onClose={closePreviewModal}
+            radius="md"
+            centered>
+            <div>{previewModalContents}</div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
+              <Button onClick={() => { closePreviewModal() }}>OK</Button>
+            </div>
+          </Modal>
+
         </div>
       </div>
     </div>
-);
+  );
 };
