@@ -5,6 +5,7 @@ import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import UserHint from '../../lib/UserHint';
+import Expando from '../../lib/Expando';
 import { NotificationTypeSelector } from '../../lib/NotificationTypeSelector';
 import { useNotifications } from './NotificationsContext';
 
@@ -225,16 +226,18 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                 />
               }
             </div>
-            <TextInput
-              name="pageId"
-              value={notificationData.pageId}
-              onChange={handleTextChange}
-              label="Page ID"
-              style={{marginTop:'15px'}}
-              placeholder="Enter page ID"
-              description="(Optional) Enter a page ID you can use to target this notification."
-            />
-            <NotificationTypeSelector value={notificationData.notificationType} onSelectionChange={handleNotificationTypeChange} />
+            <Expando closedTitle="Show advanced options" openTitle="Hide advanced options" outerStyle={{marginTop: '10px'}} >
+              <TextInput
+                name="pageId"
+                value={notificationData.pageId}
+                onChange={handleTextChange}
+                label="Page ID"
+                style={{marginTop:'15px'}}
+                placeholder="Enter page ID"
+                description="(Optional) Enter a page ID you can use to target this notification."
+              />
+              <NotificationTypeSelector value={notificationData.notificationType} onSelectionChange={handleNotificationTypeChange} />
+            </Expando>
           </Paper>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
         <Button variant="filled" type="submit">{editing ? 'Update' : 'Create'}</Button>
