@@ -29,6 +29,9 @@ export class EZNotification {
   @Column({ name: 'end_date', nullable: true })
   endDate: Date;
 
+  @Column({ name: 'environment', length: 256, nullable: true })
+  environment: string;
+    
   @OneToMany(() => EndUsersServed, endUsersServed => endUsersServed.notification)
   endUsersServed: EndUsersServed[];
     

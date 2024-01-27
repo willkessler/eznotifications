@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Anchor, Collapse, Text } from '@mantine/core';
 
-interface ExpandProps {
+interface ExpandoProps {
   children: ReactNode;
   openTitle: string;
   closedTitle: string;
   outerStyle?: React.CSSProperties;
 }
 
-const Expando: React.FC<ExpandProps> = ({children, openTitle, closedTitle, outerStyle}) => {
+const Expando: React.FC<ExpandoProps> = ({children, openTitle, closedTitle, outerStyle}) => {
   const [opened, setOpened] = useState(false);
 
   const triangleStyle = {
@@ -31,7 +31,7 @@ const Expando: React.FC<ExpandProps> = ({children, openTitle, closedTitle, outer
         <Text span="component">{opened ? openTitle : closedTitle}</Text>
       </Anchor>
       <Collapse in={opened}>
-        <div style={{marginLeft: '12px' }}>{children}</div>
+        <div>{children}</div>
       </Collapse>
     </div>
   );

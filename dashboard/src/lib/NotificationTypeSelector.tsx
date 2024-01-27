@@ -28,10 +28,11 @@ export function NotificationTypeSelector({ value, onSelectionChange }) {
   return (
     <div>
       <RadioGroup 
+        style={{width:'300px'}}
         value={selectedType} 
         onChange={handleTypeChange}
-        label="Select notification type:"
-        description="(Optional) Choose a type for this notification so you can decorate it appropriately in your app."
+        label="Notification type (optional)"
+        description="Set the type for this notification, so you can decorate it appropriately in your app."
         className={classes.notificationTypeChoice}
       >
         <Radio value="info" label="Info" />
@@ -44,7 +45,6 @@ export function NotificationTypeSelector({ value, onSelectionChange }) {
 
       {selectedType === 'other' && (
         <TextInput
-          mw={20}
           label="Specify Other Type"
           placeholder="Type here"
           value={customType}

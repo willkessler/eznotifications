@@ -1,5 +1,6 @@
 import cx from 'clsx';
-import { Anchor, Box, Button, Menu, Pill, ScrollArea, Spoiler, Switch, Table, Text } from '@mantine/core';
+import { Anchor, Box, Button, Menu, Pill, ScrollArea, Spoiler, Switch, Table, Text, rem } from '@mantine/core';
+import { IconArrowRight } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -140,17 +141,16 @@ export function NotificationsList({onEdit, onCancel, displayBanner}) {
     onEdit(notificationData);
   };
 
-  const formatDisplayDate = (prefix, date) => {
-    return (date == null ? '' : 
-        prefix + ': ' + 
-        new Date(date).toLocaleString('en-US', 
-                                      { weekday: 'short', 
-                                        year: 'numeric', 
-                                        month: 'short', 
-                                        day: 'numeric', 
-                                        hour: '2-digit', 
-                                        minute: '2-digit' }
-                                     )
+  const formatDisplayDate = (date) => {
+      return (date == null ? '' : 
+          new Date(date).toLocaleString('en-US', 
+                                        { weekday: 'short', 
+                                          year: 'numeric', 
+                                          month: 'short', 
+                                          day: 'numeric', 
+                                          hour: '2-digit', 
+                                          minute: '2-digit' }
+                                       )
            );
   };
     
@@ -168,13 +168,14 @@ export function NotificationsList({onEdit, onCancel, displayBanner}) {
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}><Box w="400"><Spoiler maxHeight={50} showLabel="Show more" hideLabel="Hide"><Text>{row.content.length == 0 ? '(Not set)' : row.content }</Text></Spoiler></Box></Table.Td>
       <Table.Td className={classes.tableCellToTop}>
-      Page: <Text size="sm" component="span" className={classes.pageId}>{row.pageId}</Text><br/>
-        Environment: <Pill style={{ backgroundColor: 'lightblue', color: 'navy' }} radius="sm">{row.environment ? row.environment : 'All'}</Pill><br/>
+          Page: {(row.pageId ? <Text size="sm" style={{ padding:'2px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '<not set>')}<br/>
+        Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy' }} radius="sm">{row.environment ? row.environment : 'All'}</Pill><br/>
         Type:<Pill radius="sm">{row.notificationType ? row.notificationType : 'Any'}</Pill>
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
-        {formatDisplayDate('From', row.startDate)}<br />
-        {formatDisplayDate('To', row.endDate)}
+          {formatDisplayDate(row.startDate)}
+          <IconArrowRight style={{ width: rem(18), height: rem(18), paddingTop: '6px' }} stroke={3} color="#666"/> <br />
+          &nbsp;&nbsp;{formatDisplayDate(row.endDate)}
       </Table.Td>
       <Table.Td>
           <Menu shadow="md" width={200}>
@@ -213,9 +214,9 @@ export function NotificationsList({onEdit, onCancel, displayBanner}) {
         <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
           <Table.Tr>
             <Table.Th> </Table.Th>
-            <Table.Th>Notification contents</Table.Th>
-            <Table.Th>Where Applied</Table.Th>
-            <Table.Th>Display Timeframe</Table.Th>
+            <Table.Th>Notification Contents</Table.Th>
+            <Table.Th>Display Conditions</Table.Th>
+            <Table.Th>Timeframe</Table.Th>
             <Table.Th>Action</Table.Th>
           </Table.Tr>
         </Table.Thead>

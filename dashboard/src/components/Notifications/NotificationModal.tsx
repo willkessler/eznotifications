@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Anchor, Button, Modal, Paper, Textarea, TextInput } from '@mantine/core';
+import { Anchor, Button, Modal, MultiSelect, Paper, Textarea, TextInput } from '@mantine/core';
 import { DateTimePicker, DatePickerInput, TimeInput } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
@@ -18,14 +18,6 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
 
   const [timeInputsDisabled, setTimeInputsDisabled] = useState(true);
   const [notificationType, setNotificationType] = useState('info'); // default is the "info" choice
-  const handleNotificationTypeChange = (type) => {
-    console.log('handleNotificationTypeChange:', type);
-    setNotificationType(type);
-    setNotificationData(prevData => ({
-      ...prevData,
-      notificationType: type
-    }));
-  };
 
   const [notificationData, setNotificationData] = useState({
     content: '',
@@ -35,7 +27,26 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
     endTime: '',
     live: false,
     notificationType: 'info',
+    environment: '',
   });
+
+  const handleNotificationTypeChange = (type) => {
+    console.log('handleNotificationTypeChange:', type);
+    setNotificationType(type);
+    setNotificationData(prevData => ({
+      ...prevData,
+      notificationType: type
+    }));
+  };
+
+
+  const handleEnvironmentChange = (values) => {
+    console.log('environment change:', values);
+    setNotificationData(prevData => ({
+      ...prevData,
+      environment: values
+    }));
+  };
 
   function formatTime(date) {
     if (!date) return '';
@@ -88,6 +99,8 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
 
     console.log('Processed form data:', formData);
 
+    formData.environment = formData.environment.join(',');
+
     // Use formData for submission or further processing
     onSubmit(formData);
 
@@ -111,18 +124,22 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
       const formattedEndDate = new Date(initialData.endDate);
       const formattedStartTime = formatTime(formattedStartDate);
       const formattedEndTime = formatTime(formattedEndDate);
-      console.log('startDate type:', typeof startDate, 'endDate type:', typeof endDate);
+      const initialEnvironmentArray = initialData.environment ? initialData.environment.split(',') : [];
+      console.log('initialEnvironmentArray:', initialEnvironmentArray);
 
       console.log('pre-iso');
+
       setNotificationData({
-        ...initialData, // Spread the initialData
+        ...initialData, // Spread the initialData passed in for editing
         editing: true,
         dateRange: [formattedStartDate, formattedEndDate],
         startTime: formattedStartTime,
-        endTime: formattedEndTime
+        endTime: formattedEndTime,
+        environment: initialEnvironmentArray,
       });
-      console.log('post setnotif');
+      console.log('post setnotif, initialEnvironmentArray:', initialEnvironmentArray);
     } else {
+      // otherwise, initialize for a new notification
       setNotificationData({
         editing:false,
         content: '',
@@ -130,7 +147,8 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
         dateRange: [null, null],
         startTime: '00:00',
         endTime: '00:00',
-        live: false
+        live: false,
+        environment: [],
       });
     }
   }, [initialData, editing]);
@@ -227,16 +245,33 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
               }
             </div>
             <Expando closedTitle="Show advanced options" openTitle="Hide advanced options" outerStyle={{marginTop: '10px'}} >
+              <Paper shadow="sm" p="sm">
               <TextInput
                 name="pageId"
                 value={notificationData.pageId}
                 onChange={handleTextChange}
-                label="Page ID"
+                label="Page ID (Optional)"
                 style={{marginTop:'15px'}}
                 placeholder="Enter page ID"
-                description="(Optional) Enter a page ID you can use to target this notification."
+                description="Enter a page ID you can use to target this notification."
               />
-              <NotificationTypeSelector value={notificationData.notificationType} onSelectionChange={handleNotificationTypeChange} />
+              <div style={{ display: 'flex', width: '90%' }}>
+                <NotificationTypeSelector value={notificationData.notificationType} onSelectionChange={handleNotificationTypeChange} />
+                <MultiSelect
+                  name="environment"
+                  value={Array.isArray(notificationData.environment) ? notificationData.environment : []}
+                  onChange={handleEnvironmentChange}
+                  style={{width:'375px', paddingTop:'20px', paddingLeft: '20px'}}
+                  pointer
+                  label="Environments"
+                  description="Choose the environments to serve this notification to."
+                  placeholder="Pick values"
+                  data={['Development', 'Staging', 'UAT', 'Production']}
+                  comboboxProps={{ shadow: 'md' }}
+                  onChange={(value) => handleEnvironmentChange(value)}
+                />
+              </div>
+                </Paper>
             </Expando>
           </Paper>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
