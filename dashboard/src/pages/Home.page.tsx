@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Code, Group, Image, Modal, Textarea, Text } from '@mantine/core';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
+import { renderMarkdown } from '../lib/RenderMarkdown';
 import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner/Banner';
 
@@ -62,11 +61,6 @@ export function HomePage() {
       <span>{item.label}</span>
     </a>
   ));
-
-  const createMarkup = (markdownText) => {
-    const rawMarkup = marked(markdownText);
-    return { __html: DOMPurify.sanitize(rawMarkup) };
-  };
 
   const goToNewNotification = () => {
     navigate('/new-notification'); // Use the path you've defined for the new notification form
@@ -185,7 +179,7 @@ export function HomePage() {
             onClose={closePreviewModal}
             radius="md"
             centered>
-            <div dangerouslySetInnerHTML={createMarkup(previewModalContents)}></div>
+            <div dangerouslySetInnerHTML={renderMarkdown(previewModalContents)}></div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
               <Button onClick={() => { closePreviewModal() }}>OK</Button>
             </div>

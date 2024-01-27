@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import classes from './Banner.module.css';
+import { renderMarkdown } from '../../lib/RenderMarkdown';
 
 interface BannerProps {
   message: string;
@@ -17,7 +18,7 @@ const Banner: React.FC<BannerProps> = ({ message, onClose }) => {
 
   return (
     <div className={classes.banner}>
-      <span>{message}</span>
+      <span dangerouslySetInnerHTML={renderMarkdown(message)}></span>
       <button className={classes.closeButton} onClick={onClose}>X</button>
     </div>
   );
