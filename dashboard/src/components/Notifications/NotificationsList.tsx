@@ -1,5 +1,5 @@
 import cx from 'clsx';
-import { Anchor, Box, Button, Menu, ScrollArea, Switch, Table, Text } from '@mantine/core';
+import { Anchor, Box, Button, Menu, Pill, ScrollArea, Spoiler, Switch, Table, Text } from '@mantine/core';
 import { useState, useEffect } from 'react';
 import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -140,9 +140,23 @@ export function NotificationsList({onEdit, onCancel, displayBanner}) {
     onEdit(notificationData);
   };
 
+  const formatDisplayDate = (prefix, date) => {
+    return (date == null ? '' : 
+        prefix + ': ' + 
+        new Date(date).toLocaleString('en-US', 
+                                      { weekday: 'short', 
+                                        year: 'numeric', 
+                                        month: 'short', 
+                                        day: 'numeric', 
+                                        hour: '2-digit', 
+                                        minute: '2-digit' }
+                                     )
+           );
+  };
+    
   const rows = notificationsState.map((row, index) => (
     <Table.Tr key={row.id || index} className={row.id === highlightedId ? classes['highlighted-row'] : ''}>
-      <Table.Td>
+      <Table.Td className={classes.tableCellToTop}>
         <Switch
           color="lime"
           checked={row.live}
@@ -152,35 +166,40 @@ export function NotificationsList({onEdit, onCancel, displayBanner}) {
           onChange={(event) => handleSwitchChange(row, event.currentTarget.checked)}
         />
       </Table.Td>
-      <Table.Td><Box w="300"><Text truncate="end">{row.content.length == 0 ? '(Not set)' : row.content }</Text></Box></Table.Td>
-      <Table.Td>{row.pageId}</Table.Td>
-      <Table.Td>{row.notificationType}</Table.Td>
-      <Table.Td>{row.startDate == null ? '' : new Date(row.startDate).toLocaleString() }</Table.Td>
-      <Table.Td>{row.endDate == null   ? '' : new Date(row.endDate).toLocaleString()}</Table.Td>
-        <Table.Td>
+      <Table.Td className={classes.tableCellToTop}><Box w="400"><Spoiler maxHeight={50} showLabel="Show more" hideLabel="Hide"><Text>{row.content.length == 0 ? '(Not set)' : row.content }</Text></Spoiler></Box></Table.Td>
+      <Table.Td className={classes.tableCellToTop}>
+      Page: <Text size="sm" component="span" className={classes.pageId}>{row.pageId}</Text><br/>
+        Environment: <Pill style={{ backgroundColor: 'lightblue', color: 'navy' }} radius="sm">{row.environment ? row.environment : 'All'}</Pill><br/>
+        Type:<Pill radius="sm">{row.notificationType ? row.notificationType : 'Any'}</Pill>
+      </Table.Td>
+      <Table.Td className={classes.tableCellToTop}>
+        {formatDisplayDate('From', row.startDate)}<br />
+        {formatDisplayDate('To', row.endDate)}
+      </Table.Td>
+      <Table.Td>
           <Menu shadow="md" width={200}>
             <Menu.Target>
-                <Anchor component="button" type="button">...</Anchor>
+          <Anchor component="button" style={{ fontWeight: 'bold', color: '#000' }} type="button">...</Anchor>
             </Menu.Target>
   
             <Menu.Dropdown>
-              <Menu.Label>Previews</Menu.Label>
+              <Menu.Label>Preview It</Menu.Label>
               <Menu.Item onClick={ () => { displayBanner(row.content.length==0 ? '(Not set)' : row.content) }}>
                 <Text>Banner</Text>
               </Menu.Item>
               <Menu.Item onClick={ () => { toastNotify(row.content.length==0 ? '(Not set)' : row.content) }}>
                 <Text>Toast</Text>
               </Menu.Item>
+              <Menu.Item onClick={ () => { displayModal(row.content.length==0 ? '(Not set)' : row.content) }}>
+                <Text>Modal</Text>
+              </Menu.Item>
               <Menu.Divider />
-              <Menu.Label>Changes</Menu.Label>
+              <Menu.Label>Change It</Menu.Label>
               <Menu.Item onClick= { () => { editNotification(row); }}>
                 <Text>Edit</Text>
               </Menu.Item>
               <Menu.Item>
                 <Text>Duplicate</Text>
-              </Menu.Item>
-              <Menu.Item>
-                <Text c={'#f00'}>Cancel</Text>
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
@@ -194,11 +213,9 @@ export function NotificationsList({onEdit, onCancel, displayBanner}) {
         <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
           <Table.Tr>
             <Table.Th> </Table.Th>
-            <Table.Th>Contents</Table.Th>
-            <Table.Th>Page</Table.Th>
-            <Table.Th>Type</Table.Th>
-            <Table.Th>Starts on</Table.Th>
-            <Table.Th>Ends on</Table.Th>
+            <Table.Th>Notification contents</Table.Th>
+            <Table.Th>Where Applied</Table.Th>
+            <Table.Th>Display Timeframe</Table.Th>
             <Table.Th>Action</Table.Th>
           </Table.Tr>
         </Table.Thead>

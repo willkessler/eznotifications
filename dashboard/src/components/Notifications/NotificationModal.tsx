@@ -5,6 +5,7 @@ import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import UserHint from '../../lib/UserHint';
+import { NotificationTypeSelector } from '../../lib/NotificationTypeSelector';
 import { useNotifications } from './NotificationsContext';
 
 export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onClose }) => {
@@ -15,6 +16,15 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
   const navigate = useNavigate();
 
   const [timeInputsDisabled, setTimeInputsDisabled] = useState(true);
+  const [notificationType, setNotificationType] = useState('info'); // default is the "info" choice
+  const handleNotificationTypeChange = (type) => {
+    console.log('handleNotificationTypeChange:', type);
+    setNotificationType(type);
+    setNotificationData(prevData => ({
+      ...prevData,
+      notificationType: type
+    }));
+  };
 
   const [notificationData, setNotificationData] = useState({
     content: '',
@@ -22,7 +32,8 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
     dateRange: [null, null],
     startTime: '',
     endTime: '',
-    canceled: false
+    live: false,
+    notificationType: 'info',
   });
 
   function formatTime(date) {
@@ -93,7 +104,6 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
   );
 
   useEffect(() => {
-    let setDateRange = false;
     if (editing) {
       console.log('useEffect, initialState=', initialData);
       const formattedStartDate = new Date(initialData.startDate);
@@ -111,7 +121,6 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
         endTime: formattedEndTime
       });
       console.log('post setnotif');
-      setDateRange = true;
     } else {
       setNotificationData({
         editing:false,
@@ -120,7 +129,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
         dateRange: [null, null],
         startTime: '00:00',
         endTime: '00:00',
-        canceled: false
+        live: false
       });
     }
   }, [initialData, editing]);
@@ -132,11 +141,11 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
   }, [notificationData.dateRange]);
 
   const customLabel1 = 
-        (<CustomLabelWithHint text="Notification Display Dates" hintText="Select a calendar period during which your notification will be returned via the API. (Optional)" />);
+        (<CustomLabelWithHint text="Notification Display Dates:" hintText="Select a calendar period during which your notification will be returned via the API. (Optional)" />);
   const customLabel2 = 
-        (<CustomLabelWithHint text="Notification's display start time (optional)." hintText="If you provided display dates, you can optionally set the notification's display starting time on the first day." />);
+        (<CustomLabelWithHint text="Notification's display starting time:" hintText="If you provided display dates, you can optionally set the notification's display starting time on the first day." />);
   const customLabel3 = 
-        (<CustomLabelWithHint text="Notification's display end time." hintText="If you provided display dates, you can optionally set the notification's last display time on the last day." />);
+        (<CustomLabelWithHint text="Notification's display ending time:" hintText="If you provided display dates, you can optionally set the notification's last display time on the last day." />);
   const ref1 = useRef<HTMLInputElement>(null);
   const ref2 = useRef<HTMLInputElement>(null);
 
@@ -155,7 +164,13 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
 
   return (
     <div>
-      <Modal title={editing ? 'Update this notification' : 'Create a new notification'} opened={opened} onClose={onClose} size="auto" centered>
+      <Modal 
+        title={editing ? 'Update this notification' : 'Create a new notification'} 
+        opened={opened} 
+        onClose={onClose} 
+        size="auto" 
+        radius="md"
+        centered>
         <form onSubmit={handleSubmit} style={{margin:'10px'}} >
           <Paper padding="md">
             <Textarea
@@ -219,6 +234,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
               placeholder="Enter page ID"
               description="(Optional) Enter a page ID you can use to target this notification."
             />
+            <NotificationTypeSelector value={notificationData.notificationType} onSelectionChange={handleNotificationTypeChange} />
           </Paper>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
         <Button variant="filled" type="submit">{editing ? 'Update' : 'Create'}</Button>

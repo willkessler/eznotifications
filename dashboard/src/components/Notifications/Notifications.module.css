@@ -32,3 +32,19 @@
     background-color: white; /* Final color */
   }
 }
+
+.notificationTypeChoice {
+  margin-top:22px;
+}
+
+.pageId {
+  font-family: courier;
+}
+
+.notificationTypeChoice div {
+  margin-top:2px;
+}
+
+.tableCellToTop {
+  vertical-align: top;
+}

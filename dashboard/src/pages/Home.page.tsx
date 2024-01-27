@@ -96,6 +96,7 @@ export function HomePage() {
   };
 
   const handleNotificationSubmit = (notificationData) => {
+    console.log('Notif data on form submit:', notificationData);
     const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
     const action = (notificationData.editing ? 'updated' : 'created' );
     const apiUrl = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications` +
