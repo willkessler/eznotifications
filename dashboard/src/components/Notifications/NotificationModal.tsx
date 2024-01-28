@@ -244,9 +244,14 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                 />
               }
             </div>
-            <Expando closedTitle="Show advanced options" openTitle="Hide advanced options" outerStyle={{marginTop: '10px'}} >
+            <Expando 
+              closedTitle="Show advanced options" 
+              openTitle="Hide advanced options" 
+              outerStyle={{marginTop: '10px'}} 
+              openOnDisplay={editing}
+            >
               <Paper shadow="sm" p="sm">
-              <TextInput
+                <TextInput
                 name="pageId"
                 value={notificationData.pageId}
                 onChange={handleTextChange}
@@ -254,8 +259,8 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                 style={{marginTop:'15px'}}
                 placeholder="Enter page ID"
                 description="Enter a page ID you can use to target this notification."
-              />
-              <div style={{ display: 'flex', width: '90%' }}>
+                />
+                <div style={{ display: 'flex', width: '90%' }}>
                 <NotificationTypeSelector value={notificationData.notificationType} onSelectionChange={handleNotificationTypeChange} />
                 <MultiSelect
                   name="environment"
@@ -270,8 +275,8 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                   comboboxProps={{ shadow: 'md' }}
                   onChange={(value) => handleEnvironmentChange(value)}
                 />
-              </div>
-                </Paper>
+                </div>
+              </Paper>
             </Expando>
           </Paper>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>

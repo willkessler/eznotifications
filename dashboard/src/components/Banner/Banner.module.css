@@ -1,9 +1,21 @@
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%); /* Start from above the top */
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 0.95; /* Since you want 95% opacity */
+  }
+}
+
 .banner {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100px;
+  height: auto;
+  padding: 10px 0;
   background-color: #888; /* Customize as needed */
   color: white;
   display: flex;
@@ -11,6 +23,7 @@
   align-items: center;
   opacity:95%;
   z-index: 1000; /* Ensure it's above other content */
+  animation: slideDown 0.25s ease-out forwards; /* Adjust time as needed */
 }
 
 .closeButton {

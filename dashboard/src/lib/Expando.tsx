@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Anchor, Collapse, Text } from '@mantine/core';
 
 interface ExpandoProps {
@@ -6,10 +6,22 @@ interface ExpandoProps {
   openTitle: string;
   closedTitle: string;
   outerStyle?: React.CSSProperties;
+  openOnDisplay?: boolean;
 }
 
-const Expando: React.FC<ExpandoProps> = ({children, openTitle, closedTitle, outerStyle}) => {
+const Expando: React.FC<ExpandoProps> = ({
+  children, 
+  openTitle, 
+  closedTitle, 
+  outerStyle, 
+  openOnDisplay = false
+}) => {
+
   const [opened, setOpened] = useState(false);
+
+  useEffect(() => {
+    setOpened(openOnDisplay); 
+  }, [openOnDisplay]);
 
   const triangleStyle = {
     display: 'inline-block', // Ensure proper rendering

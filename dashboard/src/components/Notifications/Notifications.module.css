@@ -20,13 +20,13 @@
 }
 
 .highlighted-row {
-  background-color: yellow; /* Starting color */
+  background-color: orange; /* Starting color */
   animation: fadeOutHighlight 4s forwards; /* Animation over 4 seconds */
 }
 
 @keyframes fadeOutHighlight {
   from {
-    background-color: yellow; /* Starting color */
+    background-color: orange; /* Starting color */
   }
   to {
     background-color: white; /* Final color */
@@ -36,7 +36,7 @@
 .tableCellToTop .hoverIcons {
   visibility:hidden;
   position: absolute;
-  bottom: 0;
+  bottom: -8px;
   left: 0;
   width: 100%;
   display: flex;
@@ -44,6 +44,11 @@
   transition: visibility 0.3s, opacity 0.3s ease;
   opacity: 0;
   margin:0px 0px 5px 10px;
+  color: #555;
+}
+
+.tableCellToTop .hoverIcons svg {
+  color:#555;
 }
 
 .tableCellToTop .hoverIcons svg:hover {
@@ -54,7 +59,7 @@
 .tableCellWithHover {
   position: relative;
   padding-bottom: 30px; /* Adjust this value based on icon size */
-  transition: background-color 0.3s ease; /* Optional: for background color change */
+  transition: background-color 1s ease; /* Optional: for background color change */
 }
 
 .tableCellWithHover:hover .hoverIcons {

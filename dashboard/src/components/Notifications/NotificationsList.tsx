@@ -1,6 +1,6 @@
 import cx from 'clsx';
-import { Anchor, Box, Button, Menu, Modal, Pill, ScrollArea, Spoiler, Switch, Table, Text, rem } from '@mantine/core';
-import { IconArrowRight, IconEdit, IconFlag2Filled } from '@tabler/icons-react';
+import { Anchor, Box, Button, Menu, Modal, Pill, ScrollArea, Spoiler, Switch, Table, Text, Tooltip, rem } from '@mantine/core';
+import { IconArrowElbowRight, IconEdit, IconFlag2Filled, IconBread, IconAppWindow, IconCopy } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -170,10 +170,32 @@ export function NotificationsList({onEdit, onCancel, displayBanner, displayPrevi
          <Box w="400">
             <Spoiler maxHeight={50} showLabel="Show more" hideLabel="Hide">
               <Text>{row.content.length === 0 ? '(Not set)' : row.content}</Text>
-              </Spoiler>
+            </Spoiler>
             <div className={`${classes.hoverIcons}`}>
-              <IconEdit size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
-              <IconFlag2Filled size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
+              <Tooltip openDelay={1000} label="Edit this notification" position="bottom" withArrow>
+               <Anchor component="button" type="button" onClick={ () => { editNotification(row)}} >
+                  <IconEdit size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
+                </Anchor>
+              </Tooltip>
+              <Tooltip openDelay={1000} label="Duplicate this notification" position="bottom" withArrow>
+                <IconCopy size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
+              </Tooltip>
+              &nbsp;&nbsp;&mdash;&nbsp;&nbsp;
+              <Tooltip openDelay={1000} label="Banner preview" position="bottom" withArrow>
+                <Anchor component="button" type="button" onClick={ () => { displayBanner(row.content.length==0 ? '(Not set)' : row.content) }}>
+                  <IconFlag2Filled size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
+                </Anchor>
+              </Tooltip>
+              <Tooltip openDelay={1000} label="Popup preview" position="bottom" withArrow>
+                <Anchor component="button" type="button" onClick={ () => { displayPreviewModal(row.content.length==0 ? '(Not set)' : row.content) }}>
+                  <IconAppWindow size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
+                </Anchor>
+              </Tooltip>
+              <Tooltip openDelay={1000} label="Toast preview" position="bottom" withArrow>
+                <Anchor component="button" type="button" onClick={ () => { toastNotify(row.content.length==0 ? '(Not set)' : row.content) }}>
+                  <IconBread size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
+                </Anchor>
+              </Tooltip>
             </div>
           </Box>
       </Table.Td>
@@ -183,38 +205,10 @@ export function NotificationsList({onEdit, onCancel, displayBanner, displayPrevi
         Type:<Pill radius="sm">{row.notificationType ? row.notificationType : 'Any'}</Pill>
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
-          {formatDisplayDate(row.startDate)}
-          <IconArrowRight style={{ width: rem(18), height: rem(18), paddingTop: '6px' }} stroke={3} color="#666"/> <br />
-          &nbsp;&nbsp;{formatDisplayDate(row.endDate)}
+          {formatDisplayDate(row.startDate)} <br />
+          <IconArrowElbowRight style={{transform: 'rotate(45deg)', padding:'2px', marginTop:'2px' }} color="orange" />
+          {formatDisplayDate(row.endDate)}
       </Table.Td>
-      <Table.Td>
-          <Menu shadow="md" width={200}>
-            <Menu.Target>
-          <Anchor component="button" style={{ fontWeight: 'bold', color: '#000' }} type="button">...</Anchor>
-            </Menu.Target>
-  
-            <Menu.Dropdown>
-              <Menu.Label>Preview Notifications</Menu.Label>
-              <Menu.Item onClick={ () => { displayPreviewModal(row.content.length==0 ? '(Not set)' : row.content) }}>
-                <Text>As a modal</Text>
-              </Menu.Item>
-              <Menu.Item onClick={ () => { displayBanner(row.content.length==0 ? '(Not set)' : row.content) }}>
-                <Text>As a banner</Text>
-              </Menu.Item>
-              <Menu.Item onClick={ () => { toastNotify(row.content.length==0 ? '(Not set)' : row.content) }}>
-                <Text>As a toast</Text>
-              </Menu.Item>
-              <Menu.Divider />
-              <Menu.Label>Updates to this Notification</Menu.Label>
-              <Menu.Item onClick= { () => { editNotification(row); }}>
-                <Text>Edit</Text>
-              </Menu.Item>
-              <Menu.Item>
-                <Text>Duplicate</Text>
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Table.Td>
     </Table.Tr>
   ));
 
@@ -227,7 +221,6 @@ export function NotificationsList({onEdit, onCancel, displayBanner, displayPrevi
             <Table.Th>Notification Contents</Table.Th>
             <Table.Th>Display Conditions</Table.Th>
             <Table.Th>Timeframe</Table.Th>
-            <Table.Th>Action</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>
