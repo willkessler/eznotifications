@@ -33,6 +33,39 @@
   }
 }
 
+.tableCellToTop .hoverIcons {
+  visibility:hidden;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: left;
+  transition: visibility 0.3s, opacity 0.3s ease;
+  opacity: 0;
+  margin:0px 0px 5px 10px;
+}
+
+.tableCellToTop .hoverIcons svg:hover {
+  opacity:1;
+  color:#00f;
+}
+
+.tableCellWithHover {
+  position: relative;
+  padding-bottom: 30px; /* Adjust this value based on icon size */
+  transition: background-color 0.3s ease; /* Optional: for background color change */
+}
+
+.tableCellWithHover:hover .hoverIcons {
+  visibility: visible;
+  opacity: 0.5;
+}
+
+.tableCellWithHover:hover {
+
+}
+
 .notificationTypeChoice {
   margin-top:22px;
 }

@@ -1,6 +1,6 @@
 import cx from 'clsx';
 import { Anchor, Box, Button, Menu, Modal, Pill, ScrollArea, Spoiler, Switch, Table, Text, rem } from '@mantine/core';
-import { IconArrowRight } from '@tabler/icons-react';
+import { IconArrowRight, IconEdit, IconFlag2Filled } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -166,7 +166,17 @@ export function NotificationsList({onEdit, onCancel, displayBanner, displayPrevi
           onChange={(event) => handleSwitchChange(row, event.currentTarget.checked)}
         />
       </Table.Td>
-      <Table.Td className={classes.tableCellToTop}><Box w="400"><Spoiler maxHeight={50} showLabel="Show more" hideLabel="Hide"><Text>{row.content.length == 0 ? '(Not set)' : row.content }</Text></Spoiler></Box></Table.Td>
+      <Table.Td className={`${classes.tableCellToTop} ${classes.tableCellWithHover}`}>
+         <Box w="400">
+            <Spoiler maxHeight={50} showLabel="Show more" hideLabel="Hide">
+              <Text>{row.content.length === 0 ? '(Not set)' : row.content}</Text>
+              </Spoiler>
+            <div className={`${classes.hoverIcons}`}>
+              <IconEdit size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
+              <IconFlag2Filled size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
+            </div>
+          </Box>
+      </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
           Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'1px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '(not set)')}<br/>
           Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy' }} radius="xs">{row.environment ? row.environment : 'All'}</Pill><br/>
