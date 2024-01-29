@@ -201,12 +201,17 @@ export function NotificationsList({onEdit, onCancel, displayBanner, displayPrevi
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
           Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'1px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '(not set)')}<br/>
-          Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy' }} radius="xs">{row.environment ? row.environment : 'All'}</Pill><br/>
+          Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy' }} radius="xs">{row.environments ? row.environments : 'All'}</Pill><br/>
         Type:<Pill radius="sm">{row.notificationType ? row.notificationType : 'Any'}</Pill>
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
-          {formatDisplayDate(row.startDate)} <br />
-          <IconArrowElbowRight style={{transform: 'rotate(45deg)', padding:'2px', marginTop:'2px' }} color="orange" />
+          {formatDisplayDate(row.startDate)}
+          {row.startDate != null && row.endDate != null && (
+              <>
+                  <br />
+                  <IconArrowElbowRight style={{transform: 'rotate(45deg)', padding:'2px', marginTop:'2px' }} color="orange" />
+                  </>
+          )}
           {formatDisplayDate(row.endDate)}
       </Table.Td>
     </Table.Tr>

@@ -12,7 +12,7 @@ import { useNotifications } from './NotificationsContext';
 export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onClose }) => {
   const { refreshNotifications } = useNotifications();
   const editing = (initialData != null);
-  console.log('initialData:', initialData, ' editing:', editing);
+  //console.log('initialData:', initialData, ' editing:', editing);
 
   const navigate = useNavigate();
 
@@ -27,11 +27,11 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
     endTime: '',
     live: false,
     notificationType: 'info',
-    environment: [],
+    environments: [],
   });
 
   const handleNotificationTypeChange = (type) => {
-    console.log('handleNotificationTypeChange:', type);
+    //console.log('handleNotificationTypeChange:', type);
     setNotificationType(type);
     setNotificationData(prevData => ({
       ...prevData,
@@ -40,11 +40,11 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
   };
 
 
-  const handleEnvironmentChange = (values) => {
-    console.log('environment change:', values);
+  const handleEnvironmentsChange = (values) => {
+    console.log('environments change:', values);
     setNotificationData(prevData => ({
       ...prevData,
-      environment: values
+      environments: values
     }));
   };
 
@@ -61,12 +61,12 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
   };
 
   const handleDateRangeChange = (value, name) => {
-    console.log("date range change:", name, value);
+    //console.log("date range change:", name, value);
     setNotificationData({ ...notificationData, [name]: value });
   };
 
   const handleDateTimeChange = (value, name) => {
-    console.log("date time change, name=", name, "value=", value.target.value);
+    //console.log("date time change, name=", name, "value=", value.target.value);
     setNotificationData({ ...notificationData, [name]: value.target.value });
   };
 
@@ -97,9 +97,9 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
       formData.endDate.setHours(endHours, endMinutes);
     }
 
-    console.log('Processed form data:', formData);
+    //console.log('Processed form data:', formData);
 
-    formData.environment = formData.environment.join(',');
+    formData.environments = formData.environments.join(',');
 
     // Use formData for submission or further processing
     onSubmit(formData);
@@ -119,15 +119,15 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
 
   useEffect(() => {
     if (editing) {
-      console.log('useEffect, initialState=', initialData);
+      //console.log('useEffect, initialState=', initialData);
       const formattedStartDate = new Date(initialData.startDate);
       const formattedEndDate = new Date(initialData.endDate);
       const formattedStartTime = formatTime(formattedStartDate);
       const formattedEndTime = formatTime(formattedEndDate);
-      const initialEnvironmentArray = initialData.environment ? initialData.environment.split(',') : [];
-      console.log('initialEnvironmentArray:', initialEnvironmentArray);
+      const initialEnvironmentsArray = initialData.environments ? initialData.environments.split(',') : [];
+      //console.log('initialEnvironmentsArray:', initialEnvironmentsArray);
 
-      console.log('pre-iso');
+      //console.log('pre-iso');
 
       setNotificationData({
         ...initialData, // Spread the initialData passed in for editing
@@ -135,9 +135,9 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
         dateRange: [formattedStartDate, formattedEndDate],
         startTime: formattedStartTime,
         endTime: formattedEndTime,
-        environment: initialEnvironmentArray,
+        environments: initialEnvironmentsArray,
       });
-      console.log('post setnotif, initialEnvironmentArray:', initialEnvironmentArray);
+      //console.log('post setnotif, initialEnvironmentsArray:', initialEnvironmentsArray);
     } else {
       // otherwise, initialize for a new notification
       setNotificationData({
@@ -148,7 +148,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
         startTime: '00:00',
         endTime: '00:00',
         live: false,
-        environment: [],
+        environments: [],
       });
     }
   }, [initialData, editing]);
@@ -263,9 +263,8 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                 <div style={{ display: 'flex', width: '90%' }}>
                 <NotificationTypeSelector value={notificationData.notificationType} onSelectionChange={handleNotificationTypeChange} />
                 <MultiSelect
-                  name="environment"
-                  value={Array.isArray(notificationData.environment) ? notificationData.environment : []}
-                  onChange={handleEnvironmentChange}
+                  name="environments"
+                  value={Array.isArray(notificationData.environments) ? notificationData.environments : []}
                   style={{width:'375px', paddingTop:'20px', paddingLeft: '20px'}}
                   pointer
                   label="Environments"
@@ -273,7 +272,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                   placeholder="Pick values"
                   data={['Development', 'Staging', 'UAT', 'Production']}
                   comboboxProps={{ shadow: 'md' }}
-                  onChange={(value) => handleEnvironmentChange(value)}
+                  onChange={(value) => handleEnvironmentsChange(value)}
                 />
                 </div>
               </Paper>
