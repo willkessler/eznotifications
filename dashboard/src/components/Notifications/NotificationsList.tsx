@@ -1,6 +1,6 @@
 import cx from 'clsx';
 import { Anchor, Box, Button, Menu, Modal, Pill, ScrollArea, Spoiler, Switch, Table, Text, Tooltip, rem } from '@mantine/core';
-import { IconArrowElbowRight, IconEdit, IconFlag2Filled, IconBread, IconAppWindow, IconCopy } from '@tabler/icons-react';
+import { IconArrowElbowRight, IconEdit, IconLayoutNavbarExpand, IconMessageDown, IconAlignBoxCenterMiddle, IconCopy } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -183,17 +183,17 @@ export function NotificationsList({onEdit, onCancel, displayBanner, displayPrevi
               &nbsp;&nbsp;&mdash;&nbsp;&nbsp;
               <Tooltip openDelay={1000} label="Banner preview" position="bottom" withArrow>
                 <Anchor component="button" type="button" onClick={ () => { displayBanner(row.content.length==0 ? '(Not set)' : row.content) }}>
-                  <IconFlag2Filled size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
+                  <IconLayoutNavbarExpand size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
               <Tooltip openDelay={1000} label="Popup preview" position="bottom" withArrow>
                 <Anchor component="button" type="button" onClick={ () => { displayPreviewModal(row.content.length==0 ? '(Not set)' : row.content) }}>
-                  <IconAppWindow size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
+                  <IconAlignBoxCenterMiddle size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
               <Tooltip openDelay={1000} label="Toast preview" position="bottom" withArrow>
                 <Anchor component="button" type="button" onClick={ () => { toastNotify(row.content.length==0 ? '(Not set)' : row.content) }}>
-                  <IconBread size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
+                  <IconMessageDown size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
             </div>

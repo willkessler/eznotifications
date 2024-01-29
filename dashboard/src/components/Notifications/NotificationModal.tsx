@@ -162,9 +162,9 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
   const customLabel1 = 
         (<CustomLabelWithHint text="Notification Display Dates:" hintText="Select a calendar period during which your notification will be returned via the API. (Optional)" />);
   const customLabel2 = 
-        (<CustomLabelWithHint text="Notification's display starting time:" hintText="If you provided display dates, you can optionally set the notification's display starting time on the first day." />);
+        (<CustomLabelWithHint text="Starting display time on the first day:" hintText="If you provided display dates, you can optionally set the notification's display starting time on the first day." />);
   const customLabel3 = 
-        (<CustomLabelWithHint text="Notification's display ending time:" hintText="If you provided display dates, you can optionally set the notification's last display time on the last day." />);
+        (<CustomLabelWithHint text="Ending display time on the last day:" hintText="If you provided display dates, you can optionally set the notification's last display time on the last day. Make sure it's *after* the start time, if the display date is only one calendar day." />);
   const ref1 = useRef<HTMLInputElement>(null);
   const ref2 = useRef<HTMLInputElement>(null);
 
