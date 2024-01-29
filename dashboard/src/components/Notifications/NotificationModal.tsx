@@ -97,9 +97,8 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
       formData.endDate.setHours(endHours, endMinutes);
     }
 
-    //console.log('Processed form data:', formData);
 
-    formData.environments = formData.environments.join(',');
+    console.log('Form data for submission=:', formData);
 
     // Use formData for submission or further processing
     onSubmit(formData);
@@ -124,7 +123,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
       const formattedEndDate = new Date(initialData.endDate);
       const formattedStartTime = formatTime(formattedStartDate);
       const formattedEndTime = formatTime(formattedEndDate);
-      const initialEnvironmentsArray = initialData.environments ? initialData.environments.split(',') : [];
+      const initialEnvironmentsArray = initialData.environments;
       //console.log('initialEnvironmentsArray:', initialEnvironmentsArray);
 
       //console.log('pre-iso');

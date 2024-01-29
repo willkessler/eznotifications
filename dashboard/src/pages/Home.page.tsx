@@ -114,7 +114,7 @@ export function HomePage() {
     const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
     const action = (notificationData.editing ? 'updated' : 'created' );
     const apiUrl = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications` +
-          (notificationData.editing ? '/' + notificationData.id : '');
+          (notificationData.editing ? '/' + notificationData.id : '/new');
     fetch(apiUrl, {
       method: method,
       headers: { 'Content-Type': 'application/json' },

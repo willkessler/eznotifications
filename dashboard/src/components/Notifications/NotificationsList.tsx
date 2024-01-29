@@ -201,8 +201,8 @@ export function NotificationsList({onEdit, onCancel, displayBanner, displayPrevi
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
           Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'1px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '(not set)')}<br/>
-          Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy' }} radius="xs">{row.environments ? row.environments : 'All'}</Pill><br/>
-        Type:<Pill radius="sm">{row.notificationType ? row.notificationType : 'Any'}</Pill>
+          Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy' }} radius="xs">{row.environments != null ? (row.environments.length ? row.environments.join(', ') : 'Any') : 'Any'}</Pill><br/>
+        Type:<Pill c="green" radius="sm">{row.notificationType ? row.notificationType : '<not set>'}</Pill>
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
           {formatDisplayDate(row.startDate)}

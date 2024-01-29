@@ -26,7 +26,7 @@ export class EZNotificationController {
 
     //constructor(private readonly ezNotificationService: EZNotificationService) {}
 
-    @Post()
+    @Post('/new')
     async create(@Body() EZNotificationData: Partial<EZNotification>): Promise<EZNotification> {
         return this.EZNotificationService.create(EZNotificationData);
     }
