@@ -17,6 +17,9 @@ export class EZNotification {
   @Column({ name: 'notification_type', nullable: true })
   notificationType: string;
 
+  @Column({ name: 'notification_type_other', nullable: true })
+  notificationTypeOther: string;
+    
   @Column({ default: false })
   live: boolean;
 

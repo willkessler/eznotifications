@@ -11,7 +11,7 @@ import { EZNotificationService } from './EZNotification.service';
 import { EndUser } from './entities/EndUsers.entity';
 import { EndUsersServed } from './entities/EndUsersServed.entity';
 
-@Controller('ezNotifications')
+@Controller()
 export class EZNotificationController {
     constructor(
         private connection: Connection, 

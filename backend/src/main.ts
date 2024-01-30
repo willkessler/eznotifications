@@ -7,6 +7,7 @@ import * as dotenv from 'dotenv';
 async function bootstrap() {
     dotenv.config();
     const app = await NestFactory.create(AppModule);
+    app.setGlobalPrefix('eznotifications'); // all API paths must start with 'eznotifications'
 
     app.enableCors({
         origin: 'http://' + process.env.HOST + ':' + process.env.INBOUND_PORT, // Allow only your front-end origin
@@ -18,6 +19,7 @@ async function bootstrap() {
         .setDescription('The EZNotifications API description')
         .setVersion('1.0')
         .addTag('notifications')
+        .addServer('/eznotifications', 'EZNotifications API Base Path')
         .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);

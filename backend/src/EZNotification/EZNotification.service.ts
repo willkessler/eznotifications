@@ -38,7 +38,7 @@ export class EZNotificationService {
     }
 
     async findAll(queryParams: QueryParamProps): Promise<EZNotification[]> {
-        console.log('findAll queryParams:', queryParams);
+        //console.log('findAll queryParams:', queryParams);
         if (!queryParams.userId) {
             // no userId provided. If the dashboard auth check passed then, return all notifications.
             return this.ezNotificationRepository.find();

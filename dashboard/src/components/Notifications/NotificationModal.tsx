@@ -27,21 +27,29 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
     endTime: '',
     live: false,
     notificationType: 'info',
+    notificationTypeOther: '',
     environments: [],
   });
 
   const handleNotificationTypeChange = (type) => {
     //console.log('handleNotificationTypeChange:', type);
-    setNotificationType(type);
     setNotificationData(prevData => ({
       ...prevData,
-      notificationType: type
+      notificationType: type,
     }));
   };
 
+  const handleCustomNotificationTypeChange = (customType) => {
+    //console.log('handleCustomNotificationTypeChange:', customType, 'notificationData.notificationType=', notificationData.notificationType);
+    setNotificationData(prevData => ({
+      ...prevData,
+      notificationTypeOther: customType
+    }));
+
+  };
 
   const handleEnvironmentsChange = (values) => {
-    console.log('environments change:', values);
+    //console.log('environments change:', values);
     setNotificationData(prevData => ({
       ...prevData,
       environments: values
@@ -65,9 +73,17 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
   const handleSubmit = e => {
     e.preventDefault();
 
-    // Create a copy of notificationData
-    const formData = { ...notificationData };
+    // Make a copy of notificationData so we can massage it for submission to the API.
+    const formData = { 
+      ...notificationData,
+    };
 
+    // make sure, if user did not pick 'other', that we null out the custom field value (so user perceives it resetting)
+    if (formData.notificationType !== 'other') {
+      //console.log('clearing notificationTypeOther');
+      formData.notificationTypeOther = null;
+    }
+    
     // Destructure the dateRange to get startDate and endDate
     const [startDate, endDate] = formData.dateRange;
 
@@ -118,7 +134,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
 
   useEffect(() => {
     if (editing) {
-      console.log('useEffect. initialState=', initialData);
+      //console.log('useEffect. initialState=', initialData);
       const formattedStartDate = (initialData.startDate == null ? null : new Date(initialData.startDate));
       const formattedEndDate   = (initialData.endDate == null ? null : new Date(initialData.endDate));
       const formattedStartTime = formatTime(formattedStartDate);
@@ -128,6 +144,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
 
       //console.log('pre-iso', formattedStartDate, formattedStartTime);
       
+      //console.log('pre setnotif, notificationData:', notificationData);
       setNotificationData({
         ...initialData, // Spread the initialData passed in for editing
         editing: true,
@@ -136,7 +153,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
         endTime: formattedEndTime,
         environments: initialEnvironmentsArray || [],
       });
-      console.log('post setnotif, notificationData:', notificationData);
+      //console.log('post setnotif, notificationData:', notificationData);
     } else {
       // otherwise, initialize for a new notification
       setNotificationData({
@@ -256,7 +273,12 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                 description="Enter a page ID you can use to target this notification."
                 />
                 <div style={{ display: 'flex', width: '90%' }}>
-                <NotificationTypeSelector value={notificationData.notificationType} onSelectionChange={handleNotificationTypeChange} />
+                  <NotificationTypeSelector 
+                    value={notificationData.notificationType} 
+                    notificationTypeOther={notificationData.notificationTypeOther}
+                    onSelectionChange={handleNotificationTypeChange} 
+                    onCustomTypeChange={handleCustomNotificationTypeChange} 
+                  />
                 <MultiSelect
                   name="environments"
                   value={Array.isArray(notificationData.environments) ? notificationData.environments : []}

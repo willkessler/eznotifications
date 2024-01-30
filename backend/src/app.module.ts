@@ -2,7 +2,6 @@ import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerMiddleware } from './loggerMiddleware';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EndUser } from './EZNotification/entities/EndUsers.entity';
 import { EndUsersServed } from './EZNotification/entities/EndUsersServed.entity';
@@ -26,7 +25,6 @@ import { EZNotification } from './EZNotification/entities/EZNotification.entity'
         }),
     ],
     controllers: [AppController],
-    providers: [AppService],
 })
 
 export class AppModule {
