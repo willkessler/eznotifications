@@ -3,7 +3,7 @@ info:
   title: Notification Service API
   version: 1.0.0
 paths:
-  /notifications:
+  /notifications/new:
     post:
       summary: Create a new notification
       requestBody:
@@ -16,8 +16,9 @@ paths:
         '201':
           description: Notification created
 
+  /notifications:
     get:
-      summary: Retrieve notifications
+      summary: Retrieve (filtered) notifications
       parameters:
         - in: query
           name: pageId
@@ -31,6 +32,16 @@ paths:
             type: string
           required: false
           description: Optional user ID to filter notifications
+        - in: query
+          name: environments
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+          required: false
+          description: Optional list of environments to filter notifications
       responses:
         '200':
           description: A list of notifications

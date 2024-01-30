@@ -76,7 +76,7 @@ export class EZNotificationService {
                 }
 
                 if (environments && environments.length > 0) {
-                    query.andWhere('notification.environments && :environments', { environments });
+                    query.andWhere('(notification.environments && :environments OR notification.environments = \'{}\' )', { environments });
                 }
                 
                 const notifications = await query.getMany();
