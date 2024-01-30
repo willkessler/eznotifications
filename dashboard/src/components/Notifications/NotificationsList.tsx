@@ -166,7 +166,7 @@ export function NotificationsList({onEdit, onCancel, openModal, displayBanner, d
             </Table.Td>
             <Table.Td>
               <Text style={{ fontStyle: 'italic' }}>
-                Your notifications will appear here once you have created one.
+                Your notifications will appear here once you have created one.  <Anchor href="https://tellyourusers-help-pages.super.site">Need help?</Anchor>
               </Text>
             <Button onClick={() => { openModal(null) }} style={{ marginTop: '15px', marginLeft:'15px' }}>+ Create my first notification</Button>
             </Table.Td>

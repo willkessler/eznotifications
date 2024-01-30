@@ -11,6 +11,7 @@ import {
   IconSettings,
   Icon2fa,
   IconDatabaseImport,
+  IconHelp,
   IconReceipt2,
   IconSwitchHorizontal,
   IconLogout,
@@ -29,13 +30,6 @@ export function HomePage() {
 
   const navigate = useNavigate();
 
-  const navBarData = [
-    { link: '', label: 'All Notifications', icon: IconBellRinging },
-    { link: '', label: 'Billing', icon: IconReceipt2 },
-    { link: '', label: 'API Keys', icon: IconKey },
-    { link: '', label: 'Account and Settings', icon: IconSettings },
-  ];
-
   const [activeLink, setActiveLink] = useState('Notifications');
   const [showBanner, setShowBanner] = useState(false);
   const [bannerContent, setBannerContent] = useState('');
@@ -45,21 +39,41 @@ export function HomePage() {
   const [previewModalContents, setPreviewModalContents] = useState('');
   const { highlightNotification, refreshNotifications } = useNotifications();
 
-  const links = navBarData.map((item) => (
-    <a
-      className={classes.link}
-      data-active={item.label === activeLink || undefined}
-      href={item.link}
-      key={item.label}
-      onClick={(event) => {
-        event.preventDefault();
-        setActiveLink(item.label);
-      }}
-    >
-      <item.icon className={classes.linkIcon} stroke={1.5} />
-      <span>{item.label}</span>
-    </a>
-  ));
+  const isExternalLink = (url) => /^(http|https):\/\//.test(url); // tests if a string is a url
+  const navBarData = [
+    { link: '', label: 'All Notifications', icon: IconBellRinging },
+    { link: '', label: 'Billing', icon: IconReceipt2 },
+    { link: '', label: 'API Keys', icon: IconKey },
+    { link: '', label: 'Account and Settings', icon: IconSettings },
+    { link: 'https://tellyourusers-help-pages.super.site', label: 'Get Help', icon: IconHelp },
+  ];
+
+    const links = navBarData.map((item) => {
+        const handleNavBarClick = (event) => {
+            if (isExternalLink(item.link)) {
+                // open external links in a new tab
+                window.open(item.link, '_blank');
+            } else {
+                event.preventDefault();
+                setActiveLink(item.label);
+            }
+        };
+
+        return (
+            <a
+            className={classes.link}
+            data-active={item.label === activeLink || undefined}
+            href={item.link}
+            target={isExternalLink(item.link) ? '_blank' : '_self'}
+            rel={isExternalLink(item.link) ? 'nopener noreferrer' : undefined}
+            key={item.label}
+            onClick={handleNavBarClick}
+                >
+                <item.icon className={classes.linkIcon} stroke={1.5} />
+                <span>{item.label}</span>
+                </a>
+        );
+    });
 
   const goToNewNotification = () => {
     navigate('/new-notification'); // Use the path you've defined for the new notification form
