@@ -134,7 +134,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
         dateRange: [formattedStartDate, formattedEndDate],
         startTime: formattedStartTime,
         endTime: formattedEndTime,
-        environments: initialEnvironmentsArray,
+        environments: initialEnvironmentsArray || [],
       });
       //console.log('post setnotif, initialEnvironmentsArray:', initialEnvironmentsArray);
     } else {

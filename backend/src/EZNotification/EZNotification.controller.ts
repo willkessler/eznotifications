@@ -1,6 +1,6 @@
 // src/ezNotification/ezNotification.controller.ts
 
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body, Param, Put, Delete } from '@nestjs/common';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -32,8 +32,14 @@ export class EZNotificationController {
     }
 
     @Get()
-    async findAll(): Promise<EZNotification[]> {
-        return this.EZNotificationService.findAll();
+    findAll(
+        @Query('userId') userId: string,
+        @Query('environments') environments: string,
+        @Query('pageId') pageId: string,
+    ) {
+        const environmentsArray = environments ? environments.split(',') : [];
+        const query = { userId, environments: environmentsArray, pageId };
+        return this.EZNotificationService.findAll(query);
     }
 
     @Get('/user/:userId')
