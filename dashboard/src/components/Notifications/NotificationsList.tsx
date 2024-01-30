@@ -8,7 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useNotifications } from './NotificationsContext';
 import { addPreviewCaveatToString } from '../../lib/RenderMarkdown';
 
-export function NotificationsList({onEdit, onCancel, displayBanner, displayPreviewModal, closePreviewModal }) {
+export function NotificationsList({onEdit, onCancel, openModal, displayBanner, displayPreviewModal, closePreviewModal }) {
   const [scrolled, setScrolled] = useState(false);
   const { refreshToken, highlightedId } = useNotifications();
   const [notificationsState, setNotificationsState] = useState([]);
@@ -69,6 +69,7 @@ export function NotificationsList({onEdit, onCancel, displayBanner, displayPrevi
     }
   };
 
+  // handle turning a notification on and off
   const handleSwitchChange = async (notification, checked) => {
     // Update local state
     const notificationId = notification.id;
@@ -156,7 +157,26 @@ export function NotificationsList({onEdit, onCancel, displayBanner, displayPrevi
            );
   };
     
-  const rows = notificationsState.map((row, index) => (
+  let rows;
+  if (notificationsState.length === 0) {
+    rows = (
+        <Table.Tr key={1} className={classes['highlighted-row']} >
+            <Table.Td>
+            &nbsp;
+            </Table.Td>
+            <Table.Td>
+              <Text style={{ fontStyle: 'italic' }}>
+                Your notifications will appear here once you have created one.
+              </Text>
+            <Button onClick={() => { openModal(null) }} style={{ marginTop: '15px', marginLeft:'15px' }}>+ Create my first notification</Button>
+            </Table.Td>
+            <Table.Td>
+              &nbsp;
+            </Table.Td>
+        </Table.Tr>
+    );
+  } else {
+  rows = notificationsState.map((row, index) => (
     <Table.Tr key={row.id || index} className={row.id === highlightedId ? classes['highlighted-row'] : ''}>
       <Table.Td className={classes.tableCellToTop}>
         <Switch
@@ -218,13 +238,14 @@ export function NotificationsList({onEdit, onCancel, displayBanner, displayPrevi
       </Table.Td>
     </Table.Tr>
   ));
+  }
 
   return (
     <ScrollArea h={700} onScrollPositionChange={({ y }) => setScrolled(y !== 0)}>
       <Table miw={1300} verticalSpacing="md" highlightOnHover >
         <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
           <Table.Tr>
-            <Table.Th> </Table.Th>
+            <Table.Th>&nbsp;</Table.Th>
             <Table.Th>Notification Contents</Table.Th>
             <Table.Th>Display Conditions</Table.Th>
             <Table.Th>Timeframe</Table.Th>

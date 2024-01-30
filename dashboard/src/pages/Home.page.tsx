@@ -159,6 +159,7 @@ export function HomePage() {
             <NotificationsList
               onEdit={handleEdit}
               onCancel={handleCancel}
+              openModal={openModal}
               displayBanner={displayBanner}
               displayPreviewModal={displayPreviewModal}
               closePreviewModal={closePreviewModal}
