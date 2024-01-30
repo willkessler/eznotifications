@@ -43,7 +43,6 @@ export function HomePage() {
   const [modalData, setModalData] = useState(null);
   const [previewModalOpened, setPreviewModalOpened] = useState(false);
   const [previewModalContents, setPreviewModalContents] = useState('');
-
   const { highlightNotification, refreshNotifications } = useNotifications();
 
   const links = navBarData.map((item) => (
@@ -179,7 +178,7 @@ export function HomePage() {
             onClose={closePreviewModal}
             radius="md"
             centered>
-            <div dangerouslySetInnerHTML={renderMarkdown(previewModalContents)}></div>
+            <div dangerouslySetInnerHTML={renderMarkdown(previewModalContents, true)}></div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
               <Button onClick={() => { closePreviewModal() }}>OK</Button>
             </div>

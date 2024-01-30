@@ -6,6 +6,7 @@ import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
 
 import { useNotifications } from './NotificationsContext';
+import { addPreviewCaveatToString } from '../../lib/RenderMarkdown';
 
 export function NotificationsList({onEdit, onCancel, displayBanner, displayPreviewModal, closePreviewModal }) {
   const [scrolled, setScrolled] = useState(false);
@@ -14,7 +15,8 @@ export function NotificationsList({onEdit, onCancel, displayBanner, displayPrevi
 
   // Set up the demo toaster
   const toastNotify = (message) => { 
-    toast.success(message, {
+    const caveatedMessage = addPreviewCaveatToString(message);
+    toast.success(caveatedMessage, {
       duration: 4000,
       position: 'top-center',
 

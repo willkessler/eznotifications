@@ -16,9 +16,11 @@ const Banner: React.FC<BannerProps> = ({ message, onClose }) => {
     return () => clearTimeout(timer);
   }, [message, onClose]); // Re-run effect if message changes
 
+  const previewCaveat = "\n\n#### _Please note: this is only a demo, how you display notifications on your site is up to you._";
+  const caveatedMessage = message + previewCaveat;
   return (
     <div className={classes.banner}>
-      <span dangerouslySetInnerHTML={renderMarkdown(message)}></span>
+      <span dangerouslySetInnerHTML={renderMarkdown(caveatedMessage)}></span>
       <button className={classes.closeButton} onClick={onClose}>X</button>
     </div>
   );
