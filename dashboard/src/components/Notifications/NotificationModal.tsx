@@ -48,14 +48,6 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
     }));
   };
 
-  function formatTime(date) {
-    if (!date) return '';
-
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
-  }
-
   const handleTextChange = e => {
     setNotificationData({ ...notificationData, [e.target.name]: e.target.value });
   };
@@ -116,18 +108,26 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
     </div>
   );
 
+  function formatTime(date) {
+    if (!date) return '';
+
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
   useEffect(() => {
     if (editing) {
-      //console.log('useEffect, initialState=', initialData);
-      const formattedStartDate = new Date(initialData.startDate);
-      const formattedEndDate = new Date(initialData.endDate);
+      console.log('useEffect. initialState=', initialData);
+      const formattedStartDate = (initialData.startDate == null ? null : new Date(initialData.startDate));
+      const formattedEndDate   = (initialData.endDate == null ? null : new Date(initialData.endDate));
       const formattedStartTime = formatTime(formattedStartDate);
-      const formattedEndTime = formatTime(formattedEndDate);
+      const formattedEndTime   = formatTime(formattedEndDate);
       const initialEnvironmentsArray = initialData.environments;
       //console.log('initialEnvironmentsArray:', initialEnvironmentsArray);
 
-      //console.log('pre-iso');
-
+      //console.log('pre-iso', formattedStartDate, formattedStartTime);
+      
       setNotificationData({
         ...initialData, // Spread the initialData passed in for editing
         editing: true,
@@ -136,7 +136,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
         endTime: formattedEndTime,
         environments: initialEnvironmentsArray || [],
       });
-      //console.log('post setnotif, initialEnvironmentsArray:', initialEnvironmentsArray);
+      console.log('post setnotif, notificationData:', notificationData);
     } else {
       // otherwise, initialize for a new notification
       setNotificationData({
@@ -218,7 +218,6 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                     }
                   }}
                 />
-              {notificationData.startTime &&
                 <TimeInput
                   name="startTime"
                   value={notificationData.startTime}
@@ -229,8 +228,6 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                   style={{marginTop:'10px', marginLeft:'10px'}}
                   disabled={timeInputsDisabled}
                 />
-              }
-              {notificationData.endTime &&
                 <TimeInput
                   name="endTime"
                   value={notificationData.endTime}
@@ -241,7 +238,6 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                   style={{marginTop:'10px', marginLeft:'10px'}}
                   disabled={timeInputsDisabled}
                 />
-              }
             </div>
             <Expando 
               closedTitle="Show advanced options" 

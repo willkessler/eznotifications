@@ -79,6 +79,7 @@ export class EZNotificationService {
                     query.andWhere('(notification.environments && :environments OR notification.environments = \'{}\' )', { environments });
                 }
                 
+                console.log(query.getSql());
                 const notifications = await query.getMany();
 
                 // Persist the served notifications as EndUsersServed
