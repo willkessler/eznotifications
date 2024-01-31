@@ -1,15 +1,19 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { LoggerMiddleware } from './loggerMiddleware';
 import { AppController } from './app.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { EndUser } from './EZNotification/entities/EndUsers.entity';
-import { EndUsersServed } from './EZNotification/entities/EndUsersServed.entity';
-import { EZNotificationModule } from './EZNotification/EZNotification.module';
-import { EZNotification } from './EZNotification/entities/EZNotification.entity';
+import { AuthModule } from '../auth/auth.module';
+
+import { EndUser } from '../EZNotification/entities/EndUsers.entity';
+import { EndUsersServed } from '../EZNotification/entities/EndUsersServed.entity';
+import { EZNotificationModule } from '../EZNotification/EZNotification.module';
+import { EZNotification } from '../EZNotification/entities/EZNotification.entity';
 
 @Module({
     imports: [
+        AuthModule,
         EZNotificationModule,
         ConfigModule.forRoot({
         }),
@@ -25,6 +29,7 @@ import { EZNotification } from './EZNotification/entities/EZNotification.entity'
         }),
     ],
     controllers: [AppController],
+
 })
 
 export class AppModule {
