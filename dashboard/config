@@ -1,0 +1,9 @@
+import { registerAs } from '@nestjs/config';
+
+export default registerAs('config', () => ({
+  google: {
+    clientID:     import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID,
+    clientSecret: import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_SECRET,
+    callbackURL:  import.meta.env.VITE_GOOGLE_CALLBACK_URL,
+  },
+}));
