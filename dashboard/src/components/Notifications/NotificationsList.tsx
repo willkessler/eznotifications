@@ -54,7 +54,7 @@ export function NotificationsList({onEdit, onCancel, openModal, displayBanner, d
       };
       const apiUrl = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}` +
             `/eznotifications/${notification.id}`;
-      const response =
+        const response =
             await fetch(apiUrl, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
@@ -115,12 +115,13 @@ export function NotificationsList({onEdit, onCancel, openModal, displayBanner, d
 
   const getNotifications = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications`);
-      const data = await response.json();
-      return data; // Return the fetched data
+        const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        return data; // Return the fetched data
     } catch (error) {
-      console.error('Error fetching notifications:', error);
-      return []; // Return empty array in case of error
+        console.error('Error fetching notifications:', error);
+        return []; // Return empty array in case of error
     }
   };
 

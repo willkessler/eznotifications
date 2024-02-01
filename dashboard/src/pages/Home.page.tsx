@@ -3,6 +3,7 @@ import { Anchor, Button, Code, Group, Image, Modal, Textarea, Text } from '@mant
 import { renderMarkdown } from '../lib/RenderMarkdown';
 import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner/Banner';
+import { UserButton, SignOutButton, SignInButton, SignedIn, SignedOut } from "@clerk/clerk-react"
 
 import {
   IconBellRinging,
@@ -60,7 +61,7 @@ export function HomePage() {
         };
 
         return (
-            <a
+            <Anchor
             className={classes.link}
             data-active={item.label === activeLink || undefined}
             href={item.link}
@@ -71,7 +72,7 @@ export function HomePage() {
                 >
                 <item.icon className={classes.linkIcon} stroke={1.5} />
                 <span>{item.label}</span>
-                </a>
+                </Anchor>
         );
     });
 
@@ -126,7 +127,7 @@ export function HomePage() {
     //console.log('Notif data on form submit:', notificationData);
     const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
     const action = (notificationData.editing ? 'updated' : 'created' );
-    const apiUrl = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}/eznotifications` +
+    const apiUrl = `/eznotifications` +
           (notificationData.editing ? '/' + notificationData.id : '/new');
     fetch(apiUrl, {
       method: method,
@@ -156,13 +157,18 @@ export function HomePage() {
             <Code fw={700}>v1.0</Code>
           </Group>
           {links}
+          <Anchor
+            className={classes.link}
+          >
+            <IconLogout className={classes.linkIcon} stroke={1.5} />
+            <SignOutButton>
+              <span>Log out</span>
+            </SignOutButton>
+          </Anchor>
+
         </div>
 
         <div className={classes.footer}>
-          <Anchor component="button" type="button" style={{color:'#aaa'}}>
-            <IconLogout className={classes.linkIcon} stroke={1.5} />
-            <span>Log out</span>
-          </Anchor>
         </div>
       </nav>
 
