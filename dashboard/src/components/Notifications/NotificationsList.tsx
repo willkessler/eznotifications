@@ -183,7 +183,7 @@ export function NotificationsList({onEdit, onCancel, openModal, displayBanner, d
         <Switch
           color="lime"
           checked={row.live}
-          size="md"
+          size="sm"
           onLabel="ON"
           offLabel="OFF"
           onChange={(event) => handleSwitchChange(row, event.currentTarget.checked)}
@@ -199,9 +199,6 @@ export function NotificationsList({onEdit, onCancel, openModal, displayBanner, d
                <Anchor component="button" type="button" onClick={ () => { editNotification(row)}} >
                   <IconEdit size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
-              </Tooltip>
-              <Tooltip openDelay={1000} label="Duplicate this notification" position="bottom" withArrow>
-                <IconCopy size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
               </Tooltip>
               &nbsp;&nbsp;&mdash;&nbsp;&nbsp;
               <Tooltip openDelay={1000} label="Banner preview" position="bottom" withArrow>
@@ -223,16 +220,16 @@ export function NotificationsList({onEdit, onCancel, openModal, displayBanner, d
           </Box>
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
-          Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'1px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '(not set)')}<br/>
-          Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy' }} radius="xs">{row.environments != null ? (row.environments.length ? row.environments.join(', ') : 'Any') : 'Any'}</Pill><br/>
-        Type:<Pill c="green" radius="sm">{row.notificationType ? row.notificationType : '<not set>'}</Pill>
+          Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'1px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '<not set>')}<br/>
+          Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy', marginTop:'2px' }} radius="md">{row.environments != null ? (row.environments.length ? row.environments.join(', ') : 'Any') : 'Any'}</Pill><br/>
+          Type:<Pill style={{ color:"white", backgroundColor:'#151', marginTop:'2px'}} radius="md">{row.notificationType ? row.notificationType : '<not set>'}</Pill>
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
           {formatDisplayDate(row.startDate)}
           {row.startDate != null && row.endDate != null && (
               <>
                   <br />
-                  <IconArrowElbowRight style={{transform: 'rotate(45deg)', padding:'2px', marginTop:'2px' }} color="orange" />
+                  <IconArrowElbowRight style={{transform: 'rotate(45deg)', marginLeft:'4px',  marginTop:'-3px' }} color="#b63" />
                   </>
           )}
           {formatDisplayDate(row.endDate)}
@@ -242,18 +239,18 @@ export function NotificationsList({onEdit, onCancel, openModal, displayBanner, d
   }
 
   return (
-    <ScrollArea h={700} onScrollPositionChange={({ y }) => setScrolled(y !== 0)}>
-      <Table miw={1300} verticalSpacing="md" highlightOnHover >
+      <Table.ScrollContainer minWidth={800}>
+      <Table verticalSpacing="md" highlightOnHover >
         <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
           <Table.Tr>
             <Table.Th>&nbsp;</Table.Th>
-            <Table.Th>Notification Contents</Table.Th>
+            <Table.Th>What the Notification Will Say</Table.Th>
             <Table.Th>Display Conditions</Table.Th>
-            <Table.Th>Timeframe</Table.Th>
+            <Table.Th>Time Period</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
-    </ScrollArea>
+      </Table.ScrollContainer>
   );
 }

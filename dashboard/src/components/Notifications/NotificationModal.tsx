@@ -259,7 +259,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
             <Expando 
               closedTitle="Show advanced options" 
               openTitle="Hide advanced options" 
-              outerStyle={{marginTop: '10px'}} 
+              outerStyle={{marginTop: '10px', color:'#aaa'}} 
               openOnDisplay={editing}
             >
               <Paper shadow="sm" p="sm">

@@ -30,17 +30,17 @@ const Expando: React.FC<ExpandoProps> = ({
     height: '0',
     borderTop: '6px solid transparent',
     borderBottom: '6px solid transparent',
-    borderLeft: opened ? '6px solid black' : '0',
-    borderRight: !opened ? '6px solid black' : '0',
+    borderLeft: opened ? '6px solid #aaa' : '0',
+    borderRight: !opened ? '6px solid #aaa' : '0',
     transform: opened ? 'rotate(90deg)' : 'rotate(-180deg)',
     transition: 'transform 0.1s ease',
   };
 
   return (
-    <div style={{...outerStyle}}>
+    <div>
       <Anchor component="button" type="button" style={{ color: '#000' }} onClick={() => setOpened((o) => !o)}>
         <span style={triangleStyle}></span>
-        <Text span="component">{opened ? openTitle : closedTitle}</Text>
+        <Text style={{...outerStyle}} span="component">{opened ? openTitle : closedTitle}</Text>
       </Anchor>
       <Collapse in={opened}>
         <div>{children}</div>

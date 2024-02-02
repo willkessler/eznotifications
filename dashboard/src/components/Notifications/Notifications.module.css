@@ -48,12 +48,12 @@
 }
 
 .tableCellToTop .hoverIcons svg {
-  color:#555;
+  color:#999;
 }
 
 .tableCellToTop .hoverIcons svg:hover {
   opacity:1;
-  color:#00f;
+  color:#eee;
 }
 
 .tableCellWithHover {

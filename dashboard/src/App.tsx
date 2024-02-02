@@ -11,7 +11,7 @@ import classes from './pages/NavbarSimple.module.css';
 export default function App() {
   return (
     <>
-      <MantineProvider theme={theme}>
+      <MantineProvider defaultColorScheme="dark" >
         <SignedOut>
           <Text>You are signed out.</Text>
           <Button>
@@ -22,7 +22,6 @@ export default function App() {
         </SignedOut>
 
         <SignedIn>
-          <p>This content is truly private. Only signed in users can see this.</p>
           <UserButton />
             <Router />
         </SignedIn>

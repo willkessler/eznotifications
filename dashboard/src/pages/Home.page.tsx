@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Anchor, Button, Code, Group, Image, Modal, Textarea, Text } from '@mantine/core';
+import { Anchor, Button, Code, Group, Image, Modal, Stack, Textarea, Text } from '@mantine/core';
 import { renderMarkdown } from '../lib/RenderMarkdown';
 import toast, { Toaster } from 'react-hot-toast';
 import Banner from '../components/Banner/Banner';
 import { UserButton, SignOutButton, SignInButton, SignedIn, SignedOut } from "@clerk/clerk-react"
 
 import {
-  IconBellRinging,
-  IconFingerprint,
-  IconKey,
-  IconSettings,
-  Icon2fa,
-  IconDatabaseImport,
-  IconHelp,
-  IconReceipt2,
-  IconSwitchHorizontal,
-  IconLogout,
+    IconBellRinging,
+    IconSpeakerphone,
+    IconFingerprint,
+    IconKey,
+    IconSettings,
+    Icon2fa,
+    IconDatabaseImport,
+    IconHelp,
+    IconReceipt2,
+    IconSwitchHorizontal,
+    IconLogout,
 } from '@tabler/icons-react';
+
 import classes from './NavbarSimple.module.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -31,7 +33,7 @@ export function HomePage() {
 
   const navigate = useNavigate();
 
-  const [activeLink, setActiveLink] = useState('Notifications');
+  const [activeLink, setActiveLink] = useState('All Notifications');
   const [showBanner, setShowBanner] = useState(false);
   const [bannerContent, setBannerContent] = useState('');
   const [isModalOpen, setModalIsOpen] = useState(false);
@@ -42,7 +44,7 @@ export function HomePage() {
 
   const isExternalLink = (url) => /^(http|https):\/\//.test(url); // tests if a string is a url
   const navBarData = [
-    { link: '', label: 'All Notifications', icon: IconBellRinging },
+    { link: '', label: 'All Notifications', icon: IconSpeakerphone },
     { link: '', label: 'Billing', icon: IconReceipt2 },
     { link: '', label: 'API Keys', icon: IconKey },
     { link: '', label: 'Account and Settings', icon: IconSettings },
@@ -149,13 +151,10 @@ export function HomePage() {
       <Toaster />
       <nav className={classes.navbar}>
         <div className={classes.navbarMain}>
-          <Group className={classes.header} justify="space-between">
-            <Anchor href="/"><Image src="/megaphone_logo2a.png" h={150} /></Anchor>
-            <Text span size="xl" fs="italic" ta="left" fw={800} variant="gradient" gradient={{ from: 'cyan', to: 'green', deg: 197 }}>
-              EZ Notifications
-            </Text>
+          <Stack className={classes.header} align="center" justify="space-between">
+              <Anchor href="/"><Image src="/ThisIsNotADrill_cutout.png" h={150} /></Anchor>
             <Code fw={700}>v1.0</Code>
-          </Group>
+          </Stack>
           {links}
           <Anchor
             className={classes.link}
@@ -174,7 +173,10 @@ export function HomePage() {
 
       <div className={classes.content}> {/* Main content area */}
         <div> { showBanner && <Banner message={bannerContent} onClose={closeBanner} /> } </div>
-        <h1>Your Notifications</h1>
+          <Group justify="space-between" style={{ marginBottom: '20px'}}>
+          <Text size="xl" tt="capitalize" style={{ fontSize:'24px'}}>All Notifications</Text>
+            <Button size="sm" onClick={() => { openModal(null) }} style={{ marginLeft: '15px' }}>+ Create new notification</Button>
+          </Group>
         <div>
             <NotificationsList
               onEdit={handleEdit}
@@ -192,7 +194,6 @@ export function HomePage() {
                 onClose={closeModal}
               />
             )}
-            <Button onClick={() => { openModal(null) }} style={{ marginTop: '15px' }}>+ Create new notification</Button>
           <Modal 
             size="60%"
             opened={previewModalOpened} 
