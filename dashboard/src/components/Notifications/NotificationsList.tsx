@@ -8,7 +8,9 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useNotifications } from './NotificationsContext';
 import { addPreviewCaveatToString } from '../../lib/RenderMarkdown';
 
-export function NotificationsList({onEdit, onCancel, openModal, displayBanner, displayPreviewModal, closePreviewModal }) {
+import NotificationsListHeader from './NotificationsListHeader';
+
+const NotificationsList = ({onEdit, onCancel, openModal, displayBanner, displayPreviewModal, closePreviewModal }) => {
   const [scrolled, setScrolled] = useState(false);
   const { refreshToken, highlightedId } = useNotifications();
   const [notificationsState, setNotificationsState] = useState([]);
@@ -239,18 +241,24 @@ export function NotificationsList({onEdit, onCancel, openModal, displayBanner, d
   }
 
   return (
-      <Table.ScrollContainer minWidth={800}>
-      <Table verticalSpacing="md" highlightOnHover >
-        <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
-          <Table.Tr>
-            <Table.Th>&nbsp;</Table.Th>
-            <Table.Th>What the Notification Will Say</Table.Th>
-            <Table.Th>Display Conditions</Table.Th>
-            <Table.Th>Time Period</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>{rows}</Table.Tbody>
-      </Table>
+      <>
+          <NotificationsListHeader openModal={openModal} />
+          <Table.ScrollContainer minWidth={800}>
+          <Table verticalSpacing="md" highlightOnHover >
+            <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
+              <Table.Tr>
+                <Table.Th>&nbsp;</Table.Th>
+                <Table.Th>What the Notification Will Say</Table.Th>
+                <Table.Th>Display Conditions</Table.Th>
+                <Table.Th>Time Period</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>{rows}</Table.Tbody>
+          </Table>
       </Table.ScrollContainer>
+    </>
   );
 }
+
+export default NotificationsList;
+

@@ -33,7 +33,6 @@ export function HomePage() {
 
   const navigate = useNavigate();
 
-  const [activeLink, setActiveLink] = useState('All Notifications');
   const [showBanner, setShowBanner] = useState(false);
   const [bannerContent, setBannerContent] = useState('');
   const [isModalOpen, setModalIsOpen] = useState(false);
@@ -44,10 +43,10 @@ export function HomePage() {
 
   const isExternalLink = (url) => /^(http|https):\/\//.test(url); // tests if a string is a url
   const navBarData = [
-    { link: '', label: 'All Notifications', icon: IconSpeakerphone },
+    { link: '/dashboard', label: 'All Notifications', icon: IconSpeakerphone },
     { link: '', label: 'Billing', icon: IconReceipt2 },
     { link: '', label: 'API Keys', icon: IconKey },
-    { link: '', label: 'Account and Settings', icon: IconSettings },
+    { link: '/settings', label: 'Account and Settings', icon: IconSettings },
     { link: 'https://tellyourusers-help-pages.super.site', label: 'Get Help', icon: IconHelp },
   ];
 
