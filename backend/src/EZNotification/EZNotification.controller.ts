@@ -14,7 +14,7 @@ import { EndUsersServed } from './entities/EndUsersServed.entity';
 @Controller()
 export class EZNotificationController {
     constructor(
-        private connection: Connection, 
+        private connection: Connection,
         private readonly EZNotificationService: EZNotificationService,
         @InjectRepository(EZNotification)
         private readonly notificationRepository: Repository<EZNotification>,
@@ -56,6 +56,21 @@ export class EZNotificationController {
     delete(@Param('id') id: string): Promise<void> {
         return this.EZNotificationService.delete(id);
     }
+
+    @Get('/check')
+    doCheck() {
+        console.log('check');
+        return(1);
+    }
+
+    @Post('/clerkWebhook')
+    async handleClerkWebhook(@Body() body:any) {
+        console.log('*** CLERK WEBHOOK ***');
+        console.log('This users email is: ', JSON.stringify(body.data.email_addresses));
+        console.log('Received webhook data:', body);
+        return true;
+    }
+
 }
 
 
