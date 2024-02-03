@@ -1,6 +1,6 @@
 .navbar {
   height: 100%;
-  width: rem(210px);
+  width: rem(250px);
   padding: var(--mantine-spacing-md);
   display: flex;
   flex-direction: column;
@@ -51,7 +51,7 @@
 
 .linkIcon {
   color: light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2));
-  margin-right: var(--mantine-spacing-sm);
+  margin-right: var(--mantine-spacing-xs);
   width: rem(25px);
   height: rem(25px);
 }

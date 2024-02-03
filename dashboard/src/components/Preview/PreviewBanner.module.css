@@ -9,6 +9,17 @@
   }
 }
 
+@keyframes slideUp {
+  from {
+    transform: translateY(0);
+    opacity: 0.95;
+  }
+  to {
+    transform: translateY(-100%); /* Slide up above the top */
+    opacity: 0;
+  }
+}
+
 .banner {
   position: fixed;
   top: 0;
@@ -24,6 +35,10 @@
   opacity:95%;
   z-index: 1000; /* Ensure it's above other content */
   animation: slideDown 0.25s ease-out forwards; /* Adjust time as needed */
+}
+
+.banner.slideUp {
+  animation: slideUp 0.25s ease-out forwards;
 }
 
 .closeButton {

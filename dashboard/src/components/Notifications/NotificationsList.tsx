@@ -8,16 +8,17 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useNotifications } from './NotificationsContext';
 import { addPreviewCaveatToString } from '../../lib/RenderMarkdown';
 
-import NotificationsListHeader from './NotificationsListHeader';
-
-const NotificationsList = ({onEdit, onCancel, openModal, displayBanner, displayPreviewModal, closePreviewModal }) => {
-  const [scrolled, setScrolled] = useState(false);
-  const { refreshToken, highlightedId } = useNotifications();
-  const [notificationsState, setNotificationsState] = useState([]);
+const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
+    const [ scrolled, setScrolled ] = useState(false);
+    const { openModal, showBanner, showPreviewModal, highlightedId,
+            notifications, submitNotification, fetchNotifications,
+            notificationsLoading } = useNotifications();
+    // const [notificationsState, setNotificationsState] = useState([]);
 
   // Set up the demo toaster
   const toastNotify = (message) => { 
     const caveatedMessage = addPreviewCaveatToString(message);
+      console.log('toastNotify');
     toast.success(caveatedMessage, {
       duration: 4000,
       position: 'top-center',
@@ -72,81 +73,24 @@ const NotificationsList = ({onEdit, onCancel, openModal, displayBanner, displayP
   };
 
   // handle turning a notification on and off
-  const handleSwitchChange = async (notification, checked) => {
-    // Update local state
-    const notificationId = notification.id;
-    const savedCurrentNotifications = [...notificationsState];
-    const updatedNotifications = notificationsState.map(notification => 
-      notification.id === notificationId ? { ...notification, live: checked } : notification
-    );
-    setNotificationsState(updatedNotifications);
+  const handleSwitchChange = async (notificationData, checked) => {
+      const notificationDataCopy = {
+          ...notificationData,
+      };
 
-    // Update database
-    try {
-      const statusChangeResult = await updateNotificationStatus(notification, checked);
-    } catch (error) {
-      console.error('Failed to update notification status', error);
-      // Revert the change in local state if the database update fails
-      setNotificationsState(savedNotifications);      
-    }
-  };
+      notificationDataCopy.live = checked;
+      notificationDataCopy.editing = true;
+      await submitNotification(notificationDataCopy);
+  }
 
-  const sortNotifications = (data) => {
-    return [...data].sort((a, b) => {
-      // Group 1: Non-null startDate and not canceled
-      if ((a.startDate !== null && a.live) && (b.startDate === null || !b.live)) {
-        return -1;
-      }
-      if ((b.startDate !== null && b.live) && (a.startDate === null || !a.live)) {
-        return 1;
-      }
-
-      // Group 2: Null startDate and not live
-      if (a.startDate === null && a.live && !b.live) {
-        return -1;
-      }
-      if (b.startDate === null && b.live && !a.live) {
-        return 1;
-      }
-
-      // Group 3: Not Live notifications
-      // For items within the same group, sort by content alphabetically
-      return a.content.localeCompare(b.content);
-    });
-  };
-
-  const getNotifications = async () => {
-    try {
-        const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications`;
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        return data; // Return the fetched data
-    } catch (error) {
-        console.error('Error fetching notifications:', error);
-        return []; // Return empty array in case of error
-    }
-  };
-
-  // Fetch the notifications list on component mount
   useEffect(() => {
-    const acquireNotifications = async () => {
-      try {
-        const notifications = await getNotifications();
-        const sortedNotifications = sortNotifications([...notifications]);
-        setNotificationsState(sortedNotifications);
-      } catch(error) {
-        console.error('Error fetching notifications:', error);
-      }
-    };
+      const fetchData = async () => {
+          await fetchNotifications();
+      };
 
-    acquireNotifications();
-  }, [refreshToken]);
-
-
-  const editNotification = (notificationData) => {
-    onEdit(notificationData);
-  };
-
+      fetchData();
+  }, [fetchNotifications]);
+    
   const formatDisplayDate = (date) => {
       return (date == null ? '' : 
           new Date(date).toLocaleString('en-US', 
@@ -161,9 +105,18 @@ const NotificationsList = ({onEdit, onCancel, openModal, displayBanner, displayP
   };
     
   let rows;
-  if (notificationsState.length === 0) {
+  if (notificationsLoading) {
+      rows = (
+          <Table.Tr key={1}>
+              <Table.Td>
+                Loading...
+              </Table.Td>
+           </Table.Tr>
+      );
+  } else if (notifications.length === 0) {
+      console.log('no notifs');
     rows = (
-        <Table.Tr key={1} className={classes['highlighted-row']} >
+        <Table.Tr key={1} >
             <Table.Td>
             &nbsp;
             </Table.Td>
@@ -179,7 +132,7 @@ const NotificationsList = ({onEdit, onCancel, openModal, displayBanner, displayP
         </Table.Tr>
     );
   } else {
-  rows = notificationsState.map((row, index) => (
+  rows = notifications.map((row, index) => (
     <Table.Tr key={row.id || index} className={row.id === highlightedId ? classes['highlighted-row'] : ''}>
       <Table.Td className={classes.tableCellToTop}>
         <Switch
@@ -198,18 +151,18 @@ const NotificationsList = ({onEdit, onCancel, openModal, displayBanner, displayP
             </Spoiler>
             <div className={`${classes.hoverIcons}`}>
               <Tooltip openDelay={1000} label="Edit this notification" position="bottom" withArrow>
-               <Anchor component="button" type="button" onClick={ () => { editNotification(row)}} >
+               <Anchor component="button" type="button" onClick={ () => { openModal(row)}} >
                   <IconEdit size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
               &nbsp;&nbsp;&mdash;&nbsp;&nbsp;
               <Tooltip openDelay={1000} label="Banner preview" position="bottom" withArrow>
-                <Anchor component="button" type="button" onClick={ () => { displayBanner(row.content.length==0 ? '(Not set)' : row.content) }}>
+                <Anchor component="button" type="button" onClick={ () => { showBanner(row.content.length==0 ? '(Not set)' : row.content) }}>
                   <IconLayoutNavbarExpand size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
-              <Tooltip openDelay={1000} label="Popup preview" position="bottom" withArrow>
-                <Anchor component="button" type="button" onClick={ () => { displayPreviewModal(row.content.length==0 ? '(Not set)' : row.content) }}>
+              <Tooltip openDelay={1000} label="Modal preview" position="bottom" withArrow>
+                <Anchor component="button" type="button" onClick={ () => { showPreviewModal(row.content.length==0 ? '(Not set)' : row.content) }}>
                   <IconAlignBoxCenterMiddle size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
@@ -242,7 +195,6 @@ const NotificationsList = ({onEdit, onCancel, openModal, displayBanner, displayP
 
   return (
       <>
-          <NotificationsListHeader openModal={openModal} />
           <Table.ScrollContainer minWidth={800}>
           <Table verticalSpacing="md" highlightOnHover >
             <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
@@ -261,4 +213,3 @@ const NotificationsList = ({onEdit, onCancel, openModal, displayBanner, displayP
 }
 
 export default NotificationsList;
-

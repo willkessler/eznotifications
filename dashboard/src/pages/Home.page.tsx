@@ -33,8 +33,6 @@ export function HomePage() {
 
   const navigate = useNavigate();
 
-  const [showBanner, setShowBanner] = useState(false);
-  const [bannerContent, setBannerContent] = useState('');
   const [isModalOpen, setModalIsOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
   const [previewModalOpened, setPreviewModalOpened] = useState(false);

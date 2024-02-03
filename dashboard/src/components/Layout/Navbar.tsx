@@ -4,17 +4,18 @@ import { Anchor, Group } from '@mantine/core';
 import classes from './Navbar.module.css';
 
 import {
-    IconBellRinging,
-    IconSpeakerphone,
-    IconFingerprint,
-    IconKey,
-    IconSettings,
-    Icon2fa,
-    IconDatabaseImport,
-    IconHelp,
-    IconReceipt2,
-    IconSwitchHorizontal,
-    IconLogout,
+  IconChartArea,
+  IconBellRinging,
+  IconSpeakerphone,
+  IconFingerprint,
+  IconKey,
+  IconSettings,
+  Icon2fa,
+  IconDatabaseImport,
+  IconHelp,
+  IconReceipt2,
+  IconSwitchHorizontal,
+  IconLogout,
 } from '@tabler/icons-react';
 
 
@@ -26,7 +27,7 @@ const Navbar = () => {
 
   const navBarData = [
     { link: '/', label: 'All Notifications', icon: IconSpeakerphone },
-    { link: '/statistics', label: 'Statistics', icon: IconReceipt2 }, // Updated with the internal link
+    { link: '/statistics', label: 'Statistics', icon: IconChartArea }, // Updated with the internal link
     { link: '/settings', label: 'Account & Settings', icon: IconSettings },
     { link: 'https://tellyourusers-help-pages.super.site', label: 'Get Help', icon: IconHelp },
   ];

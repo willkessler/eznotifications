@@ -3,18 +3,16 @@ import { Anchor, Button, Modal, MultiSelect, Paper, Textarea, TextInput } from '
 import { DateTimePicker, DatePickerInput, TimeInput } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
-import { useNavigate } from 'react-router-dom';
+
 import UserHint from '../../lib/UserHint';
 import Expando from '../../lib/Expando';
 import { NotificationTypeSelector } from '../../lib/NotificationTypeSelector';
 import { useNotifications } from './NotificationsContext';
 
-export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onClose }) => {
-  const { refreshNotifications } = useNotifications();
-  const editing = (initialData != null);
-  //console.log('initialData:', initialData, ' editing:', editing);
-
-  const navigate = useNavigate();
+const NotificationsModal = () => {
+  const { isModalOpen, modalInitialData, closeModal, submitNotification } = useNotifications();
+  const editing = (modalInitialData != null);
+  //console.log('modalInitialData:', modalInitialData, ' editing:', editing);
 
   const [timeInputsDisabled, setTimeInputsDisabled] = useState(true);
   const [notificationType, setNotificationType] = useState('info'); // default is the "info" choice
@@ -74,7 +72,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
     e.preventDefault();
 
     // Make a copy of notificationData so we can massage it for submission to the API.
-    const formData = { 
+    const formData = {
       ...notificationData,
     };
 
@@ -83,7 +81,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
       //console.log('clearing notificationTypeOther');
       formData.notificationTypeOther = null;
     }
-    
+
     // Destructure the dateRange to get startDate and endDate
     const [startDate, endDate] = formData.dateRange;
 
@@ -109,10 +107,10 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
     console.log('Form data for submission=:', formData);
 
     // Use formData for submission or further processing
-    onSubmit(formData);
+    submitNotification(formData);
 
     // Other necessary actions like closing the modal
-    onClose();
+    closeModal();
   };
 
   const CustomLabelWithHint = ({ text, hintText }) => (
@@ -134,19 +132,19 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
 
   useEffect(() => {
     if (editing) {
-      //console.log('useEffect. initialState=', initialData);
-      const formattedStartDate = (initialData.startDate == null ? null : new Date(initialData.startDate));
-      const formattedEndDate   = (initialData.endDate == null ? null : new Date(initialData.endDate));
+      //console.log('useEffect. initialState=', modalInitialData);
+      const formattedStartDate = (modalInitialData.startDate == null ? null : new Date(modalInitialData.startDate));
+      const formattedEndDate   = (modalInitialData.endDate == null ? null : new Date(modalInitialData.endDate));
       const formattedStartTime = formatTime(formattedStartDate);
       const formattedEndTime   = formatTime(formattedEndDate);
-      const initialEnvironmentsArray = initialData.environments;
+      const initialEnvironmentsArray = modalInitialData.environments;
       //console.log('initialEnvironmentsArray:', initialEnvironmentsArray);
 
       //console.log('pre-iso', formattedStartDate, formattedStartTime);
-      
+
       //console.log('pre setnotif, notificationData:', notificationData);
       setNotificationData({
-        ...initialData, // Spread the initialData passed in for editing
+        ...modalInitialData, // Spread the modalInitialData passed in for editing
         editing: true,
         dateRange: [formattedStartDate, formattedEndDate],
         startTime: formattedStartTime,
@@ -167,7 +165,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
         environments: [],
       });
     }
-  }, [initialData, editing]);
+  }, [modalInitialData, editing]);
 
   useEffect(() => {
     // Enable or disable time inputs based on the dateRange
@@ -175,11 +173,11 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
     setTimeInputsDisabled(!hasDateRange);
   }, [notificationData.dateRange]);
 
-  const customLabel1 = 
+  const customLabel1 =
         (<CustomLabelWithHint text="Notification Display Dates:" hintText="Select a calendar period during which your notification will be returned via the API. (Optional)" />);
-  const customLabel2 = 
+  const customLabel2 =
         (<CustomLabelWithHint text="Starting display time on the first day:" hintText="If you provided display dates, you can optionally set the notification's display starting time on the first day." />);
-  const customLabel3 = 
+  const customLabel3 =
         (<CustomLabelWithHint text="Ending display time on the last day:" hintText="If you provided display dates, you can optionally set the notification's last display time on the last day. Make sure it's *after* the start time, if the display date is only one calendar day." />);
   const ref1 = useRef<HTMLInputElement>(null);
   const ref2 = useRef<HTMLInputElement>(null);
@@ -197,13 +195,16 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                        )
                        ];
 
-  return (
+    if (!isModalOpen) {
+        return (<div>&nbsp;</div>);
+    } else {
+        return ( 
     <div>
-      <Modal 
-        title={editing ? 'Update this notification' : 'Create a new notification'} 
-        opened={opened} 
-        onClose={onClose} 
-        size="auto" 
+      <Modal
+        title={editing ? 'Update this notification' : 'Create a new notification'}
+        opened={isModalOpen}
+        onClose={closeModal}
+        size="auto"
         radius="md"
         centered>
         <form onSubmit={handleSubmit} style={{margin:'10px'}} >
@@ -256,10 +257,10 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                   disabled={timeInputsDisabled}
                 />
             </div>
-            <Expando 
-              closedTitle="Show advanced options" 
-              openTitle="Hide advanced options" 
-              outerStyle={{marginTop: '10px', color:'#aaa'}} 
+            <Expando
+              closedTitle="Show advanced options"
+              openTitle="Hide advanced options"
+              outerStyle={{marginTop: '10px', color:'#aaa'}}
               openOnDisplay={editing}
             >
               <Paper shadow="sm" p="sm">
@@ -273,11 +274,11 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
                 description="Enter a page ID you can use to target this notification."
                 />
                 <div style={{ display: 'flex', width: '90%' }}>
-                  <NotificationTypeSelector 
-                    value={notificationData.notificationType} 
+                  <NotificationTypeSelector
+                    value={notificationData.notificationType}
                     notificationTypeOther={notificationData.notificationTypeOther}
-                    onSelectionChange={handleNotificationTypeChange} 
-                    onCustomTypeChange={handleCustomNotificationTypeChange} 
+                    onSelectionChange={handleNotificationTypeChange}
+                    onCustomTypeChange={handleCustomNotificationTypeChange}
                   />
                 <MultiSelect
                   name="environments"
@@ -297,7 +298,7 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
           </Paper>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
         <Button variant="filled" type="submit">{editing ? 'Update' : 'Create'}</Button>
-        <Anchor component="button" type="button" onClick={onClose} style={{marginLeft:'10px', color:'#999'}} >
+        <Anchor component="button" type="button" onClick={closeModal} style={{marginLeft:'10px', color:'#999'}} >
           Cancel
         </Anchor>
       </div>
@@ -305,4 +306,8 @@ export const NotificationModal: React.FC = ({ opened, initialData, onSubmit, onC
       </Modal>
     </div>
   );
-};
+
+    }
+}
+
+export default NotificationsModal;

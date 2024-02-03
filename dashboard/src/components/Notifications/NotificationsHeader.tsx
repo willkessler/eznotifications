@@ -1,8 +1,10 @@
 import React from 'react';
 import { Anchor, Button, Group, Text } from '@mantine/core';
+import { useNotifications } from './NotificationsContext';
 import classes from './MainLayout.module.css';
 
-const NotificationsListHeader = ({ openModal }) => {
+const NotificationsHeader = () => {
+  const { openModal } = useNotifications();
   return (
     <Group justify="space-between" style={{ marginBottom: '20px'}}>
       <Text size="xl" tt="capitalize" style={{ fontSize:'24px'}}>All Notifications</Text>
@@ -11,5 +13,4 @@ const NotificationsListHeader = ({ openModal }) => {
   );
 }
 
-export default NotificationsListHeader;
-
+export default NotificationsHeader;
