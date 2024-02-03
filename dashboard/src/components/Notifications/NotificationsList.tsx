@@ -1,6 +1,7 @@
 import cx from 'clsx';
 import { Anchor, Box, Button, Menu, Modal, Pill, ScrollArea, Spoiler, Switch, Table, Text, Tooltip, rem } from '@mantine/core';
-import { IconArrowElbowRight, IconEdit, IconLayoutNavbarExpand, IconMessageDown, IconAlignBoxCenterMiddle, IconCopy } from '@tabler/icons-react';
+import { IconArrowElbowRight, IconEdit, IconLayoutNavbarExpand, 
+         IconMessageDown, IconAlignBoxCenterMiddle, IconCopy, IconFidgetSpinner } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -18,7 +19,6 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
   // Set up the demo toaster
   const toastNotify = (message) => { 
     const caveatedMessage = addPreviewCaveatToString(message);
-      console.log('toastNotify');
     toast.success(caveatedMessage, {
       duration: 4000,
       position: 'top-center',
@@ -109,7 +109,7 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
       rows = (
           <Table.Tr key={1}>
               <Table.Td>
-                Loading...
+              <Text size="sm" style={{fontStyle:'italic'}}>Loading...</Text>
               </Table.Td>
            </Table.Tr>
       );
@@ -124,7 +124,9 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
               <Text style={{ fontStyle: 'italic' }}>
                 Your notifications will appear here once you have created one.  <Anchor href="https://tellyourusers-help-pages.super.site">Need help?</Anchor>
               </Text>
-            <Button onClick={() => { openModal(null) }} style={{ marginTop: '15px', marginLeft:'15px' }}>+ Create my first notification</Button>
+            <Button onClick={() => 
+                { openModal(null) }} style={{ marginTop: '15px', marginLeft:'15px' }}>+ Create my first notification
+            </Button>
             </Table.Td>
             <Table.Td>
               &nbsp;
@@ -175,11 +177,6 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
           </Box>
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
-          Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'1px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '<not set>')}<br/>
-          Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy', marginTop:'2px' }} radius="md">{row.environments != null ? (row.environments.length ? row.environments.join(', ') : 'Any') : 'Any'}</Pill><br/>
-          Type:<Pill style={{ color:"white", backgroundColor:'#151', marginTop:'2px'}} radius="md">{row.notificationType ? row.notificationType : '<not set>'}</Pill>
-      </Table.Td>
-      <Table.Td className={classes.tableCellToTop}>
           {formatDisplayDate(row.startDate)}
           {row.startDate != null && row.endDate != null && (
               <>
@@ -188,6 +185,11 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
                   </>
           )}
           {formatDisplayDate(row.endDate)}
+      </Table.Td>
+      <Table.Td className={classes.tableCellToTop}>
+          Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'1px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '<not set>')}<br/>
+          Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy', marginTop:'2px' }} radius="md">{row.environments != null ? (row.environments.length ? row.environments.join(', ') : 'Any') : 'Any'}</Pill><br/>
+          Type:<Pill style={{ color:"white", backgroundColor:'#151', marginTop:'2px'}} radius="md">{row.notificationType ? row.notificationType : '<not set>'}</Pill>
       </Table.Td>
     </Table.Tr>
   ));
@@ -200,9 +202,9 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
             <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
               <Table.Tr>
                 <Table.Th>&nbsp;</Table.Th>
-                <Table.Th>What the Notification Will Say</Table.Th>
-                <Table.Th>Display Conditions</Table.Th>
-                <Table.Th>Time Period</Table.Th>
+                <Table.Th>What Will It Say?</Table.Th>
+                <Table.Th>When Will It Display?</Table.Th>
+                <Table.Th>Where Will It Display</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>{rows}</Table.Tbody>

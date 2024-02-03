@@ -16,14 +16,13 @@ export default function App() {
         <SignedOut>
           <Text>You are signed out.</Text>
           <Button>
-              <SignInButton afterSignInUrl="/dashboard">
+              <SignInButton afterSignInUrl="/">
                 <Text>Sign in</Text>
               </SignInButton>
           </Button>
         </SignedOut>
 
       <SignedIn>
-          <UserButton />
           <RouterComponent />
         </SignedIn>
       </MantineProvider>

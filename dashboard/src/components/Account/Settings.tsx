@@ -1,14 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Code, Group, Image, Modal, Tabs, Stack, Textarea, Text } from '@mantine/core';
+import  AccountPanel from './AccountPanel';
 
 const Settings = () => {
   return (
-    <Tabs defaultValue="first">
-      <Tabs.List justify="space-between">
-        <Tabs.Tab value="first">First tab</Tabs.Tab>
-        <Tabs.Tab value="second">Second tab</Tabs.Tab>
-        <Tabs.Tab value="third">Third tab</Tabs.Tab>
+    <Tabs defaultValue="account">
+      <Tabs.List justify="left">
+        <Tabs.Tab value="account">My Account</Tabs.Tab>
+        <Tabs.Tab value="team">Organization / Team</Tabs.Tab>
+        <Tabs.Tab value="apiKeys">API Keys</Tabs.Tab>
       </Tabs.List>
+
+      <Tabs.Panel value="account">
+        <AccountPanel />
+      </Tabs.Panel>
+
+      <Tabs.Panel value="team">
+        your team info here
+      </Tabs.Panel>
+
+      <Tabs.Panel value="apiKeys">
+        your API config here
+      </Tabs.Panel>
     </Tabs>
   );
 }

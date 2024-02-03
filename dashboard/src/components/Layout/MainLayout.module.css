@@ -1,6 +1,7 @@
 .mainLayout {
   display: flex;
   height: 100vh;
+  padding-top:20px;
 }
 
 .sidebar {

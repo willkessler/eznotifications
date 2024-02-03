@@ -1,0 +1,20 @@
+.account {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 5px;
+  padding-top: 15px;
+}
+
+.accountAnchor {
+  color:'#999';
+  padding-left:12px;
+}
+
+.payment {
+  padding: 30px 0 0 50px;
+}
+
+.paymentAnchor {
+  color:'#999';
+}

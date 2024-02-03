@@ -3,14 +3,9 @@ import classes from './PreviewBanner.module.css';
 import { renderMarkdown } from '../../lib/RenderMarkdown';
 import { useNotifications } from '../Notifications/NotificationsContext';
 
-interface PreviewBannerProps {
-  message: string;
-  onClose: () => void; // Function to handle closing the banner
-}
-
-const PreviewBanner: React.FC<BannerProps> = ({ }) => {
+const PreviewBanner = () => {
   const { isBannerVisible, bannerContent, closeBanner } = useNotifications();
-  const { isClosing, setIsClosing } = useState(false);
+  const [ isClosing, setIsClosing ] = useState();
 
     const handleClose = () => {
         setIsClosing(true); // start closing animation
@@ -41,14 +36,14 @@ const PreviewBanner: React.FC<BannerProps> = ({ }) => {
     }, [isClosing, closeBanner]);
 
     const previewCaveat = "\n\n#### _Please note: this is only a demo, how you display notifications on your site is up to you._";
-    const caveatedBannerContent = bannerContent + previewCaveat;
+  const caveatedBannerContent = renderMarkdown(bannerContent,true);
     return (
         isBannerVisible && (
             <div
               className={`${classes.banner} ${isClosing ? classes.slideUp : ''}`}
               onAnimationEnd={() => isClosing && closeBanner()}
             >
-              <span dangerouslySetInnerHTML={{ __html: bannerContent }}></span>
+              <span dangerouslySetInnerHTML={caveatedBannerContent}></span>
               <button className={classes.closeButton} onClick={handleClose}>X</button>
             </div>
         )

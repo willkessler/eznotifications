@@ -8,7 +8,7 @@ export const useNotifications = () => useContext(NotificationsContext);
 export const NotificationsProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([]);
     const [notificationsLastUpdated, setNotificationsLastUpdated] = useState([null]);
-    const [notificationsLoading, setNotificationsLoading] = useState(false);
+    const [notificationsLoading, setNotificationsLoading] = useState(true);
 
     // When we create or update a notification, we'll highlight it in the notificationsList.
     const [highlightedId, setHighlightedId] = useState(null);
