@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Code, Group, Image, Modal, Tabs, Stack, Textarea, Text } from '@mantine/core';
 import { LineChart } from '@mantine/charts';
 import { data } from './StatsData';
+import classes from './Settings.module.css';
 
 const Statistics = () => {
   return (
     <>
-    <Text size="xl">UserStatistics</Text>
+      <Text className={classes.statsTitle} size="xl">User Statistics</Text>
     <LineChart
+      w={1000}
       h={300}
       data={data}
       dataKey="date"
