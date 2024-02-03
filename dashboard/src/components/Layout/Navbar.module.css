@@ -15,12 +15,6 @@
   margin-left:-10px;
 }
 
-.footer {
-  padding-top: var(--mantine-spacing-md);
-  margin-top: var(--mantine-spacing-md);
-  border-top: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-}
-
 .link {
   display: flex;
   align-items: center;
@@ -66,4 +60,14 @@
 
 .content {
   padding-left:20px;
+}
+
+.footer {
+  padding-top: var(--mantine-spacing-md);
+  margin-top: var(--mantine-spacing-md);
+  border-top: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.signout {
+  cursor:pointer;
 }

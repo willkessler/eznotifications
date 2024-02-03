@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Anchor, Group } from '@mantine/core';
+import { Anchor, Group, Text } from '@mantine/core';
 import classes from './Navbar.module.css';
+import { SignOutButton } from "@clerk/clerk-react"
 
 import {
   IconChartArea,
@@ -30,6 +31,7 @@ const Navbar = () => {
     { link: '/statistics', label: 'Usage Statistics', icon: IconChartArea }, // Updated with the internal link
     { link: '/settings', label: 'Your Account', icon: IconSettings },
     { link: 'https://tellyourusers-help-pages.super.site', label: 'Help', icon: IconHelp },
+    { link: '', label: 'Logout', icon: IconLogout },
   ];
 
   const navBarLinks = navBarData.map((item) => {
@@ -50,7 +52,7 @@ const Navbar = () => {
       >
         <Group>
           <Icon className={classes.linkIcon} stroke={1.5} />
-          <span>{item.label}</span>
+          <span className={classes.navbarLabel}>{item.label}</span>
         </Group>
       </Anchor>
     ) : (
@@ -62,10 +64,20 @@ const Navbar = () => {
         onClick={() => setActiveLink(item.label)}
         key={item.label}
       >
-        <Group>
-          <Icon className={classes.linkIcon} stroke={1.5} />
-          <span className={classes.navbarLabel}>{item.label}</span>
-        </Group>
+        { (item.label == 'Logout') && 
+          <SignOutButton>
+            <Group>
+              <Icon className={classes.linkIcon} stroke={1.5} />
+              <span className={classes.navbarLabel}>{item.label}</span>
+            </Group>
+          </SignOutButton>
+        }
+        { (item.label !== 'Logout') && 
+            <Group>
+              <Icon className={classes.linkIcon} stroke={1.5} />
+              <span className={classes.navbarLabel}>{item.label}</span>
+            </Group>
+        }
       </Link>
     );
   });
