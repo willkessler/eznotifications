@@ -26,10 +26,10 @@ const Navbar = () => {
 
 
   const navBarData = [
-    { link: '/', label: 'All Notifications', icon: IconSpeakerphone },
-    { link: '/statistics', label: 'Statistics', icon: IconChartArea }, // Updated with the internal link
-    { link: '/settings', label: 'Account & Settings', icon: IconSettings },
-    { link: 'https://tellyourusers-help-pages.super.site', label: 'Get Help', icon: IconHelp },
+    { link: '/', label: 'Your Notifications', icon: IconSpeakerphone },
+    { link: '/statistics', label: 'Usage Statistics', icon: IconChartArea }, // Updated with the internal link
+    { link: '/settings', label: 'Your Account', icon: IconSettings },
+    { link: 'https://tellyourusers-help-pages.super.site', label: 'Help', icon: IconHelp },
   ];
 
   const navBarLinks = navBarData.map((item) => {
@@ -64,7 +64,7 @@ const Navbar = () => {
       >
         <Group>
           <Icon className={classes.linkIcon} stroke={1.5} />
-          <span>{item.label}</span>
+          <span className={classes.navbarLabel}>{item.label}</span>
         </Group>
       </Link>
     );

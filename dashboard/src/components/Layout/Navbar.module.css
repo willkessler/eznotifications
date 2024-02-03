@@ -11,6 +11,10 @@
   flex: 1;
 }
 
+.navbarLabel {
+  margin-left:-10px;
+}
+
 .footer {
   padding-top: var(--mantine-spacing-md);
   margin-top: var(--mantine-spacing-md);
@@ -51,8 +55,7 @@
 
 .linkIcon {
   color: light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2));
-  margin-right: var(--mantine-spacing-xs);
-  width: rem(25px);
+  margin-left: -5px;
   height: rem(25px);
 }
 
