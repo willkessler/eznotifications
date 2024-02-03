@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Code, Group, Image, Modal, Tabs, Stack, Textarea, Text } from '@mantine/core';
-import  AccountPanel from './AccountPanel';
+import AccountPanel from './AccountPanel';
+import TeamPanel from './TeamPanel';
+import APIKeysPanel from './APIKeysPanel';
 
 const Settings = () => {
   return (
@@ -16,11 +18,11 @@ const Settings = () => {
       </Tabs.Panel>
 
       <Tabs.Panel value="team">
-        your team info here
+        <TeamPanel />
       </Tabs.Panel>
 
       <Tabs.Panel value="apiKeys">
-        your API config here
+        <APIKeysPanel />
       </Tabs.Panel>
     </Tabs>
   );

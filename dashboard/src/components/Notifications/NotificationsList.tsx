@@ -204,7 +204,7 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
                 <Table.Th>&nbsp;</Table.Th>
                 <Table.Th>What Will It Say?</Table.Th>
                 <Table.Th>When Will It Display?</Table.Th>
-                <Table.Th>Where Will It Display</Table.Th>
+                <Table.Th>Where Will It Display?</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>{rows}</Table.Tbody>

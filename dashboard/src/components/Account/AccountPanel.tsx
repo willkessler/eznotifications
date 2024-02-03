@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Text } from '@mantine/core';
 import { UserButton, UserProfile } from "@clerk/clerk-react"
-import classes from './Account.module.css';
-import { IconArrowLeft } from '@tabler/icons-react';
+import classes from './Settings.module.css';
+import { IconArrowLeft, IconReceipt } from '@tabler/icons-react';
 
 const AccountPanel = () => {
   const triggerUserButtonClick = () => {
@@ -17,17 +17,21 @@ const AccountPanel = () => {
   };  
 
   return (
-  <>
-    <div className={classes.account} >
+    <>
+      <div className={classes.account} >
+        <Text size="xl">Manage Your Account</Text>
+      </div>
+      <div className={classes.account} >
         <UserButton />
-      <Anchor onClick={triggerUserButtonClick} className={classes.accountAnchor}>
-          Manage Account
+        <Anchor c="#999" onClick={triggerUserButtonClick} className={classes.accountAnchor} >
+          Account Details
         </Anchor>
-    </div>
-    <div className={classes.payment} >
-      <Anchor className={classes.paymentAnchor} href="http://stripe.com">Manage Billing</Anchor>
-    </div>
-  </>
+      </div>
+      <div className={classes.payment} >
+        <IconReceipt />
+        <Anchor c="#999" className={classes.paymentAnchor} href="http://stripe.com">Payment Details</Anchor>
+      </div>
+    </>
   );
 }
 
