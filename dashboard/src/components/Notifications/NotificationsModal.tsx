@@ -103,6 +103,11 @@ const NotificationsModal = () => {
       formData.endDate.setHours(endHours, endMinutes);
     }
 
+    if (editing) {
+        formData.updatedAt = new Date().toISOString();
+    } else {
+        formData.updatedAt = null;
+    }
 
     console.log('Form data for submission=:', formData);
 

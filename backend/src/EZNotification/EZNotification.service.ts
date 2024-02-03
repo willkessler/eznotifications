@@ -107,6 +107,7 @@ export class EZNotificationService {
     async update(id: string, updateData: Partial<EZNotification>): Promise<EZNotification> {
         const ezNotification = await this.ezNotificationRepository.findOneBy({ id: id });
         if (ezNotification) {
+            console.log(updateData);
             Object.assign(ezNotification, updateData);
             return this.ezNotificationRepository.save(ezNotification);
         } else {

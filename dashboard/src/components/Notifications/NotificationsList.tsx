@@ -80,6 +80,7 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
 
       notificationDataCopy.live = checked;
       notificationDataCopy.editing = true;
+      notificationDataCopy.updatedAt = new Date().toISOString();
       await submitNotification(notificationDataCopy);
   }
 

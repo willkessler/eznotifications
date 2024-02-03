@@ -11,6 +11,9 @@ export class EZNotification {
   @Column({ name: 'created_at', type: 'timestamp', nullable: false })
   createdAt: Date;
 
+  @Column({ name: 'updated_at', type: 'timestamp', nullable: true })
+  updatedAt: Date;
+    
   @Column()
   content: string;
 

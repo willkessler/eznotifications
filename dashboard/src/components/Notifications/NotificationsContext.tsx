@@ -97,7 +97,7 @@ export const NotificationsProvider = ({ children }) => {
     
 
     const submitNotification = useCallback(async (notificationData) => {
-        //console.log('Notif data on form submit:', notificationData);
+        //console.log('Notification data on form submit:', notificationData);
         const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
         const action = (notificationData.editing ? 'updated' : 'created' );
         const apiUrl = `/api/eznotifications` + (notificationData.editing ? '/' + notificationData.id : '/new');
