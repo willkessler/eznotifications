@@ -8,19 +8,19 @@ const Statistics = () => {
   return (
     <>
       <Text className={classes.statsTitle} size="xl">User Statistics</Text>
-    <LineChart
-      w={1000}
-      h={300}
-      data={data}
-      dataKey="date"
-      series={[
-        { name: 'Apples', color: 'indigo.6' },
-        { name: 'Oranges', color: 'blue.6' },
-        { name: 'Tomatoes', color: 'teal.6' },
-      ]}
-      curveType="linear"
-    />
-      </>
+      <LineChart
+        w={1000}
+        h={300}
+        data={data}
+        dataKey="date"
+        series={[
+          { name: 'Apples', color: 'indigo.6' },
+          { name: 'Oranges', color: 'blue.6' },
+          { name: 'Tomatoes', color: 'teal.6' },
+        ]}
+        curveType="linear"
+      />
+    </>
   );
 }
 

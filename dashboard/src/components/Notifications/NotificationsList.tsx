@@ -203,9 +203,9 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
             <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
               <Table.Tr>
                 <Table.Th>&nbsp;</Table.Th>
-                <Table.Th>What Will It Say?</Table.Th>
-                <Table.Th>When Will It Display?</Table.Th>
-                <Table.Th>Where Will It Display?</Table.Th>
+                <Table.Th><span style={{color:'#5c5'}}>What</span> <span style={{color:'#888'}}>Will It Tell Your User?</span></Table.Th>
+                <Table.Th><span style={{color:'#5c5'}}>When</span> <span style={{color:'#888'}}>Will It Display?</span></Table.Th>
+                <Table.Th><span style={{color:'#5c5'}}>Where</span> <span style={{color:'#888'}}>Will It Display?</span></Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>{rows}</Table.Tbody>

@@ -1,37 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Text } from '@mantine/core';
+import { useLocation } from 'react-router-dom';
+
 import { UserButton, UserProfile } from "@clerk/clerk-react"
 import classes from './Settings.module.css';
-import { IconArrowLeft, IconReceipt } from '@tabler/icons-react';
+import { IconArrowLeft, IconReceipt, IconEdit, IconCopy } from '@tabler/icons-react';
+
+import { Billing } from "./Billing";
+import { TermsOfService } from "./TermsOfService";
 
 const AccountPanel = () => {
-  const triggerUserButtonClick = () => {
-    console.log('triggered');
-    const iconElement = document.querySelector('.cl-userButtonTrigger');
-  
-    if (iconElement) {
-      iconElement.click(); // Programmatically clicks the icon element
-    } else {
-      console.error('Icon element not found');
-    }
-  };  
 
   return (
-    <>
       <div className={classes.account} >
-        <Text size="xl">Manage Your Account</Text>
+          <UserProfile path="/settings/account" routing="path">
+            <UserProfile.Page label="Terms of Service" labelIcon={<IconCopy />} url="tos">
+              <TermsOfService />
+            </UserProfile.Page>
+            <UserProfile.Page label="Billing" labelIcon={<IconCopy />} url="billing">
+              <Billing />
+            </UserProfile.Page>
+          </UserProfile>
       </div>
-      <div className={classes.account} >
-        <UserButton />
-        <Anchor c="#999" onClick={triggerUserButtonClick} className={classes.accountAnchor} >
-          Account Details
-        </Anchor>
-      </div>
-      <div className={classes.payment} >
-        <IconReceipt />
-        <Anchor c="#999" className={classes.paymentAnchor} href="http://stripe.com">Payment Details</Anchor>
-      </div>
-    </>
   );
 }
 

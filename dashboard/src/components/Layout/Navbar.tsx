@@ -29,7 +29,7 @@ const Navbar = () => {
   const navBarData = [
     { link: '/', label: 'Your Notifications', icon: IconSpeakerphone },
     { link: '/statistics', label: 'Usage Statistics', icon: IconChartArea }, // Updated with the internal link
-    { link: '/settings', label: 'Your Account', icon: IconSettings },
+    { link: '/settings/account', label: 'Your Account', icon: IconSettings },
     { link: 'https://tellyourusers-help-pages.super.site', label: 'Help', icon: IconHelp },
     { link: '', label: 'Logout', icon: IconLogout },
   ];

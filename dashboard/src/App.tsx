@@ -1,6 +1,6 @@
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import { Anchor, Button, Code, Group, Image, Modal, Textarea, Text } from '@mantine/core';
 import { IconLogout } from '@tabler/icons-react';
@@ -11,7 +11,7 @@ import classes from './pages/NavbarSimple.module.css';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <MantineProvider defaultColorScheme="dark" >
         <SignedOut>
           <Text>You are signed out.</Text>
@@ -26,6 +26,6 @@ export default function App() {
           <RouterComponent />
         </SignedIn>
       </MantineProvider>
-    </BrowserRouter>
+    </Router>
   );
 }
