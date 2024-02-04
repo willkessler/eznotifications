@@ -1,5 +1,4 @@
-// src/ezNotification/ezNotification.controller.ts
-
+import { inspect } from 'util';
 import { Controller, Get, Post, Query, Body, Param, Put, Delete } from '@nestjs/common';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
@@ -67,10 +66,9 @@ export class EZNotificationController {
     async handleClerkWebhook(@Body() body:any) {
         console.log('*** CLERK WEBHOOK ***');
         console.log('This users email is: ', JSON.stringify(body.data.email_addresses));
-        console.log('Received webhook data:', body);
-        return true;
+        console.log(inspect(body, { showHidden: false, depth: null, colors: true }));
+        return this.EZNotificationService.handleClerkWebhook(body);
     }
-
 }
 
 

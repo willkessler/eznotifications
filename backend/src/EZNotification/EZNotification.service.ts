@@ -119,4 +119,11 @@ export class EZNotificationService {
     delete(id: string): Promise<void> {
         return this.ezNotificationRepository.delete(id).then(() => undefined);
     }
+
+    async handleClerkWebhook(object: Body): Promise<EZNotification> {
+        // create user records if the webhook message is user.create.
+        // if it's user.update, then update existing user records 
+        return null;
+    }
+
 }
