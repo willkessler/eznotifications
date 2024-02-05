@@ -6,6 +6,7 @@ import PreviewModal from '../Preview/PreviewModal';
 import NotificationsHeader from './NotificationsHeader';
 import NotificationsList from './NotificationsList';
 import NotificationsModal from './NotificationsModal';
+import DeleteModal from './DeleteModal';
 
 const Notifications = () => {
 
@@ -17,6 +18,7 @@ const Notifications = () => {
             <NotificationsModal />
             <PreviewBanner />
             <PreviewModal />
+            <DeleteModal />
             <Toaster />
           </NotificationsProvider>
       </>

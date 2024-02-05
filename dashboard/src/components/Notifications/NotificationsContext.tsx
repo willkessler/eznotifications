@@ -50,6 +50,51 @@ export const NotificationsProvider = ({ children }) => {
         setIsPreviewModalOpen(false);
     };
 
+    // Show and hide the delete confirmation modal
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [deletedNotificationId, setDeletedNotificationId] = useState(null);
+    const [deletedNotificationContents, setDeletedNotificationContents] = useState('');
+    const showDeleteModal = (notification) => {
+        //console.log('deleting this notif', notification);
+        setDeletedNotificationId(notification.id);
+        setDeletedNotificationContents(notification.content);
+        setIsDeleteModalOpen(true);
+    };
+
+    const closeDeleteModal = () => {
+        setDeletedNotificationContents('');
+        setDeletedNotificationId(null);
+        setIsDeleteModalOpen(false);
+    };
+
+    const actuallyDeleteNotification = useCallback(async (deletedNotificationId) => {
+        try {
+            const method = 'DELETE';
+            const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/${deletedNotificationId}`;
+            //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
+            const response = await fetch(apiUrl, {
+                method: method
+            });
+            if (!response.ok) throw new Error('Failed to delete notification with id: ' + deletedNotificationId);
+
+            await fetchNotifications();
+            setNotificationsLastUpdated(Date.now()); // update state to trigger the notifications list to rerender
+        } catch (error) {
+            console.error(`Error deleting notification with id:${deletedNotificationId}`, error);
+            return false;
+        } finally {
+            setNotificationsLoading(false);
+        }
+    }, []);
+    
+    const deleteNotification = () => {
+        //console.log('Actually deleting notification with id:', deletedNotificationId);
+        actuallyDeleteNotification(deletedNotificationId);
+        setIsDeleteModalOpen(false);
+        setDeletedNotificationContents('');
+        setDeletedNotificationId(null);
+    };
+
     const sortNotifications = (data) => {
         return [...data].sort((a, b) => {
             // Group 1: Non-null startDate and not canceled
@@ -144,6 +189,13 @@ export const NotificationsProvider = ({ children }) => {
         showPreviewModal,
         previewModalContent,
         closePreviewModal,
+
+        isDeleteModalOpen,
+        showDeleteModal,
+        closeDeleteModal,
+        deleteNotification,
+        deletedNotificationContents,
+        
     }}>
       {children}
     </NotificationsContext.Provider>

@@ -14,7 +14,7 @@ export class EZNotification {
   @Column({ name: 'updated_at', type: 'timestamp', nullable: true })
   updatedAt: Date;
     
-  @Column({ default: false })
+  @Column({ name: 'deleted', default: false })
   deleted: boolean;
 
   @Column({ name: 'deleted_at', type: 'timestamp', nullable: true })

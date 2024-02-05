@@ -41,8 +41,11 @@ export class EZNotificationService {
         //console.log('findAll queryParams:', queryParams);
         if (!queryParams.userId) {
             // no userId provided. If the dashboard auth check passed then, return all notifications.
-            return this.ezNotificationRepository.find();
-
+            return this.ezNotificationRepository.find({
+                where: {
+                    deleted: false 
+                }
+            });
         } else {
             const userId = queryParams.userId;
             const pageId = queryParams.pageId;
@@ -62,24 +65,25 @@ export class EZNotificationService {
 
                 // Find all "not yet served to this user" (today) notifications and serve them
                 //console.log('startOfDay:', startOfDay, ' endOfDay:', endOfDay);
-                const query = this.ezNotificationRepository.createQueryBuilder('notification')
-                    .leftJoin('notification.endUsersServed', 'endUsersServed')
+                const query = this.ezNotificationRepository.createQueryBuilder('notifications')
+                    .leftJoin('notifications.endUsersServed', 'endUsersServed')
                     .leftJoin('endUsersServed.endUser', 'endUser',`"endUser"."end_user_id" = :userId`, { userId })
                     .where('endUsersServed.id IS NULL') // exclude notifications already sent to the endUser
-                    .andWhere(`((notification.startDate IS NULL OR notification.endDate IS NULL) OR 
-                                (notification.startDate <= :endOfDay AND notification.endDate >= :startOfDay) OR
-                                ((notification.startDate BETWEEN :startOfDay AND :endOfDay) OR (notification.endDate BETWEEN :startOfDay AND :endOfDay))
+                    .andWhere(`(notifications.deleted IS FALSE)`)
+                    .andWhere(`((notifications.startDate IS NULL OR notifications.endDate IS NULL) OR 
+                                (notifications.startDate <= :endOfDay AND notifications.endDate >= :startOfDay) OR
+                                ((notifications.startDate BETWEEN :startOfDay AND :endOfDay) OR (notifications.endDate BETWEEN :startOfDay AND :endOfDay))
                               )`, { startOfDay, endOfDay })
                 
                 if (pageId) {
-                    query.andWhere('notification.pageId = :pageId', { pageId });
+                    query.andWhere('notifications.pageId = :pageId', { pageId });
                 }
 
                 if (environments && environments.length > 0) {
-                    query.andWhere('(notification.environments && :environments OR notification.environments = \'{}\' )', { environments });
+                    query.andWhere('(notifications.environments && :environments OR notifications.environments = \'{}\' )', { environments });
                 }
                 
-                console.log(query.getSql());
+                //console.log('Final query:', query.getSql());
                 const notifications = await query.getMany();
 
                 // Persist the served notifications as EndUsersServed
@@ -116,8 +120,12 @@ export class EZNotificationService {
         return null;
     }
 
-    delete(id: string): Promise<void> {
-        return this.ezNotificationRepository.delete(id).then(() => undefined);
+    async delete(id: string): Promise<void> {
+        await this.ezNotificationRepository.update(id, {
+            deleted: true,
+            deletedAt: new Date(),
+        });
+        return null;
     }
 
     async handleClerkWebhook(object: Body): Promise<EZNotification> {

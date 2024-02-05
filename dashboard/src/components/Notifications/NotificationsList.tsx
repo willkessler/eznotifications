@@ -1,7 +1,13 @@
 import cx from 'clsx';
 import { Anchor, Box, Button, Menu, Modal, Pill, ScrollArea, Spoiler, Switch, Table, Text, Tooltip, rem } from '@mantine/core';
-import { IconArrowElbowRight, IconEdit, IconLayoutNavbarExpand, 
-         IconMessageDown, IconAlignBoxCenterMiddle, IconCopy, IconFidgetSpinner } from '@tabler/icons-react';
+import { IconArrowElbowRight, 
+         IconEdit, 
+         IconLayoutNavbarExpand, 
+         IconMessageDown, 
+         IconAlignBoxCenterMiddle, 
+         IconCopy, 
+         IconTrash,
+         IconFidgetSpinner } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -11,8 +17,8 @@ import { addPreviewCaveatToString } from '../../lib/RenderMarkdown';
 
 const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
     const [ scrolled, setScrolled ] = useState(false);
-    const { openModal, showBanner, showPreviewModal, highlightedId,
-            notifications, submitNotification, fetchNotifications,
+    const { openModal, showBanner, showPreviewModal, showDeleteModal, 
+            highlightedId, notifications, submitNotification, fetchNotifications,
             notificationsLoading } = useNotifications();
     // const [notificationsState, setNotificationsState] = useState([]);
 
@@ -156,6 +162,11 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
               <Tooltip openDelay={1000} label="Edit this notification" position="bottom" withArrow>
                <Anchor component="button" type="button" onClick={ () => { openModal(row)}} >
                   <IconEdit size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
+                </Anchor>
+              </Tooltip>
+              <Tooltip openDelay={1000} label="Delete this notification" position="bottom" withArrow>
+               <Anchor component="button" type="button" onClick={ () => { showDeleteModal(row)}} >
+                  <IconTrash size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
               &nbsp;&nbsp;&mdash;&nbsp;&nbsp;
