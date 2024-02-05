@@ -6,26 +6,35 @@ import { Anchor, Button, Code, Group, Image, Modal, Textarea, Text } from '@mant
 import { IconLogout } from '@tabler/icons-react';
 import RouterComponent from './components/Router';
 import { theme } from './theme';
-import { UserButton, SignOutButton, SignInButton, SignedIn, SignedOut } from "@clerk/clerk-react"
+//import { UserButton, SignOutButton, SignInButton, SignedIn, SignedOut } from "@clerk/clerk-react"
+import { KindeProvider } from '@kinde-oss/kinde-auth-react';
 import classes from './pages/NavbarSimple.module.css';
 
 export default function App() {
   return (
-    <Router>
-      <MantineProvider defaultColorScheme="dark" >
-        <SignedOut>
-          <Text>You are signed out.</Text>
-          <Button>
-              <SignInButton afterSignInUrl="/">
-                <Text>Sign in</Text>
-              </SignInButton>
-          </Button>
-        </SignedOut>
+      <KindeProvider
+        clientId="77488266f6734f6285d3985eeab43af5"
+        domain="https://thisisnotadrill-development.us.kinde.com"
+        logoutUri={window.location.origin}
+        redirectUri={window.location.origin}
+      >
+        <Router>
+          <MantineProvider defaultColorScheme="dark" >
 
-      <SignedIn>
-          <RouterComponent />
-        </SignedIn>
-      </MantineProvider>
-    </Router>
-  );
+          {/*<SignedOut>
+              <Text>You are signed out.</Text>
+              <Button>
+                  <SignInButton afterSignInUrl="/">
+                    <Text>Sign in</Text>
+                  </SignInButton>
+              </Button>
+            </SignedOut>
+    
+          <SignedIn>*/}
+              <RouterComponent />
+          {/*</SignedIn>*/}
+          </MantineProvider>
+        </Router>
+       </KindeProvider>
+    );
 }
