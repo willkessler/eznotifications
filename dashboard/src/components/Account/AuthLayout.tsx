@@ -19,8 +19,8 @@ const AuthLayout = ({ children, imageUrl }) => (
       <div className={classes.customerNameplates}>
         {/* Customer nameplates and icons */}
         Trusted by these brands: 
-          <span class={classes.brandLogo}><IconEdit /></span>
-          <span class={classes.brandLogo}><IconTrash /></span>
+          <span className={classes.brandLogo}><IconEdit /></span>
+          <span className={classes.brandLogo}><IconTrash /></span>
       </div>
       <Anchor href="/help" underline="never" size="md" className={classes.learnMore}>Learn more about what we do!</Anchor>
     </div>
