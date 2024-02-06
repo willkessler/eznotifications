@@ -1,0 +1,73 @@
+.authContainer {
+  display: flex;
+  height: 100vh; /* Full viewport height */
+}
+
+.leftColumn, .rightColumn {
+  flex: 1; /* Each column takes half of the container width */
+  display: flex;
+  flex-direction: column;
+}
+
+.leftColumn {
+  background-size: cover; /* Scale background image to cover the entire column */
+  background-position: center; /* Center the background image */
+  padding:0px;
+  margin:0px;
+}
+
+.rightColumn {
+  padding: 20px; /* Adjust padding as needed */
+  max-width:380px;
+}
+
+.logoContainer {
+  margin-bottom: 20px; /* Space below the logo */
+  text-align: left; /* Logo aligned to the left */
+}
+
+.authComponents {
+  flex-grow: 1; /* Allow this section to fill available space */
+  text-align: left; /* Align SignIn/SignUp components to the left */
+}
+
+.customerNameplates {
+  text-align: left;
+  margin-top: auto; /* Push to the bottom */
+  font-size: 0.8rem; /* Adjust the size as needed */
+  color:#666;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-aling: left;
+  margin-top:auto;
+  font-size: 0.8rem;
+}
+
+
+.brandLogo {
+  cursor:pointer;
+  margin-left:10px;
+  color:#666;
+}
+
+.brandLogo:hover {
+  color:#999;
+}
+
+.learnMore {
+  font-size:12px;
+}
+
+:global(.cl-signIn-root) {
+  max-width: 50px;
+}
+
+:global(.cl-card) {
+  max-width: 370px;
+}
+
+:global(.cl-footerActionLink) {
+  font-weight: 900;
+}
+

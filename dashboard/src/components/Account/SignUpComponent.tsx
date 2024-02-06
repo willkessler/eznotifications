@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useUser, SignUp } from "@clerk/clerk-react";
+import AuthLayout from './AuthLayout';
 
 const SignUpComponent = () => {
   const { isSignedIn } = useUser();
@@ -12,8 +13,18 @@ const SignUpComponent = () => {
   
   return (
     <>
-      Please Sign up!
-      <SignUp signInUrl="/login" />
+      <AuthLayout imageUrl="/ThisIsNotADrill1.png" >
+        <SignUp 
+          appearance={{
+            variables: {
+              colorPrimary: "#E66118",
+              colorTextOnPrimaryBackground: "white",
+              colorText: "white",
+              colorBackground: "#E66118",
+            }
+          }}
+          signInUrl="/login" />
+      </AuthLayout>
     </>
   );
 }
