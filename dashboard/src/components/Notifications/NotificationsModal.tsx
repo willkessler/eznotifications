@@ -18,15 +18,15 @@ const NotificationsModal = () => {
   const [notificationType, setNotificationType] = useState('info'); // default is the "info" choice
 
   const [notificationData, setNotificationData] = useState({
-    content: '',
-    pageId: '',
-    dateRange: [null, null],
-    startTime: '',
-    endTime: '',
-    live: false,
-    notificationType: 'info',
-    notificationTypeOther: '',
-    environments: [],
+      content: '',
+      pageId: '',
+      startDate:null,
+      endDate: null,
+      live: false,
+      notificationType: 'info',
+      nnotificationTypeOther: '',
+      environments: [],
+      deleted:false,
   });
 
   const handleNotificationTypeChange = (type) => {
@@ -58,14 +58,29 @@ const NotificationsModal = () => {
     setNotificationData({ ...notificationData, [e.target.name]: e.target.value });
   };
 
-  const handleDateRangeChange = (value, name) => {
-    //console.log("date range change:", name, value);
-    setNotificationData({ ...notificationData, [name]: value });
-  };
-
   const handleDateTimeChange = (value, name) => {
-    //console.log("date time change, name=", name, "value=", value.target.value);
-    setNotificationData({ ...notificationData, [name]: value.target.value });
+      if ((name === 'startDate') && (value === null)) {
+          // instantly clear both dates, if user clears the startDate
+          setNotificationData(prevData => ({
+              ...prevData,
+              startDate: null,
+              endDate: null,
+          }));
+      } else if ((name === 'startDate') && (value && value >= notificationData.endDate)) {
+          setNotificationData(prevData => ({
+              ...prevData,
+              startDate: value,
+              endDate: null,
+          }));
+      } else if ((name === 'endDate') && (value && value <= notificationData.startDate)) {
+          setNotificationData(prevData => ({
+              ...prevData,
+              startDate: null,
+              endDate: value,
+          }));
+      } else {
+          setNotificationData({ ...notificationData, [name]: value  });
+      }
   };
 
   const handleSubmit = e => {
@@ -83,6 +98,7 @@ const NotificationsModal = () => {
     }
 
     // Destructure the dateRange to get startDate and endDate
+      /*
     const [startDate, endDate] = formData.dateRange;
 
     if (startDate && endDate) {
@@ -102,6 +118,7 @@ const NotificationsModal = () => {
       formData.startDate.setHours(startHours, startMinutes);
       formData.endDate.setHours(endHours, endMinutes);
     }
+      */
 
     if (editing) {
         formData.updatedAt = new Date().toISOString();
@@ -137,72 +154,44 @@ const NotificationsModal = () => {
 
   useEffect(() => {
     if (editing) {
-      //console.log('useEffect. initialState=', modalInitialData);
-      const formattedStartDate = (modalInitialData.startDate == null ? null : new Date(modalInitialData.startDate));
-      const formattedEndDate   = (modalInitialData.endDate == null ? null : new Date(modalInitialData.endDate));
-      const formattedStartTime = formatTime(formattedStartDate);
-      const formattedEndTime   = formatTime(formattedEndDate);
-      const initialEnvironmentsArray = modalInitialData.environments;
-      //console.log('initialEnvironmentsArray:', initialEnvironmentsArray);
+        //console.log('useEffect. initialState=', modalInitialData);
+        const formattedStartDate = (modalInitialData.startDate == null ? null : new Date(modalInitialData.startDate));
+        const formattedEndDate   = (modalInitialData.endDate == null ? null : new Date(modalInitialData.endDate));
+        const initialEnvironmentsArray = modalInitialData.environments;
+        //console.log('initialEnvironmentsArray:', initialEnvironmentsArray);
 
-      //console.log('pre-iso', formattedStartDate, formattedStartTime);
+        //console.log('pre-iso', formattedStartDate, formattedStartTime);
 
-      //console.log('pre setnotif, notificationData:', notificationData);
-      setNotificationData({
-        ...modalInitialData, // Spread the modalInitialData passed in for editing
-        editing: true,
-        dateRange: [formattedStartDate, formattedEndDate],
-        startTime: formattedStartTime,
-        endTime: formattedEndTime,
-        environments: initialEnvironmentsArray || [],
-      });
-      //console.log('post setnotif, notificationData:', notificationData);
+        //console.log('pre setnotif, notificationData:', notificationData);
+        setNotificationData({
+            ...modalInitialData, // Spread the modalInitialData passed in for editing
+            editing: true,
+            startDate: formattedStartDate,
+            endDate:   formattedEndDate,
+            environments: initialEnvironmentsArray || [],
+        });
+        //console.log('post setnotif, notificationData:', notificationData);
+        //console.log('typeOf startDate:', typeof(formattedStartDate));
     } else {
       // otherwise, initialize for a new notification
       setNotificationData({
         editing:false,
         content: '',
         pageId: '',
-        dateRange: [null, null],
-        startTime: '00:00',
-        endTime: '00:00',
+        startDate: null,
+        endDate: null,
         live: false,
         environments: [],
       });
     }
   }, [modalInitialData, editing]);
 
-  useEffect(() => {
-    // Enable or disable time inputs based on the dateRange
-    const hasDateRange = notificationData.dateRange[0] && notificationData.dateRange[1];
-    setTimeInputsDisabled(!hasDateRange);
-  }, [notificationData.dateRange]);
-
-  const customLabel1 =
-        (<CustomLabelWithHint text="Notification Display Dates:" hintText="Select a calendar period during which your notification will be returned via the API. (Optional)" />);
-  const customLabel2 =
-        (<CustomLabelWithHint text="Starting display time on the first day:" hintText="If you provided display dates, you can optionally set the notification's display starting time on the first day." />);
-  const customLabel3 =
-        (<CustomLabelWithHint text="Ending display time on the last day:" hintText="If you provided display dates, you can optionally set the notification's last display time on the last day. Make sure it's *after* the start time, if the display date is only one calendar day." />);
-  const ref1 = useRef<HTMLInputElement>(null);
-  const ref2 = useRef<HTMLInputElement>(null);
-
-  const pickerControls = [
-                       (
-                       <ActionIcon variant="subtle" color="gray" onClick={() => ref1.current?.showPicker()}>
-                         <IconClock style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-                       </ActionIcon>
-                       ),
-                       (
-                       <ActionIcon variant="subtle" color="gray" onClick={() => ref2.current?.showPicker()}>
-                         <IconClock style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
-                       </ActionIcon>
-                       )
-                       ];
-
     if (!isModalOpen) {
         return (<div>&nbsp;</div>);
     } else {
+        //console.log('notificationData at render time:', notificationData);
+        const dtLabel = (<CustomLabelWithHint text="Start date/time (optional):" 
+                         hintText="You can either set both dates, or only one date. If you set just the start date/time, this notification will be served forever, AFTER the start date. If you set just an end date/time, the notification will never be served again, AFTER the end date." />);
         return ( 
     <div>
       <Modal
@@ -227,45 +216,28 @@ const NotificationsModal = () => {
               description="Enter anything you want to show your users. You must parse whatever format you use on your end (for instance, markdown)."
             />
             <div style={{ display: 'flex', width: '90%' }}>
-                <DatePickerInput
-                  type="range"
-                  name="dateRange"
-                  value={[notificationData.dateRange[0], notificationData.dateRange[1]]}
-                  onChange={(value) => handleDateRangeChange(value, 'dateRange')}
+                <DateTimePicker
                   clearable
-                  style={{marginTop:'10px'}}
-                  label={customLabel1}
-                  onBlur={() => {
-                    if (!notificationData.dateRange[0] && !notificationData.dateRange[1]) {
-                      setTimeInputsDisabled(true); // Disable time inputs if date range is cleared
-                    }
-                  }}
-                />
-                <TimeInput
-                  name="startTime"
-                  value={notificationData.startTime}
-                  label={customLabel2}
-                  onChange={(value) => handleDateTimeChange(value, 'startTime')}
-                  ref={ref1}
-                  rightSection={pickerControls[0]}
-                  style={{marginTop:'10px', marginLeft:'10px'}}
-                  disabled={timeInputsDisabled}
-                />
-                <TimeInput
-                  name="endTime"
-                  value={notificationData.endTime}
-                  label={customLabel3}
-                  onChange={(value) => handleDateTimeChange(value, 'endTime')}
-                  ref={ref2}
-                  rightSection={pickerControls[1]}
-                  style={{marginTop:'10px', marginLeft:'10px'}}
-                  disabled={timeInputsDisabled}
-                />
+                  valueFormat="MMM DD, YYYY HH:mm"
+                  label={dtLabel}
+                  value={notificationData.startDate}
+                  onChange={(value) => handleDateTimeChange(value, 'startDate')}
+                  style={{marginTop:'10px', minWidth:'150px'}}
+               />
+                <DateTimePicker
+                  clearable
+                  valueFormat="MMM DD, YYYY HH:mm"
+                  label="End date/time"
+                  value={notificationData.endDate}
+                  onChange={(value) => handleDateTimeChange(value, 'endDate')}
+                  style={{marginTop:'10px', marginLeft:'10px', minWidth:'150px'}}
+               />
             </div>
             <Expando
-              closedTitle="Show advanced options"
-              openTitle="Hide advanced options"
-              outerStyle={{marginTop: '10px', color:'#aaa'}}
+              closedTitle="Advanced options"
+              openTitle="Advanced options"
+              outerStyle={{marginTop:'10px'}}
+              titleStyle={{color:'#aaa'}}
               openOnDisplay={editing}
             >
               <Paper shadow="sm" p="sm">

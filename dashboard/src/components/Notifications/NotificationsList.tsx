@@ -189,14 +189,17 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
           </Box>
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
+          {(row.startDate === null && row.endDate === null) && ( <> Served all the time </> )}
           {formatDisplayDate(row.startDate)}
-          {row.startDate != null && row.endDate != null && (
+          {(row.startDate === null && row.endDate !== null) && ( <> Now, through... </> )}
+          {((row.startDate !== null || row.endDate !== null)) && (
               <>
                   <br />
                   <IconArrowElbowRight style={{transform: 'rotate(45deg)', marginLeft:'4px',  marginTop:'-3px' }} color="#b63" />
                   </>
           )}
           {formatDisplayDate(row.endDate)}
+          {(row.endDate === null && row.startDate !== null) && ( <> ...onwards </> )}
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
           Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'1px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '<not set>')}<br/>

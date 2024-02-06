@@ -5,6 +5,7 @@ interface ExpandoProps {
   children: ReactNode;
   openTitle: string;
   closedTitle: string;
+  titleTextColor?: React.CSSProperties;
   outerStyle?: React.CSSProperties;
   openOnDisplay?: boolean;
 }
@@ -14,6 +15,7 @@ const Expando: React.FC<ExpandoProps> = ({
   openTitle, 
   closedTitle, 
   outerStyle, 
+  titleStyle,
   openOnDisplay = false
 }) => {
 
@@ -37,10 +39,10 @@ const Expando: React.FC<ExpandoProps> = ({
   };
 
   return (
-    <div>
+    <div style={{...outerStyle}}>
       <Anchor component="button" type="button" style={{ color: '#000' }} onClick={() => setOpened((o) => !o)}>
         <span style={triangleStyle}></span>
-        <Text style={{...outerStyle}} span="component">{opened ? openTitle : closedTitle}</Text>
+        <Text style={{...titleStyle}} span="component">{opened ? openTitle : closedTitle}</Text>
       </Anchor>
       <Collapse in={opened}>
         <div>{children}</div>
