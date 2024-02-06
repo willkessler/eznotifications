@@ -98,8 +98,9 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
       fetchData();
   }, [fetchNotifications]);
     
-  const formatDisplayDate = (date) => {
+    const formatDisplayDate = (prefix, date) => {
       return (date == null ? '' : 
+          prefix + ': ' +
           new Date(date).toLocaleString('en-US', 
                                         { weekday: 'short', 
                                           year: 'numeric', 
@@ -190,15 +191,15 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
           {(row.startDate === null && row.endDate === null) && ( <> Served all the time </> )}
-          {formatDisplayDate(row.startDate)}
-          {(row.startDate === null && row.endDate !== null) && ( <> Now, through... </> )}
+      {(row.startDate !== null) && formatDisplayDate('From', row.startDate)}
+      {(row.startDate === null && row.endDate !== null) && ( <> From: Now... </> )}
           {((row.startDate !== null || row.endDate !== null)) && (
               <>
                   <br />
                   <IconArrowElbowRight style={{transform: 'rotate(45deg)', marginLeft:'4px',  marginTop:'-3px' }} color="#b63" />
                   </>
           )}
-          {formatDisplayDate(row.endDate)}
+      {formatDisplayDate(' Until', row.endDate)}
           {(row.endDate === null && row.startDate !== null) && ( <> ...onwards </> )}
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
