@@ -13,7 +13,7 @@ const AccountPanel = () => {
 
   return (
       <div className={classes.account} >
-          <UserProfile path="/settings/account" path="virtual">
+          <UserProfile path="virtual">
             <UserProfile.Page label="Terms of Service" labelIcon={<IconCopy />} url="tos">
               <TermsOfService />
             </UserProfile.Page>
