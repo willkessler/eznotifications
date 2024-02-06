@@ -5,10 +5,16 @@ import MainLayout from './Layout/MainLayout';
 import Notifications from './Notifications/Notifications';
 import Settings from './Account/Settings';
 import Statistics from './Account/Statistics';
+import LoginComponent from './Account/LoginComponent'; 
+import SignUpComponent from './Account/SignUpComponent'; 
+import AuthWrapper from './Account/AuthWrapper'; // Ensure you have this component created
 
 const RouterComponent = () => {
   return (
+    <AuthWrapper>
       <Routes>
+        <Route path="/login" element={<LoginComponent />} />
+        <Route path="/sign-up" element={<SignUpComponent />} />
         <Route path="/" element={<MainLayout />} >
           <Route index element={<Notifications />} />
           <Route path="statistics" element={<Statistics />} />
@@ -22,6 +28,7 @@ const RouterComponent = () => {
           <Route path="/settings/account/billing" element={<Settings />} />
         </Route>
       </Routes>
+    </AuthWrapper>
   );
 };
 

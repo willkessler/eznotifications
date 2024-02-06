@@ -6,18 +6,26 @@ import { Anchor, Button, Code, Group, Image, Modal, Textarea, Text } from '@mant
 import { IconLogout } from '@tabler/icons-react';
 import RouterComponent from './components/Router';
 import { theme } from './theme';
-//import { UserButton, SignOutButton, SignInButton, SignedIn, SignedOut } from "@clerk/clerk-react"
-import { KindeProvider } from '@kinde-oss/kinde-auth-react';
+import { ClerkProvider } from '@clerk/clerk-react'
+import { dark } from '@clerk/themes';
 import classes from './pages/NavbarSimple.module.css';
+
+// Import your publishable key for Clerk
+const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+ 
+if (!CLERK_PUBLISHABLE_KEY) {
+  throw new Error("Missing Publishable Key")
+}
 
 export default function App() {
   return (
-      <KindeProvider
-        clientId="77488266f6734f6285d3985eeab43af5"
-        domain="https://thisisnotadrill-development.us.kinde.com"
-        logoutUri={window.location.origin}
-        redirectUri={window.location.origin}
-      >
+    <ClerkProvider 
+      publishableKey={CLERK_PUBLISHABLE_KEY}
+      appearance={{
+        baseTheme: dark,
+        signIn: { baseTheme: 'neobrutalism' }
+      }}
+    >
         <Router>
           <MantineProvider defaultColorScheme="dark" >
 
@@ -35,6 +43,6 @@ export default function App() {
           {/*</SignedIn>*/}
           </MantineProvider>
         </Router>
-       </KindeProvider>
+      </ClerkProvider>
     );
 }
