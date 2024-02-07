@@ -31,9 +31,9 @@ const PendingInvitationsList = () => {
   }
   
   const pendingTableBody = invitationList.map((i) => (
-    <Table.Tr>
+    <Table.Tr key={i.emailAddress}>
       <Table.Td>
-      {i.emailAddress}
+        {i.emailAddress} (invited to be a {i.role == 'org:member' ? 'member' : 'admin'})
       </Table.Td>
       <Table.Td>
         <Anchor size="xs" component="button" type="button" onClick={() => ResendInvitation(i)}>Resend</Anchor> &nbsp;|&nbsp;
@@ -44,8 +44,8 @@ const PendingInvitationsList = () => {
   
   return (
     <div style={{marginTop:'30px'}}>
-      <Text size="md">Pending Teammate invitations</Text>
-      <Table verticalSpacing="xs" striped highlightOnHover withColumnBorders withTableBorder>
+      <Text size="lg">Pending Teammate invitations</Text>
+      <Table verticalSpacing="xs" highlightOnHover withColumnBorders withTableBorder>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Email</Table.Th>

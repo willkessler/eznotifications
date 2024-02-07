@@ -27,9 +27,9 @@ const Settings = () => {
   return (
     <Tabs value={currentTab} onChange={handleTabChange}>
       <Tabs.List justify="left">
-        <Tabs.Tab value="account">My Account</Tabs.Tab>
-        <Tabs.Tab value="team">Your Organization & Team</Tabs.Tab>
-        <Tabs.Tab value="apiKeys">Your API Keys</Tabs.Tab>
+        <Tabs.Tab value="account">Your Account</Tabs.Tab>
+        <Tabs.Tab value="team">Your Team</Tabs.Tab>
+        <Tabs.Tab value="apiKeys">API Keys</Tabs.Tab>
       </Tabs.List>
 
       <Tabs.Panel value="account">

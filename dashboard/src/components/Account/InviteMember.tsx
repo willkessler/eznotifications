@@ -34,10 +34,10 @@ const InviteMember = () => {
   return (
     <form onSubmit={sendInvitation}>
       <div className={classes.invitationControls}>
-        <Text size="md" style={{marginRight:'10px'}}>Invite:</Text>
+        <Text size="md" style={{marginRight:'10px'}}>Add teammates:</Text>
         <TextInput
           size="xs"
-          placeholder="you@yourorg.com"
+          placeholder="teammate@example.com"
           value={emailAddress}
           onChange={handleEmailChange}
           required

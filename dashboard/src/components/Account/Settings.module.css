@@ -23,6 +23,25 @@
 .team {
   padding-left:50px;
   padding-top: 45px;
+  max-width:1000px;
+}
+
+.teamNameBlock {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: white;
+  margin-bottom:20px;
+}
+
+.teamNameInput {
+  display:none;
+}
+
+.teamNameInputDisplay {
+  color: #E66118;
+  margin-top:10px;
+  font-weight: bold;
 }
 
 .statsTitle {
