@@ -11,7 +11,7 @@ const AppConfigPanel = () => {
   return (
     <>
       <GlobalSettingsPanel />
-      {/*      <APIKeysPanel />*/}
+      <APIKeysPanel />
     </>
   );
 }

@@ -54,9 +54,18 @@
   padding-bottom:20px;
 }
 
-.apiKey {
+.apiKeyRow {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  color: white;
+}
+
+.apiKeyDisplay {
   padding:5px;
-  border: 1px dotted #aaa;
+  border: 1px dotted red;
+  width:30%;
+  color:#666;
 }
 
 

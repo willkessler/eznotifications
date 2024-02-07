@@ -52,14 +52,13 @@ const MemberList = () => {
       keepPreviousData: true,
     }
   });
-  console.log('memberships:', memberships);
+  //console.log('memberships:', memberships);
 
   if (!memberships) {
     return null;
   }
  
   const isCurrentUserAdmin = membership.role === "org:admin";
-  //console.log('membership:', membership);
  
   const memberRows = memberships.data.map((m) => (
     <Table.Tr key={m.publicUserData.identifier}>

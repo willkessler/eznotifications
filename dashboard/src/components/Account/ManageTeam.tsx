@@ -8,9 +8,9 @@ import MemberList from './MemberList';
 import PendingInvitationsList from './PendingInvitations';
  
 const ManageTeam = () => {
-  const { invitationList, organization } = useOrganization({ invitationList: {} });
+  const { invitations, organization } = useOrganization({ invitations: {} });
  
-  if (!invitationList) {
+  if (!invitations) {
     return null;
   }
  

@@ -6,8 +6,11 @@ import { Anchor, Button, Group, Radio, Table, TextInput, Textarea, Text } from '
 // You can invite new organization members and 
 // revoke already sent invitations.
 const PendingInvitationsList = () => {
-  const { invitationList, organization } = useOrganization({
-    invitationList: {}
+  const { invitations, organization } = useOrganization({
+    invitations: {
+      infinite: true,
+      keepPreviousData: true
+    }
   });
  
   const ResendInvitation = async (inv) => {
@@ -25,12 +28,12 @@ const PendingInvitationsList = () => {
     await inv.revoke();
   };
 
-  if (!invitationList) {
+  if (!invitations) {
     console.log('no invitations found');
     return null;
   }
   
-  const pendingTableBody = invitationList.map((i) => (
+  const pendingTableBody = invitations.data.map((i) => (
     <Table.Tr key={i.emailAddress}>
       <Table.Td>
         {i.emailAddress} (invited to be a {i.role == 'org:member' ? 'member' : 'admin'})
