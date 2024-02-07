@@ -59,11 +59,12 @@
   font-size:12px;
 }
 
-:global(.cl-signIn-root) {
-  max-width: 50px;
-}
-
-:global(.cl-card) {
+:global(.cl-signIn-root),
+:global(.cl-signIn-start),
+:global(.cl-signIn-password),
+:global(.cl-signIn-alternativeMethods), 
+:global(.cl-signIn-forgotPasswordMethods), 
+:global(.cl-signIn-havingTrouble) {
   max-width: 370px;
 }
 

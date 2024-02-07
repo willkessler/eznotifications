@@ -10,10 +10,14 @@ const UserAuthentication = () => {
   }
  
   if (isSignedIn) {
-    console.log(user);
+    //console.log(user);
     return (
       <>
-        <div>Hello, {user.fullName} {user.primaryEmailAddress.emailAddress}</div>
+        <div style={{padding:'20px', fontSize:'0.75rem'}}>
+          <div>Name: {user.fullName}!</div>
+          <div>Email: {user.primaryEmailAddress.emailAddress}</div>
+          <div>Org: {user.organization}</div>
+        </div>
       </>
     );
   }

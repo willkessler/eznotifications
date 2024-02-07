@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Code, Group, Image, Modal, Tabs, Stack, Textarea, Text } from '@mantine/core';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AccountPanel from './AccountPanel';
-import TeamPanel from './TeamPanel';
+import OrgAndTeamPanel from './OrgAndTeamPanel';
 import APIKeysPanel from './APIKeysPanel';
 
 const tabMapping = {
@@ -28,8 +28,8 @@ const Settings = () => {
     <Tabs value={currentTab} onChange={handleTabChange}>
       <Tabs.List justify="left">
         <Tabs.Tab value="account">My Account</Tabs.Tab>
-        <Tabs.Tab value="team">Organization / Team</Tabs.Tab>
-        <Tabs.Tab value="apiKeys">API Keys</Tabs.Tab>
+        <Tabs.Tab value="team">Your Organization & Team</Tabs.Tab>
+        <Tabs.Tab value="apiKeys">Your API Keys</Tabs.Tab>
       </Tabs.List>
 
       <Tabs.Panel value="account">
@@ -37,7 +37,7 @@ const Settings = () => {
       </Tabs.Panel>
 
       <Tabs.Panel value="team">
-        <TeamPanel />
+        <OrgAndTeamPanel />
       </Tabs.Panel>
 
       <Tabs.Panel value="apiKeys">
