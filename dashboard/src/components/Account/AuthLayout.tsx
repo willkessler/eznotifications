@@ -1,5 +1,5 @@
 import React from 'react';
-import classes from './AuthLayout.module.css';
+import classes from './css/AuthLayout.module.css';
 import { Anchor } from '@mantine/core';
 import { IconArrowElbowRight, 
          IconEdit, 

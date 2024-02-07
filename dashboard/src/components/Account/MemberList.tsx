@@ -2,7 +2,7 @@ import cx from 'clsx';
 import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Table, TextInput, Text } from '@mantine/core';
 import { useUser, useOrganization } from "@clerk/clerk-react";
-import classes from './InviteUser.module.css';
+import classes from './css/InviteUser.module.css';
 import InviteMember from './InviteMember';
 import PendingInvitationsList from './PendingInvitations';
  
@@ -29,15 +29,15 @@ const AdminControls = ({ membership }: { membership: OrganizationMembershipResou
  
   return (
     <>
-      <Anchor component="button" style={{marginRight:'10px', paddingRight: '10px', borderRight:'1px solid'}} onClick={removeMember}>
+      <Anchor size="xs" component="button" style={{marginRight:'10px', paddingRight: '10px', borderRight:'1px solid'}} onClick={removeMember}>
         Remove member
       </Anchor>
       {membership.role === "admin" ? (
-        <Anchor component="button" onClick={() => changeRole("org:member")}>
+        <Anchor size="xs" component="button" onClick={() => changeRole("org:member")}>
           Make regular member
         </Anchor>
       ) : (
-        <Anchor component="button" onClick={() => changeRole("org:admin")}>
+        <Anchor size="xs" component="button" onClick={() => changeRole("org:admin")}>
           Make admin
         </Anchor>
       )}
@@ -46,18 +46,22 @@ const AdminControls = ({ membership }: { membership: OrganizationMembershipResou
 };
 
 const MemberList = () => {
-  const { memberships, membershipList, membership } = useOrganization({
-    membershipList: {},
+  const { membership, memberships } = useOrganization({
+    memberships: {
+      infinite: true,
+      keepPreviousData: true,
+    }
   });
- 
-  if (!membershipList) {
+  console.log('memberships:', memberships);
+
+  if (!memberships) {
     return null;
   }
  
   const isCurrentUserAdmin = membership.role === "org:admin";
   //console.log('membership:', membership);
  
-  const memberRows = membershipList.map((m) => (
+  const memberRows = memberships.data.map((m) => (
     <Table.Tr key={m.publicUserData.identifier}>
       <Table.Td>{m.publicUserData.firstName} {m.publicUserData.lastName}</Table.Td>
       <Table.Td>{m.publicUserData.identifier}</Table.Td>

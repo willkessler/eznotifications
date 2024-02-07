@@ -3,7 +3,7 @@ import { Anchor, Button, Text } from '@mantine/core';
 import { useLocation } from 'react-router-dom';
 
 import { UserButton, UserProfile } from "@clerk/clerk-react"
-import classes from './Settings.module.css';
+import classes from './css/Settings.module.css';
 import { IconArrowLeft, IconReceipt, IconEdit, IconCopy } from '@tabler/icons-react';
 
 import { Billing } from "./Billing";

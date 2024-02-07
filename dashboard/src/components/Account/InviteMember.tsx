@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import classes from './InviteUser.module.css';
+import classes from './css/InviteUser.module.css';
 import { useUser, useOrganization } from "@clerk/clerk-react";
 import { Anchor, Button, Group, Radio, Table, TextInput, Textarea, Text } from '@mantine/core';
 

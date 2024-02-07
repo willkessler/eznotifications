@@ -2,7 +2,7 @@ import cx from 'clsx';
 import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Group, Radio, Table, TextInput, Textarea, Text } from '@mantine/core';
 import { useUser, useOrganization } from "@clerk/clerk-react";
-import classes from './InviteUser.module.css';
+import classes from './css/InviteUser.module.css';
 import InviteMember from './InviteMember';
 import MemberList from './MemberList';
 import PendingInvitationsList from './PendingInvitations';
@@ -15,7 +15,7 @@ const ManageTeam = () => {
   }
  
   return (
-    <div>
+    <div style={{marginTop:'30px'}}>
       <Text size="lg">Active Teammates</Text>
       <MemberList />
       <PendingInvitationsList />

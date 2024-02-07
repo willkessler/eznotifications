@@ -36,8 +36,8 @@ const PendingInvitationsList = () => {
         {i.emailAddress} (invited to be a {i.role == 'org:member' ? 'member' : 'admin'})
       </Table.Td>
       <Table.Td>
-        <Anchor size="xs" component="button" type="button" onClick={() => ResendInvitation(i)}>Resend</Anchor> &nbsp;|&nbsp;
-        <Anchor size="xs" component="button" type="button" onClick={() => RevokeInvitation(i)}>Revoke</Anchor>
+        <Anchor size="xs" component="button" type="button" onClick={() => ResendInvitation(i)}>Resend Invitation</Anchor> &nbsp;|&nbsp;
+        <Anchor size="xs" component="button" type="button" onClick={() => RevokeInvitation(i)}>Revoke Invitation</Anchor>
       </Table.Td>
     </Table.Tr>
   ));

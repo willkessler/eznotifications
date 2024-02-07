@@ -23,7 +23,8 @@ const RouterComponent = () => {
 
           <Route path="/settings/account" element={<Settings />} />
           <Route path="/settings/team" element={<Settings />} />
-          <Route path="/settings/apikeys" element={<Settings />} />
+          <Route path="/settings/api-keys" element={<Settings />} />
+          <Route path="/settings/app-config" element={<Settings />} />
           <Route path="/settings/account/tos" element={<Settings />} />
           <Route path="/settings/account/billing" element={<Settings />} />
         </Route>

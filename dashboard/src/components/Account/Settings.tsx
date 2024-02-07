@@ -3,14 +3,14 @@ import { Anchor, Button, Code, Group, Image, Modal, Tabs, Stack, Textarea, Text 
 import { useLocation, useNavigate } from 'react-router-dom';
 import AccountPanel from './AccountPanel';
 import OrgAndTeamPanel from './OrgAndTeamPanel';
-import APIKeysPanel from './APIKeysPanel';
+import AppConfigPanel from './AppConfigPanel';
 
 const tabMapping = {
   '/settings/account': 'account',
   '/settings/billing': 'billing',
   '/settings/team': 'team',
-  '/settings/apikeys': 'apiKeys',
-  '/settings/tos': 'account' // Redirect to account but we handle showing TOS inside AccountPanel differently
+  '/settings/tos': 'account', // Redirect to account but we handle showing TOS inside AccountPanel differently
+  '/settings/app-config' : 'appConfig',
 };
 
 const Settings = () => {
@@ -29,7 +29,7 @@ const Settings = () => {
       <Tabs.List justify="left">
         <Tabs.Tab value="account">Your Account</Tabs.Tab>
         <Tabs.Tab value="team">Your Team</Tabs.Tab>
-        <Tabs.Tab value="apiKeys">API Keys</Tabs.Tab>
+        <Tabs.Tab value="appConfig">Configuration</Tabs.Tab>
       </Tabs.List>
 
       <Tabs.Panel value="account">
@@ -40,8 +40,8 @@ const Settings = () => {
         <OrgAndTeamPanel />
       </Tabs.Panel>
 
-      <Tabs.Panel value="apiKeys">
-        <APIKeysPanel />
+      <Tabs.Panel value="appConfig">
+        <AppConfigPanel />
       </Tabs.Panel>
     </Tabs>
   );

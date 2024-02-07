@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Text, TextInput } from '@mantine/core';
 import ManageTeam from './ManageTeam';
-import classes from './Settings.module.css';
+import classes from './css/Settings.module.css';
 import { useUser, useOrganization, CreateOrganization, OrganizationProfile, OrganizationList } from "@clerk/clerk-react";
+import { IconEdit, IconDeviceFloppy } from '@tabler/icons-react';
 
 const TeamPanel = () => {
   const { 
@@ -87,9 +88,11 @@ const TeamPanel = () => {
                 {teamName}
               </Text>
 
-              <Anchor underline="hover" onClick={editOrSaveTeamName} size="md" style={{marginLeft:'10px'}}>{buttonTitle}</Anchor>
+              <Anchor component="button" type="button" className={classes.teamNameInputControl} 
+                      underline="hover" onClick={editOrSaveTeamName} size="md">
+                {teamNameInputDisplay ? <IconDeviceFloppy size="18" /> : <IconEdit size="18" />}
+              </Anchor>
             </div>
-
             <ManageTeam />
           </>
         )}

@@ -28,19 +28,7 @@ export default function App() {
     >
         <Router>
           <MantineProvider defaultColorScheme="dark" >
-
-          {/*<SignedOut>
-              <Text>You are signed out.</Text>
-              <Button>
-                  <SignInButton afterSignInUrl="/">
-                    <Text>Sign in</Text>
-                  </SignInButton>
-              </Button>
-            </SignedOut>
-    
-          <SignedIn>*/}
               <RouterComponent />
-          {/*</SignedIn>*/}
           </MantineProvider>
         </Router>
       </ClerkProvider>

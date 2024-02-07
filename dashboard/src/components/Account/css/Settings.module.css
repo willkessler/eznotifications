@@ -29,19 +29,20 @@
 .teamNameBlock {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-end;
   color: white;
-  margin-bottom:20px;
 }
 
-.teamNameInput {
-  display:none;
-}
 
 .teamNameInputDisplay {
   color: #E66118;
-  margin-top:10px;
   font-weight: bold;
+  margin:0px;
+}
+
+.teamNameInputControl {
+  margin-left:5px;
+  color:#aaa;
 }
 
 .firstTimeTeamSetup {
@@ -52,6 +53,12 @@
   padding-top:   20px;
   padding-bottom:20px;
 }
+
+.apiKey {
+  padding:5px;
+  border: 1px dotted #aaa;
+}
+
 
 /* Clerk card background color */
 
