@@ -13,7 +13,11 @@ const TeamPanel = () => {
   } = useOrganization();
   const { user } = useUser();
 
-  if (!isLoaded || !currentOrganization) {
+  if (!isLoaded) {
+    return null;
+  }
+  
+  if (!currentOrganization) {
 /*
     return (
       <>
@@ -22,7 +26,15 @@ const TeamPanel = () => {
       </>
     );
 */
-    return null;
+    console.log('no org');
+    return (
+        <>
+          <div className={classes.firstTimeTeamSetup}>
+            <Text>In order to invite additional team members, first you must create a team.</Text>
+            <Button>Create your team</Button>
+          </div>
+        </>
+    );
   }
 
   const isAdmin = (membership.role === "org:admin");
@@ -57,9 +69,6 @@ const TeamPanel = () => {
   return (
       <div className={classes.team} >
           <Text size="xl">Your Team</Text>
-          {!teamExists && (
-            <div>You have not yet set up a team. Set up an team in order to invite team members.</div>
-          )}
 
         {teamExists && isAdmin && (
           <>

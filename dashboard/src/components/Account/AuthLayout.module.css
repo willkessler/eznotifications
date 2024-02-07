@@ -61,6 +61,7 @@
 
 :global(.cl-signIn-root),
 :global(.cl-signIn-start),
+:global(.cl-signUp-start),
 :global(.cl-signIn-password),
 :global(.cl-signIn-alternativeMethods), 
 :global(.cl-signIn-forgotPasswordMethods), 
