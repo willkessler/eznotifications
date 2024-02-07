@@ -6,6 +6,7 @@ import { IconArrowElbowRight,
          IconMessageDown, 
          IconAlignBoxCenterMiddle, 
          IconCopy, 
+         IconInfoCircle,
          IconTrash,
          IconFidgetSpinner } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
@@ -90,6 +91,16 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
       await submitNotification(notificationDataCopy);
   }
 
+  const formatCreateInfo = (notificationData) => {
+    const jsDate = new Date(notificationData.createdAt);
+    const humanFormattedDate = jsDate.toLocaleDateString() + ' ' + jsDate.toLocaleTimeString();
+    return (
+        <>
+        Created: {humanFormattedDate} by Schmingle
+      </>
+    );
+  };
+  
   useEffect(() => {
       const fetchData = async () => {
           await fetchNotifications();
@@ -168,6 +179,11 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
               <Tooltip openDelay={1000} label="Delete this notification" position="bottom" withArrow>
                <Anchor component="button" type="button" onClick={ () => { showDeleteModal(row)}} >
                   <IconTrash size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
+                </Anchor>
+              </Tooltip>
+              <Tooltip openDelay={1000} label={formatCreateInfo(row)} position="bottom" withArrow>
+               <Anchor component="button" type="button">
+                  <IconInfoCircle size={20}  style={{ marginRight: '10px' }} />
                 </Anchor>
               </Tooltip>
               &nbsp;&nbsp;&mdash;&nbsp;&nbsp;
