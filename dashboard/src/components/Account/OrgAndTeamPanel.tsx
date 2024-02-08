@@ -50,7 +50,6 @@ const TeamPanel = () => {
   
   const setTeamNameAtClerk = async () => {
     const name = teamName;
-    console.log('Saving org name:', name);
     await organization.update({ name });
   };
 

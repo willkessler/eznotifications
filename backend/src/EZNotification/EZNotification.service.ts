@@ -1,9 +1,11 @@
 // src/ezNotification/ezNotification.service.ts
 
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EZNotification } from './entities/EZNotification.entity';
 import { Connection, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { randomBytes } from 'crypto';
+import { EZNotification } from './entities/EZNotification.entity';
+import { ApiKey } from './entities/ApiKeys.entity';
 import { EndUser } from './entities/EndUsers.entity';
 import { EndUsersServed } from './entities/EndUsersServed.entity';
 
@@ -26,6 +28,9 @@ export class EZNotificationService {
 
         @InjectRepository(EndUsersServed)
         private readonly endUsersServedRepository: Repository<EndUsersServed>,
+
+        @InjectRepository(ApiKey)
+        private apiKeyRepository: Repository<ApiKey>,
 
     ) {}
 
@@ -80,7 +85,8 @@ export class EZNotificationService {
                 }
 
                 if (environments && environments.length > 0) {
-                    query.andWhere('(notifications.environments && :environments OR notifications.environments = \'{}\' )', { environments });
+                    query.andWhere('(notifications.environments && :environments OR notifications.environments = \'{}\' )', 
+                                   { environments });
                 }
                 
                 //console.log('Final query:', query.getSql());
@@ -128,10 +134,26 @@ export class EZNotificationService {
         return null;
     }
 
-    async handleClerkWebhook(object: Body): Promise<EZNotification> {
-        // create user records if the webhook message is user.create.
-        // if it's user.update, then update existing user records 
-        return null;
+    generateRandomKey(length: number = 8): string {
+        return randomBytes(length)
+            .toString('base64') // Convert to base64 to ensure characters are printable
+            .replace(/\+/g, '-') // Replace + with -
+            .replace(/\//g, '_') // Replace / with _
+            .substring(0, length); // Ensure the key is of the desired length
     }
 
+    async createApiKey(apiKeyType: string): Promise<ApiKey> {
+        const apiKeyValue = this.generateRandomKey(8);
+/*
+        const newApiKey = this.apiKeyRepository.create ({
+            apiKey : apiKeyValue,
+            apiKeyType: apiKeyType,
+            organization: "abc123",
+            user: "abc123"
+        });
+
+        return this.apiKeyRepository.save(newApiKey);
+*/
+        return null;
+    };
 }

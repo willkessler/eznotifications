@@ -1,4 +1,3 @@
-import { inspect } from 'util';
 import { Controller, Get, Post, Query, Body, Param, Put, Delete } from '@nestjs/common';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
@@ -7,13 +6,16 @@ import { Connection, Repository, MoreThan } from 'typeorm';
 
 import { EZNotification } from './entities/EZNotification.entity';
 import { EZNotificationService } from './EZNotification.service';
+import { EZNotificationWebhooks } from './EZNotification.webhooks';
 import { EndUser } from './entities/EndUsers.entity';
 import { EndUsersServed } from './entities/EndUsersServed.entity';
+import { ApiKey } from './entities/ApiKeys.entity';
 
 @Controller()
 export class EZNotificationController {
     constructor(
         private connection: Connection,
+        private EZNotificationWebhooks: EZNotificationWebhooks,
         private readonly EZNotificationService: EZNotificationService,
         @InjectRepository(EZNotification)
         private readonly notificationRepository: Repository<EZNotification>,
@@ -21,6 +23,7 @@ export class EZNotificationController {
         private readonly endUserRepository: Repository<EndUser>,
         @InjectRepository(EndUsersServed)
         private readonly endUsersServedRepository: Repository<EndUsersServed>,
+
     ) {}
 
     //constructor(private readonly ezNotificationService: EZNotificationService) {}
@@ -62,13 +65,17 @@ export class EZNotificationController {
         return(1);
     }
 
+    // Handle the clerk webhook callbacks in the service file
     @Post('/clerkWebhook')
     async handleClerkWebhook(@Body() body:any) {
-        console.log('*** CLERK WEBHOOK ***');
-        console.log('This users email is: ', JSON.stringify(body.data.email_addresses));
-        console.log(inspect(body, { showHidden: false, depth: null, colors: true }));
-        return this.EZNotificationService.handleClerkWebhook(body);
+        return this.EZNotificationWebhooks.handleClerkWebhook(body);
     }
+
+    @Post('/api-keys/create')
+    async createApiKey(@Body('apiKeyType') apiKeyType: string): Promise<ApiKey> {
+        return this.EZNotificationService.createApiKey(apiKeyType);
+    }
+    
 }
 
 

@@ -1,7 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
-import { UserEmail } from './UserEmails.entity';
+import { UserEmails } from './UserEmails.entity';
 import { Organization } from './Organizations.entity';
 import { UserOrganization } from './UserOrganizations.entity';
+import { ApiKey } from './ApiKeys.entity';
 
 @Entity('users')
 export class User {
@@ -23,8 +24,8 @@ export class User {
     @Column({ name: 'payment_subscription_id', nullable: true })
     paymentSubscriptionId: string;
 
-    @OneToMany(() => UserEmail, userEmail => userEmail.user)
-    emails: UserEmail[];
+    @OneToMany(() => UserEmails, userEmails => userEmails.user)
+    emails: UserEmails[];
 
     @ManyToMany(() => Organization)
     @JoinTable({
@@ -39,4 +40,7 @@ export class User {
         }
     })
     organizations: Organization[];
+
+    @OneToMany(() => ApiKey, apiKey => apiKey.creator)
+    apiKeys: ApiKey[];
 }

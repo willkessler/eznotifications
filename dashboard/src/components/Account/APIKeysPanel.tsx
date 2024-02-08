@@ -7,11 +7,34 @@ import toast, { Toaster } from 'react-hot-toast';
 const APIKeysPanel = () => {
   const productionApiKeyValue = 'X123';
   const [agreeToRegenerateProdKey, setAgreeToRegenerateProdKey] = useState(false);
-  const createApiKey = () => {
+
+  const createApiKey = async (apiKeyType) => {
+    console.log('creating an api key for env: ', apiKeyType);
+    const apiUrl = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}` +
+          `/eznotifications/api-keys/create`;
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKeyType }),
+      });;
+      if (!response.ok) {
+        throw new Error (`HTTP error! status: ${response.status}`);
+      } else {
+        console.log('created an API key');
+      }
+    } catch (error) {
+      console.error(`Error creating API key of type: ( ${apiKeyType} ).`, error);
+      throw error;
+    }
+  };
+
+  const createProdApiKey = () => {
     if (agreeToRegenerateProdKey) {
       console.log('regenerating API key');
+      createApiKey('production');
     } else {
-      toast.error('You must check the "Are you sure?" checkbox first.', {
+      toast.error('You must check the "Are you positive?" checkbox first.', {
         duration: 5000,
         position: 'top-center',
 
@@ -53,7 +76,7 @@ const APIKeysPanel = () => {
         <Text size="xl">Your API Keys</Text>
 
         <Text size="md">Development API Keys</Text>
-        <Button onClick={createApiKey} size="xs" style={{marginTop:'10px'}}>Generate new development key</Button>
+        <Button onClick={() => createApiKey('development')} size="xs" style={{marginTop:'10px'}}>Generate new development key</Button>
 
         <Text size="md" style={{marginTop:'10px'}}>Production API Key</Text>
 
@@ -74,11 +97,11 @@ const APIKeysPanel = () => {
             )}
           </CopyButton>
         </div>
-        <Button onClick={createApiKey} size="xs" style={{marginTop:'10px', backgroundColor:'#f00'}}>Regenerate Production API Key</Button>
+        <Button onClick={createProdApiKey} size="xs" style={{marginTop:'10px', backgroundColor:'#f00'}}>Regenerate Production API Key</Button>
         <Checkbox style={{marginTop:'10px'}} 
                   checked={agreeToRegenerateProdKey} 
                   onChange={(event) => setAgreeToRegenerateProdKey(event.currentTarget.checked) }
-                  label="Are you sure?" />
+                  label="Are you positive?" />
       </div>
   );
 }

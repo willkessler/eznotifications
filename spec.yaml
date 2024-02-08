@@ -83,6 +83,27 @@ paths:
         '204':
           description: Notification deleted
 
+  /api-keys/{id}:
+    get:
+      summary: Get an API key by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of API key to get
+
+  /api-keys/create:
+    post:
+      summary: Create a new API key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiKey'
+
 components:
   schemas:
     Notification:
@@ -105,3 +126,10 @@ components:
           nullable: true
         canceled:
           type: boolean
+    ApiKey:
+      type: object
+      required:
+        - api_key_type
+      properties:
+        api_key_type:
+          type: string

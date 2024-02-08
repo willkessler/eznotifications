@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinColumn, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinColumn, OneToOne } from 'typeorm';
 import { User } from './Users.entity';
 import { PricingModel } from './PricingModels.entity';
+import { ApiKey } from './ApiKeys.entity';
 
 @Entity('organizations')
 export class Organization {
@@ -19,4 +20,7 @@ export class Organization {
     @OneToOne(() => PricingModel)
     @JoinColumn()
     pricingModel: PricingModel;
+
+    @OneToMany(() => ApiKey, apiKey => apiKey.organization)
+    apiKeys: ApiKey[];
 }
