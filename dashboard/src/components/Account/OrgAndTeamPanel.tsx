@@ -1,66 +1,58 @@
 import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Text, TextInput } from '@mantine/core';
+import CreateTeam from './CreateTeam';
 import ManageTeam from './ManageTeam';
 import classes from './css/Settings.module.css';
-import { useUser, useOrganization, CreateOrganization, OrganizationProfile, OrganizationList } from "@clerk/clerk-react";
+import { useUser, useOrganization, useOrganizationList, OrganizationList } from "@clerk/clerk-react";
 import { IconEdit, IconDeviceFloppy } from '@tabler/icons-react';
 
 const TeamPanel = () => {
-  const { 
-    organization,
-    organization:currentOrganization, 
-    membership, 
-    isLoaded
-  } = useOrganization();
+  const { createOrganization } = useOrganizationList();
+  const { isLoaded } = useOrganization();
   const { user } = useUser();
+  const [teamExists, setTeamExists] = useState(user.organizationMemberships.length > 0);
+  const [isAdmin, setIsAdmin] = 
+        useState(user.organizationMemberships.length > 0 && user.organizationMemberships[0].role);
 
   if (!isLoaded) {
     return null;
   }
-  
-  if (!currentOrganization) {
-/*
-    return (
-      <>
-        <div style={{borderTop:'1px solid #666', marginTop:'50px'}}>&nbsp;</div>
-        <div style={{fontSize:'10px'}}><pre>{JSON.stringify(user, null, 2)}</pre></div>
-      </>
-    );
-*/
-    console.log('no org');
-    return (
-        <>
-          <div className={classes.firstTimeTeamSetup}>
-            <Text>In order to invite additional team members, first you must create a team.</Text>
-            <Button>Create your team</Button>
-          </div>
-        </>
-    );
-  }
 
-  const isAdmin = (membership.role === "org:admin");
-  const teamExists = (user.organizationMemberships.length > 0);
-  let initialName = '';
-  if (teamExists) {
-    initialName = user.organizationMemberships[0].organization.name;
-  }
+  useEffect(() => {
+    if (teamExists) {
+      setIsAdmin(user.organizationMemberships[0].role === "org:admin");
+      setTeamName(user.organizationMemberships[0].organization.name);
+    }
+  }, [teamExists, user.organizationMemberships]); 
+
+
+  let organization;
+  let initialName = 'Your Team Name';
   const [teamName, setTeamName] = useState(initialName);
   const [teamNameInputDisplay, setTeamNameInputDisplay] = useState(false);
-  const [buttonTitle, setButtonTitle] = useState('Edit');
   
   const setTeamNameAtClerk = async () => {
     const name = teamName;
-    await organization.update({ name });
+    if (teamExists) {
+      organization = user.organizationMemberships[0].organization;
+      //console.log('updating team, org:', organization);
+      await organization.update({ name });
+    } else {
+      try {
+        organization = await createOrganization({name});
+        setTeamExists(true);
+      } catch (error) {
+        console.log('Unable to create a team, please try again later. (' + error + ')');
+      }      
+    }
   };
 
   const editOrSaveTeamName = async () => {
     if (teamNameInputDisplay) {
       setTeamNameInputDisplay(false);
-      setButtonTitle('Edit');
       await setTeamNameAtClerk();
     } else {
-      setTeamNameInputDisplay(true);    
-      setButtonTitle('Save');
+      setTeamNameInputDisplay(true);
     }
   }
   
@@ -69,8 +61,13 @@ const TeamPanel = () => {
   return (
       <div className={classes.team} >
           <Text size="xl">Your Team</Text>
+        {!teamExists && (
+          <>
+            <Text size="sm">Edit (and save) your team name, below, and then you will be able to invite members to your team.</Text>
+          </>
+        )}
 
-        {teamExists && isAdmin && (
+        {(isAdmin || !teamExists) && (
           <>
             <div className={classes.teamNameBlock} >
               <TextInput style={{ display: teamNameInputDisplay ? 'block' : 'none' }} 
@@ -92,11 +89,13 @@ const TeamPanel = () => {
                 {teamNameInputDisplay ? <IconDeviceFloppy size="18" /> : <IconEdit size="18" />}
               </Anchor>
             </div>
-            <ManageTeam />
+            {teamExists && (
+              <ManageTeam />
+            )}
           </>
         )}
 
-        {teamExists && !isAdmin && (
+        {!isAdmin && teamExists && (
           <>
             <Text className={classes.teamNameInputDisplay} style={{display: teamNameInputDisplay ? 'none' : 'block'}} size="md">
                 {teamName}
@@ -107,8 +106,10 @@ const TeamPanel = () => {
           </>
         )}          
 
+        {/*
         <div style={{borderTop:'1px solid #666', marginTop:'50px'}}>&nbsp;</div>
         <div style={{fontSize:'10px'}}><pre>{JSON.stringify(user, null, 2)}</pre></div>
+         */}
       </div>
   );
 }

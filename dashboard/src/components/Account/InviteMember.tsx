@@ -34,7 +34,7 @@ const InviteMember = () => {
   return (
     <form onSubmit={sendInvitation}>
       <div className={classes.invitationControls}>
-        <Text size="md" style={{marginRight:'10px'}}>Add teammates:</Text>
+        <Text size="sm" style={{marginRight:'10px'}}>Add teammates:</Text>
         <TextInput
           size="xs"
           placeholder="teammate@example.com"
@@ -55,7 +55,7 @@ const InviteMember = () => {
             <Radio value="org:admin" label="Admin" iconColor="dark.8" color="lime.4"  />
           </Group>
         </Radio.Group>
-        <Button type="submit" disabled={!isValidEmail} style={{marginLeft:'10px'}}>
+        <Button size="xs" type="submit" disabled={!isValidEmail} style={{marginLeft:'10px'}}>
           Send Invitation
         </Button>
       </div>

@@ -29,7 +29,7 @@ const PendingInvitationsList = () => {
   };
 
   if (!invitations) {
-    console.log('no invitations found');
+    //console.log('no invitations found');
     return null;
   }
   

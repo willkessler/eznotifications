@@ -23,11 +23,29 @@ export class EZNotificationWebhooks {
     ) {}
 
     async createUserFromWebhook(bodyData: any) : Promise<User> {
-        const userData = {
-            primaryEmail: bodyData.email_addresses[0].email_address,
-            clerkId: bodyData.id,
-        };
-        return this.UserRepository.save(userData);
+        const primaryEmail = bodyData.email_addresses[0].email_address;
+        const clerkId = bodyData.id;
+
+        // First, check if the user already exists based on a unique identifier, e.g., clerkId
+        const existingUser = await this.UserRepository.findOne({
+            where: [
+                { primaryEmail: primaryEmail },
+                { clerkId: clerkId }
+            ],
+        });
+
+        if (existingUser) {
+        console.log(`User already exists with clerkId ${clerkId}, no new record created.`);
+            return existingUser; // Return the existing user record
+        } else {
+            // User does not exist, create a new one
+            const userData = {
+                primaryEmail: primaryEmail,
+                clerkId: clerkId,
+            };
+            console.log('Creating new user from webhook:', userData);
+            return this.UserRepository.save(userData);
+        }
     };
     
     async handleClerkWebhook(body: any): Promise<EZNotification> {
@@ -47,7 +65,6 @@ export class EZNotificationWebhooks {
             case 'user.created':
                 // Handle user creation
                 await this.createUserFromWebhook(body.data);
-                // Your logic here, e.g., creating a new user record
                 break;
 
             case 'user.update':
