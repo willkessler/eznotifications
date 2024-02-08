@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {  Button, Menu, rem, Text, Textarea } from '@mantine/core';
+import ManageTimezone from './ManageTimezone';
 import classes from './css/Settings.module.css';
 import {
   IconSettings,
@@ -24,9 +25,10 @@ const GlobalSettingsPanel = () => {
   return (
       <div className={classes.team} >
         <Text size="xl">Application Settings</Text>
+        <ManageTimezone />
         <Textarea 
           style={{maxWidth:'620px',marginTop:'10px'}}
-          label="Permitted domains"
+          label="Set your site's permitted domains"
           description="Enter all top-level domains (TLD's) which are allowed to retrieve notifications from us (one per line, no commas). We will allow these domains using CORS."
           placeholder={`example1.com
 example2.com
