@@ -7,7 +7,7 @@ export class CreateAPITokens1707339476786 implements MigrationInterface {
             name: 'api_keys',
             columns: [
                 {
-                    name: 'id',
+                    name: 'uuid',
                     type: 'uuid',
                     isPrimary: true,
                     default: 'uuid_generate_v4()'

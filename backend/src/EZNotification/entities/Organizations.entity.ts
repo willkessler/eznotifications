@@ -18,7 +18,7 @@ export class Organization {
     users: User[];
 
     @OneToOne(() => PricingModel)
-    @JoinColumn()
+    @JoinColumn({ name: 'pricing_model_uuid' })
     pricingModel: PricingModel;
 
     @OneToMany(() => ApiKey, apiKey => apiKey.organization)

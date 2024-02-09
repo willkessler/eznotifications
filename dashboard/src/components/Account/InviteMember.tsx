@@ -4,7 +4,7 @@ import { useUser, useOrganization } from "@clerk/clerk-react";
 import { Anchor, Button, Group, Radio, Table, TextInput, Textarea, Text } from '@mantine/core';
 
 const InviteMember = () => {
-  const { organization, membership, isLoaded, invitationList } = useOrganization();
+  const { organization, membership, isLoaded, invitationList } = useOrganization({ invitations: true });
   const [emailAddress, setEmailAddress] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(false);
   const [role, setRole] = useState('org:member');

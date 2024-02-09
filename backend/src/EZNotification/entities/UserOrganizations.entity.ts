@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './Users.entity';
 import { Organization } from './Organizations.entity';
 
@@ -8,9 +8,11 @@ export class UserOrganization {
     id: number;
 
     @ManyToOne(() => User, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'user_uuid' })
     user: User;
 
     @ManyToOne(() => Organization, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'organization_uuid' })
     organization: Organization;
 
     @Column({

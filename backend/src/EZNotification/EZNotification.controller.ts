@@ -72,8 +72,11 @@ export class EZNotificationController {
     }
 
     @Post('/api-keys/create')
-    async createApiKey(@Body('apiKeyType') apiKeyType: string): Promise<ApiKey> {
-        return this.EZNotificationService.createApiKey(apiKeyType);
+    async createApiKey(
+                       @Body('apiKeyType') apiKeyType: string,
+                       @Body('clerkId') clerkId: string,
+    ): Promise<ApiKey> {
+        return this.EZNotificationService.createApiKey(apiKeyType, clerkId);
     }
     
 }

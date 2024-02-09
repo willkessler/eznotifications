@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { ActionIcon, Checkbox, CopyButton, Tooltip, rem, Anchor, Button, Text } from '@mantine/core';
 import { IconCopy, IconCheck } from '@tabler/icons-react';
+import { useUser } from "@clerk/clerk-react";
 import classes from './css/Settings.module.css';
 import toast, { Toaster } from 'react-hot-toast';
+import APIKeysTable from './APIKeysTable';
 
 const APIKeysPanel = () => {
   const productionApiKeyValue = 'X123';
   const [agreeToRegenerateProdKey, setAgreeToRegenerateProdKey] = useState(false);
+  const { user } = useUser();
+
+  console.log('user:', user);
 
   const createApiKey = async (apiKeyType) => {
     console.log('creating an api key for env: ', apiKeyType);
-    const apiUrl = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}` +
-          `/eznotifications/api-keys/create`;
+    const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/api-keys/create`;
+    const clerkId = user.id;
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiKeyType }),
+        body: JSON.stringify({ apiKeyType, clerkId }),
       });;
       if (!response.ok) {
         throw new Error (`HTTP error! status: ${response.status}`);
@@ -75,6 +80,7 @@ const APIKeysPanel = () => {
         <Toaster />
         <Text size="xl">Your API Keys</Text>
 
+        <APIKeysTable />
         <Text size="md">Development API Keys</Text>
         <Button onClick={() => createApiKey('development')} size="xs" style={{marginTop:'10px'}}>Generate new development key</Button>
 

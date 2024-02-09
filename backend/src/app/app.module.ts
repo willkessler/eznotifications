@@ -34,6 +34,7 @@ import { EZNotification } from '../EZNotification/entities/EZNotification.entity
                        User, Organization, PricingModel, UserEmails, UserOrganization,
                        ApiKey],
             synchronize: false,
+            logging: ["query"],
         }),
     ],
     controllers: [AppController],

@@ -7,7 +7,7 @@ export class CreatePermittedDomains1707339486783 implements MigrationInterface {
             name: 'permitted_domains',
             columns: [
                 { 
-                    name: 'id', 
+                    name: 'uuid', 
                     type: 'uuid', 
                     isPrimary: true, 
                     default: 'uuid_generate_v4()' 

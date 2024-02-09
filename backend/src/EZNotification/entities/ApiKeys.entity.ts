@@ -8,7 +8,7 @@ export class ApiKey {
     uuid: string;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    created_date: Date;
+    created_at: Date;
 
     @Column({ name: 'api_key', nullable: true })
     apiKey: string;
@@ -21,7 +21,7 @@ export class ApiKey {
     })
     apiKeyType: string;
 
-    @Column({ default: true })
+    @Column({ name: 'is_active', default: true })
     isActive: boolean;
 
     @ManyToOne(() => User, user => user.apiKeys)

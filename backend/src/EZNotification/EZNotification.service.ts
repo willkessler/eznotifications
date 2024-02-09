@@ -5,6 +5,9 @@ import { Connection, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes } from 'crypto';
 import { EZNotification } from './entities/EZNotification.entity';
+import { User } from './entities/Users.entity';
+import { Organization } from './entities/Organizations.entity';
+import { UserOrganization } from './entities/UserOrganizations.entity';
 import { ApiKey } from './entities/ApiKeys.entity';
 import { EndUser } from './entities/EndUsers.entity';
 import { EndUsersServed } from './entities/EndUsersServed.entity';
@@ -31,6 +34,15 @@ export class EZNotificationService {
 
         @InjectRepository(ApiKey)
         private apiKeyRepository: Repository<ApiKey>,
+
+        @InjectRepository(User)
+        private userRepository: Repository<User>,
+
+        @InjectRepository(Organization)
+        private organizationRepository: Repository<Organization>,
+
+        @InjectRepository(UserOrganization)
+        private userOrganizationRepository: Repository<UserOrganization>,
 
     ) {}
 
@@ -142,18 +154,34 @@ export class EZNotificationService {
             .substring(0, length); // Ensure the key is of the desired length
     }
 
-    async createApiKey(apiKeyType: string): Promise<ApiKey> {
+    async findUserOrganizationByClerkId(clerkId: string): Promise<UserOrganization[]> {
+        return this.userOrganizationRepository
+            .createQueryBuilder('userOrganization')
+            .innerJoinAndSelect('userOrganization.organization', 'organization')
+            .innerJoin('userOrganization.user', 'user')
+            .where('user.clerkId = :clerkId', { clerkId })
+            .addSelect('organization.uuid')
+            .addSelect('organization.name')
+            .addSelect('user.uuid')
+            .getMany();
+    }
+
+    async createApiKey(apiKeyType: string, clerkId: string): Promise<ApiKey> {
         const apiKeyValue = this.generateRandomKey(8);
-/*
+        const userOrganization = await this.findUserOrganizationByClerkId(clerkId);
+        console.log('createApiKey has apiKeyType:', apiKeyType, 'clerkId:', clerkId, 'userOrg:', userOrganization[0]);
+        const organizationUuid = userOrganization[0].organization.uuid;
+        const userUuid = userOrganization[0].user.uuid;
+
         const newApiKey = this.apiKeyRepository.create ({
             apiKey : apiKeyValue,
             apiKeyType: apiKeyType,
-            organization: "abc123",
-            user: "abc123"
+            creator: { uuid: userUuid },
+            organization: { uuid: organizationUuid },
+            isActive: true,
         });
 
         return this.apiKeyRepository.save(newApiKey);
-*/
-        return null;
+
     };
 }

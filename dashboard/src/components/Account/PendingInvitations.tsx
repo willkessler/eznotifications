@@ -6,7 +6,9 @@ import { Anchor, Table, Text } from '@mantine/core';
 // You can invite new organization members and 
 // revoke already sent invitations.
 const PendingInvitationsList = () => {
-  const { invitations, organization } = useOrganization();
+  const { invitations, organization } = useOrganization({
+    invitations: true
+  });
   
   const ResendInvitation = async (invitation) => {
     const emailAddress = invitation.emailAddress;
@@ -23,6 +25,12 @@ const PendingInvitationsList = () => {
     await invitation.revoke();
   };
 
+  console.log('got invitations:', invitations);
+  if (invitations === null) {
+    console.log('no invitations found');
+    
+  }
+  
   if (invitations.data.length === 0) {
     console.log('no invitations found');
     console.log(invitations);
