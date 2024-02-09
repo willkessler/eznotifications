@@ -21,8 +21,7 @@
 }
 
 .team {
-  padding-left:50px;
-  padding-top: 45px;
+  padding:45px 0px 30px 50px;
   max-width:1000px;
 }
 
@@ -67,6 +66,12 @@
   border: 1px dotted red;
   width:30%;
   color:#666;
+}
+
+.globalSettingsPanel {
+  padding-left:50px;
+  padding-top: 45px;
+  max-width:1000px;
 }
 
 

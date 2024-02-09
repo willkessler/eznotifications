@@ -197,6 +197,8 @@ export class EZNotificationService {
             .leftJoinAndSelect("apiKey.creator", "user") // Include user details
             .leftJoinAndSelect("apiKey.organization", "organization") // Include organization details
             .where("organization.uuid = :organizationUuid", { organizationUuid }) // Filter by organization UUID
+            .orderBy('apiKey.isActive', "DESC")
+            .addOrderBy('apiKey.createdAt', "DESC")
             .getMany();
 
         return apiKeys;

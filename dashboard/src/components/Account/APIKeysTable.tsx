@@ -3,6 +3,7 @@ import { ActionIcon, Anchor,CopyButton, Tooltip, rem,  Table, Text } from '@mant
 import { IconCopy, IconCheck } from '@tabler/icons-react';
 import { useUser, useOrganization } from "@clerk/clerk-react";
 import { useAPIKeys } from './APIKeysContext';
+import classes from './css/APIKeys.module.css';
 
 const APIKeysTable = () => {
     const { APIKeys, fetchAPIKeys, APIKeysLoading, APIKeysLastUpdated, toggleAPIKeyStatus } = useAPIKeys();
@@ -25,7 +26,7 @@ const APIKeysTable = () => {
     }
     
     const APIKeysBody = APIKeys.map((apiKeyRecord) => (
-      <Table.Tr key={apiKeyRecord.id}>
+      <Table.Tr key={apiKeyRecord.id} className={apiKeyRecord.isActive ? classes.enabled : classes.disabled}>
         <Table.Td>
             { new Date(apiKeyRecord.createdAt).toLocaleString('en-US', 
                                                               { weekday: 'short', 
@@ -38,20 +39,23 @@ const APIKeysTable = () => {
             }
         </Table.Td>
         <Table.Td>
-          <CopyButton value={apiKeyRecord.apiKey} timeout={2000}>
+          <div className={classes.apiKeyBlock} >
+            <CopyButton value={apiKeyRecord.apiKey} timeout={2000}>
             {({ copied, copy }) => (
               <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
                 <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
                   {copied ? (
                     <IconCheck style={{ width: rem(16) }} />
                   ) : (
-                    <IconCopy style={{ width: rem(16) }} />
+                    <IconCopy className={ (apiKeyRecord.isActive ? classes.apiKeyTextEnabled : classes.apiKeyTextDisabled) }
+                              style={{ width: rem(16) }} />
                   )}
                 </ActionIcon>
               </Tooltip>
             )}
-          </CopyButton>
-          {apiKeyRecord.apiKey}
+            </CopyButton>
+            <span className={classes.apiKeyText}>{apiKeyRecord.apiKey}</span>
+            </div>
         </Table.Td>
         <Table.Td>
           {apiKeyRecord.apiKeyType}
@@ -60,15 +64,20 @@ const APIKeysTable = () => {
           {apiKeyRecord.isActive ? 'Enabled' : 'Disabled'}
         </Table.Td>
         <Table.Td>
-            <Anchor size="xs" component="button" type="button" onClick={(e) => doToggleAPIKeyStatus(e, apiKeyRecord.id)}>
-            {apiKeyRecord.isActive ? 'Disable' : 'Enable'}
-             </Anchor>
+            <Anchor 
+              className={apiKeyRecord.isActive ? classes.deactivate : classes.activate}
+              size="sm" 
+              component="button" 
+              type="button" 
+              onClick={(e) => doToggleAPIKeyStatus(e, apiKeyRecord.id)}>
+              {apiKeyRecord.isActive ? 'Disable' : 'Enable'}
+            </Anchor>
         </Table.Td>
       </Table.Tr>
     ));
     
     return (
-      <div style={{marginTop:'30px'}}>
+      <div style={{marginTop:'10px'}}>
         <Table verticalSpacing="xs" highlightOnHover withTableBorder>
           <Table.Thead>
             <Table.Tr>

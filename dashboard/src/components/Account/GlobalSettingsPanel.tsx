@@ -23,7 +23,7 @@ const GlobalSettingsPanel = () => {
   };
   
   return (
-      <div className={classes.team} >
+      <div className={classes.globalSettingsPanel} >
         <Text size="xl">Application Settings</Text>
         <ManageTimezone />
         <Textarea 

@@ -50,12 +50,12 @@ const APIKeysPanel = () => {
   return (
       <div className={classes.team} >
         <Toaster />
-        <Text size="xl">Your API Keys</Text>
+        <Text size="xl">Development API Keys</Text>
 
         <APIKeysTable />
         <Button onClick={() => createAPIKey('development',user.id)} size="xs" style={{marginTop:'10px'}}>Generate new development key</Button>
 
-        <Text size="md" style={{marginTop:'10px'}}>Production API Key</Text>
+        <Text size="xl" style={{marginTop:'30px'}}>Your Production API Key</Text>
 
         <div className={classes.apiKeyRow}>
           <Text size="sm" className={classes.apiKeyDisplay}>X123u8</Text>

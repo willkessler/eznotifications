@@ -1,0 +1,32 @@
+.apiKeyBlock {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.apiKeyTextEnabled {
+  font-family: courier;
+  color:#ccc;
+}
+
+.apiKeyTextDisabled {
+  font-family: courier;
+  color:#666;
+}
+
+.disabled {
+  color: #666;
+}
+
+.enabled {
+  color: #ddd;
+  cursor: pointer;
+}
+
+.activate {
+  color: #55f;
+}
+
+.deactivate {
+  color: #a22;
+}
