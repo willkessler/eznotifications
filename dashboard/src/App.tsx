@@ -11,7 +11,7 @@ import { dark } from '@clerk/themes';
 import classes from './pages/NavbarSimple.module.css';
 
 // Import your publishable key for Clerk
-const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
  
 if (!CLERK_PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key")

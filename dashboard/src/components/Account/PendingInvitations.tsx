@@ -1,46 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { useUser, useOrganization } from "@clerk/clerk-react";
-import { Anchor, Button, Group, Radio, Table, TextInput, Textarea, Text } from '@mantine/core';
+import { useOrganization } from "@clerk/clerk-react";
+import { Anchor, Table, Text } from '@mantine/core';
 
 // List of organization pending invitations. 
 // You can invite new organization members and 
 // revoke already sent invitations.
 const PendingInvitationsList = () => {
-  const { invitations, organization } = useOrganization({
-    invitations: {
-      infinite: true,
-      keepPreviousData: true
-    }
-  });
- 
-  const ResendInvitation = async (inv) => {
-    const emailAddress = inv.emailAddress;
-    let role = inv.role;
+  const { invitations, organization } = useOrganization();
+  
+  const ResendInvitation = async (invitation) => {
+    const emailAddress = invitation.emailAddress;
+    let role = invitation.role;
     if (role == 'org:admin') {
       role = 'admin';
     }
-    console.log('inv:', inv, emailAddress, role);
-    await(inv.revoke());
+    console.log('invitation:', invitation, emailAddress, role);
+    await(invitation.revoke());
     await organization.inviteMember({emailAddress, role});
   };
 
-  const RevokeInvitation = async (inv) => {
-    await inv.revoke();
+  const RevokeInvitation = async (invitation) => {
+    await invitation.revoke();
   };
 
-  if (!invitations) {
-    //console.log('no invitations found');
+  if (invitations.data.length === 0) {
+    console.log('no invitations found');
+    console.log(invitations);
     return null;
   }
   
-  const pendingTableBody = invitations.data.map((i) => (
-    <Table.Tr key={i.emailAddress}>
+  const pendingTableBody = invitations.data.map((invitation) => (
+    <Table.Tr key={invitation.id || invitation.emailAddress}>
       <Table.Td>
-        {i.emailAddress} (invited to be a {i.role == 'org:member' ? 'member' : 'admin'})
+        {invitation.emailAddress} (invited to be a {invitation.role == 'org:member' ? 'member' : 'admin'})
       </Table.Td>
       <Table.Td>
-        <Anchor size="xs" component="button" type="button" onClick={() => ResendInvitation(i)}>Resend Invitation</Anchor> &nbsp;|&nbsp;
-        <Anchor size="xs" component="button" type="button" onClick={() => RevokeInvitation(i)}>Revoke Invitation</Anchor>
+        <Anchor size="xs" component="button" type="button" onClick={() => ResendInvitation(invitation)}>Resend Invitation</Anchor> &nbsp;|&nbsp;
+        <Anchor size="xs" component="button" type="button" onClick={() => RevokeInvitation(invitation)}>Revoke Invitation</Anchor>
       </Table.Td>
     </Table.Tr>
   ));
@@ -64,4 +60,3 @@ const PendingInvitationsList = () => {
 }
 
 export default PendingInvitationsList;
-
