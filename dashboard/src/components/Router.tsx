@@ -7,10 +7,12 @@ import Settings from './Account/Settings';
 import Statistics from './Account/Statistics';
 import LoginComponent from './Account/LoginComponent'; 
 import SignUpComponent from './Account/SignUpComponent'; 
-import AuthWrapper from './Account/AuthWrapper'; // Ensure you have this component created
+import AuthWrapper from './Account/AuthWrapper'; 
+import { APIKeysProvider } from './Account/APIKeysContext';
 
 const RouterComponent = () => {
   return (
+    <APIKeysProvider>
     <AuthWrapper>
       <Routes>
         <Route path="/login" element={<LoginComponent />} />
@@ -30,6 +32,7 @@ const RouterComponent = () => {
         </Route>
       </Routes>
     </AuthWrapper>
+    </APIKeysProvider>
   );
 };
 

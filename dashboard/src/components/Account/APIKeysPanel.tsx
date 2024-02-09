@@ -5,34 +5,13 @@ import { useUser } from "@clerk/clerk-react";
 import classes from './css/Settings.module.css';
 import toast, { Toaster } from 'react-hot-toast';
 import APIKeysTable from './APIKeysTable';
+import { useAPIKeys } from './APIKeysContext';
 
 const APIKeysPanel = () => {
   const productionApiKeyValue = 'X123';
   const [agreeToRegenerateProdKey, setAgreeToRegenerateProdKey] = useState(false);
   const { user } = useUser();
-
-  console.log('user:', user);
-
-  const createApiKey = async (apiKeyType) => {
-    console.log('creating an api key for env: ', apiKeyType);
-    const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/api-keys/create`;
-    const clerkId = user.id;
-    try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiKeyType, clerkId }),
-      });;
-      if (!response.ok) {
-        throw new Error (`HTTP error! status: ${response.status}`);
-      } else {
-        console.log('created an API key');
-      }
-    } catch (error) {
-      console.error(`Error creating API key of type: ( ${apiKeyType} ).`, error);
-      throw error;
-    }
-  };
+  const { APIKeys, fetchAPIKeys, APIKeysLoading, APIKeysLastUpdated, toggleAPIKeyStatus, createAPIKey } = useAPIKeys();
 
   const createProdApiKey = () => {
     if (agreeToRegenerateProdKey) {
@@ -66,13 +45,6 @@ const APIKeysPanel = () => {
 
   const handleCopy = () => {
     copy(text);
-/*
-    Notification({
-      title: 'Success',
-      message: 'Copied to clipboard!',
-      color: 'green'
-    });
-*/
   };
   
   return (
@@ -81,8 +53,7 @@ const APIKeysPanel = () => {
         <Text size="xl">Your API Keys</Text>
 
         <APIKeysTable />
-        <Text size="md">Development API Keys</Text>
-        <Button onClick={() => createApiKey('development')} size="xs" style={{marginTop:'10px'}}>Generate new development key</Button>
+        <Button onClick={() => createAPIKey('development',user.id)} size="xs" style={{marginTop:'10px'}}>Generate new development key</Button>
 
         <Text size="md" style={{marginTop:'10px'}}>Production API Key</Text>
 

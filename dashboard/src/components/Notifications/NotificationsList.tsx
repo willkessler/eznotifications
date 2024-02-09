@@ -56,6 +56,7 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
     });
   };
 
+/*
   const updateNotificationStatus = async (notification, status) => {
     try {
       const modifiedNotification = {
@@ -78,7 +79,8 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
       throw error;
     }
   };
-
+*/
+  
   // handle turning a notification on and off
   const handleSwitchChange = async (notificationData, checked) => {
       const notificationDataCopy = {

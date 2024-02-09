@@ -4,11 +4,11 @@ import { Organization } from './Organizations.entity';
 
 @Entity('api_keys')
 export class ApiKey {
-    @PrimaryGeneratedColumn('uuid')
-    uuid: string;
+    @PrimaryGeneratedColumn({name: 'uuid'})
+    id: string;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    created_at: Date;
+    @Column({ name:'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
 
     @Column({ name: 'api_key', nullable: true })
     apiKey: string;

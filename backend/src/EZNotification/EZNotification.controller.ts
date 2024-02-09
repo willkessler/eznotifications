@@ -26,7 +26,35 @@ export class EZNotificationController {
 
     ) {}
 
-    //constructor(private readonly ezNotificationService: EZNotificationService) {}
+    // Handle the clerk webhook callbacks in the service file
+    @Post('/clerkWebhook')
+    async handleClerkWebhook(@Body() body:any) {
+        return this.EZNotificationWebhooks.handleClerkWebhook(body);
+    }
+
+    @Get('/api-keys')
+    findApiKeys(
+        @Query('clerkId') clerkId: string
+    ) {
+        console.log('controller api-keys');
+        return this.EZNotificationService.findApiKeys(clerkId);
+    }
+
+    @Post('/api-keys/create')
+    async createApiKey(
+                       @Body('apiKeyType') apiKeyType: string,
+                       @Body('clerkId') clerkId: string,
+    ): Promise<ApiKey> {
+        return this.EZNotificationService.createApiKey(apiKeyType, clerkId);
+    }
+
+    @Get('/api-keys/toggle-active/:api_key_id')
+    toggleApiKeyStatus(
+        @Param('api_key_id') apiKeyId: string
+    ) {
+        console.log('controller api-keys toggle');
+        return this.EZNotificationService.toggleApiKeyActive(apiKeyId);
+    }
 
     @Post('/new')
     async create(@Body() EZNotificationData: Partial<EZNotification>): Promise<EZNotification> {
@@ -65,19 +93,6 @@ export class EZNotificationController {
         return(1);
     }
 
-    // Handle the clerk webhook callbacks in the service file
-    @Post('/clerkWebhook')
-    async handleClerkWebhook(@Body() body:any) {
-        return this.EZNotificationWebhooks.handleClerkWebhook(body);
-    }
-
-    @Post('/api-keys/create')
-    async createApiKey(
-                       @Body('apiKeyType') apiKeyType: string,
-                       @Body('clerkId') clerkId: string,
-    ): Promise<ApiKey> {
-        return this.EZNotificationService.createApiKey(apiKeyType, clerkId);
-    }
     
 }
 

@@ -149,8 +149,8 @@ export class EZNotificationService {
     generateRandomKey(length: number = 8): string {
         return randomBytes(length)
             .toString('base64') // Convert to base64 to ensure characters are printable
-            .replace(/\+/g, '-') // Replace + with -
-            .replace(/\//g, '_') // Replace / with _
+            .replace(/\+/g, '0') // Replace + with 0
+            .replace(/\//g, '0') // Replace / with 0
             .substring(0, length); // Ensure the key is of the desired length
     }
 
@@ -182,6 +182,36 @@ export class EZNotificationService {
         });
 
         return this.apiKeyRepository.save(newApiKey);
+    };
+
+    // Fetch all API keys for any team associated with a given clerkId
+    async findApiKeys(clerkId: string) : Promise<ApiKey[]> {
+        const userOrganization = await this.findUserOrganizationByClerkId(clerkId);
+        console.log('in service findApiKeys,', JSON.stringify(userOrganization, null, 2));
+        const organizationUuid = userOrganization[0].organization.uuid;
+        const userUuid = userOrganization[0].user.uuid;
+        console.log('find api keys for org:', organizationUuid);
+
+        const apiKeys = await this.apiKeyRepository
+            .createQueryBuilder("apiKey")
+            .leftJoinAndSelect("apiKey.creator", "user") // Include user details
+            .leftJoinAndSelect("apiKey.organization", "organization") // Include organization details
+            .where("organization.uuid = :organizationUuid", { organizationUuid }) // Filter by organization UUID
+            .getMany();
+
+        return apiKeys;
 
     };
+
+    async toggleApiKeyActive(apiKeyId: string) : Promise<void> {
+        console.log('toggleApiKeyActive');
+        const apiKeyRecord = await this.apiKeyRepository.findOneBy({ id: apiKeyId });
+        if (apiKeyRecord !== null) {
+            await this.apiKeyRepository.update(apiKeyId, {
+                isActive: !apiKeyRecord.isActive
+            });
+        }
+        return null;
+    }
+
 }
