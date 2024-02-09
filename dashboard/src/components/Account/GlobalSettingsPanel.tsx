@@ -39,7 +39,7 @@ example3.com`}
         />
         <Button onClick={updateAllowedDomains} size="xs" style={{marginTop:'10px'}}>Save</Button>
 
-        <Text size="md" style={{marginTop:'25px'}}>Look-forward duration:</Text>
+        <Text size="md" style={{marginTop:'25px'}}>Set your look-forward duration to:</Text>
 
         <Menu shadow="md" width={200}>
           <Menu.Target>

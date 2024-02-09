@@ -35,7 +35,7 @@ export class EZNotificationWebhooks {
         });
 
         if (existingUser) {
-        console.log(`User already exists with clerkId ${clerkId}, no new record created.`);
+            console.log(`User already exists with clerkId ${clerkId}, no new record created.`);
             return existingUser; // Return the existing user record
         } else {
             // User does not exist, create a new one
@@ -44,6 +44,10 @@ export class EZNotificationWebhooks {
                 clerkId: clerkId,
             };
             console.log('Creating new user from webhook:', userData);
+            // next, create a working organization for them (team), unless they joined by an invite from another org.
+
+
+
             return this.UserRepository.save(userData);
         }
     };
