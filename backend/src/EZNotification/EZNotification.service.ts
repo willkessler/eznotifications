@@ -7,6 +7,7 @@ import { randomBytes } from 'crypto';
 import { EZNotification } from './entities/EZNotification.entity';
 import { User } from './entities/Users.entity';
 import { Organization } from './entities/Organizations.entity';
+import { PermittedDomains } from './entities/PermittedDomains.entity';
 import { UserOrganization } from './entities/UserOrganizations.entity';
 import { ApiKey } from './entities/ApiKeys.entity';
 import { EndUser } from './entities/EndUsers.entity';
@@ -44,6 +45,8 @@ export class EZNotificationService {
         @InjectRepository(UserOrganization)
         private userOrganizationRepository: Repository<UserOrganization>,
 
+        @InjectRepository(PermittedDomains)
+        private readonly permittedDomainsRepository: Repository<PermittedDomains>,
     ) {}
 
     async create(ezNotificationData: Partial<EZNotification>): Promise<EZNotification> {
@@ -162,6 +165,8 @@ export class EZNotificationService {
             .where('user.clerkId = :clerkId', { clerkId })
             .addSelect('organization.uuid')
             .addSelect('organization.name')
+            .addSelect('organization.preferred_timezone')
+            .addSelect('organization.refresh_frequency')
             .addSelect('user.uuid')
             .getMany();
     }
@@ -281,7 +286,64 @@ export class EZNotificationService {
             // Save the updated entity
             return transactionalEntityManager.save(ApiKey, apiKeyEntity);
         })
+    }
 
+    async getAppConfiguration(clerkId: string) : Promise<{}> {
+        const userOrganization = await this.findUserOrganizationByClerkId(clerkId);
+        const organization = userOrganization[0].organization;
+        const organizationUuid = userOrganization[0].organization.uuid;
+
+        const permittedDomains = await this.permittedDomainsRepository.find({ where: { organizationUuid } });
+        const appConfig = {
+            timezone:         organization.preferredTimezone,
+            permittedDomains: permittedDomains,
+            refreshFrequency: organization.refreshFrequency
+        };
+        console.log('appconfig:', appConfig)
+        return appConfig;
+    }
+
+    async saveAppConfiguration(clerkId: string, 
+                               timezone: string, 
+                               permittedDomainsString: string, 
+                               refreshFrequency: number) : Promise<Organization> {
+        const userOrganization = await this.findUserOrganizationByClerkId(clerkId);
+        const organization = userOrganization[0].organization;
+        const userUuid = userOrganization[0].user.uuid;
+        organization.preferredTimezone = timezone;
+        organization.refreshFrequency = refreshFrequency;
+
+        console.log('saving organization:', organization, 'permittedDomainsString:', permittedDomainsString);
+
+        await this.organizationRepository.save(organization);
+        // Now split the permitted domains, and remove any previous ones before persisting this new set
+        // into the permitted_domains table, each one with a foreign key back to this organization
+        
+        // Split permittedDomainsString into an array, removing empty strings
+        if (permittedDomainsString) {
+            const permittedDomains = permittedDomainsString.split(/[\s,]+/).filter(domain => domain.trim().length > 0);
+
+            console.log('saving organization:', organization);
+            console.log('permittedDomains:', permittedDomains);
+
+            // Remove any previous permitted domains
+            await this.permittedDomainsRepository.delete({ organization: { uuid: organization.uuid } });
+
+            // Create new permitted domain records
+            const permittedDomainEntities = permittedDomains.map(domain => {
+                const permittedDomain = new PermittedDomains();
+                permittedDomain.domain = domain;
+                permittedDomain.organization = organization;
+                permittedDomain.creatorUuid = userUuid;
+                return permittedDomain;
+            });
+
+            // Save new permitted domain records
+            await this.permittedDomainsRepository.save(permittedDomainEntities);
+        }
+
+        // Return the updated organization entity (optionally refresh it from the database if needed)
+        return organization;
     }
 
 }

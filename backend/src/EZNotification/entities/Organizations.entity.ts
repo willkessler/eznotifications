@@ -1,7 +1,14 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinColumn, OneToOne } from 'typeorm';
 import { User } from './Users.entity';
 import { PricingModel } from './PricingModels.entity';
+import { PermittedDomains } from './PermittedDomains.entity';
 import { ApiKey } from './ApiKeys.entity';
+
+// Getting all permitted domains for an org:
+// const organization = await organizationRepository.findOne({
+//    where: { uuid: 'the-organization-uuid' },
+//    relations: ['permittedDomains'],
+// });
 
 @Entity('organizations')
 export class Organization {
@@ -11,9 +18,15 @@ export class Organization {
     @Column({ nullable: true })
     name: string;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    created_date: Date;
+    @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
 
+    @Column({ name: 'preferred_timezone', type: 'text' })
+    preferredTimezone: string;
+
+    @Column({ name: 'refresh_frequency', type: 'int' })
+    refreshFrequency: number;
+    
     @ManyToMany(() => User)
     users: User[];
 
@@ -23,4 +36,7 @@ export class Organization {
 
     @OneToMany(() => ApiKey, apiKey => apiKey.organization)
     apiKeys: ApiKey[];
+
+    @OneToMany(() => PermittedDomains, (permittedDomains) => permittedDomains.organization)
+    permittedDomains: PermittedDomains[];    
 }

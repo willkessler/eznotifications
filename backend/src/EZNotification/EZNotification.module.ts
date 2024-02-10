@@ -8,11 +8,12 @@ import { EndUser } from './entities/EndUsers.entity';
 import { EndUsersServed } from './entities/EndUsersServed.entity';
 import { User } from './entities/Users.entity';
 import { Organization } from './entities/Organizations.entity';
+import { PermittedDomains } from '../EZNotification/entities/PermittedDomains.entity';
 import { UserOrganization } from './entities/UserOrganizations.entity';
 import { ApiKey } from './entities/ApiKeys.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([EZNotification, EndUser, EndUsersServed, ApiKey, User, Organization, UserOrganization ])],
+    imports: [TypeOrmModule.forFeature([EZNotification, EndUser, EndUsersServed, ApiKey, User, Organization, PermittedDomains, UserOrganization ])],
     controllers: [EZNotificationController],
     providers: [EZNotificationService, EZNotificationWebhooks],
 })

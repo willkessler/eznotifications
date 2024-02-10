@@ -25,7 +25,7 @@ const PendingInvitationsList = () => {
     await invitation.revoke();
   };
 
-  console.log('got invitations:', invitations);
+  //  console.log('got invitations:', invitations);
   if (invitations === null) {
     console.log('no invitations found');
     

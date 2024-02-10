@@ -7,6 +7,7 @@ import { Connection, Repository, MoreThan } from 'typeorm';
 import { EZNotification } from './entities/EZNotification.entity';
 import { EZNotificationService } from './EZNotification.service';
 import { EZNotificationWebhooks } from './EZNotification.webhooks';
+import { Organization } from './entities/Organizations.entity';
 import { EndUser } from './entities/EndUsers.entity';
 import { EndUsersServed } from './entities/EndUsersServed.entity';
 import { ApiKey } from './entities/ApiKeys.entity';
@@ -23,7 +24,6 @@ export class EZNotificationController {
         private readonly endUserRepository: Repository<EndUser>,
         @InjectRepository(EndUsersServed)
         private readonly endUsersServedRepository: Repository<EndUsersServed>,
-
     ) {}
 
     // Handle the clerk webhook callbacks in the service file
@@ -60,6 +60,25 @@ export class EZNotificationController {
     @Post('/new')
     async create(@Body() EZNotificationData: Partial<EZNotification>): Promise<EZNotification> {
         return this.EZNotificationService.create(EZNotificationData);
+    }
+
+    @Get('/app-configure')
+    getAppConfiguration(
+        @Query('clerkId') clerkId: string
+    ) {
+        console.log('controller get app configuration');
+        return this.EZNotificationService.getAppConfiguration(clerkId);
+    };
+
+    @Post('/app-configure')
+    async saveAppConfiguration(
+        @Body('clerkId') clerkId: string,
+        @Body('timezone') timezone: string,
+        @Body('permittedDomains') permittedDomains: string,
+        @Body('refreshFrequency') refreshFrequency: number,
+    ): Promise<Organization> {
+        console.log('Configure saving settings.');
+        return this.EZNotificationService.saveAppConfiguration(clerkId, timezone, permittedDomains, refreshFrequency);
     }
 
     @Get()

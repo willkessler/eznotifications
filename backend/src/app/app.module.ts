@@ -9,6 +9,7 @@ import { AuthModule } from '../auth/auth.module';
 import { ApiKey } from '../EZNotification/entities/ApiKeys.entity';
 import { User } from '../EZNotification/entities/Users.entity';
 import { Organization } from '../EZNotification/entities/Organizations.entity';
+import { PermittedDomains } from '../EZNotification/entities/PermittedDomains.entity';
 import { PricingModel } from '../EZNotification/entities/PricingModels.entity';
 import { UserEmails } from '../EZNotification/entities/UserEmails.entity';
 import { UserOrganization } from '../EZNotification/entities/UserOrganizations.entity';
@@ -31,8 +32,9 @@ import { EZNotification } from '../EZNotification/entities/EZNotification.entity
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE,
             entities: [EZNotification, EndUser, EndUsersServed, 
-                       User, Organization, PricingModel, UserEmails, UserOrganization,
-                       ApiKey],
+                       User, Organization, PricingModel,
+                       UserEmails, UserOrganization,
+                       ApiKey, PermittedDomains],
             synchronize: false,
             logging: ["query"],
         }),
