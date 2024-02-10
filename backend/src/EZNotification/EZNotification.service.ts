@@ -173,15 +173,52 @@ export class EZNotificationService {
         const organizationUuid = userOrganization[0].organization.uuid;
         const userUuid = userOrganization[0].user.uuid;
 
-        const newApiKey = this.apiKeyRepository.create ({
-            apiKey : apiKeyValue,
-            apiKeyType: apiKeyType,
-            creator: { uuid: userUuid },
-            organization: { uuid: organizationUuid },
-            isActive: true,
-        });
+        if (apiKeyType === 'production') {
+            // Production key generation is wrapped in a transaction
+            // because we have to first retire whatever current prod
+            // key exists first.  Deactivate any existing active
+            // production API key.
 
-        return this.apiKeyRepository.save(newApiKey);
+            return this.apiKeyRepository.manager.transaction(async (transactionalEntityManager) => {
+                console.log('creating a production key with a txn');
+                // Deprecate old prod api key
+                await transactionalEntityManager.update(ApiKey, 
+                                                        { 
+                    apiKeyType: 'production', 
+                    organization: { uuid: organizationUuid }, 
+                    isActive: true 
+                }, 
+                                                        {
+                    isActive: false 
+                }
+                                                       );
+
+                // Create new prod API key
+                const newApiKey = transactionalEntityManager.create(ApiKey, {
+                    apiKey: apiKeyValue,
+                    apiKeyType: 'production',
+                    creator: { uuid: userUuid },
+                    organization: { uuid: organizationUuid },
+                    isActive: true,
+                });
+
+                // Save new prod API key
+                await transactionalEntityManager.save(newApiKey);
+
+                return newApiKey;
+            });
+        } else {
+            // development key generation
+            const newApiKey = this.apiKeyRepository.create ({
+                apiKey : apiKeyValue,
+                apiKeyType: apiKeyType,
+                creator: { uuid: userUuid },
+                organization: { uuid: organizationUuid },
+                isActive: true,
+            });
+
+            return this.apiKeyRepository.save(newApiKey);
+        }
     };
 
     // Fetch all API keys for any team associated with a given clerkId

@@ -2,23 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { ActionIcon, Checkbox, CopyButton, Tooltip, rem, Anchor, Button, Text } from '@mantine/core';
 import { IconCopy, IconCheck } from '@tabler/icons-react';
 import { useUser } from "@clerk/clerk-react";
-import classes from './css/Settings.module.css';
 import toast, { Toaster } from 'react-hot-toast';
 import APIKeysTable from './APIKeysTable';
 import { useAPIKeys } from './APIKeysContext';
+import classes from './css/APIKeys.module.css';
 
 const APIKeysPanel = () => {
-  const productionApiKeyValue = 'X123';
   const [agreeToRegenerateProdKey, setAgreeToRegenerateProdKey] = useState(false);
   const { user } = useUser();
-  const { APIKeys, fetchAPIKeys, APIKeysLoading, APIKeysLastUpdated, toggleAPIKeyStatus, createAPIKey } = useAPIKeys();
+  const { APIKeys, fetchAPIKeys, createAPIKey,toggleAPIKeyStatus, 
+          APIKeysLoading, APIKeysLastUpdated, productionAPIKeyValue } = useAPIKeys();
 
   const createProdApiKey = () => {
     if (agreeToRegenerateProdKey) {
-      console.log('regenerating API key');
-      createApiKey('production');
+      console.log('Generating new production API key.');
+      createAPIKey('production', user.id);
+      setAgreeToRegenerateProdKey(false);
     } else {
-      toast.error('You must check the "Are you positive?" checkbox first.', {
+      toast.error('You must check the "Yes, go ahead" checkbox first, as this action will disable any existing production api key you may have.', {
         duration: 5000,
         position: 'top-center',
 
@@ -48,7 +49,7 @@ const APIKeysPanel = () => {
   };
   
   return (
-      <div className={classes.team} >
+      <div className={classes.apiKeyPanel} >
         <Toaster />
         <Text size="xl">Development API Keys</Text>
 
@@ -58,11 +59,13 @@ const APIKeysPanel = () => {
         <Text size="xl" style={{marginTop:'30px'}}>Your Production API Key</Text>
 
         <div className={classes.apiKeyRow}>
-          <Text size="sm" className={classes.apiKeyDisplay}>X123u8</Text>
+          <Text size="sm" className={classes.apiProdKeyDisplay}>
+            {productionAPIKeyValue === null ? '<not set yet>' : productionAPIKeyValue}
+          </Text>
 
-          <CopyButton value={productionApiKeyValue} timeout={2000}>
+          <CopyButton value={productionAPIKeyValue} timeout={2000}>
             {({ copied, copy }) => (
-              <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
+              <Tooltip label={copied ? 'Copied Production API Key!' : 'Copy'} withArrow position="right">
                 <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
                   {copied ? (
                     <IconCheck style={{ width: rem(16) }} />
@@ -74,11 +77,12 @@ const APIKeysPanel = () => {
             )}
           </CopyButton>
         </div>
-        <Button onClick={createProdApiKey} size="xs" style={{marginTop:'10px', backgroundColor:'#f00'}}>Regenerate Production API Key</Button>
-        <Checkbox style={{marginTop:'10px'}} 
+
+        <Button onClick={createProdApiKey} size="xs" style={{marginTop:'10px', backgroundColor:'#f00'}}>Generate New Production API Key</Button>
+        <Checkbox style={{marginTop:'10px', maxWidth:'300px'}} 
                   checked={agreeToRegenerateProdKey} 
                   onChange={(event) => setAgreeToRegenerateProdKey(event.currentTarget.checked) }
-                  label="Are you positive?" />
+                  label="Yes, go ahead and replace any existing production key with a new one." />
       </div>
   );
 }

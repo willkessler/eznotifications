@@ -12,6 +12,22 @@ export const APIKeysProvider = ({ children }) => {
     const [APIKeys, setAPIKeys] = useState([]);
     const [APIKeysLastUpdated, setAPIKeysLastUpdated] = useState(null);
     const [APIKeysLoading, setAPIKeysLoading] = useState(true);
+    const [productionAPIKeyValue, setProductionAPIKeyValue] = useState(null);
+
+    const splitDevelopmentAndProductionKeys = (data: any) => {
+        // pull out all development keys
+        console.log('filtering on data:', data);
+        const developmentKeys = data.filter(apiKeyRecord => apiKeyRecord.apiKeyType === 'development');
+        const productionKeys = data.filter(apiKeyRecord => 
+            apiKeyRecord.apiKeyType === 'production' && apiKeyRecord.isActive === true );
+        console.log('developmentKeys:', developmentKeys);
+        console.log('productionKeys:', productionKeys);
+        setAPIKeys(developmentKeys);
+        if (productionKeys.length > 0) {
+            console.log('setting prod api key value');
+            setProductionAPIKeyValue(productionKeys[0].apiKey);
+        }
+    };
 
     const fetchAPIKeys = useCallback(async (clerkId) => {
         setAPIKeysLoading(true); // start loading process
@@ -19,7 +35,7 @@ export const APIKeysProvider = ({ children }) => {
             const APIUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/api-keys?clerkId=${clerkId}`;
             const response = await fetch(APIUrl);
             const data = await response.json();
-            setAPIKeys(data);
+            splitDevelopmentAndProductionKeys(data);
         } catch (error) {
             console.error('Error fetching notifications:', error);
         } finally {
@@ -28,7 +44,6 @@ export const APIKeysProvider = ({ children }) => {
     }, []);
     
     const createAPIKey = useCallback(async (apiKeyType,clerkId) => {
-        console.log('creating an api key for env: ', apiKeyType);
         const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/api-keys/create`;
         try {
             const response = await fetch(apiUrl, {
@@ -70,6 +85,7 @@ export const APIKeysProvider = ({ children }) => {
             APIKeysLoading,
             APIKeysLastUpdated,
             toggleAPIKeyStatus,
+            productionAPIKeyValue,
         }}>
             {children}
         </APIKeysContext.Provider>

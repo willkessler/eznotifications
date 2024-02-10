@@ -54,20 +54,6 @@
   padding-bottom:20px;
 }
 
-.apiKeyRow {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  color: white;
-}
-
-.apiKeyDisplay {
-  padding:5px;
-  border: 1px dotted red;
-  width:30%;
-  color:#666;
-}
-
 .globalSettingsPanel {
   padding-left:50px;
   padding-top: 45px;

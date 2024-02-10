@@ -52,7 +52,7 @@ export class EZNotificationController {
     toggleApiKeyStatus(
         @Param('api_key_id') apiKeyId: string
     ) {
-        console.log('controller api-keys toggle');
+        console.log('controller: api-keys toggle');
         return this.EZNotificationService.toggleApiKeyActive(apiKeyId);
     }
 
