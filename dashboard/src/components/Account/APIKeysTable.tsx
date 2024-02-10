@@ -12,7 +12,7 @@ const APIKeysTable = () => {
 
     const doToggleAPIKeyStatus = (e, apiKeyId) => {
         e.preventDefault();
-        toggleAPIKeyStatus(apiKeyId);
+        toggleAPIKeyStatus(apiKeyId, user.id);
     };
     
     useEffect(() => {

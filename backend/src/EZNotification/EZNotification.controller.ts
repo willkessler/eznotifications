@@ -48,12 +48,13 @@ export class EZNotificationController {
         return this.EZNotificationService.createApiKey(apiKeyType, clerkId);
     }
 
-    @Get('/api-keys/toggle-active/:api_key_id')
-    toggleApiKeyStatus(
-        @Param('api_key_id') apiKeyId: string
-    ) {
-        console.log('controller: api-keys toggle');
-        return this.EZNotificationService.toggleApiKeyActive(apiKeyId);
+    @Post('/api-keys/toggle-active')
+    async toggleApiKeyStatus(
+        @Body('clerkId') clerkId: string,
+        @Body('APIKeyId') APIKeyId: string,
+    ): Promise<ApiKey> {
+        console.log('controller: api-keys toggle, clerkId:', clerkId, 'APIKeyId:', APIKeyId);
+        return this.EZNotificationService.toggleApiKeyActive(clerkId, APIKeyId);
     }
 
     @Post('/new')

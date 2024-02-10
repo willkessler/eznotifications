@@ -10,6 +10,9 @@ export class ApiKey {
     @Column({ name:'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
+    @Column({ name:'updated_at', type: 'timestamp' })
+    updatedAt: Date;
+    
     @Column({ name: 'api_key', nullable: true })
     apiKey: string;
 
@@ -27,6 +30,10 @@ export class ApiKey {
     @ManyToOne(() => User, user => user.apiKeys)
     @JoinColumn({ name: 'creator_uuid' })
     creator: User;
+
+    @ManyToOne(() => User, user => user.apiKeys)
+    @JoinColumn({ name: 'updated_by_uuid' })
+    updatedBy: User;
 
     @ManyToOne(() => Organization, organization => organization.apiKeys)
     @JoinColumn({ name: 'organization_uuid' })

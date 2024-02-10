@@ -21,7 +21,7 @@ interface QueryParamProps {
 @Injectable()
 export class EZNotificationService {
     constructor(
-        private connection: Connection, 
+        private connection: Connection,
 
         @InjectRepository(EZNotification)
         private ezNotificationRepository: Repository<EZNotification>,
@@ -60,7 +60,7 @@ export class EZNotificationService {
             // no userId provided. If the dashboard auth check passed then, return all notifications.
             return this.ezNotificationRepository.find({
                 where: {
-                    deleted: false 
+                    deleted: false
                 }
             });
         } else {
@@ -87,20 +87,20 @@ export class EZNotificationService {
                     .leftJoin('endUsersServed.endUser', 'endUser',`"endUser"."end_user_id" = :userId`, { userId })
                     .where('endUsersServed.id IS NULL') // exclude notifications already sent to the endUser
                     .andWhere(`(notifications.deleted IS FALSE)`)
-                    .andWhere(`((notifications.startDate IS NULL OR notifications.endDate IS NULL) OR 
+                    .andWhere(`((notifications.startDate IS NULL OR notifications.endDate IS NULL) OR
                                 (notifications.startDate <= :endOfDay AND notifications.endDate >= :startOfDay) OR
                                 ((notifications.startDate BETWEEN :startOfDay AND :endOfDay) OR (notifications.endDate BETWEEN :startOfDay AND :endOfDay))
                               )`, { startOfDay, endOfDay })
-                
+
                 if (pageId) {
                     query.andWhere('notifications.pageId = :pageId', { pageId });
                 }
 
                 if (environments && environments.length > 0) {
-                    query.andWhere('(notifications.environments && :environments OR notifications.environments = \'{}\' )', 
+                    query.andWhere('(notifications.environments && :environments OR notifications.environments = \'{}\' )',
                                    { environments });
                 }
-                
+
                 //console.log('Final query:', query.getSql());
                 const notifications = await query.getMany();
 
@@ -182,22 +182,31 @@ export class EZNotificationService {
             return this.apiKeyRepository.manager.transaction(async (transactionalEntityManager) => {
                 console.log('creating a production key with a txn');
                 // Deprecate old prod api key
-                await transactionalEntityManager.update(ApiKey, 
-                                                        { 
-                    apiKeyType: 'production', 
-                    organization: { uuid: organizationUuid }, 
-                    isActive: true 
-                }, 
-                                                        {
-                    isActive: false 
+                const userEntity = await transactionalEntityManager.findOneBy(User, { uuid: userUuid });
+                if (!userEntity) {
+                    throw new Error('User not found');
                 }
-                                                       );
+
+                await transactionalEntityManager.update(
+                    ApiKey,
+                    {
+                        apiKeyType: 'production',
+                        organization: { uuid: organizationUuid },
+                        isActive: true,
+                    },
+                    {
+                        isActive: false,
+                        updatedBy: userEntity,
+                        updatedAt: new Date(),
+                    }
+                );
 
                 // Create new prod API key
                 const newApiKey = transactionalEntityManager.create(ApiKey, {
                     apiKey: apiKeyValue,
                     apiKeyType: 'production',
                     creator: { uuid: userUuid },
+                    updatedBy: { uuid: userUuid },
                     organization: { uuid: organizationUuid },
                     isActive: true,
                 });
@@ -213,6 +222,7 @@ export class EZNotificationService {
                 apiKey : apiKeyValue,
                 apiKeyType: apiKeyType,
                 creator: { uuid: userUuid },
+                updatedBy: { uuid: userUuid },
                 organization: { uuid: organizationUuid },
                 isActive: true,
             });
@@ -242,15 +252,36 @@ export class EZNotificationService {
 
     };
 
-    async toggleApiKeyActive(apiKeyId: string) : Promise<void> {
+    async toggleApiKeyActive(clerkId: string, APIKeyId: string) : Promise<ApiKey> {
         console.log('toggleApiKeyActive');
-        const apiKeyRecord = await this.apiKeyRepository.findOneBy({ id: apiKeyId });
-        if (apiKeyRecord !== null) {
-            await this.apiKeyRepository.update(apiKeyId, {
-                isActive: !apiKeyRecord.isActive
-            });
+        const userOrganization = await this.findUserOrganizationByClerkId(clerkId);
+        if (!userOrganization.length) {
+            throw new Error('User organization not found');
         }
-        return null;
+        console.log('in service findApiKeys,', JSON.stringify(userOrganization, null, 2));
+        const organizationUuid = userOrganization[0].organization.uuid;
+        const userUuid = userOrganization[0].user.uuid;
+
+        return this.apiKeyRepository.manager.transaction(async (transactionalEntityManager) => {
+            // Fetch the API key entity to update
+            const apiKeyEntity = await this.apiKeyRepository.findOneBy({ id: APIKeyId });
+            if (!apiKeyEntity) {
+                throw new Error('API key not found');
+            }
+
+            // Update the entity's properties
+            apiKeyEntity.isActive = (apiKeyEntity.isActive ? false : true );
+            const userEntity = await transactionalEntityManager.findOneBy(User, { uuid: userUuid });
+            if (!userEntity) {
+                throw new Error('User not found');
+            }
+            apiKeyEntity.updatedBy = userEntity;
+            apiKeyEntity.updatedAt = new Date();
+
+            // Save the updated entity
+            return transactionalEntityManager.save(ApiKey, apiKeyEntity);
+        })
+
     }
 
 }

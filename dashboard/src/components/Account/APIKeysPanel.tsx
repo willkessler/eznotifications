@@ -10,7 +10,7 @@ import classes from './css/APIKeys.module.css';
 const APIKeysPanel = () => {
   const [agreeToRegenerateProdKey, setAgreeToRegenerateProdKey] = useState(false);
   const { user } = useUser();
-  const { APIKeys, fetchAPIKeys, createAPIKey,toggleAPIKeyStatus, 
+  const { APIKeys, fetchAPIKeys, createAPIKey, 
           APIKeysLoading, APIKeysLastUpdated, productionAPIKeyValue } = useAPIKeys();
 
   const createProdApiKey = () => {

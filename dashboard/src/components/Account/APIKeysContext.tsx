@@ -50,7 +50,7 @@ export const APIKeysProvider = ({ children }) => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ apiKeyType, clerkId }),
-            });;
+            });
             if (!response.ok) {
                 throw new Error (`HTTP error! status: ${response.status}`);
             } else {
@@ -63,10 +63,14 @@ export const APIKeysProvider = ({ children }) => {
         }
     });
 
-    const toggleAPIKeyStatus = useCallback(async (APIKeyId) => {
+    const toggleAPIKeyStatus = useCallback(async (APIKeyId, clerkId) => {
         try {
-            const APIUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/api-keys/toggle-active/${APIKeyId}`;
-            const response = await fetch(APIUrl);
+            const APIUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/api-keys/toggle-active`;
+            const response = await fetch(APIUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ clerkId, APIKeyId }),
+            });
             if (!response.ok) throw new Error(`Failed to toggle status of API key with id: ${APIKeyId}`);
             setAPIKeysLastUpdated(Date.now()); // update state to trigger the API keys list to rerender
         } catch (error) {
