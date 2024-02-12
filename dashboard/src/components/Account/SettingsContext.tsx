@@ -1,10 +1,20 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useUser } from "@clerk/clerk-react";
 
+interface OrganizationDataProps {
+    name: string,
+    clerkId: string,
+    clerkOrganizationId: string,
+    timezone: string,
+    permittedDomains: string,
+    refreshFrequency: number,
+}
+
 const SettingsContext = createContext({
+    name: 'My Team',
     timezone: 'America/Los_Angeles',
-    permittedDomains: '',
     refreshFrequency: 300, // 5 minutes, in seconds
+    permittedDomains: '',
 });
 
 export const useSettings = () => useContext(SettingsContext);
@@ -17,7 +27,7 @@ export const SettingsProvider = ({ children }) => {
 
     const getSettings = async () => {
         const clerkId = user.id;
-        const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/app-configure?clerkId=${clerkId}`;
+        const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/org-configure?clerkId=${clerkId}`;
         try {
             const response = await fetch(apiUrl);
             if (!response.ok) {
@@ -36,25 +46,57 @@ export const SettingsProvider = ({ children }) => {
         }
     };
         
-    const saveSettings = async () => {
-        const clerkId = user.id;
-        const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/app-configure`;
-        console.log('in saveSettings, permittedDomains:', permittedDomains);
+    const createLocalOrganization = async (organizationData: OrganizationDataProps) => {
+        const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/organization/create`;
+        console.log('in createTeam, calling API to attempt to create an org.');
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ clerkId, timezone, permittedDomains, refreshFrequency }),
+                body: JSON.stringify({ 
+                    name:                organizationData.name,
+                    clerkId:             user.id,
+                    clerkOrganizationId: organizationData.clerkOrganizationId,
+                    timezone:            organizationData.timezone, 
+                    permittedDomains:    organizationData.permittedDomains, 
+                    refreshFrequency:    organizationData.refreshFrequency }),
             });
             if (!response.ok) {
                 throw new Error (`HTTP error! status: ${response.status}`);
             } else {
+                setTimezone(organizationData.timezone);
+                setPermittedDomains(organizationData.permittedDomains);
+                setRefreshFrequency(organizationData.refreshFrequency);                
                 console.log('Stored all settings.');
             }
         } catch (error) {
             console.error(`Error saving settings: ( ${error} ).`);
             throw error;
         }
+
+    }
+
+    const saveSettings = async (clerkOrganizationId: string) => {
+        const clerkId = user.id;
+        const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/org-configure`;
+        console.log('in saveSettings, permittedDomains:', permittedDomains);
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ clerkId, clerkOrganizationId, timezone, permittedDomains, refreshFrequency }),
+            });
+            if (!response.ok) {
+                throw new Error (`HTTP error! status: ${response.status}`);
+            } else {
+                console.log('Stored all settings.');
+                return true;
+            }
+        } catch (error) {
+            console.error(`Error saving settings: ( ${error} ).`);
+            throw error;
+        }
+        return false;
     }
 
     // This is called by onboarding page which doesn't keep state on everything, so passes in some
@@ -70,17 +112,18 @@ export const SettingsProvider = ({ children }) => {
     return (
       <SettingsContext.Provider 
         value={{ 
-          getSettings,
-          saveSettings,
-          saveSettingsWithPresets,
-          timezone,
-          setTimezone,
-          permittedDomains,
-          setPermittedDomains,
-          refreshFrequency,
-          setRefreshFrequency,
+            getSettings,
+            saveSettings,
+            saveSettingsWithPresets,
+            createLocalOrganization,
+            timezone,
+            setTimezone,
+            permittedDomains,
+            setPermittedDomains,
+            refreshFrequency,
+            setRefreshFrequency,
         }}>
-          {children}
+            {children}
         </SettingsContext.Provider>
     );
 };

@@ -148,10 +148,10 @@ export class EZNotificationWebhooks {
         // if it's user.update, then update existing user records 
         // Example of safely accessing nested properties
         console.log('*** CLERK WEBHOOK in webhook handlers ***');
-        console.log(inspect(body, { showHidden: false, depth: null, colors: true }));
+        //console.log(inspect(body, { showHidden: false, depth: null, colors: true }));
 
         const emailAddresses = body?.data?.email_addresses;
-        console.log('This users email is:', emailAddresses);
+        //console.log('This users email is:', emailAddresses);
 
         // Determine the event type
         const eventType = body?.type; // Assuming the event type is specified in `body.event`
@@ -163,10 +163,9 @@ export class EZNotificationWebhooks {
                 await this.createUserFromWebhook(body.data);
                 break;
             case 'user.update':
-                // Your logic here, e.g., updating an existing user record
                 break;
             case 'organizationMembership.created':
-                await this.createUserOrganizationFromWebhook(body.data);
+                console.log('Skipping creating userOrg and Org webhook since both handled by organizationMembership.created.');
                 break;
             case 'organization.created':
                 // Handle new org creation during onboarding

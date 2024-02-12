@@ -16,6 +16,7 @@ export class UserOrganization {
     organization: Organization;
 
     @Column({
+        name: 'role',
         type: 'enum',
         enum: ['Admin', 'Member', 'Guest'],
         default: 'Member'

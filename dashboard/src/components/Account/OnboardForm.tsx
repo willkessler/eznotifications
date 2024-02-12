@@ -9,74 +9,100 @@ const  OnboardForm = () => {
     mt: 'lg',
   };
 
-  const { isLoaded } = useOrganization();
   const { createOrganization } = useOrganizationList();
+  const { isLoaded } = useOrganization();
   const { user } = useUser();
-  const { saveSettingsWithPresets } = useSettings();
-  const [ teamName, setTeamName ] = useState('');
-  const [ teamExists, setTeamExists ] = useState();
+  const { createLocalOrganization, saveSettings } = useSettings();
+  const [ teamName, setTeamName ] = useState('My Team');
+  const [ teamExists, setTeamExists ] = useState(false);
+  const [ initialTeamCreated, setInitialTeamCreated ] = useState(false);
   const [ permittedDomains, setPermittedDomains ] = useState('stackblitz.io\ncodesandbox.io\n');
+  const [ clerkOrganizationId, setClerkOrganizationId ] = useState(null);
   const [ saveButtonDisabled, setSaveButtonDisabled ] = useState(false);
 
   if (!isLoaded) {
     return null; // don't proceed unless we have clerk user record
   }
 
-  if (teamExists) {
-    // If a team exists, then we shouldn't be at this page, so just forward the user to the 
-    // app home page.
-    console.log('Team exists, forwarding to home page.');
-  }
-
-  console.log('teamExists:', teamExists);
-  useEffect(() => {
-    setTeamExists(user.organizationMemberships.length > 0);
-    if (teamExists) {
-      setTeamName(user.organizationMemberships[0].organization.name);
+  const createClerkAndLocalTeams = async () => {
+    try {
+      // create starting clerk and local teams that the user can edit from the current form.
+      console.log(`Trying to create clerk team with name ${teamName}`);
+      const clerkOrganization = await createOrganization({name: teamName});
+      console.log(`Got this organization data from clerk, name: ${clerkOrganization.name}, id:${clerkOrganization.id}`);
+      console.log('Made clerk create call');
+      if (clerkOrganization !== null) {
+        setTeamExists(true);
+        // now create the mirror org on our side
+        try {
+          createLocalOrganization({
+            name: teamName,
+            clerkOrganizationId: clerkOrganization.id,
+            timezone: 'America/Los_Angeles',
+            permittedDomains: permittedDomains,
+            refreshFrequency: 300,
+          });
+          console.log('Setting initialTeamCreated to true.');
+          setInitialTeamCreated(true);
+        } catch (error) {
+          console.error(`Failed to create local organization with error: ${error}`);
+        }
+      }
+    } catch (error) {
+      console.log(`Unable to create clerk team for user ${user.id} with error ${error}`);
     }
-  }, [teamExists, user.organizationMemberships]); 
+  };
+
+  useEffect(() => {
+    console.log(`useEffect depending on teamExists, user:${JSON.stringify(user.organizationMemberships,null,2)}`);
+    setTeamExists(user.organizationMemberships.length > 0);
+    if (!initialTeamCreated && teamExists) {
+      console.log('in useEffect no deps, sending to home page because we didn\'t create a team, and we found a pre-existing team.');
+      window.location = '/';
+    } else {
+      console.log('useEffect depending on teamExists does nothing, initialTeamCreated:', initialTeamCreated);
+    }
+  }, [initialTeamCreated, teamExists, user.organizationMemberships]);
+
+  // This effect is run only during component mount.
+  // Do not do create a team/organization if this user already has a team association in clerk.
+  useEffect(() => {
+    console.log('useEffects, no depends');
+    if (!initialTeamCreated) { 
+      // Create teams on component load if not yet done
+      console.log('useEffects, no depends: calling createClerkAndLocalTeams');
+      createClerkAndLocalTeams(); 
+    } else {
+      console.log('useEffects, no depends, setting teamExists to true.');
+      setTeamExists(true);
+    }
+  }, []);
+
 
   // this already exists in OrgAndTeamPanel, so refactor!
   const setTeamNameAtClerk = async () => {
     const name = teamName;
-    let organization;
-    if (!teamExists) {
-      // We will get a clerk webhook to create the corresponding org on our side and tie current user to it as a member.
-      try {
-        organization = user.organizationMemberships[0].organization;
-        console.log(`updating team name to ${teamName}, org: ${organization}`);
-        await organization.update({ name });
-        return true;
-      } catch (error) {
-        console.log(`Unable to update a team, please try again later. (${error})`);
-      }      
-    } else {
-      try {
-        organization = await createOrganization({name});
-        setTeamExists(true);
-        return true;
-      } catch (error) {
-        console.log(`Unable to create a team, please try again later. (${error})`);
-      }      
-    }
+    try {
+      const organization = user.organizationMemberships[0].organization;
+      console.log(`updating team name to ${teamName}, org: ${organization}`);
+      await organization.update({ name });
+      setClerkOrganizationId(organization.id);
+      return true;
+    } catch (error) {
+      console.log(`Unable to update a team, please try again later. (${error})`);
+    }      
     return false;
-  };
+  }
 
-  const saveConfigAndForward = async () => {
+  const saveConfigAndForwardTheUser = async () => {
     // Set up a team at clerk.com.
     let updatedOrg = false;
     const setTeamOK = await setTeamNameAtClerk();
     if (setTeamOK) {
-      const settingsObj = {
-        timezone: 'America/Los_Angeles',
-        permittedDomains: permittedDomains,
-        refreshFrequency: 300,
-      }
-      console.log('saveSettingsWithPresets');
-      updatedOrg = await saveSettingsWithPresets(settingsObj);
+      updatedOrg = await saveSettings(clerkOrganizationId);
       if (updatedOrg) {
         // Forward to the playground
-        setSaveButtonEnabled(false);
+        setSaveButtonDisabled(true);
         window.location = '/';
       }
     }
@@ -103,11 +129,6 @@ const  OnboardForm = () => {
                 value={teamName}
                 onChange={(e) => setTeamName(e.target.value)}
                 required={true}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    saveTeamName();
-                  }
-                }}
               />
             </div>
 
@@ -129,7 +150,7 @@ const  OnboardForm = () => {
 
           <Text>3. Head on over to the playground to try things out!</Text>
           <Button
-            onClick={saveConfigAndForward}
+            onClick={saveConfigAndForwardTheUser}
             disabled={saveButtonDisabled}
           >
             Save / Go to Playground!

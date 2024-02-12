@@ -23,7 +23,9 @@ const SignUpComponent = () => {
               colorBackground: "#E66118",
             }
           }}
-          signInUrl="/login" />
+          signInUrl="/login" 
+          afterSignUpUrl="/onboard"
+        />
       </AuthLayout>
     </>
   );

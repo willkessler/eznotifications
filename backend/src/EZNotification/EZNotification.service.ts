@@ -7,6 +7,7 @@ import { randomBytes } from 'crypto';
 import { EZNotification } from './entities/EZNotification.entity';
 import { User } from './entities/Users.entity';
 import { Organization } from './entities/Organizations.entity';
+import { PricingModel } from './entities/PricingModels.entity';
 import { PermittedDomains } from './entities/PermittedDomains.entity';
 import { UserOrganization } from './entities/UserOrganizations.entity';
 import { ApiKey } from './entities/ApiKeys.entity';
@@ -17,6 +18,15 @@ interface QueryParamProps {
     userId? : string,
     pageId? : string,
     environments?: string[],
+}
+
+interface OrganizationDataProps {
+    name?: string,
+    clerkId: string,
+    clerkOrganizationId: string,
+    timezone: string,
+    permittedDomains: string,
+    refreshFrequency: number,
 }
 
 @Injectable()
@@ -47,6 +57,9 @@ export class EZNotificationService {
 
         @InjectRepository(PermittedDomains)
         private readonly permittedDomainsRepository: Repository<PermittedDomains>,
+
+        @InjectRepository(PricingModel)
+        private readonly pricingModelRepository: Repository<PricingModel>,
     ) {}
 
     async create(ezNotificationData: Partial<EZNotification>): Promise<EZNotification> {
@@ -157,6 +170,7 @@ export class EZNotificationService {
             .substring(0, length); // Ensure the key is of the desired length
     }
 
+
     async findUserOrganizationByClerkId(clerkId: string): Promise<UserOrganization[]> {
         return this.userOrganizationRepository
             .createQueryBuilder('userOrganization')
@@ -169,6 +183,90 @@ export class EZNotificationService {
             .addSelect('organization.refresh_frequency')
             .addSelect('user.uuid')
             .getMany();
+    }
+
+    async createLocalOrganization(organizationData: OrganizationDataProps) : Promise<Organization> {
+        let theOrganization = null;
+        let existingUserOrganization = null;
+        const basePricingModel = await this.pricingModelRepository.findOne({
+            where: [
+                { name: 'Starter' }
+            ],
+        });
+
+        const existingOrganization = await this.organizationRepository.findOneBy({ clerkId: organizationData.clerkId });
+
+        // Check if the user already exists based on its clerk id
+        const existingUser = await this.userRepository.findOne({
+            where: [
+                { clerkId: organizationData.clerkId }
+            ],
+        });
+
+        if (existingUser && existingOrganization) {
+            existingUserOrganization = await this.userOrganizationRepository.findOne({
+                where: [
+                    { 
+                        user: { uuid: existingUser.uuid },
+                        organization: { uuid: existingOrganization.uuid },
+                    }
+                ],
+            });
+        }
+
+        // check if an org already exists with the given clerkid. If not, create it and bind this user to it.
+        if (existingOrganization === null) {
+            // no org exists with this clerk id, so we need to create a local org according to the passed in data,
+            return this.organizationRepository.manager.transaction(async (transactionalEntityManager) => {
+                const newOrganization = await transactionalEntityManager.create(Organization, {
+                    name: organizationData.name,
+                    clerkId: organizationData.clerkOrganizationId,
+                    creatorClerkId: organizationData.clerkId,
+                    preferredTimezone: organizationData.timezone,
+                    refreshFrequency: organizationData.refreshFrequency,
+                    pricingModel: basePricingModel,
+                });
+
+                await transactionalEntityManager.save(newOrganization);
+                theOrganization = newOrganization;
+                console.log(`Created a new organization with id: ${newOrganization.uuid}`);
+
+                let theUser;
+                if (existingUser) {
+                    theUser = existingUser;
+                } else {
+                    // create a user record if we don't have one for that clerk id
+                    const newUser = transactionalEntityManager.create(User, {});
+                    await transactionalEntityManager.save(newUser);
+                    theUser = newUser;
+                }
+
+                if (existingUserOrganization) {
+                    // set the existingUserOrganization to point to theOrganization
+                    await transactionalEntityManager.update(
+                        UserOrganization,
+                        {
+                            organization: { uuid: existingOrganization.uuid },
+                            user: { uuid: existingUser.uuid },
+                        },
+                        {
+                            organization: { uuid: theOrganization.uuid },
+                            user: { uuid: theUser.uuid },
+                            role: existingUserOrganization.role,
+                        });
+                } else {
+                    const newUserOrganization = transactionalEntityManager.create(UserOrganization, {
+                        user: existingUser,
+                        organization: theOrganization,
+                        type: 'Admin',
+                    });
+                    await transactionalEntityManager.save(newUserOrganization);
+                    console.log(`Created a new user_organization with id: ${newUserOrganization.id}`);
+                }
+                return theOrganization;
+            });
+        }
+        return null;
     }
 
     async createApiKey(apiKeyType: string, clerkId: string): Promise<ApiKey> {
@@ -295,7 +393,7 @@ export class EZNotificationService {
         })
     }
 
-    async getAppConfiguration(clerkId: string) : Promise<{}> {
+    async getOrgConfiguration(clerkId: string) : Promise<{}> {
         const userOrganization = await this.findUserOrganizationByClerkId(clerkId);
 
         if (userOrganization.length == 0) {
@@ -316,33 +414,32 @@ export class EZNotificationService {
         return appConfig;
     }
 
-    async saveAppConfiguration(clerkId: string, 
-                               timezone: string, 
-                               permittedDomainsString: string, 
-                               refreshFrequency: number) : Promise<Organization> {
-        const userOrganization = await this.findUserOrganizationByClerkId(clerkId);
+    async saveOrgConfiguration(appConfiguration: OrganizationDataProps) : Promise<Organization> {
+        console.log(`saveAppConfiguration: ${appConfiguration}`);
+        const userOrganization = await this.findUserOrganizationByClerkId(appConfiguration.clerkId);
         if (userOrganization.length == 0) {
-            console.log(`saveAppConfiguration: Error, could not find organization associated with user with clerk id: ${clerkId}`);
+            console.log(`saveOrgConfiguration: Error, could not find organization associated with user with clerk id: ${appConfiguration.clerkId}`);
             return null;
         }
 
         const organization = userOrganization[0].organization;
         const userUuid = userOrganization[0].user.uuid;
-        organization.preferredTimezone = timezone;
-        organization.refreshFrequency = refreshFrequency;
+        organization.preferredTimezone = appConfiguration.timezone;
+        organization.refreshFrequency = appConfiguration.refreshFrequency;
 
-        console.log('saving organization:', organization, 'permittedDomainsString:', permittedDomainsString);
+        console.log('Saving organization config for organization:',
+                    organization, 'with permittedDomains:', appConfiguration.permittedDomains);
 
         await this.organizationRepository.save(organization);
         // Now split the permitted domains, and remove any previous ones before persisting this new set
         // into the permitted_domains table, each one with a foreign key back to this organization
         
         // Split permittedDomainsString into an array, removing empty strings
-        if (permittedDomainsString) {
-            const permittedDomains = permittedDomainsString.split(/[\s,]+/).filter(domain => domain.trim().length > 0);
+        if (appConfiguration.permittedDomains) {
+            const permittedDomains = appConfiguration.permittedDomains.split(/[\s,]+/).filter(domain => domain.trim().length > 0);
 
             console.log('saving organization:', organization);
-            console.log('permittedDomains:', permittedDomains);
+            console.log('permittedDomains after splitting:', permittedDomains);
 
             // Remove any previous permitted domains
             await this.permittedDomainsRepository.delete({ organization: { uuid: organization.uuid } });
