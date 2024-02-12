@@ -16,6 +16,7 @@ const  OnboardForm = () => {
   const [ teamName, setTeamName ] = useState('');
   const [ teamExists, setTeamExists ] = useState();
   const [ permittedDomains, setPermittedDomains ] = useState('stackblitz.io\ncodesandbox.io\n');
+  const [ saveButtonDisabled, setSaveButtonDisabled ] = useState(false);
 
   if (!isLoaded) {
     return null; // don't proceed unless we have clerk user record
@@ -34,12 +35,12 @@ const  OnboardForm = () => {
       setTeamName(user.organizationMemberships[0].organization.name);
     }
   }, [teamExists, user.organizationMemberships]); 
-    
+
   // this already exists in OrgAndTeamPanel, so refactor!
   const setTeamNameAtClerk = async () => {
     const name = teamName;
     let organization;
-    if (teamExists) {
+    if (!teamExists) {
       // We will get a clerk webhook to create the corresponding org on our side and tie current user to it as a member.
       try {
         organization = user.organizationMemberships[0].organization;
@@ -75,7 +76,8 @@ const  OnboardForm = () => {
       updatedOrg = await saveSettingsWithPresets(settingsObj);
       if (updatedOrg) {
         // Forward to the playground
-        //window.location = '/';
+        setSaveButtonEnabled(false);
+        window.location = '/';
       }
     }
   }
@@ -128,6 +130,7 @@ const  OnboardForm = () => {
           <Text>3. Head on over to the playground to try things out!</Text>
           <Button
             onClick={saveConfigAndForward}
+            disabled={saveButtonDisabled}
           >
             Save / Go to Playground!
           </Button>

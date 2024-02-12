@@ -240,6 +240,11 @@ export class EZNotificationService {
     async findApiKeys(clerkId: string) : Promise<ApiKey[]> {
         const userOrganization = await this.findUserOrganizationByClerkId(clerkId);
         console.log('in service findApiKeys,', JSON.stringify(userOrganization, null, 2));
+        if (userOrganization.length == 0) {
+            console.log(`toggleApiKeyActive: Error, could not find organization associated with user with clerk id: ${clerkId}`);
+            return null;
+        }
+
         const organizationUuid = userOrganization[0].organization.uuid;
         const userUuid = userOrganization[0].user.uuid;
         console.log('find api keys for org:', organizationUuid);
@@ -260,9 +265,11 @@ export class EZNotificationService {
     async toggleApiKeyActive(clerkId: string, APIKeyId: string) : Promise<ApiKey> {
         console.log('toggleApiKeyActive');
         const userOrganization = await this.findUserOrganizationByClerkId(clerkId);
-        if (!userOrganization.length) {
-            throw new Error('User organization not found');
+        if (userOrganization.length == 0) {
+            console.log(`toggleApiKeyActive: Error, could not find organization associated with user with clerk id: ${clerkId}`);
+            return null;
         }
+
         console.log('in service findApiKeys,', JSON.stringify(userOrganization, null, 2));
         const organizationUuid = userOrganization[0].organization.uuid;
         const userUuid = userOrganization[0].user.uuid;
@@ -290,6 +297,12 @@ export class EZNotificationService {
 
     async getAppConfiguration(clerkId: string) : Promise<{}> {
         const userOrganization = await this.findUserOrganizationByClerkId(clerkId);
+
+        if (userOrganization.length == 0) {
+            console.log(`getAppConfiguration: Error, could not find organization associated with user with clerk id: ${clerkId}`);
+            return null;
+        }
+
         const organization = userOrganization[0].organization;
         const organizationUuid = userOrganization[0].organization.uuid;
 
@@ -308,6 +321,11 @@ export class EZNotificationService {
                                permittedDomainsString: string, 
                                refreshFrequency: number) : Promise<Organization> {
         const userOrganization = await this.findUserOrganizationByClerkId(clerkId);
+        if (userOrganization.length == 0) {
+            console.log(`saveAppConfiguration: Error, could not find organization associated with user with clerk id: ${clerkId}`);
+            return null;
+        }
+
         const organization = userOrganization[0].organization;
         const userUuid = userOrganization[0].user.uuid;
         organization.preferredTimezone = timezone;

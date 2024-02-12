@@ -52,7 +52,7 @@ export const SettingsProvider = ({ children }) => {
                 console.log('Stored all settings.');
             }
         } catch (error) {
-            console.error(`Error creating API key of type: ( ${apiKeyType} ).`, error);
+            console.error(`Error saving settings: ( ${error} ).`);
             throw error;
         }
     }
