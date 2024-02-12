@@ -1,0 +1,50 @@
+.introLayout {
+  display: flex;
+  height: 100vh;
+  padding-top:20px;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 220px;
+  padding: 0.1rem;
+  box-sizing: border-box;
+}
+
+.divider {
+  width: 1px;
+  background-color: #666;
+  margin: 0 1rem;
+}
+
+.introBrandTitle {
+  font-weight: bold;
+  color: #E66118;
+}
+
+.introContent {
+  flex-grow: 1;
+  overflow: auto;
+  padding:30px;
+}
+
+.logoStack {
+  padding-bottom: var(--mantine-spacing-md);
+  margin-bottom: calc(var(--mantine-spacing-md) * 1.5);
+  border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.versionContainer {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.logoAnchor {
+  alignSelf: center;
+  width: 100%; /* Make the anchor take up the full width to center the logo */
+}
+
+

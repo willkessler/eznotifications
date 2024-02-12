@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import LogoComponent from './LogoComponent';
 import UserAuthentication from './UserAuthentication';
-import classes from './MainLayout.module.css';
+import classes from './css/MainLayout.module.css';
 
 const MainLayout = () => {
   return (

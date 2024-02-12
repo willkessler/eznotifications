@@ -1,11 +1,10 @@
 import React from 'react';
 import classes from './css/AuthLayout.module.css';
 import { Anchor } from '@mantine/core';
-import { IconArrowElbowRight, 
-         IconEdit, 
+import { IconArrowElbowRight,
+         IconEdit,
          IconTrash
        } from '@tabler/icons-react';
-
 
 const AuthLayout = ({ children, imageUrl }) => (
   <div className={classes.authContainer}>
@@ -18,7 +17,7 @@ const AuthLayout = ({ children, imageUrl }) => (
       </div>
       <div className={classes.customerNameplates}>
         {/* Customer nameplates and icons */}
-        Trusted by these brands: 
+        Trusted by these brands:
           <span className={classes.brandLogo}><IconEdit /></span>
           <span className={classes.brandLogo}><IconTrash /></span>
       </div>

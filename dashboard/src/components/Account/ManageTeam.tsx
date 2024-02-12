@@ -10,10 +10,6 @@ import PendingInvitationsList from './PendingInvitations';
 const ManageTeam = () => {
   const { invitations, organization } = useOrganization({ invitations: {} });
  
-/*  if (!invitations) {
-    return null;
-  }
- */
   return (
     <div style={{marginTop:'30px'}}>
       <Text size="lg">Active Teammates</Text>

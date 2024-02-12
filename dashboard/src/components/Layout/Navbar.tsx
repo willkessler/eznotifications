@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Anchor, Group, Text } from '@mantine/core';
-import classes from './Navbar.module.css';
+import classes from './css/Navbar.module.css';
 import { SignOutButton } from "@clerk/clerk-react"
 
 import {

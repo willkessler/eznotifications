@@ -39,6 +39,7 @@ export const SettingsProvider = ({ children }) => {
     const saveSettings = async () => {
         const clerkId = user.id;
         const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/app-configure`;
+        console.log('in saveSettings, permittedDomains:', permittedDomains);
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -56,11 +57,22 @@ export const SettingsProvider = ({ children }) => {
         }
     }
 
+    // This is called by onboarding page which doesn't keep state on everything, so passes in some
+    // default values to set values on a new org created via onboarding.
+    const saveSettingsWithPresets = async (settingsObj:any) => {
+        console.log(`saveSettingsWithPresets: ` + JSON.stringify(settingsObj));
+        setTimezone(settingsObj.timezone);
+        setPermittedDomains(settingsObj.permittedDomains);
+        setRefreshFrequency(settingsObj.refreshFrequency);
+        await saveSettings();
+    }
+
     return (
       <SettingsContext.Provider 
         value={{ 
           getSettings,
           saveSettings,
+          saveSettingsWithPresets,
           timezone,
           setTimezone,
           permittedDomains,

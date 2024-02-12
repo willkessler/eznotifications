@@ -1,5 +1,5 @@
 import cx from 'clsx';
-import { Anchor, Box, Button, Menu, Modal, Pill, ScrollArea, Spoiler, Switch, Table, Text, Tooltip, rem } from '@mantine/core';
+import { Anchor, Box, Button, Menu, Modal, Pill, ScrollArea, Skeleton, Spoiler, Switch, Table, Text, Tooltip, rem } from '@mantine/core';
 import { IconArrowElbowRight, 
          IconEdit, 
          IconLayoutNavbarExpand, 
@@ -231,6 +231,7 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
 
   return (
       <>
+      <Skeleton visible={notificationsLoading} height="100vh">
           <Table.ScrollContainer minWidth={800}>
           <Table verticalSpacing="md" highlightOnHover >
             <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
@@ -244,6 +245,7 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
             <Table.Tbody>{rows}</Table.Tbody>
           </Table>
       </Table.ScrollContainer>
+    </Skeleton>
     </>
   );
 }

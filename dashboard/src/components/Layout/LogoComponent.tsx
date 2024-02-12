@@ -1,6 +1,6 @@
 import React from 'react';
 import { Anchor, Code, Image, Stack } from '@mantine/core';
-import classes from './MainLayout.module.css';
+import classes from './css/MainLayout.module.css';
 
 const LogoComponent = () => {
   return (
