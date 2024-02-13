@@ -13,8 +13,6 @@ const  OnboardForm = () => {
   const { isSignedIn, user, isLoaded } = useUser();
   const { createLocalOrganization, saveSettings, permittedDomains, setPermittedDomains } = useSettings();
   const [ teamName, setTeamName ] = useState('My Team');
-  const [ teamExists, setTeamExists ] = useState(false);
-  const [ initialTeamCreated, setInitialTeamCreated ] = useState(false);
   const [ clerkOrganizationId, setClerkOrganizationId ] = useState(null);
   const [ saveButtonDisabled, setSaveButtonDisabled ] = useState(false);
 
@@ -42,9 +40,6 @@ const  OnboardForm = () => {
             permittedDomains: permittedDomains,
             refreshFrequency: 300,
           });
-          console.log('Setting initialTeamCreated to true.');
-          setInitialTeamCreated(true);
-          setTeamExists(true);
           console.log(`Setting clerkOrg ${clerkOrganization.id} to active.`);
           const clerkResults = await setActive({ organization: clerkOrganization.id });
         } catch (error) {
@@ -56,28 +51,21 @@ const  OnboardForm = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(`useEffect depending on teamExists, user:${JSON.stringify(user.organizationMemberships,null,2)}, initialTeamCreated: ${initialTeamCreated}, teamExists: ${teamExists}.`);
-    setTeamExists(user.organizationMemberships.length > 0);
-    if (!initialTeamCreated && teamExists) {
-      console.log('in useEffect no deps, sending to home page because we didn\'t create a team, and we found a pre-existing team.');
-      window.location = '/';
-    } else {
-      console.log('useEffect depending on teamExists does nothing, initialTeamCreated:', initialTeamCreated, 'teamExists:', teamExists);
-    }
-  }, [initialTeamCreated, teamExists, user.organizationMemberships]);
-
   // This effect is run only during component mount.
-  // Do not do create a team/organization if this user already has a team association in clerk.
+  // Do not do create a team/organization if this user already has a team association in clerk, just forward to home page
   useEffect(() => {
-    console.log('useEffects, no depends');
-    if (!initialTeamCreated && user.organizationMemberships.length === 0 && isLoaded && isSignedIn) { 
-      // Create teams on component load if not yet done
-      console.log('useEffects, no depends: calling createClerkAndLocalTeams');
-      createClerkAndLocalTeams(); 
+    console.log('useEffects/no depends starts.');
+    if (isLoaded && isSignedIn) {
+      if (user.organizationMemberships.length > 0) {
+        // this user already has an org or belongs to an org so send them back to the home page
+        window.location = '/';
+      } else {
+        // Create teams on component load if not yet done
+        console.log('useEffects, no depends: calling createClerkAndLocalTeams');
+        createClerkAndLocalTeams(); 
+      }
     } else {
-      console.log('useEffects, no depends, setting teamExists to true.');
-      setTeamExists(true);
+      console.log('useEffects/no depends, doing nothing.');
     }
   }, []);
 

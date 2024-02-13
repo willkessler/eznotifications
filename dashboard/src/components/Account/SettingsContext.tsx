@@ -21,7 +21,7 @@ export const useSettings = () => useContext(SettingsContext);
 
 export const SettingsProvider = ({ children }) => {
     const [ timezone, setTimezone ] = useState('America/Los_Angeles');
-    const [ permittedDomains, setPermittedDomains ] = useState('');
+    const [ permittedDomains, setPermittedDomains ] = useState('stackblitz.io\ncodesandbox.io\n');
     const [ refreshFrequency, setRefreshFrequency ] = useState(300); // seconds
     const { user } = useUser();
 
