@@ -8,8 +8,14 @@ import MemberList from './MemberList';
 import PendingInvitationsList from './PendingInvitations';
  
 const ManageTeam = () => {
+  const { isSignedIn, isLoaded } = useUser();
   const { invitations, organization } = useOrganization({ invitations: {} });
+  const [invitationData, setInvitationData] = useState([]);
  
+  if (!isLoaded || !isSignedIn || !invitations) {
+    return null;
+  }
+
   return (
     <div style={{marginTop:'30px'}}>
       <Text size="lg">Active Teammates</Text>
@@ -18,7 +24,7 @@ const ManageTeam = () => {
       )}
       <MemberList />
       <PendingInvitationsList />
-      <InviteMember />
+      {/*      <InviteMember />*/}
     </div>
   );
 }

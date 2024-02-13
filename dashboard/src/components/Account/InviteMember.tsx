@@ -4,12 +4,29 @@ import { useUser, useOrganization } from "@clerk/clerk-react";
 import { Anchor, Button, Group, Radio, Table, TextInput, Textarea, Text } from '@mantine/core';
 
 const InviteMember = () => {
-  const { organization, membership, isLoaded, invitationList } = useOrganization({ invitations: true });
-  const [emailAddress, setEmailAddress] = useState('');
-  const [isValidEmail, setIsValidEmail] = useState(false);
-  const [role, setRole] = useState('org:member');
-  const [disabled, setDisabled] = useState(false);
+  const { user, isSignedIn } = useUser();
+  const { isLoaded, organization, invitations } = useOrganization({ invitations: true });
+  const [ emailAddress, setEmailAddress ] = useState('');
+  const [ isValidEmail, setIsValidEmail ] = useState(false);
+  const [ role, setRole ] = useState('org:member');
+  const [ disabled, setDisabled ] = useState(false);
  
+  if (!(isLoaded && isSignedIn)) {
+    return null;
+  } else {
+    console.log(`InviteMember organization: ${organization}`);
+  }
+    
+/*
+  console.log(`organization:${JSON.stringify(organization, null, 2)}`);
+
+  useEffect(() => {
+    if (isLoaded) {
+      setOrganization(user.organizationMemberships[0].organization);
+    }
+  });
+*/
+
   const validateEmail = (email) => {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
@@ -25,6 +42,7 @@ const InviteMember = () => {
   const sendInvitation = async (e) => {
     e.preventDefault();
     setDisabled(true);
+    console.log(`sendInvitation, organization:${JSON.stringify(organization, null, 2)}, organization.inviteMember: $`);
     await organization.inviteMember({ emailAddress, role });
     setEmailAddress('');
     setRole(role);

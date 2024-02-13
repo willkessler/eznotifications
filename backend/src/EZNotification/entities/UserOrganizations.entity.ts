@@ -4,8 +4,8 @@ import { Organization } from './Organizations.entity';
 
 @Entity('user_organizations')
 export class UserOrganization {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    uuid: number;
 
     @ManyToOne(() => User, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'user_uuid' })

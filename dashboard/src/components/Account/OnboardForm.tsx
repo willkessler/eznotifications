@@ -9,14 +9,12 @@ const  OnboardForm = () => {
     mt: 'lg',
   };
 
-  const { createOrganization } = useOrganizationList();
-  const { isLoaded } = useOrganization();
-  const { user } = useUser();
-  const { createLocalOrganization, saveSettings } = useSettings();
+  const { createOrganization, setActive } = useOrganizationList();
+  const { isSignedIn, user, isLoaded } = useUser();
+  const { createLocalOrganization, saveSettings, permittedDomains, setPermittedDomains } = useSettings();
   const [ teamName, setTeamName ] = useState('My Team');
   const [ teamExists, setTeamExists ] = useState(false);
   const [ initialTeamCreated, setInitialTeamCreated ] = useState(false);
-  const [ permittedDomains, setPermittedDomains ] = useState('stackblitz.io\ncodesandbox.io\n');
   const [ clerkOrganizationId, setClerkOrganizationId ] = useState(null);
   const [ saveButtonDisabled, setSaveButtonDisabled ] = useState(false);
 
@@ -32,10 +30,12 @@ const  OnboardForm = () => {
       console.log(`Got this organization data from clerk, name: ${clerkOrganization.name}, id:${clerkOrganization.id}`);
       console.log('Made clerk create call');
       if (clerkOrganization !== null) {
-        setTeamExists(true);
-        // now create the mirror org on our side
+        // First we have to tell the front-end clerk session to make the  new org active,
+        // or else it doesn't think this user belongs to the new clerk org :(
+        // Now create the "local" mirror org on our side.
         try {
-          createLocalOrganization({
+          console.log('Hitting API to create local org.');
+          await createLocalOrganization({
             name: teamName,
             clerkOrganizationId: clerkOrganization.id,
             timezone: 'America/Los_Angeles',
@@ -44,6 +44,9 @@ const  OnboardForm = () => {
           });
           console.log('Setting initialTeamCreated to true.');
           setInitialTeamCreated(true);
+          setTeamExists(true);
+          console.log(`Setting clerkOrg ${clerkOrganization.id} to active.`);
+          const clerkResults = await setActive({ organization: clerkOrganization.id });
         } catch (error) {
           console.error(`Failed to create local organization with error: ${error}`);
         }
@@ -54,13 +57,13 @@ const  OnboardForm = () => {
   };
 
   useEffect(() => {
-    console.log(`useEffect depending on teamExists, user:${JSON.stringify(user.organizationMemberships,null,2)}`);
+    console.log(`useEffect depending on teamExists, user:${JSON.stringify(user.organizationMemberships,null,2)}, initialTeamCreated: ${initialTeamCreated}, teamExists: ${teamExists}.`);
     setTeamExists(user.organizationMemberships.length > 0);
     if (!initialTeamCreated && teamExists) {
       console.log('in useEffect no deps, sending to home page because we didn\'t create a team, and we found a pre-existing team.');
       window.location = '/';
     } else {
-      console.log('useEffect depending on teamExists does nothing, initialTeamCreated:', initialTeamCreated);
+      console.log('useEffect depending on teamExists does nothing, initialTeamCreated:', initialTeamCreated, 'teamExists:', teamExists);
     }
   }, [initialTeamCreated, teamExists, user.organizationMemberships]);
 
@@ -68,7 +71,7 @@ const  OnboardForm = () => {
   // Do not do create a team/organization if this user already has a team association in clerk.
   useEffect(() => {
     console.log('useEffects, no depends');
-    if (!initialTeamCreated) { 
+    if (!initialTeamCreated && user.organizationMemberships.length === 0 && isLoaded && isSignedIn) { 
       // Create teams on component load if not yet done
       console.log('useEffects, no depends: calling createClerkAndLocalTeams');
       createClerkAndLocalTeams(); 

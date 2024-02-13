@@ -136,7 +136,7 @@ export class EZNotificationWebhooks {
                     type: 'Admin',
                 });
                 await transactionalEntityManager.save(newUserOrganization);
-                console.log(`Created a new user_organization with id: ${newUserOrganization.id}`);
+                console.log(`Created a new user_organization with id: ${newUserOrganization.uuid}`);
             }
 
             return theOrganization;
