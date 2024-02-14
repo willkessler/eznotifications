@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EZNotification } from './entities/EZNotification.entity';
 import { EZNotificationService } from './EZNotification.service';
-import { EZNotificationWebhooks } from './EZNotification.webhooks';
 import { EZNotificationController, LoggerMiddleware } from './EZNotification.controller';
+import { WebhookController } from '../webhook/webhook.controller';
 import { EndUser } from './entities/EndUsers.entity';
 import { EndUsersServed } from './entities/EndUsersServed.entity';
 import { User } from './entities/Users.entity';
@@ -15,7 +15,7 @@ import { ApiKey } from './entities/ApiKeys.entity';
 
 @Module({
     imports: [TypeOrmModule.forFeature([EZNotification, EndUser, EndUsersServed, ApiKey, User, Organization, PricingModel, PermittedDomains, UserOrganization ])],
-    controllers: [EZNotificationController],
-    providers: [EZNotificationService, EZNotificationWebhooks],
+    controllers: [EZNotificationController, WebhookController],
+    providers: [EZNotificationService, WebhookController],
 })
 export class EZNotificationModule {}

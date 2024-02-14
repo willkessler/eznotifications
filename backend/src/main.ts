@@ -3,10 +3,23 @@ import { AppModule } from './app/app.module';
 import { ConfigModule } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as dotenv from 'dotenv';
+import * as express from 'express';
 
 async function bootstrap() {
     dotenv.config();
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, { bodyParser: false }); // Disable automatic body parsing
+
+    // Middleware to capture raw body and make it available as a rawBody attribute on the request
+    app.use('/eznotifications/webhook/clerk', express.raw({ type: 'application/json' }), (req, res, next) => {
+        req.rawBody = req.body; // Capture raw body
+        //console.log('Raw body captured:', req.rawBody);
+        next();
+    });
+
+    // Re-enable body parsing for other routes
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+
     app.setGlobalPrefix('eznotifications'); // all API paths must start with 'eznotifications'
 
     app.enableCors({

@@ -415,7 +415,7 @@ export class EZNotificationService {
         })
     }
 
-    async getOrgConfiguration(clerkId: string) : Promise<OrganizationDataProps || null> {
+    async getOrgConfiguration(clerkId: string): Promise<OrganizationDataProps | null> {
         console.log('getOrgConfiguration: calling findUserOrganizationByClerkId');
         const userOrganizations = await this.findUserOrganizationByClerkId(clerkId);
 
@@ -434,12 +434,12 @@ export class EZNotificationService {
         const permittedDomains = await this.permittedDomainsRepository.find({ where: { organizationUuid } });
         const permittedDomainsString = permittedDomains.map(pd => pd.domain).join('\n');
         const orgConfig:OrganizationDataProps = {
-            name:             organization.name,
-            clerkCreatorId:   organization.clerkCreatorId,
-            clerkOrganizerId: organization.clerkOrganizerId,
-            timezone:         organization.preferredTimezone,
-            permittedDomains: permittedDomainsString,
-            refreshFrequency: organization.refreshFrequency
+            name:                organization.name,
+            clerkCreatorId:      organization.clerkCreatorId,
+            clerkOrganizationId: organization.clerkOrganizationId,
+            timezone:            organization.preferredTimezone,
+            permittedDomains:    permittedDomainsString,
+            refreshFrequency:    organization.refreshFrequency
         };
         console.log('orgConfig:', orgConfig)
         return orgConfig;

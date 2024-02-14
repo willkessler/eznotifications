@@ -6,7 +6,6 @@ import { Connection, Repository, MoreThan } from 'typeorm';
 
 import { EZNotification } from './entities/EZNotification.entity';
 import { EZNotificationService } from './EZNotification.service';
-import { EZNotificationWebhooks } from './EZNotification.webhooks';
 import { Organization } from './entities/Organizations.entity';
 import { EndUser } from './entities/EndUsers.entity';
 import { EndUsersServed } from './entities/EndUsersServed.entity';
@@ -16,16 +15,9 @@ import { ApiKey } from './entities/ApiKeys.entity';
 export class EZNotificationController {
     constructor(
         private connection: Connection,
-        private EZNotificationWebhooks: EZNotificationWebhooks,
         private readonly EZNotificationService: EZNotificationService,
 
     ) {}
-
-    // Handle the clerk webhook callbacks in the service file
-    @Post('/clerkWebhook')
-    async handleClerkWebhook(@Body() body:any) {
-        return this.EZNotificationWebhooks.handleClerkWebhook(body);
-    }
 
     @Post('/organization/create')
     async createOrganization(
