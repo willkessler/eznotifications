@@ -17,10 +17,30 @@ const  OnboardForm = () => {
   const [ saveButtonDisabled, setSaveButtonDisabled ] = useState(false);
 
   if (!isLoaded) {
-    return null; // don't proceed unless we have clerk user record
+    return null; // Don't proceed until we have clerk's user record
   }
 
-  const createClerkAndLocalTeams = async () => {
+  const createOurTeam = async() => {
+    try {
+      console.log('Hitting API to create local org.');
+      // Our API is idempotent.
+      // If an org on our side already exists with this clerk org id, it won't create it.
+      await createLocalOrganization({
+        name: teamName,
+        clerkEmail: user.primaryEmailAddress.emailAddress, // primary email stored at  clerk of the owner of the new org.
+        clerkUserId: user.id, // clerkId of the owner of the new org.
+        clerkOrganizationId: clerkOrganizationId,
+        timezone: 'America/Los_Angeles',
+        permittedDomains: permittedDomains,
+        refreshFrequency: 300,
+      });
+    } catch (error) {
+      console.error(`Failed to create local organization with error: ${error}`);
+    }
+
+  }
+
+  const createClerkTeam = async () => {
     try {
       // create starting clerk and local teams that the user can edit from the current form.
       console.log(`Trying to create clerk team with name ${teamName}`);
@@ -28,23 +48,11 @@ const  OnboardForm = () => {
       console.log(`Got this organization data from clerk, name: ${clerkOrganization.name}, id:${clerkOrganization.id}`);
       console.log('Made clerk create call');
       if (clerkOrganization !== null) {
-        // First we have to tell the front-end clerk session to make the  new org active,
+        setClerkOrganizationId(clerkOrganization.id);
+        // We have to tell the front-end clerk session to make the new org active,
         // or else it doesn't think this user belongs to the new clerk org :(
-        // Now create the "local" mirror org on our side.
-        try {
-          console.log('Hitting API to create local org.');
-          await createLocalOrganization({
-            name: teamName,
-            clerkOrganizationId: clerkOrganization.id,
-            timezone: 'America/Los_Angeles',
-            permittedDomains: permittedDomains,
-            refreshFrequency: 300,
-          });
-          console.log(`Setting clerkOrg ${clerkOrganization.id} to active.`);
-          const clerkResults = await setActive({ organization: clerkOrganization.id });
-        } catch (error) {
-          console.error(`Failed to create local organization with error: ${error}`);
-        }
+        console.log(`Setting clerkOrg ${clerkOrganization.id} to active.`);
+        const clerkResults = await setActive({ organization: clerkOrganization.id });
       }
     } catch (error) {
       console.log(`Unable to create clerk team for user ${user.id} with error ${error}`);
@@ -60,9 +68,10 @@ const  OnboardForm = () => {
         // this user already has an org or belongs to an org so send them back to the home page
         window.location = '/';
       } else {
-        // Create teams on component load if not yet done
+        // Create starter teams on component load if they don't exist yet
         console.log('useEffects, no depends: calling createClerkAndLocalTeams');
-        createClerkAndLocalTeams(); 
+        createClerkTeam();
+        createOurTeam();
       }
     } else {
       console.log('useEffects/no depends, doing nothing.');
@@ -81,15 +90,18 @@ const  OnboardForm = () => {
       return true;
     } catch (error) {
       console.log(`Unable to update a team, please try again later. (${error})`);
-    }      
+    }
     return false;
   }
 
   const saveConfigAndForwardTheUser = async () => {
     // Set up a team at clerk.com.
     let updatedOrg = false;
+    // Update the clerk org's name to whatever the user has entered in the form
     const setTeamOK = await setTeamNameAtClerk();
     if (setTeamOK) {
+      // Update the remainder of the settings of our local org, and
+      // then forward to the home page
       updatedOrg = await saveSettings(clerkOrganizationId);
       if (updatedOrg) {
         // Forward to the playground
@@ -108,13 +120,13 @@ const  OnboardForm = () => {
       <Container {...demoProps}>
         <Title order={3}>Getting started is easy!</Title>
         <Space h="md" />
-        <Stack 
+        <Stack
           align="flex-start"
           bg="var(--mantine-color-body)"
         >
           <Text>1. Enter your team name:</Text>
             <div >
-              <TextInput 
+              <TextInput
                 description="You'll need a team to add colleagues to the service. (OK to leave this as-is for now, if you prefer.)"
                 w="600"
                 value={teamName}
@@ -126,7 +138,7 @@ const  OnboardForm = () => {
           <Space h="sm" />
           <Text>2. Enter any approved domains where you'll display your notifications.</Text>
 
-          <Textarea 
+          <Textarea
             style={{maxWidth:'620px'}}
             title="foo"
             description="We have included the playground site's domain (Stackblitz), so you can test out things out quickly. Feel free to add your domains as well."
@@ -147,7 +159,7 @@ const  OnboardForm = () => {
             Save / Go to Playground!
           </Button>
           <Text size="xs" style={{fontStyle:'italic'}}>Note, we've created a test notification for you already so you can test things immediately.</Text>
-        </Stack>       
+        </Stack>
       </Container>
     </>
   );

@@ -79,7 +79,7 @@ const GlobalSettingsPanel = () => {
           description="All of your notifications will be configured in this timezone (regardless of where the recipient is). It's best to set this to a timezone that makes the most sense to you and your team."
           placeholder="Select your timezone"
           style={{maxWidth:'620px',marginTop:'10px'}}
-          value={timezone}
+          value={timezone || timezoneOptions[0]}
           data={timezoneOptions}
           searchable
           allowDeselect={false}
@@ -97,7 +97,7 @@ example2.com
           size="sm"
           minRows={5}
           autosize
-          value={permittedDomains}
+          value={permittedDomains || ''}
           onChange={(e) => { handlePermittedDomainsChange(e) }}
         />
 
@@ -106,7 +106,7 @@ example2.com
           description="Enter how frequently you want the SDK to check for new notifications for an active user. (Note: if you are calling the 'This is Not a Drill!' API directly, this won't apply to you.)"
           style={{maxWidth:'620px',marginTop:'5px'}}
           size="sm"
-          value={refreshFrequency}
+          value={refreshFrequency || 300}
           onChange={(e) => { handleRefreshFrequencyChange(e) }}
           required
         />

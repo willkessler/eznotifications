@@ -44,7 +44,7 @@ const UserAuthentication = () => {
       
   if (isSignedIn && isLoaded) {
     //console.log(organization);
-    console.log(`clerk thinks organization = ${JSON.stringify(organization,null,2)}`);
+    //console.log(`clerk thinks organization = ${JSON.stringify(organization,null,2)}`);
 
     let organizationName = 'Not set up yet';
     if (user.organizationMemberships &&

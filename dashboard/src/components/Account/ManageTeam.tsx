@@ -5,7 +5,7 @@ import { useUser, useOrganization } from "@clerk/clerk-react";
 import classes from './css/InviteUser.module.css';
 import InviteMember from './InviteMember';
 import MemberList from './MemberList';
-import PendingInvitationsList from './PendingInvitations';
+import InvitationsManager from './InvitationsManager';
  
 const ManageTeam = () => {
   const { isSignedIn, isLoaded } = useUser();
@@ -23,8 +23,7 @@ const ManageTeam = () => {
         <Text size="xs">(You haven't invited any teammates yet. Invite one below.)</Text>
       )}
       <MemberList />
-      <PendingInvitationsList />
-      {/*      <InviteMember />*/}
+      <InvitationsManager />
     </div>
   );
 }

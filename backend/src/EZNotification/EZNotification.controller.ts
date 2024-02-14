@@ -30,16 +30,18 @@ export class EZNotificationController {
     @Post('/organization/create')
     async createOrganization(
         @Body('name') name: string,
-        @Body('clerkId') clerkId: string,
+        @Body('clerkCreatorId') clerkCreatorId: string,
         @Body('clerkOrganizationId') clerkOrganizationId: string,
+        @Body('clerkEmail') clerkEmail: string,
         @Body('timezone') timezone: string,
         @Body('permittedDomains') permittedDomains: string,
         @Body('refreshFrequency') refreshFrequency: number,
     ): Promise<Organization> {
         const organizationData = {
             name,
-            clerkId,
+            clerkCreatorId,
             clerkOrganizationId,
+            clerkEmail,
             timezone,
             permittedDomains,
             refreshFrequency
@@ -51,6 +53,32 @@ export class EZNotificationController {
             await this.EZNotificationService.saveOrgConfiguration(organizationData);
         }
         return newOrganization;
+    }
+
+    @Get('/organization/configure')
+    getAppConfiguration(
+        @Query('clerkId') clerkId: string
+    ) {
+        console.log('controller get app configuration');
+        return this.EZNotificationService.getOrgConfiguration(clerkId);
+    };
+
+    @Post('/organization/configure')
+    async saveOrgConfiguration(
+        @Body('clerkCreatorId') clerkCreatorId: string,
+        @Body('clerkOrganizationId') clerkOrganizationId: string,
+        @Body('timezone') timezone: string,
+        @Body('permittedDomains') permittedDomains: string,
+        @Body('refreshFrequency') refreshFrequency: number,
+    ): Promise<Organization> {
+        console.log('Configure saving settings.');
+        return this.EZNotificationService.saveOrgConfiguration({
+            clerkCreatorId,
+            clerkOrganizationId, 
+            timezone, 
+            permittedDomains, 
+            refreshFrequency
+        });
     }
 
     @Get('/api-keys')
@@ -81,32 +109,6 @@ export class EZNotificationController {
     @Post('/new')
     async create(@Body() EZNotificationData: Partial<EZNotification>): Promise<EZNotification> {
         return this.EZNotificationService.create(EZNotificationData);
-    }
-
-    @Get('/org-configure')
-    getAppConfiguration(
-        @Query('clerkId') clerkId: string
-    ) {
-        console.log('controller get app configuration');
-        return this.EZNotificationService.getOrgConfiguration(clerkId);
-    };
-
-    @Post('/org-configure')
-    async saveOrgConfiguration(
-        @Body('clerkId') clerkId: string,
-        @Body('clerkOrganizationId') clerkOrganizationId: string,
-        @Body('timezone') timezone: string,
-        @Body('permittedDomains') permittedDomains: string,
-        @Body('refreshFrequency') refreshFrequency: number,
-    ): Promise<Organization> {
-        console.log('Configure saving settings.');
-        return this.EZNotificationService.saveOrgConfiguration({
-            clerkId,
-            clerkOrganizationId, 
-            timezone, 
-            permittedDomains, 
-            refreshFrequency
-        });
     }
 
     @Get()

@@ -27,11 +27,13 @@ export class Organization {
     @Column({ name: 'refresh_frequency', type: 'int' })
     refreshFrequency: number;
     
-    @Column({ name: 'clerk_id', type: 'varchar', length: '256', nullable: true })
-    clerkId: string;
+    // The clerk id of the clerk organization that this local org mirrors.
+    @Column({ name: 'clerk_organization_id', type: 'varchar', length: '256', nullable: true })
+    clerkOrganizationId: string;
 
-    @Column({ name: 'creator_clerk_id', type: 'varchar', length: '256', nullable: true })
-    creatorClerkId: string;
+    // The clerk id of the user that created this local org when onboarding.
+    @Column({ name: 'clerk_creator_id', type: 'varchar', length: '256', nullable: true })
+    clerkCreatorId: string;
 
     @ManyToMany(() => User)
     users: User[];

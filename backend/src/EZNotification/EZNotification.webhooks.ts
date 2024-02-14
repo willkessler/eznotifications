@@ -82,7 +82,7 @@ export class EZNotificationWebhooks {
         // Check if the org already exists based on its clerk id
         existingOrganization = await this.organizationRepository.findOne({
             where: [
-                { clerkId: clerkOrganizationId }
+                { clerkOrganizationId: clerkOrganizationId }
             ],
         });
 
