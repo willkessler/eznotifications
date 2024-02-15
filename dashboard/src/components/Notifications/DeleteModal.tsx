@@ -3,8 +3,10 @@ import { Anchor, Button, Modal } from '@mantine/core';
 import classes from './Banner.module.css';
 import { renderMarkdown } from '../../lib/RenderMarkdown';
 import { useNotifications } from '../Notifications/NotificationsContext';
+import { useUser } from "@clerk/clerk-react";
 
 const DeleteModal = () => {
+  const { user } = useUser();
   const { isDeleteModalOpen, deleteNotification, closeDeleteModal, deletedNotificationContents } = useNotifications();
   const doubleCheckContentsMd = renderMarkdown(deletedNotificationContents, false);
   
@@ -25,7 +27,7 @@ const DeleteModal = () => {
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems:'center', marginTop:'30px' }}>
             <Anchor onClick={() => { closeDeleteModal() }} style={{ marginRight:'10px', color:'#999'}}>Cancel</Anchor>
-            <Button onClick={() => { deleteNotification() }}>OK</Button>
+            <Button onClick={() => { deleteNotification(user.id) }}>OK</Button>
           </div>
         </Modal.Body>
       </Modal.Content>

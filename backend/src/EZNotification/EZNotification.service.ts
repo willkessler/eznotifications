@@ -64,16 +64,37 @@ export class EZNotificationService {
         private readonly pricingModelRepository: Repository<PricingModel>,
     ) {}
 
-    async createNotification(ezNotificationData: Partial<EZNotification>): Promise<EZNotification> {
+    async createNotification(ezNotificationData: Partial<EZNotification>, clerkCreatorId: string): Promise<EZNotification> {
+        console.log(`createNotification: ezNotificationData -> ${ezNotificationData}`);
         if (ezNotificationData.id) {
             throw new NotFoundException('Do not pass an ID to create a new EZNotification.');
         }
-        const ezNotification = this.ezNotificationRepository.create(ezNotificationData);
-        return this.ezNotificationRepository.save(ezNotification);
+        // Look up org for the given user, and the user record to set the creator
+        const userOrganization = await this.findUserOrganizationByClerkId(clerkCreatorId);
+        if (userOrganization.length > 0) {
+            ezNotificationData.creator = userOrganization[0].user;
+            ezNotificationData.organization = userOrganization[0].organization;
+            const ezNotification = this.ezNotificationRepository.create(ezNotificationData);
+            return this.ezNotificationRepository.save(ezNotification);
+        } else {
+            throw new NotFoundException(`Org not found for clerk creator id: ${clerkCreatorId}.`);
+        }
+    }
+
+    async updateNotification(id: string, updateData: Partial<EZNotification>, clerkCreatorId: string): Promise<EZNotification> {
+        const ezNotification = await this.ezNotificationRepository.findOneBy({ id: id });
+        if (ezNotification) {
+            console.log(updateData);
+            Object.assign(ezNotification, updateData);
+            return this.ezNotificationRepository.save(ezNotification);
+        } else {
+            throw new NotFoundException(`EZNotification with ID ${id} not found.`);
+        }
+        return null;
     }
 
     async findAllNotifications(queryParams: QueryParamProps): Promise<EZNotification[]> {
-        //console.log('findAll queryParams:', queryParams);
+        console.log('findAll queryParams:', queryParams);
         if (queryParams.clerkUserId !== null) {
             // The dashboard will send a clerk user id, we can use this to find the org for that user
             // and then pull up notifs for that org.
@@ -149,18 +170,6 @@ export class EZNotificationService {
 
     findOneNotification(id: string): Promise<EZNotification> {
         return this.ezNotificationRepository.findOneBy({ id: id });
-    }
-
-    async updateNotification(id: string, updateData: Partial<EZNotification>): Promise<EZNotification> {
-        const ezNotification = await this.ezNotificationRepository.findOneBy({ id: id });
-        if (ezNotification) {
-            console.log(updateData);
-            Object.assign(ezNotification, updateData);
-            return this.ezNotificationRepository.save(ezNotification);
-        } else {
-            throw new NotFoundException(`EZNotification with ID ${id} not found.`);
-        }
-        return null;
     }
 
     async deleteNotification(id: string): Promise<void> {

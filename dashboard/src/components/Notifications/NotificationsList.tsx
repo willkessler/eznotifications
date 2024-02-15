@@ -17,12 +17,14 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useNotifications } from './NotificationsContext';
 import { addPreviewCaveatToString } from '../../lib/RenderMarkdown';
 
-const NotificationsList = ({displayPreviewModal, closePreviewModal, clerkUserId }) => {
+const NotificationsList = () => {
     const [ scrolled, setScrolled ] = useState(false);
     const { openModal, showBanner, showPreviewModal, showDeleteModal, 
             highlightedId, notifications, submitNotification, fetchNotifications,
             notificationsLoading } = useNotifications();
   const { isSignedIn, user, isLoaded } = useUser();
+
+    const clerkUserId = user.id;
 
   // Set up the demo toaster
   const toastNotify = (message) => { 
@@ -91,6 +93,7 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal, clerkUserId 
       notificationDataCopy.live = checked;
       notificationDataCopy.editing = true;
       notificationDataCopy.updatedAt = new Date().toISOString();
+      notificationDataCopy.clerkUserId = user?.id;
       await submitNotification(notificationDataCopy);
   }
 
@@ -104,16 +107,16 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal, clerkUserId 
     );
   };
   
-  useEffect(() => {
+    useEffect(() => {
       const fetchData = async () => {
-        const clerkUserId = user?.id;
+        console.log('clerkUserId in fetchData=', clerkUserId);
         await fetchNotifications(clerkUserId);
       };
 
     if (isLoaded && isSignedIn) {
       fetchData();
     }
-  }, [fetchNotifications]);
+  }, [fetchNotifications,clerkUserId]);
     
     const formatDisplayDate = (prefix, date) => {
       return (date == null ? '' : 

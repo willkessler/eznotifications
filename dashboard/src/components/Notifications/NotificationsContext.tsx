@@ -67,7 +67,7 @@ export const NotificationsProvider = ({ children }) => {
         setIsDeleteModalOpen(false);
     };
 
-    const actuallyDeleteNotification = useCallback(async (deletedNotificationId) => {
+    const actuallyDeleteNotification = useCallback(async (deletedNotificationId, clerkUserId) => {
         try {
             const method = 'DELETE';
             const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/notifications/${deletedNotificationId}`;
@@ -77,7 +77,7 @@ export const NotificationsProvider = ({ children }) => {
             });
             if (!response.ok) throw new Error('Failed to delete notification with id: ' + deletedNotificationId);
 
-            await fetchNotifications();
+            await fetchNotifications(clerkUserId);
             setNotificationsLastUpdated(Date.now()); // update state to trigger the notifications list to rerender
         } catch (error) {
             console.error(`Error deleting notification with id:${deletedNotificationId}`, error);
@@ -87,9 +87,9 @@ export const NotificationsProvider = ({ children }) => {
         }
     }, []);
     
-    const deleteNotification = () => {
+    const deleteNotification = (clerkUserId) => {
         //console.log('Actually deleting notification with id:', deletedNotificationId);
-        actuallyDeleteNotification(deletedNotificationId);
+        actuallyDeleteNotification(deletedNotificationId, clerkUserId);
         setIsDeleteModalOpen(false);
         setDeletedNotificationContents('');
         setDeletedNotificationId(null);
@@ -147,21 +147,37 @@ export const NotificationsProvider = ({ children }) => {
     
 
     const submitNotification = useCallback(async (notificationData) => {
-        //console.log('Notification data on form submit:', notificationData);
+        console.log('Notification data on form submit:', notificationData);
         const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
         const action = (notificationData.editing ? 'updated' : 'created' );
         const apiUrl = `/api/eznotifications/notifications` + (notificationData.editing ? '/' + notificationData.id : '/new');
 
         try {
+            const postingObject = {
+                EZNotificationData: {
+                    content: notificationData.content,
+                    startDate: notificationData.startDate,
+                    endDate: notificationData.endDate,
+                    environments: [...notificationData.environments],
+                    live: notificationData.live,
+                    notificationType: notificationData.type,
+                    notificationTypeOther: notificationData.typeOther,
+                    pageId: notificationData.pageId || '',
+                },
+                clerkCreatorId: notificationData.clerkCreatorId,
+            };
+            console.log('Posting object before stringificiation:', postingObject);
+            const postingObjectString = JSON.stringify(postingObject);
+            console.log(`submitNotification with body: ${JSON.stringify(postingObject)}`);
             const response = await fetch(apiUrl, {
                 method: method,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(notificationData),
-            })
+                body: postingObjectString,
+            });
             const data = await response.json();
             console.log('Notification was ' + action + ' with:', data);
             highlightNotification(data.id);
-            await fetchNotifications();
+            await fetchNotifications(notificationData.clerkCreatorId);
             setNotificationsLastUpdated(Date.now()); // update state to trigger the notifications list to rerender
         } catch(error) {
             console.error('Error creating notification:', error);

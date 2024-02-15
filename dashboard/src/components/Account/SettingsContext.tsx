@@ -61,12 +61,12 @@ export const SettingsProvider = ({ children }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     organizationName: organizationName,
-                    clerkCreatorId: clerkCreatorId,
                     clerkOrganizationId: clerkOrganizationId,
                     timezone: timezone,
                     permittedDomains: permittedDomains,
-                    refreshFrequency: refreshFrequency 
-                }),
+                    refreshFrequency: refreshFrequency,
+                    clerkCreatorId: clerkCreatorId,
+                })
             });
             if (!response.ok) {
                 throw new Error (`HTTP error! status: ${response.status}`);

@@ -3,6 +3,7 @@ import { Anchor, Button, Modal, MultiSelect, Paper, Textarea, TextInput } from '
 import { DateTimePicker, DatePickerInput, TimeInput } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
+import { useUser } from "@clerk/clerk-react";
 
 import UserHint from '../../lib/UserHint';
 import Expando from '../../lib/Expando';
@@ -12,6 +13,7 @@ import { useNotifications } from './NotificationsContext';
 const NotificationsModal = () => {
   const { isModalOpen, modalInitialData, closeModal, submitNotification } = useNotifications();
   const editing = (modalInitialData != null);
+  const { user } = useUser();
   //console.log('modalInitialData:', modalInitialData, ' editing:', editing);
 
   const [timeInputsDisabled, setTimeInputsDisabled] = useState(true);
@@ -128,7 +130,9 @@ const NotificationsModal = () => {
 
     console.log('Form data for submission=:', formData);
 
-    // Use formData for submission or further processing
+    // Use formData for submission or further processing.
+    // Pass in the clerk id so the backend can tie the notif to the right organization
+    formData.clerkCreatorId = user.id;
     submitNotification(formData);
 
     // Other necessary actions like closing the modal

@@ -6,6 +6,7 @@ import { Connection, Repository, MoreThan } from 'typeorm';
 
 import { EZNotification } from './entities/EZNotification.entity';
 import { EZNotificationService } from './EZNotification.service';
+import { EZNotificationDto } from './dto/EZNotification.dto';
 import { Organization } from './entities/Organizations.entity';
 import { EndUser } from './entities/EndUsers.entity';
 import { EndUsersServed } from './entities/EndUsersServed.entity';
@@ -118,13 +119,14 @@ export class EZNotificationController {
     }
 
     @Post('/notifications/new')
-    async createNotification(@Body() EZNotificationData: Partial<EZNotification>): Promise<EZNotification> {
-        return this.EZNotificationService.createNotification(EZNotificationData);
+    async createNotification(@Body() ezNotificationDto: EZNotificationDto): Promise<EZNotification> {
+        console.log(`ezNotificationDto: ${JSON.stringify(ezNotificationDto,null,2)}`);
+        return this.EZNotificationService.createNotification(ezNotificationDto.EZNotificationData, ezNotificationDto.clerkCreatorId);
     }
 
     @Put('/notifications/:id')
-    updateNotification(@Param('id') id: string, @Body() updateData: Partial<EZNotification>): Promise<EZNotification> {
-        return this.EZNotificationService.updateNotification(id, updateData);
+    updateNotification(@Param('id') id: string, @Body() ezNotificationDto: EZNotificationDto): Promise<EZNotification> {
+        return this.EZNotificationService.updateNotification(id, ezNotificationDto.EZNotificationData, ezNotificationDto.clerkCreatorId);
     }
 
     @Delete('/notifications/:id')
