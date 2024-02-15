@@ -27,7 +27,7 @@ const DeleteModal = () => {
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems:'center', marginTop:'30px' }}>
             <Anchor onClick={() => { closeDeleteModal() }} style={{ marginRight:'10px', color:'#999'}}>Cancel</Anchor>
-            <Button onClick={() => { deleteNotification(user.id) }}>OK</Button>
+            <Button onClick={() => { deleteNotification() }}>OK</Button>
           </div>
         </Modal.Body>
       </Modal.Content>

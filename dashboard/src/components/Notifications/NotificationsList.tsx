@@ -20,11 +20,16 @@ import { addPreviewCaveatToString } from '../../lib/RenderMarkdown';
 const NotificationsList = () => {
     const [ scrolled, setScrolled ] = useState(false);
     const { openModal, showBanner, showPreviewModal, showDeleteModal, 
-            highlightedId, notifications, submitNotification, fetchNotifications,
-            notificationsLoading } = useNotifications();
+            highlightedId, notifications, submitNotification, 
+            fetchNotifications,
+            notificationsLoading
+          } = useNotifications();
   const { isSignedIn, user, isLoaded } = useUser();
 
-    const clerkUserId = user.id;
+    if (!isLoaded || !isSignedIn) {
+        return null;
+    }
+
 
   // Set up the demo toaster
   const toastNotify = (message) => { 
@@ -109,14 +114,14 @@ const NotificationsList = () => {
   
     useEffect(() => {
       const fetchData = async () => {
-        console.log('clerkUserId in fetchData=', clerkUserId);
-        await fetchNotifications(clerkUserId);
+          //console.log('clerkUserId in fetchData=', clerkUserId);
+        await fetchNotifications();
       };
 
     if (isLoaded && isSignedIn) {
-      fetchData();
+        fetchData();
     }
-  }, [fetchNotifications,clerkUserId]);
+  }, [fetchNotifications]);
     
     const formatDisplayDate = (prefix, date) => {
       return (date == null ? '' : 

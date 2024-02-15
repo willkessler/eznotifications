@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import { useUser } from "@clerk/clerk-react";
 
 const NotificationsContext = createContext({
 });
@@ -9,6 +10,7 @@ export const NotificationsProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([]);
     const [notificationsLastUpdated, setNotificationsLastUpdated] = useState([null]);
     const [notificationsLoading, setNotificationsLoading] = useState(true);
+    const { user } = useUser();
 
     // When we create or update a notification, we'll highlight it in the notificationsList.
     const [highlightedId, setHighlightedId] = useState(null);
@@ -67,7 +69,7 @@ export const NotificationsProvider = ({ children }) => {
         setIsDeleteModalOpen(false);
     };
 
-    const actuallyDeleteNotification = useCallback(async (deletedNotificationId, clerkUserId) => {
+    const actuallyDeleteNotification = useCallback(async (deletedNotificationId) => {
         try {
             const method = 'DELETE';
             const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/notifications/${deletedNotificationId}`;
@@ -77,7 +79,7 @@ export const NotificationsProvider = ({ children }) => {
             });
             if (!response.ok) throw new Error('Failed to delete notification with id: ' + deletedNotificationId);
 
-            await fetchNotifications(clerkUserId);
+            await fetchNotifications();
             setNotificationsLastUpdated(Date.now()); // update state to trigger the notifications list to rerender
         } catch (error) {
             console.error(`Error deleting notification with id:${deletedNotificationId}`, error);
@@ -87,9 +89,9 @@ export const NotificationsProvider = ({ children }) => {
         }
     }, []);
     
-    const deleteNotification = (clerkUserId) => {
+    const deleteNotification = () => {
         //console.log('Actually deleting notification with id:', deletedNotificationId);
-        actuallyDeleteNotification(deletedNotificationId, clerkUserId);
+        actuallyDeleteNotification(deletedNotificationId);
         setIsDeleteModalOpen(false);
         setDeletedNotificationContents('');
         setDeletedNotificationId(null);
@@ -119,10 +121,11 @@ export const NotificationsProvider = ({ children }) => {
         });
     };
 
-    const fetchNotifications = useCallback(async (clerkUserId) => {
+    const fetchNotifications = useCallback(async () => {
+        console.log(`Inside fetchNotifications, user.id = ${user.id}`);
         setNotificationsLoading(true); // start loading process
         try {
-            const queryParams = new URLSearchParams({ clerkUserId }).toString();
+            const queryParams = new URLSearchParams({ clerkUserId: user.id }).toString();
             const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/notifications?${queryParams}`;
             const response = await fetch(apiUrl);
             const data = await response.json();
@@ -177,7 +180,7 @@ export const NotificationsProvider = ({ children }) => {
             const data = await response.json();
             console.log('Notification was ' + action + ' with:', data);
             highlightNotification(data.id);
-            await fetchNotifications(notificationData.clerkCreatorId);
+            await fetchNotifications();
             setNotificationsLastUpdated(Date.now()); // update state to trigger the notifications list to rerender
         } catch(error) {
             console.error('Error creating notification:', error);
@@ -216,7 +219,6 @@ export const NotificationsProvider = ({ children }) => {
         closeDeleteModal,
         deleteNotification,
         deletedNotificationContents,
-        
     }}>
       {children}
     </NotificationsContext.Provider>
