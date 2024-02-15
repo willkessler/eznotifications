@@ -27,7 +27,8 @@ const  OnboardForm = () => {
     // this function executes, leading to a null value passed to the backend.
     const clerkCreatorId = user.id;
     if (!clerkCreatorId || !clerkOrgId ) {
-      console.error(`Cannot create local organization, missing critical value, either one of clerkCreatorId: ${clerkCreatorId} or clerkOrganizationId: ${clerkOrganizationId}`);
+      console.error(`Cannot create local organization, missing critical value, either one of clerkCreatorId:`
+                    + `${clerkCreatorId} or clerkOrganizationId: ${clerkOrganizationId}`);
     } else {
       try {
         console.log(`Hitting API to create local org with orgName: ${organizationName}.`);
@@ -77,6 +78,8 @@ const  OnboardForm = () => {
     if (isLoaded && isSignedIn) {
       if (user.organizationMemberships.length > 0) {
         // this user already has an org or belongs to an org so send them back to the home page
+        console.log('  Sending user to home page since already a member.');
+        console.log(' Here is the user object: ' + JSON.stringify(user,null,2));
         window.location = '/';
       } else {
         // Create starter organizations on component load if they don't exist yet

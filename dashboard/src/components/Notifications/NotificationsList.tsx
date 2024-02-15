@@ -248,7 +248,7 @@ const NotificationsList = () => {
           <Table verticalSpacing="md" highlightOnHover >
             <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
               <Table.Tr>
-                <Table.Th>&nbsp;</Table.Th>
+                <Table.Th><span style={{color:'#5c5'}}>Active?</span></Table.Th>
                 <Table.Th><span style={{color:'#5c5'}}>What</span> <span style={{color:'#888'}}>Will It Tell Your User?</span></Table.Th>
                 <Table.Th><span style={{color:'#5c5'}}>When</span> <span style={{color:'#888'}}>Will It Display?</span></Table.Th>
                 <Table.Th><span style={{color:'#5c5'}}>Where</span> <span style={{color:'#888'}}>Will It Display?</span></Table.Th>
