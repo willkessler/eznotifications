@@ -16,12 +16,13 @@ import { EndUsersServed } from './entities/EndUsersServed.entity';
 
 interface QueryParamProps {
     userId? : string,
+    clerkUserId? : string,
     pageId? : string,
     environments?: string[],
 }
 
 interface OrganizationDataProps {
-    name?: string,
+    organizationName?: string,
     clerkEmail?: string,
     clerkCreatorId: string,
     clerkOrganizationId: string,
@@ -63,7 +64,7 @@ export class EZNotificationService {
         private readonly pricingModelRepository: Repository<PricingModel>,
     ) {}
 
-    async create(ezNotificationData: Partial<EZNotification>): Promise<EZNotification> {
+    async createNotification(ezNotificationData: Partial<EZNotification>): Promise<EZNotification> {
         if (ezNotificationData.id) {
             throw new NotFoundException('Do not pass an ID to create a new EZNotification.');
         }
@@ -71,15 +72,26 @@ export class EZNotificationService {
         return this.ezNotificationRepository.save(ezNotification);
     }
 
-    async findAll(queryParams: QueryParamProps): Promise<EZNotification[]> {
+    async findAllNotifications(queryParams: QueryParamProps): Promise<EZNotification[]> {
         //console.log('findAll queryParams:', queryParams);
-        if (!queryParams.userId) {
-            // no userId provided. If the dashboard auth check passed then, return all notifications.
-            return this.ezNotificationRepository.find({
-                where: {
-                    deleted: false
-                }
-            });
+        if (queryParams.clerkUserId !== null) {
+            // The dashboard will send a clerk user id, we can use this to find the org for that user
+            // and then pull up notifs for that org.
+            console.log(`Finding notifications for clerk id: ${queryParams.clerkUserId}`);
+            const userOrganization = await this.findUserOrganizationByClerkId(queryParams.clerkUserId);
+            if (userOrganization.length > 0) {
+                const organizationUuid = userOrganization[0].organization.uuid;
+                return this.ezNotificationRepository.find({
+                    where: {
+                        deleted: false,
+                        organization: {
+                            uuid : organizationUuid
+                        }
+                    },
+                });
+            } else {
+                throw new NotFoundException(`Cannot find organization for clerk user id: ${queryParams.clerkUserId}`);
+            }
         } else {
             const userId = queryParams.userId;
             const pageId = queryParams.pageId;
@@ -135,15 +147,11 @@ export class EZNotificationService {
         }
     }
 
-    async findAllForUserId(userId: string): Promise<EZNotification[]> {
-        return this.ezNotificationRepository.find();
-    }
-
-    findOne(id: string): Promise<EZNotification> {
+    findOneNotification(id: string): Promise<EZNotification> {
         return this.ezNotificationRepository.findOneBy({ id: id });
     }
 
-    async update(id: string, updateData: Partial<EZNotification>): Promise<EZNotification> {
+    async updateNotification(id: string, updateData: Partial<EZNotification>): Promise<EZNotification> {
         const ezNotification = await this.ezNotificationRepository.findOneBy({ id: id });
         if (ezNotification) {
             console.log(updateData);
@@ -155,7 +163,7 @@ export class EZNotificationService {
         return null;
     }
 
-    async delete(id: string): Promise<void> {
+    async deleteNotification(id: string): Promise<void> {
         await this.ezNotificationRepository.update(id, {
             deleted: true,
             deletedAt: new Date(),
@@ -190,6 +198,7 @@ export class EZNotificationService {
     // Create a local org on our side to mirror clerk's. This function is idempotent in that
     // if a local org already exists with the given clerkId for the clerk org, we do nothing.
     async createLocalOrganization(organizationData: OrganizationDataProps) : Promise<Organization> {
+        console.log('-0-0-0- createLocalOrganization -0-0-0');
         let theOrganization = null;
         let existingUserOrganization = null;
         const basePricingModel = await this.pricingModelRepository.findOne({
@@ -198,10 +207,7 @@ export class EZNotificationService {
             ],
         });
 
-        const existingOrganization = await this.organizationRepository.findOneBy({
-            clerkOrganizationId: organizationData.clerkOrganizationId
-        });
-
+        console.log('  createLocalOrganization, find existing User');
         // Check if the user already exists based on its clerk id
         const existingUser = await this.userRepository.findOne({
             where: [
@@ -209,7 +215,15 @@ export class EZNotificationService {
             ],
         });
 
+        console.log('  createLocalOrganization, find existing Organization');
+        const existingOrganization = await this.organizationRepository.findOne({
+            where: [
+                { clerkOrganizationId: organizationData.clerkOrganizationId }
+            ],
+        });
+
         if (existingUser && existingOrganization) {
+            console.log('  createLocalOrganization, find existing Userorganization');
             existingUserOrganization = await this.userOrganizationRepository.findOne({
                 where: [
                     {
@@ -225,7 +239,7 @@ export class EZNotificationService {
             // no org exists with this clerk id, so we need to create a local org according to the passed in data,
             return this.organizationRepository.manager.transaction(async (transactionalEntityManager) => {
                 const newOrganization = await transactionalEntityManager.create(Organization, {
-                    name: organizationData.name,
+                    name: organizationData.organizationName,
                     clerkCreatorId: organizationData.clerkCreatorId,
                     clerkOrganizationId: organizationData.clerkOrganizationId, // the organization clerk id
                     preferredTimezone: organizationData.timezone,
@@ -390,7 +404,7 @@ export class EZNotificationService {
             return null;
         }
 
-        console.log('in service findApiKeys,', JSON.stringify(userOrganization, null, 2));
+        console.log('In service findApiKeys,', JSON.stringify(userOrganization, null, 2));
         const organizationUuid = userOrganization[0].organization.uuid;
         const userUuid = userOrganization[0].user.uuid;
 
@@ -421,7 +435,7 @@ export class EZNotificationService {
 
         if (userOrganizations.length == 0) {
             console.log(`getOrgConfiguration: Error: Could not find organization associated with user with clerk id: ${clerkId}`);
-            return null;
+            throw new NotFoundException(`Organization not found for user with clerk id: ${clerkId}`);
         }
 
         console.log('getOrgConfiguration: getting org and orguuid');
@@ -434,14 +448,14 @@ export class EZNotificationService {
         const permittedDomains = await this.permittedDomainsRepository.find({ where: { organizationUuid } });
         const permittedDomainsString = permittedDomains.map(pd => pd.domain).join('\n');
         const orgConfig:OrganizationDataProps = {
-            name:                organization.name,
+            organizationName:    organization.name,
             clerkCreatorId:      organization.clerkCreatorId,
             clerkOrganizationId: organization.clerkOrganizationId,
             timezone:            organization.preferredTimezone,
             permittedDomains:    permittedDomainsString,
             refreshFrequency:    organization.refreshFrequency
         };
-        console.log('orgConfig:', orgConfig)
+        console.log('orgConfig:', JSON.stringify(orgConfig,null,2));
         return orgConfig;
     }
 
@@ -455,11 +469,14 @@ export class EZNotificationService {
 
         const organization = userOrganization[0].organization;
         const userUuid = userOrganization[0].user.uuid;
+        organization.name = orgConfiguration.organizationName;
         organization.preferredTimezone = orgConfiguration.timezone;
         organization.refreshFrequency = orgConfiguration.refreshFrequency;
 
-        console.log('Saving organization config for organization:',
-                    organization, 'with permittedDomains:', orgConfiguration.permittedDomains);
+        console.log(`Saving organization config for organization: ` +
+            `${JSON.stringify(organization,null,2)}, ` +
+            `with permittedDomains: ` +
+            `${orgConfiguration.permittedDomains}`);
 
         await this.organizationRepository.save(organization);
         // Now split the permitted domains, and remove any previous ones before persisting this new set

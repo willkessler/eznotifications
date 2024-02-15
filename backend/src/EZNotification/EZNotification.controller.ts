@@ -21,7 +21,7 @@ export class EZNotificationController {
 
     @Post('/organization/create')
     async createOrganization(
-        @Body('name') name: string,
+        @Body('organizationName') organizationName: string,
         @Body('clerkCreatorId') clerkCreatorId: string,
         @Body('clerkOrganizationId') clerkOrganizationId: string,
         @Body('clerkEmail') clerkEmail: string,
@@ -30,7 +30,7 @@ export class EZNotificationController {
         @Body('refreshFrequency') refreshFrequency: number,
     ): Promise<Organization> {
         const organizationData = {
-            name,
+            organizationName,
             clerkCreatorId,
             clerkOrganizationId,
             clerkEmail,
@@ -57,6 +57,7 @@ export class EZNotificationController {
 
     @Post('/organization/configure')
     async saveOrgConfiguration(
+        @Body('organizationName') organizationName: string,
         @Body('clerkCreatorId') clerkCreatorId: string,
         @Body('clerkOrganizationId') clerkOrganizationId: string,
         @Body('timezone') timezone: string,
@@ -65,6 +66,7 @@ export class EZNotificationController {
     ): Promise<Organization> {
         console.log('Configure saving settings.');
         return this.EZNotificationService.saveOrgConfiguration({
+            organizationName,
             clerkCreatorId,
             clerkOrganizationId, 
             timezone, 
@@ -98,44 +100,38 @@ export class EZNotificationController {
         return this.EZNotificationService.toggleApiKeyActive(clerkId, APIKeyId);
     }
 
-    @Post('/new')
-    async create(@Body() EZNotificationData: Partial<EZNotification>): Promise<EZNotification> {
-        return this.EZNotificationService.create(EZNotificationData);
-    }
-
-    @Get()
-    findAll(
+    @Get('/notifications')
+    findAllNotifications(
         @Query('userId') userId: string,
         @Query('environments') environments: string,
         @Query('pageId') pageId: string,
+        @Query('clerkUserId') clerkUserId: string,
     ) {
         const environmentsArray = environments ? environments.split(',') : [];
-        const query = { userId, environments: environmentsArray, pageId };
-        return this.EZNotificationService.findAll(query);
+        const query = { userId, environments: environmentsArray, pageId, clerkUserId };
+        return this.EZNotificationService.findAllNotifications(query);
     }
 
-    @Get(':id')
-    findOne(@Param('id') id: string): Promise<EZNotification> {
-        return this.EZNotificationService.findOne(id);
+    @Get('/notifications/:id')
+    findOneNotification(@Param('id') id: string): Promise<EZNotification> {
+        return this.EZNotificationService.findOneNotification(id);
     }
 
-    @Put(':id')
-    update(@Param('id') id: string, @Body() updateData: Partial<EZNotification>): Promise<EZNotification> {
-        return this.EZNotificationService.update(id, updateData);
+    @Post('/notifications/new')
+    async createNotification(@Body() EZNotificationData: Partial<EZNotification>): Promise<EZNotification> {
+        return this.EZNotificationService.createNotification(EZNotificationData);
     }
 
-    @Delete(':id')
-    delete(@Param('id') id: string): Promise<void> {
-        return this.EZNotificationService.delete(id);
+    @Put('/notifications/:id')
+    updateNotification(@Param('id') id: string, @Body() updateData: Partial<EZNotification>): Promise<EZNotification> {
+        return this.EZNotificationService.updateNotification(id, updateData);
     }
 
-    @Get('/check')
-    doCheck() {
-        console.log('check');
-        return(1);
+    @Delete('/notifications/:id')
+    deleteNotification(@Param('id') id: string): Promise<void> {
+        return this.EZNotificationService.deleteNotification(id);
     }
 
-    
 }
 
 

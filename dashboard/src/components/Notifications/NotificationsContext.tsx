@@ -70,7 +70,7 @@ export const NotificationsProvider = ({ children }) => {
     const actuallyDeleteNotification = useCallback(async (deletedNotificationId) => {
         try {
             const method = 'DELETE';
-            const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/${deletedNotificationId}`;
+            const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/notifications/${deletedNotificationId}`;
             //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
             const response = await fetch(apiUrl, {
                 method: method
@@ -119,14 +119,19 @@ export const NotificationsProvider = ({ children }) => {
         });
     };
 
-    const fetchNotifications = useCallback(async () => {
+    const fetchNotifications = useCallback(async (clerkUserId) => {
         setNotificationsLoading(true); // start loading process
         try {
-            const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications`;
+            const queryParams = new URLSearchParams({ clerkUserId }).toString();
+            const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/notifications?${queryParams}`;
             const response = await fetch(apiUrl);
             const data = await response.json();
-            const sortedNotifications = sortNotifications(data);
-            setNotifications(sortedNotifications);
+            if (data && data.length > 0) {
+                const sortedNotifications = sortNotifications(data);
+                setNotifications(sortedNotifications);
+            } else {
+                setNotifications([]);
+            }
         } catch (error) {
             console.error('Error fetching notifications:', error);
         } finally {
@@ -145,7 +150,7 @@ export const NotificationsProvider = ({ children }) => {
         //console.log('Notification data on form submit:', notificationData);
         const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
         const action = (notificationData.editing ? 'updated' : 'created' );
-        const apiUrl = `/api/eznotifications` + (notificationData.editing ? '/' + notificationData.id : '/new');
+        const apiUrl = `/api/eznotifications/notifications` + (notificationData.editing ? '/' + notificationData.id : '/new');
 
         try {
             const response = await fetch(apiUrl, {

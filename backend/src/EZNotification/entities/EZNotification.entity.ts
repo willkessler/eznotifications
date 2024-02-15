@@ -1,6 +1,8 @@
 // src/ezNotification/entities/ezNotification.entity.ts
 
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToOne, OneToMany } from 'typeorm';
+import { Organization } from './Organizations.entity';
+import { User } from './Users.entity';
 import { EndUsersServed } from './EndUsersServed.entity';
 
 @Entity('notifications')
@@ -47,4 +49,12 @@ export class EZNotification {
   @OneToMany(() => EndUsersServed, endUsersServed => endUsersServed.notification)
   endUsersServed: EndUsersServed[];
     
+  @OneToOne(() => User)
+  @JoinColumn({ name: 'creator_uuid' })
+  creator: User;
+
+  @OneToOne(() => Organization)
+  @JoinColumn({ name: 'organization_uuid' })
+  organization: Organization;
+
 }

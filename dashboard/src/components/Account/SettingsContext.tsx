@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useUser } from "@clerk/clerk-react";
 
 interface OrganizationDataProps {
-    name: string,
+    organizationName: string,
     clerkEmail?: string,
     clerkUserId: string,
     clerkOrganizationId: string,
@@ -12,7 +12,7 @@ interface OrganizationDataProps {
 }
 
 const SettingsContext = createContext({
-    name: 'My Team',
+    organizationName: 'My Team',
     timezone: 'America/Los_Angeles',
     refreshFrequency: 300, // 5 minutes, in seconds
     permittedDomains: 'stackblitz.io\ncodesandbox.io\n',
@@ -21,6 +21,7 @@ const SettingsContext = createContext({
 export const useSettings = () => useContext(SettingsContext);
 
 export const SettingsProvider = ({ children }) => {
+    const [ organizationName, setOrganizationName ] = useState('My Team');
     const [ timezone, setTimezone ] = useState('America/Los_Angeles');
     const [ permittedDomains, setPermittedDomains ] = useState('stackblitz.io\ncodesandbox.io\n');
     const [ refreshFrequency, setRefreshFrequency ] = useState(300); // seconds
@@ -32,32 +33,40 @@ export const SettingsProvider = ({ children }) => {
         try {
             const response = await fetch(apiUrl);
             if (!response.ok) {
-                throw new Error (`HTTP error! status: ${response.status}`);
+                if (response.status === 404) {
+                    console.log('Organization settings not found.');
+                } else {
+                    throw new Error (`HTTP error! status: ${response.status}`);
+                }
             } else {
                 const data = await response.json();
-                if (data === null) {
-                    throw new Error (`API says no settings are available.`);
-                }
                 console.log('Fetched stored settings, now storing in context.');
                 setTimezone(data.timezone);
                 setPermittedDomains(data.permittedDomains);
                 setRefreshFrequency(data.refreshFrequency);
             }
         } catch (error) {
-            console.error(`Error getting app settings: ${error}`);
+            console.error(`Error getting org settings: ${error}`);
         }
         return null;
     };
         
     const saveSettings = async (clerkOrganizationId: string) => {
-        const clerkId = user.id;
+        const clerkCreatorId = user.id;
         const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/organization/configure`;
         console.log('in saveSettings, permittedDomains:', permittedDomains);
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ clerkId, clerkOrganizationId, timezone, permittedDomains, refreshFrequency }),
+                body: JSON.stringify({
+                    organizationName: organizationName,
+                    clerkCreatorId: clerkCreatorId,
+                    clerkOrganizationId: clerkOrganizationId,
+                    timezone: timezone,
+                    permittedDomains: permittedDomains,
+                    refreshFrequency: refreshFrequency 
+                }),
             });
             if (!response.ok) {
                 throw new Error (`HTTP error! status: ${response.status}`);
@@ -74,13 +83,13 @@ export const SettingsProvider = ({ children }) => {
 
     const createLocalOrganization = async (organizationData: OrganizationDataProps) => {
         const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/organization/create`;
-        console.log('in createTeam, calling API to attempt to create an org.');
+        console.log('in createLocalOrganization, calling API to attempt to create an org.');
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
-                    name:                organizationData.name,
+                    organizationName:    organizationData.organizationName,
                     clerkCreatorId:      organizationData.clerkCreatorId,
                     clerkOrganizationId: organizationData.clerkOrganizationId,
                     clerkEmail:          organizationData.clerkEmail,
@@ -91,6 +100,7 @@ export const SettingsProvider = ({ children }) => {
             if (!response.ok) {
                 throw new Error (`HTTP error! status: ${response.status}`);
             } else {
+                setOrganizationName(organizationData.organizationName);
                 setTimezone(organizationData.timezone);
                 setPermittedDomains(organizationData.permittedDomains);
                 setRefreshFrequency(organizationData.refreshFrequency);
@@ -109,6 +119,8 @@ export const SettingsProvider = ({ children }) => {
             getSettings,
             saveSettings,
             createLocalOrganization,
+            organizationName,
+            setOrganizationName,
             timezone,
             setTimezone,
             permittedDomains,

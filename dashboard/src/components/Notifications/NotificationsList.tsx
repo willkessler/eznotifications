@@ -1,4 +1,6 @@
 import cx from 'clsx';
+import { useState, useEffect } from 'react';
+import { useUser } from "@clerk/clerk-react";
 import { Anchor, Box, Button, Menu, Modal, Pill, ScrollArea, Skeleton, Spoiler, Switch, Table, Text, Tooltip, rem } from '@mantine/core';
 import { IconArrowElbowRight, 
          IconEdit, 
@@ -9,19 +11,18 @@ import { IconArrowElbowRight,
          IconInfoCircle,
          IconTrash,
          IconFidgetSpinner } from '@tabler/icons-react';
-import { useState, useEffect } from 'react';
 import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
 
 import { useNotifications } from './NotificationsContext';
 import { addPreviewCaveatToString } from '../../lib/RenderMarkdown';
 
-const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
+const NotificationsList = ({displayPreviewModal, closePreviewModal, clerkUserId }) => {
     const [ scrolled, setScrolled ] = useState(false);
     const { openModal, showBanner, showPreviewModal, showDeleteModal, 
             highlightedId, notifications, submitNotification, fetchNotifications,
             notificationsLoading } = useNotifications();
-    // const [notificationsState, setNotificationsState] = useState([]);
+  const { isSignedIn, user, isLoaded } = useUser();
 
   // Set up the demo toaster
   const toastNotify = (message) => { 
@@ -105,10 +106,13 @@ const NotificationsList = ({displayPreviewModal, closePreviewModal }) => {
   
   useEffect(() => {
       const fetchData = async () => {
-          await fetchNotifications();
+        const clerkUserId = user?.id;
+        await fetchNotifications(clerkUserId);
       };
 
+    if (isLoaded && isSignedIn) {
       fetchData();
+    }
   }, [fetchNotifications]);
     
     const formatDisplayDate = (prefix, date) => {

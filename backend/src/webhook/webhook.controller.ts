@@ -78,7 +78,6 @@ export class WebhookController {
      @Post('/clerk')
     async handleClerkWebhook(@Req() req: Request, @Res() res: Response): Promise<Response> {
         console.log('*** CLERK WEBHOOK received ***');
-        console.log(process.env.CLERK_WEBHOOK_SECRET);
         
          // Extract the raw body as Buffer and convert it to string for verification
         const rawBody = ((req as unknown) as RawBodyRequest).rawBody.toString();

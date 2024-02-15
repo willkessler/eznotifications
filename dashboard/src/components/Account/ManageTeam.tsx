@@ -12,7 +12,7 @@ const ManageTeam = () => {
   const { invitations, organization } = useOrganization({ invitations: {} });
   const [invitationData, setInvitationData] = useState([]);
  
-  if (!isLoaded || !isSignedIn || !invitations) {
+  if (!isLoaded || !isSignedIn) {
     return null;
   }
 

@@ -13,7 +13,7 @@ const InvitationsManager = () => {
   const [ disabled, setDisabled ] = useState(false);
   const [ sendLabel, setSendLabel ] = useState('Send invitation');
 
-  if (!isLoaded || !isSignedIn || !invitations) {
+  if (!isLoaded || !isSignedIn) {
     return null;
   }
 
