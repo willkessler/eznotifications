@@ -28,12 +28,12 @@ const Navbar = () => {
 
 
   const navBarData = [
-    { link: '/', label: 'Your Notifications', icon: IconSpeakerphone },
-    { link: '/statistics', label: 'Usage Statistics', icon: IconChartArea }, // Updated with the internal link
-    { link: '/settings/account', label: 'Your Account', icon: IconSettings },
-    { link: 'https://tellyourusers-help-pages.super.site', label: 'Help', icon: IconHelp },
-    { link: '/playground', label: 'Playground', icon: IconHorseToy },
-    { link: '', label: 'Logout', icon: IconLogout },
+    { link: '/', label: 'Your Notifications', icon: IconSpeakerphone, dataTour: 'notifications' },
+    { link: '/statistics', label: 'Usage Statistics', icon: IconChartArea, dataTour: 'statistics' },
+    { link: '/settings/account', label: 'Your Account', icon: IconSettings, dataTour: 'account' },
+    { link: 'https://tellyourusers-help-pages.super.site', label: 'Help', icon: IconHelp, dataTour: 'help' },
+    { link: '/sandbox', label: 'Sandbox', icon: IconHorseToy, dataTour: 'sandbox' },
+    { link: '', label: 'Logout', icon: IconLogout, dataTour: 'logout' },
   ];
 
   const navBarLinks = navBarData.map((item) => {
@@ -47,6 +47,7 @@ const Navbar = () => {
       <Anchor
         className={classes.link}
         data-active={isActive || undefined}
+        data-tour={item.dataTour}
         href={item.link}
         target="_blank"
         rel="noopener noreferrer"
@@ -62,6 +63,7 @@ const Navbar = () => {
       <Link
         to={item.link}
         className={classes.link}
+        data-tour={item.dataTour}
         data-active={isActive || undefined}
         onClick={() => setActiveLink(item.label)}
         key={item.label}
