@@ -52,7 +52,7 @@ const  OnboardForm = () => {
   }
 
   // Set up clerk org, and set up everything on our side to mirror clerk as required.
-  const setupClerkOrganizationAndMirrorRecords = async () => {
+  const setupClerkOrganizationAndMirrorRecords = async (gotoHomePageAfter) => {
     // Create a user record for this user if one does not exist on our side.
     let userId = user.id;
     let clerkOrganizationId = null;
@@ -116,6 +116,12 @@ const  OnboardForm = () => {
         console.error(`Error saving default settings for our mirror organization: ${error}`);
       }
 
+      if (gotoHomePageAfter) {
+        // This user already has an org or belongs to an org so send them back to the home page
+        console.log('  Sending user to home page since already a member.');
+        window.location = '/';
+      }
+        
     }
   };
 
@@ -161,16 +167,9 @@ const  OnboardForm = () => {
     if (isLoaded && isSignedIn) {
       // Create starter organizations on component load if they don't exist yet
       console.log('useEffects, no depends: setting up all required entities.');
-      setupClerkOrganizationAndMirrorRecords();
-
-      if (user.organizationMemberships.length > 0) {
-        // This user already has an org or belongs to an org so send them back to the home page
-        console.log('  Sending user to home page since already a member.');
-        //console.log(' Here is the user object: ' + JSON.stringify(user,null,2));
-        window.location = '/';
-      } else {
-        setShouldRender(true);
-      }
+      const gotoHomePageAfter = (user.organizationMemberships.length > 0);
+      setupClerkOrganizationAndMirrorRecords(gotoHomePageAfter);
+      setShouldRender(true);
     } else {
       console.log('useEffects/no depends, clerk not ready so doing nothing.');
     }

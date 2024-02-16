@@ -311,8 +311,10 @@ export class EZNotificationService {
 
         // check if an org already exists with the given clerkid. If not, create it.
         if (existingOrganization !== null) {
-            throw new NotFoundException(`We already have an existing organization for ` +
-                `clerk org id: ${organizationData.clerkOrganizationId}.`);
+            const errorMsg = `We already have an existing organization for ` +
+                `clerk org id: ${organizationData.clerkOrganizationId}.`;
+            console.log(errorMsg);
+            throw new NotFoundException(errorMsg);
         } else {
             // No organization exists with this clerk id, so we need to create a local organization.
             try {
@@ -327,8 +329,10 @@ export class EZNotificationService {
                 console.log(`Created a new organization with id: ${newOrganization.uuid}`);
                 return this.organizationRepository.save(newOrganization);
             } catch (error) {
-                throw new NotFoundException(`Unable to create an organization for ` +
-                    `clerk org id: ${organizationData.clerkOrganizationId}.`);
+                const errorMsg = `Unable to create an organization for ` +
+                    `clerk org id: ${organizationData.clerkOrganizationId}.`;
+                console.log(errorMsg);
+                throw new NotFoundException(errorMsg);
             }
         }
     }
