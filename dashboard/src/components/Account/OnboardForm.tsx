@@ -17,6 +17,7 @@ const  OnboardForm = () => {
           organizationName, setOrganizationName } = useSettings();
   const [ clerkOrganizationId, setClerkOrganizationId ] = useState(null);
   const [ saveButtonDisabled, setSaveButtonDisabled ] = useState(false);
+  const [ shouldRender, setShouldRender ] = useState(false);
 
   if (!isLoaded) {
     return null; // Don't proceed until we have clerk's user record
@@ -50,27 +51,6 @@ const  OnboardForm = () => {
     }
   }
 
-  const createClerkOrgThenLocalOrg = async () => {
-    try {
-      // create starting clerk and local orgs that the user can edit from the current form.
-      console.log(`Trying to create clerk organization with name ${organizationName}`);
-      const clerkOrganization = await createOrganization({name: organizationName});
-      console.log(`Got this organization data from clerk, name: ${clerkOrganization.name}, id:${clerkOrganization.id}`);
-      console.log('Made clerk create call');
-      if (clerkOrganization !== null) {
-        setClerkOrganizationId(clerkOrganization.id);
-        // We have to tell the front-end clerk session to make the new org active,
-        // or else it doesn't think this user belongs to the new clerk org :(
-        console.log(`Setting clerkOrg ${clerkOrganization.id} to active.`);
-        const clerkResults = await setActive({ organization: clerkOrganization.id });
-        console.log('useEffects, no depends: calling createOurOrganization');
-        await createOurOrganization(clerkOrganization.id);
-      }
-    } catch (error) {
-      console.log(`Unable to create clerk organization for user ${user.id} with error ${error}`);
-    }
-  };
-
   // Set up clerk org, and set up everything on our side to mirror clerk as required.
   const setupClerkOrganizationAndMirrorRecords = async () => {
     // Create a user record for this user if one does not exist on our side.
@@ -95,7 +75,7 @@ const  OnboardForm = () => {
                       `clerk organization id: ${clerkOrganizationId}: ${error}`);
       }
     } else {
-      // If the user doesn't belong to any organiation yet, then
+      // If the user doesn't belong to any organization yet, then
       // the overall client is just getting going, so we will need to create a clerk org first.
       try {
         console.log(`Trying to create clerk organization with name ${organizationName}`);
@@ -122,13 +102,6 @@ const  OnboardForm = () => {
       }
 
       try {
-        console.log(`Saving default settings into the new org with clerk org id: ${clerkOrganizationId}.`);
-        const updatedOrg = await saveSettings(clerkOrganizationId);
-      } catch (error) {
-        console.error(`Error saving default settings for our mirror organization: ${error}`);
-      }
-
-      try {
         console.log(`Adding clerk user id: ${userId} to our new clerk org id: ${clerkOrganizationId}.`);
         await addUserToOurOrg(clerkOrganizationId);
       } catch (error) {
@@ -136,30 +109,15 @@ const  OnboardForm = () => {
                       `clerk organization id: ${clerkOrganizationId}: ${error}`);
       }
       
+      try {
+        console.log(`Saving default settings into the new org with clerk org id: ${clerkOrganizationId}.`);
+        const updatedOrg = await saveSettings(clerkOrganizationId);
+      } catch (error) {
+        console.error(`Error saving default settings for our mirror organization: ${error}`);
+      }
 
     }
   };
-
-  // This effect is run only during component mount.
-  // Do not do create a organization if this user already has a organization association in clerk, just forward to home page
-  useEffect(() => {
-    console.log('useEffects/no depends starts.');
-    console.log(`  permittedDomains: ${permittedDomains}`);
-    if (isLoaded && isSignedIn) {
-      // Create starter organizations on component load if they don't exist yet
-      console.log('useEffects, no depends: setting up all required entities.');
-      setupClerkOrganizationAndMirrorRecords();
-
-      if (user.organizationMemberships.length > 0) {
-        // This user already has an org or belongs to an org so send them back to the home page
-        console.log('  Sending user to home page since already a member.');
-        //console.log(' Here is the user object: ' + JSON.stringify(user,null,2));
-        window.location = '/';
-      }
-    } else {
-      console.log('useEffects/no depends, clerk not ready so doing nothing.');
-    }
-  }, []);
 
 
   // this already exists in OrgAndTeamPanel, so refactor!
@@ -193,6 +151,37 @@ const  OnboardForm = () => {
         window.location = '/';
       }
     }
+  }
+
+  // This effect is run only during component mount.
+  // Do not do create a organization if this user already has a organization association in clerk, just forward to home page
+  useEffect(() => {
+    console.log('useEffects/no depends starts.');
+    console.log(`  permittedDomains: ${permittedDomains}`);
+    if (isLoaded && isSignedIn) {
+      // Create starter organizations on component load if they don't exist yet
+      console.log('useEffects, no depends: setting up all required entities.');
+      setupClerkOrganizationAndMirrorRecords();
+
+      if (user.organizationMemberships.length > 0) {
+        // This user already has an org or belongs to an org so send them back to the home page
+        console.log('  Sending user to home page since already a member.');
+        //console.log(' Here is the user object: ' + JSON.stringify(user,null,2));
+        window.location = '/';
+      } else {
+        setShouldRender(true);
+      }
+    } else {
+      console.log('useEffects/no depends, clerk not ready so doing nothing.');
+    }
+  }, []);
+
+  if (!shouldRender) {
+    return (
+      <>
+        Loading...
+      </>
+    )
   }
 
   const handlePermittedDomainsChange = (e) => {
