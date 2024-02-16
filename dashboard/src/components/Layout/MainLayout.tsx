@@ -5,7 +5,7 @@ import Navbar from './Navbar';
 import LogoComponent from './LogoComponent';
 import UserAuthentication from './UserAuthentication';
 import classes from './css/MainLayout.module.css';
-import TutorialJoyride from './TutorialJoyride';
+import Tutorial from './Tutorial';
 
 const MainLayout = () => {
   return (
@@ -20,7 +20,7 @@ const MainLayout = () => {
         <main className={classes.mainContent}>
           <Outlet /> {/* This is where the routed content will be rendered */}
         </main>
-        <TutorialJoyride />
+        <Tutorial />
       </div>
   );
 };

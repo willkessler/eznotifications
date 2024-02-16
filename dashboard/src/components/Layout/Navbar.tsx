@@ -15,6 +15,7 @@ import {
   IconDatabaseImport,
   IconHelp,
   IconHorseToy,
+  IconSandbox,
   IconReceipt2,
   IconSwitchHorizontal,
   IconLogout,
@@ -31,8 +32,8 @@ const Navbar = () => {
     { link: '/', label: 'Your Notifications', icon: IconSpeakerphone, dataTour: 'notifications' },
     { link: '/statistics', label: 'Usage Statistics', icon: IconChartArea, dataTour: 'statistics' },
     { link: '/settings/account', label: 'Your Account', icon: IconSettings, dataTour: 'account' },
-    { link: 'https://tellyourusers-help-pages.super.site', label: 'Help', icon: IconHelp, dataTour: 'help' },
     { link: '/sandbox', label: 'Sandbox', icon: IconHorseToy, dataTour: 'sandbox' },
+    { link: 'https://tellyourusers-help-pages.super.site', label: 'Help', icon: IconHelp, dataTour: 'help' },
     { link: '', label: 'Logout', icon: IconLogout, dataTour: 'logout' },
   ];
 
