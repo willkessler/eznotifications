@@ -215,7 +215,7 @@ export class EZNotificationService {
         });
 
         if (existingUser) {
-            const errorMsg = `--> createLocalUser : not creating local user with clerkUserId: ${clerkUserId}, already exists.`;
+            const errorMsg = `--> createLocalUser : local user with clerkUserId: ${clerkUserId} already exists.`;
             console.log(errorMsg);
             throw new NotFoundException(errorMsg);
         } else {

@@ -14,6 +14,7 @@ import {
   Icon2fa,
   IconDatabaseImport,
   IconHelp,
+  IconHorseToy,
   IconReceipt2,
   IconSwitchHorizontal,
   IconLogout,
@@ -31,6 +32,7 @@ const Navbar = () => {
     { link: '/statistics', label: 'Usage Statistics', icon: IconChartArea }, // Updated with the internal link
     { link: '/settings/account', label: 'Your Account', icon: IconSettings },
     { link: 'https://tellyourusers-help-pages.super.site', label: 'Help', icon: IconHelp },
+    { link: '/playground', label: 'Playground', icon: IconHorseToy },
     { link: '', label: 'Logout', icon: IconLogout },
   ];
 
