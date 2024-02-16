@@ -28,7 +28,12 @@ export const SettingsProvider = ({ children }) => {
     const [ permittedDomains, setPermittedDomains ] = useState('stackblitz.io\ncodesandbox.io\n');
     const [ refreshFrequency, setRefreshFrequency ] = useState(300); // seconds
     const [ isSetupComplete, setIsSetupComplete ] = useState(false);
-    const [ isFirstTimeAdmin,  setIsFirstTimeAdmin ] = useState(false);
+    const [ createdLocalUser, setCreatedLocalUser ] = useState(false);
+    const [ createdLocalOrg, setCreatedLocalOrg ] = useState(false);
+
+    // If we create a user account but we DON'T create an org, this is a teammate.
+    // In that case, we tell the tutorial to do something a bit different.
+    let userRecordCreated = false;    
 
     const getSettings = async () => {
         const clerkId = user.id;
@@ -106,6 +111,7 @@ export const SettingsProvider = ({ children }) => {
             } else {
                 const userData = await response.json();
                 console.log(`Created new user: ${JSON.stringify(userData,null,2)}`);
+                setCreatedLocalUser(true);
                 return userData;
             }
         } catch (error) {
@@ -132,6 +138,19 @@ export const SettingsProvider = ({ children }) => {
                     refreshFrequency:    organizationData.refreshFrequency }),
             });
             if (!response.ok) {
+                response.json().then(body => {
+                    // Now `body` contains the parsed JSON body of the response
+                    if ((response.status === 404) && 
+                        body.message && body.message.startsWith('We already have an existing organization')) {
+                        console.log('createLocalOrganization: We already created an org.');
+                    } else {
+                        // If the condition is not met, throw an error with the status
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                }).catch(error => {
+                    // Handle any errors that occur during the parsing of the response body or in your condition logic
+                    console.error('Error processing response:', error);
+                });
                 throw new Error (`HTTP error! status: ${response.status}`);
             } else {
                 setOrganizationName(organizationData.organizationName);
@@ -140,7 +159,7 @@ export const SettingsProvider = ({ children }) => {
                 setRefreshFrequency(organizationData.refreshFrequency);
                 // Tell the Notifications.tsx file that this is the first time an account admin has signed in
                 // so we should give them the option of seeing the tutorial.
-                setIsFirstTimeAdmin(true);
+                setCreatedLocalOrg(true);
                 console.log('Stored all settings.');
             }
         } catch (error) {
@@ -290,7 +309,8 @@ export const SettingsProvider = ({ children }) => {
         value={{ 
             isSetupComplete,
             setIsSetupComplete,
-            isFirstTimeAdmin,
+            createdLocalUser,
+            createdLocalOrg,
             getSettings,
             saveSettings,
             createLocalUser,

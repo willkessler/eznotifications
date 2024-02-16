@@ -7,13 +7,13 @@ import { useSettings } from '../Account/SettingsContext';
 
 const Tutorial = () => {
 
-  const { isFirstTimeAdmin } = useSettings();
+  const { createdLocalUser, createdLocalOrg } = useSettings();
   const [ joyrideRunState, setJoyrideRunState ] = useState(false);
-  const [ isTutorialModalOpen, setIsTutorialModeOpen ] = useState(isFirstTimeAdmin);
+  const [ isTutorialModalOpen, setIsTutorialModeOpen ] = useState(false);
   
   useEffect(() => {
-    setIsTutorialModeOpen(isFirstTimeAdmin);
-  }, [isFirstTimeAdmin]);
+    setIsTutorialModeOpen(createdLocalUser || createdLocalOrg);
+  }, [createdLocalUser, createdLocalOrg]);
 
   const takeTheTour = () => {
     setIsTutorialModeOpen(false);
@@ -71,16 +71,27 @@ const Tutorial = () => {
           <Modal.Content>
             <Modal.Header>
               <Modal.Title style={{fontSize:'24px', fontWeight:'800', color:'#d33'}}>
-                <Image src="/ThisIsNotADrill_cutout.png" h={120} />Welcome!
+                <Image src="/ThisIsNotADrill_cutout.png" w={120} />
+                Welcome{ (!createdLocalOrg && createdLocalUser) && (<>, team member</>)}!
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <div style={{marginBottom:'10px'}}>
-                <span style={{fontStyle:'italic',fontWeight:'bold'}}>This Is Not A Drill! </span>
-                makes it easy to set up immediate, critical,
-                or scheduled notices to users, <span style={{fontWeight:'bold'}}>without deploying code</span>.
-                <br /><br />
-                Why not take the (literally) 30-second tour?
+                { createdLocalOrg && (
+                  <>
+                    <p> <span style={{fontStyle:'italic',fontWeight:'bold'}}>This Is Not A Drill! </span>
+                      makes it dead simple to set up immediate, critical, or scheduled notices to users, 
+                    <span style={{fontWeight:'bold'}}>without deploying code</span>.</p>
+                    <p>Why not take the (literally) 30-second tour?</p>
+                  </>
+                )}
+                { (!createdLocalOrg && createdLocalUser) && (
+                  <>
+                  <p>Your teammate has invited you to help manage this service, which makes it dead simple to show immediate, critical,
+                or scheduled notices to users, <span style={{fontWeight:'bold'}}>without deploying code</span>.</p>
+                  <p>But first, why not take the (literally) 30-second tour?</p>
+                  </>
+                )}
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems:'center', marginTop:'30px' }}>
                 <Anchor onClick={() => { closeTutorialModal() }} style={{ color:'#ccc', fontStyle:'italic', marginRight:'10px', color:'#999'}}>No thanks, I got this!</Anchor>
