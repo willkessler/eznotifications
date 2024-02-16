@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { NotificationsProvider, useNotifications } from './NotificationsContext';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -7,8 +9,23 @@ import NotificationsHeader from './NotificationsHeader';
 import NotificationsList from './NotificationsList';
 import NotificationsModal from './NotificationsModal';
 import DeleteModal from './DeleteModal';
+import { useSettings } from '../Account/SettingsContext';
 
 const Notifications = () => {
+
+  const { setupClerkOrganizationAndMirrorRecords, isSetupComplete, setIsSetupComplete } = useSettings();
+  const componentLoadCallbackFn = () => {
+    console.log("We've completed setting things up.");
+  };
+
+  useEffect(() => {
+    console.log('Notifications component mount');
+    if (!isSetupComplete) {
+      setupClerkOrganizationAndMirrorRecords(componentLoadCallbackFn);
+      setIsSetupComplete(true);
+    }
+    console.log('Notifications component completed');
+  }, []);
 
   return (
       <>

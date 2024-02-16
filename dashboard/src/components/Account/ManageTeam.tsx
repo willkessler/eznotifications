@@ -4,7 +4,7 @@ import { Anchor, Button, Group, Radio, Table, TextInput, Textarea, Text } from '
 import { useUser, useOrganization } from "@clerk/clerk-react";
 import classes from './css/InviteUser.module.css';
 import InviteMember from './InviteMember';
-import MemberList from './MemberList';
+import MembersManager from './MembersManager';
 import InvitationsManager from './InvitationsManager';
  
 const ManageTeam = () => {
@@ -22,7 +22,7 @@ const ManageTeam = () => {
       {!invitations && (
         <Text size="xs">(You haven't invited any teammates yet. Invite one below.)</Text>
       )}
-      <MemberList />
+      <MembersManager />
       <InvitationsManager />
     </div>
   );

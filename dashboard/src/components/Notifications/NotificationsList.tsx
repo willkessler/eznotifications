@@ -15,6 +15,7 @@ import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
 
 import { useNotifications } from './NotificationsContext';
+import { useSettings } from '../Account/SettingsContext';
 import { addPreviewCaveatToString } from '../../lib/RenderMarkdown';
 
 const NotificationsList = () => {
@@ -24,9 +25,10 @@ const NotificationsList = () => {
             fetchNotifications,
             notificationsLoading
           } = useNotifications();
-  const { isSignedIn, user, isLoaded } = useUser();
+    const { isSetupComplete } = useSettings();
+    const { isSignedIn, user, isLoaded } = useUser();
 
-    if (!isLoaded || !isSignedIn) {
+    if (!isLoaded || !isSignedIn ) {
         return null;
     }
 
@@ -63,33 +65,8 @@ const NotificationsList = () => {
       },
     });
   };
-
-/*
-  const updateNotificationStatus = async (notification, status) => {
-    try {
-      const modifiedNotification = {
-        ...notification,
-        live: status
-      };
-      const apiUrl = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}` +
-            `/eznotifications/${notification.id}`;
-        const response =
-            await fetch(apiUrl, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(modifiedNotification),
-            });
-      if (!response.ok) {
-        throw new Error (`HTTP error! status: ${response.status}`);
-      }
-    } catch (error) {
-      console.error(`Error updating notification ${notification.id}: `, error);
-      throw error;
-    }
-  };
-*/
   
-  // handle turning a notification on and off
+  // Handle turning a notification on and off
   const handleSwitchChange = async (notificationData, checked) => {
       const notificationDataCopy = {
           ...notificationData,
@@ -113,15 +90,15 @@ const NotificationsList = () => {
   };
   
     useEffect(() => {
-      const fetchData = async () => {
-          //console.log('clerkUserId in fetchData=', clerkUserId);
-        await fetchNotifications();
-      };
+        const fetchData = async () => {
+            //console.log('clerkUserId in fetchData=', clerkUserId);
+            await fetchNotifications();
+        };
 
-    if (isLoaded && isSignedIn) {
-        fetchData();
-    }
-  }, [fetchNotifications]);
+        if (isLoaded && isSignedIn && isSetupComplete) {
+            fetchData();
+        }
+    }, [fetchNotifications, isSetupComplete]);
     
     const formatDisplayDate = (prefix, date) => {
       return (date == null ? '' : 

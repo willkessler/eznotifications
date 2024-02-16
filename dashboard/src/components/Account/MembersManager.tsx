@@ -11,6 +11,12 @@ const AdminControls = ({ membership }: { membership: OrganizationMembershipResou
   const {
     user: { id: userId },
   } = useUser();
+  const { memberships } = useOrganization({
+    memberships: {
+      infinite: true,
+      keepPreviousData: true,
+    }
+  });
  
   if (membership.publicUserData.userId === userId) {
     return null;
@@ -19,11 +25,13 @@ const AdminControls = ({ membership }: { membership: OrganizationMembershipResou
   const removeMember = async () => {
     setDisabled(true);
     await membership.destroy();
+    await memberships?.revalidate?.();
   };
  
   const changeRole = async (role: MembershipRole) => {
     setDisabled(true);
     await membership.update({ role });
+    await memberships?.revalidate?.();
     setDisabled(false);
   };
  
@@ -45,7 +53,7 @@ const AdminControls = ({ membership }: { membership: OrganizationMembershipResou
   );
 };
 
-const MemberList = () => {
+const MembersManager = () => {
   const { membership, memberships } = useOrganization({
     memberships: {
       infinite: true,
@@ -86,5 +94,5 @@ const MemberList = () => {
   );
 }
 
-export default MemberList;
+export default MembersManager;
 
