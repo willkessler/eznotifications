@@ -87,7 +87,7 @@ const InvitationsManager = () => {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {invitations.data.map((invitation) => (
+          {invitations?.data.map((invitation) => (
             <Table.Tr key={invitation.id || invitation.emailAddress}>
               <Table.Td>
                 {invitation.emailAddress} (invited to be a {invitation.role === 'org:member' ? 'member' : 'admin'})

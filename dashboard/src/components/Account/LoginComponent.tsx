@@ -24,7 +24,7 @@ const LoginComponent = () => {
             }
           }}
           signUpUrl="/sign-up"
-          afterSignUpUrl="/onboard" />
+        />
       </AuthLayout>
     </>
   );

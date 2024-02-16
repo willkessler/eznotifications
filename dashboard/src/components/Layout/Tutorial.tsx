@@ -3,15 +3,21 @@ import Joyride from 'react-joyride';
 import { Anchor, Button, Image, Modal, Space } from '@mantine/core';
 import mainClasses from './css/MainLayout.module.css';
 import navClasses from './css/Navbar.module.css';
+import { useSettings } from '../Account/SettingsContext';
 
 const Tutorial = () => {
 
-  const [ runState, setRunState ] = useState(false);
-  const [ isTutorialModalOpen, setIsTutorialModeOpen ] = useState(true);
+  const { isFirstTimeAdmin } = useSettings();
+  const [ joyrideRunState, setJoyrideRunState ] = useState(false);
+  const [ isTutorialModalOpen, setIsTutorialModeOpen ] = useState(isFirstTimeAdmin);
   
+  useEffect(() => {
+    setIsTutorialModeOpen(isFirstTimeAdmin);
+  }, [isFirstTimeAdmin]);
+
   const takeTheTour = () => {
     setIsTutorialModeOpen(false);
-    setRunState(true);
+    setJoyrideRunState(true);
   };
   
   const closeTutorialModal = () => {
@@ -21,14 +27,32 @@ const Tutorial = () => {
   const steps = [
       {
         target: '[data-tour="notifications"]',
-        content: 'Use the notifications page to create and configure notifications to show your users.', 
+        content: 'Start at the Notifications page: create and configure notifications to show your users.', 
         disableBeacon: true,
         placement: 'right-end',
         locale: { skip: <strong aria-label="skip">Skip</strong> },
       },
       {
         target: '[data-tour="sandbox"]',
-        content: 'After setting up a notification or two, you can always try it out in the sandbox.', 
+        content: 'After setting up a notification or two, you can try it out in the sandbox to kick the tires.', 
+        disableBeacon: true,
+        placement: 'right-end',
+      },
+      {
+        target: '[data-tour="statistics"]',
+        content: `Once you're in production, track your Notifications' performance, right down to the individual user.`,
+        disableBeacon: true,
+        placement: 'right-end',
+      },
+      {
+        target: '[data-tour="account"]',
+        content: `Invite others to the dashboard, manage API keys and payment methods here.`,
+        disableBeacon: true,
+        placement: 'right-end',
+      },
+      {
+        target: '[data-tour="help"]',
+        content: `That's pretty much it! If you need help, look here. Have fun!`,
         disableBeacon: true,
         placement: 'right-end',
       },
@@ -69,7 +93,7 @@ const Tutorial = () => {
         <Joyride 
           continuous
           hideCloseButton
-          run={runState}
+          run={joyrideRunState}
           scrollToFirstStep
           showProgress
           showSkipButton

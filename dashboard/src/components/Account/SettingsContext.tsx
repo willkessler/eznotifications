@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { useUser } from "@clerk/clerk-react";
+import { useUser, useOrganization, useOrganizationList } from "@clerk/clerk-react";
 
 interface OrganizationDataProps {
     organizationName: string,
@@ -21,12 +21,14 @@ const SettingsContext = createContext({
 export const useSettings = () => useContext(SettingsContext);
 
 export const SettingsProvider = ({ children }) => {
+    const { user } = useUser();
+    const { createOrganization, setActive } = useOrganizationList();
     const [ organizationName, setOrganizationName ] = useState('My Team');
     const [ timezone, setTimezone ] = useState('America/Los_Angeles');
     const [ permittedDomains, setPermittedDomains ] = useState('stackblitz.io\ncodesandbox.io\n');
     const [ refreshFrequency, setRefreshFrequency ] = useState(300); // seconds
     const [ isSetupComplete, setIsSetupComplete ] = useState(false);
-    const { user } = useUser();
+    const [ isFirstTimeAdmin,  setIsFirstTimeAdmin ] = useState(false);
 
     const getSettings = async () => {
         const clerkId = user.id;
@@ -107,7 +109,7 @@ export const SettingsProvider = ({ children }) => {
                 return userData;
             }
         } catch (error) {
-            console.error(`Error creating local user: ( ${error} ).`);
+            console.log(`Error creating local user: ( ${error} ).`);
             throw error;
         }
 
@@ -136,6 +138,9 @@ export const SettingsProvider = ({ children }) => {
                 setTimezone(organizationData.timezone);
                 setPermittedDomains(organizationData.permittedDomains);
                 setRefreshFrequency(organizationData.refreshFrequency);
+                // Tell the Notifications.tsx file that this is the first time an account admin has signed in
+                // so we should give them the option of seeing the tutorial.
+                setIsFirstTimeAdmin(true);
                 console.log('Stored all settings.');
             }
         } catch (error) {
@@ -164,7 +169,7 @@ export const SettingsProvider = ({ children }) => {
                 console.log(`Locally attached clerk user ${clerkUserId} to clerk org ${clerkOrganizationId}.`);
             }
         } catch (error) {
-            console.error(`Error attaching clerk user ${clerkUserId} to clerk org ${clerkOrganizationId}.`);
+            console.log(`Error attaching clerk user ${clerkUserId} to clerk org ${clerkOrganizationId}.`);
             throw error;
         }
     }
@@ -261,7 +266,7 @@ export const SettingsProvider = ({ children }) => {
                 await addUserToOurOrg(clerkOrganizationId);
                 outcomes.addedUserOrganization = true;
             } catch (error) {
-                console.error(`Error attaching a clerk user id: ${userId} to ` +
+                console.log(`Error attaching a clerk user id: ${userId} to ` +
                     `clerk organization id: ${clerkOrganizationId}: ${error}`);
             }
             
@@ -283,14 +288,15 @@ export const SettingsProvider = ({ children }) => {
     return (
       <SettingsContext.Provider 
         value={{ 
+            isSetupComplete,
+            setIsSetupComplete,
+            isFirstTimeAdmin,
             getSettings,
             saveSettings,
             createLocalUser,
             createLocalOrganization,
             addUserToOurOrg,
             setupClerkOrganizationAndMirrorRecords,
-            isSetupComplete,
-            setIsSetupComplete,
             organizationName,
             setOrganizationName,
             timezone,
