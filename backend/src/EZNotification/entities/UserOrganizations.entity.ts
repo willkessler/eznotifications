@@ -7,6 +7,9 @@ export class UserOrganization {
     @PrimaryGeneratedColumn('uuid')
     uuid: number;
 
+    @Column({ name: 'created_at', type: 'timestamp', nullable: false })
+    createdAt: Date;
+
     @ManyToOne(() => User, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'user_uuid' })
     user: User;

@@ -118,7 +118,8 @@ export class WebhookController {
 
         switch (eventType) {
             case 'user.created':
-                await this.createUserFromWebhook(body.data);
+                //await this.createUserFromWebhook(body.data);
+                console.log('Skipping creating user on webhook since now done by frontend.');
                 break;
             case 'user.update':
                 break;

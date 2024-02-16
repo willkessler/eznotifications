@@ -1,6 +1,12 @@
 import { DataSource } from 'typeorm';
 import { EndUser } from './EZNotification/entities/EndUsers.entity';
 import { EndUsersServed } from './EZNotification/entities/EndUsersServed.entity';
+import { User } from './EZNotification/entities/Users.entity';
+import { UserEmails } from './EZNotification/entities/UserEmails.entity';
+import { Organization } from './EZNotification/entities/Organizations.entity';
+import { ApiKey } from './EZNotification/entities/ApiKeys.entity';
+import { PricingModel } from './EZNotification/entities/PricingModels.entity';
+import { PermittedDomains } from './EZNotification/entities/PermittedDomains.entity';
 import { EZNotification } from './EZNotification/entities/EZNotification.entity';
 
 export const AppDataSource = new DataSource({
@@ -10,7 +16,7 @@ export const AppDataSource = new DataSource({
     username: 'postgres',
     password: 'postgres',
     database: 'notifications_dev',
-    entities: [EZNotification, EndUser, EndUsersServed],
+    entities: [EZNotification, EndUser, EndUsersServed, Organization, User, UserEmails, ApiKey, PermittedDomains, PricingModel],
     synchronize: false,
     migrations: ["migration/*.ts"],
     // other options

@@ -8,6 +8,8 @@ import { EZNotification } from './entities/EZNotification.entity';
 import { EZNotificationService } from './EZNotification.service';
 import { EZNotificationDto } from './dto/EZNotification.dto';
 import { Organization } from './entities/Organizations.entity';
+import { User } from './entities/Users.entity';
+import { UserOrganization } from './entities/UserOrganizations.entity';
 import { EndUser } from './entities/EndUsers.entity';
 import { EndUsersServed } from './entities/EndUsersServed.entity';
 import { ApiKey } from './entities/ApiKeys.entity';
@@ -19,6 +21,25 @@ export class EZNotificationController {
         private readonly EZNotificationService: EZNotificationService,
 
     ) {}
+
+    @Post('/user/create')
+    async createUser(
+        @Body('clerkUserId') clerkUserId: string,
+        @Body('primaryEmail') primaryEmail: string,
+    ): Promise<User> {
+        const newUser = await this.EZNotificationService.createLocalUser(clerkUserId, primaryEmail);
+        return newUser;
+    }
+    
+    @Post('/user/attach-to-organization')
+    async attachUserToOrganization(
+        @Body('clerkUserId') clerkUserId: string,
+        @Body('clerkOrganizationId') clerkOrganizationId: string,
+    ): Promise<UserOrganization> {
+        const newUserOrganization = await this.EZNotificationService.attachUserToOrganization(clerkUserId, clerkOrganizationId);
+        return newUserOrganization;
+    }
+
 
     @Post('/organization/create')
     async createOrganization(

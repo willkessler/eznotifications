@@ -49,6 +49,12 @@ export class EZNotification {
   @OneToMany(() => EndUsersServed, endUsersServed => endUsersServed.notification)
   endUsersServed: EndUsersServed[];
     
+  @Column({ name: 'creator_uuid', type: 'uuid', nullable: true })
+  creatorUuid: string;
+
+  @Column({ name: 'organization_uuid', type: 'uuid', nullable: true })
+  organizationUuid: string;
+
   @OneToOne(() => User)
   @JoinColumn({ name: 'creator_uuid' })
   creator: User;

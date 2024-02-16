@@ -11,7 +11,8 @@ const  OnboardForm = () => {
 
   const { createOrganization, setActive } = useOrganizationList();
   const { isSignedIn, user, isLoaded } = useUser();
-  const { createLocalOrganization, saveSettings, 
+  const { createLocalUser, createLocalOrganization, addUserToOurOrg,
+          saveSettings, 
           permittedDomains, setPermittedDomains,
           organizationName, setOrganizationName } = useSettings();
   const [ clerkOrganizationId, setClerkOrganizationId ] = useState(null);
@@ -70,24 +71,93 @@ const  OnboardForm = () => {
     }
   };
 
+  // Set up clerk org, and set up everything on our side to mirror clerk as required.
+  const setupClerkOrganizationAndMirrorRecords = async () => {
+    // Create a user record for this user if one does not exist on our side.
+    let userId = user.id;
+    let clerkOrganizationId = null;
+    try {
+      console.log(`Trying to create a local user.`);
+      const localUser = await createLocalUser();
+    } catch (error) {
+      console.error('Error creating local user.');
+    }
+
+    if (user.organizationMemberships.length > 0) {
+      // If the user is already part of a clerk org, then try to tie the local user to the matching local org.
+      // This case happens when a user is invited to an existing org thorugh the app. (Idempotent.)
+      clerkOrganizationId = user.organizationMemberships[0].organization.id;
+      try {
+        console.log(`Adding clerk user id ${userId} to our own org that matches clerk org id ${clerkOrganizationId}.`);
+        const localOrganization = await addUserToOurOrg(clerkOrganizationId);
+      } catch (error) {
+        console.error(`Error attaching clerk user id: ${userId} to ` +
+                      `clerk organization id: ${clerkOrganizationId}: ${error}`);
+      }
+    } else {
+      // If the user doesn't belong to any organiation yet, then
+      // the overall client is just getting going, so we will need to create a clerk org first.
+      try {
+        console.log(`Trying to create clerk organization with name ${organizationName}`);
+        const clerkOrganization = await createOrganization({name: organizationName});
+        console.log('Made clerk create call');
+        if (clerkOrganization !== null) {
+          clerkOrganizationId = clerkOrganization.id;
+        } else {
+          throw new Error (`Unable to create clerk organization for user ${user.id} with error ${error}`);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    // If we have just created a clerk organization, create an org on our side (if required),
+    // and attach our user record to it.
+    if (clerkOrganizationId) {
+      try {
+        console.log(`Creating mirror org for clerk org id ${clerkOrganizationId}.`);
+        const organizationRecord = await createOurOrganization(clerkOrganizationId);
+      } catch (error) {
+        console.error(`Error creating our mirror organization: ${error}`);
+      }
+
+      try {
+        console.log(`Saving default settings into the new org with clerk org id: ${clerkOrganizationId}.`);
+        const updatedOrg = await saveSettings(clerkOrganizationId);
+      } catch (error) {
+        console.error(`Error saving default settings for our mirror organization: ${error}`);
+      }
+
+      try {
+        console.log(`Adding clerk user id: ${userId} to our new clerk org id: ${clerkOrganizationId}.`);
+        await addUserToOurOrg(clerkOrganizationId);
+      } catch (error) {
+        console.error(`Error attaching a clerk user id: ${userId} to ` +
+                      `clerk organization id: ${clerkOrganizationId}: ${error}`);
+      }
+      
+
+    }
+  };
+
   // This effect is run only during component mount.
   // Do not do create a organization if this user already has a organization association in clerk, just forward to home page
   useEffect(() => {
     console.log('useEffects/no depends starts.');
     console.log(`  permittedDomains: ${permittedDomains}`);
     if (isLoaded && isSignedIn) {
+      // Create starter organizations on component load if they don't exist yet
+      console.log('useEffects, no depends: setting up all required entities.');
+      setupClerkOrganizationAndMirrorRecords();
+
       if (user.organizationMemberships.length > 0) {
-        // this user already has an org or belongs to an org so send them back to the home page
+        // This user already has an org or belongs to an org so send them back to the home page
         console.log('  Sending user to home page since already a member.');
-        console.log(' Here is the user object: ' + JSON.stringify(user,null,2));
+        //console.log(' Here is the user object: ' + JSON.stringify(user,null,2));
         window.location = '/';
-      } else {
-        // Create starter organizations on component load if they don't exist yet
-        console.log('useEffects, no depends: calling createClerkOrgThenLocalOrg');
-        createClerkOrgThenLocalOrg();
       }
     } else {
-      console.log('useEffects/no depends, doing nothing.');
+      console.log('useEffects/no depends, clerk not ready so doing nothing.');
     }
   }, []);
 

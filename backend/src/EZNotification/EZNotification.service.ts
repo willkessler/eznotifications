@@ -204,6 +204,92 @@ export class EZNotificationService {
             .getMany();
     }
 
+    async createLocalUser(clerkUserId: string, primaryEmail: string) {
+        console.log('-1-1-1- createLocalUser -1-1-1');
+        console.log('--> createLocalUser, check for pre-existing User record.');
+            // Check if the user already exists based on its userId
+        const existingUser = await this.userRepository.findOne({
+            where: [
+                { clerkId: clerkUserId }
+            ],
+        });
+
+        if (existingUser) {
+            const errorMsg = `--> createLocalUser : not creating local user with clerkUserId: ${clerkUserId}, already exists.`;
+            console.log(errorMsg);
+            throw new NotFoundException(errorMsg);
+        } else {
+            try {
+                console.log(`--> createLocalUser : trying to create user with ` +
+                    `clerkUserId: ${clerkUserId} and primaryEmail: ${primaryEmail}.`);
+                const newUser = await this.userRepository.create({
+                    primaryEmail: primaryEmail,
+                    clerkId: clerkUserId
+                });
+                const newUserRecord = await this.userRepository.save(newUser);
+                return newUserRecord;
+            } catch(error) {
+                throw new NotFoundException(`--> createLocalUser : unable to create local user with clerkUserId: ` +
+                    `${clerkUserId}, primaryEmail: ${primaryEmail}`);
+            }
+        }
+    }
+
+    async attachUserToOrganization(clerkUserId: string, clerkOrganizationId: string) {
+        console.log('-2-2-2- attachUserToOrganization -2-2-2');
+        console.log(`--> clerkUserId: ${clerkUserId}, clerkOrganizationId: ${clerkOrganizationId}.`);
+        console.log('-->  attachUserToOrganization, fetch the pre-existing User record.');
+        const existingUser = await this.userRepository.findOne({
+            where: [
+                { clerkId: clerkUserId }
+            ],
+        });
+        if (!existingUser) {
+            throw new NotFoundException(`Error: cannot locate existing user record for clerk user id: ${clerkUserId}`);
+        }
+        console.log('-->  attachUserToOrganization, fetch the pre-existing Organization.');
+        const existingOrganization = await this.organizationRepository.findOne({
+            where: [
+                { clerkOrganizationId: clerkOrganizationId }
+            ],
+        });
+
+        if (!existingOrganization) {
+            throw new NotFoundException(`Error: cannot locate existing organization record for clerk organization id:` +
+                `${clerkOrganizationId}`);
+        }
+
+        console.log('-->  attachUserToOrganization, fetch the pre-existing UserOrganization.');
+        const existingUserOrganization = await this.userOrganizationRepository.findOne({
+            where: [
+                {
+                    user: { uuid: existingUser.uuid },
+                    organization: { uuid: existingOrganization.uuid },
+                }
+            ],
+        });
+
+        const postfix = ` for user id: ${existingUser.uuid} / clerk id:${clerkUserId}, ` +
+            `org id: ${existingOrganization.uuid} / clerk org id:${clerkOrganizationId}`;
+        if (existingUserOrganization) {
+            const errorMsg = 'Error: We already have a userOrganization' + postfix;
+            console.log(errorMsg);
+            throw new NotFoundException(errorMsg);
+        } else {
+            try {
+                const newUserOrganization = this.userOrganizationRepository.create({
+                    user: existingUser,
+                    organization: existingOrganization
+                });
+                return this.userOrganizationRepository.save(newUserOrganization);
+            } catch (error) {
+                const errorMsg = 'Error: unable to create userOrganization ' + postfix;
+                console.error(errorMsg);
+                throw new NotFoundException(errorMsg);
+            }
+        }
+    }
+
     // Create a local org on our side to mirror clerk's. This function is idempotent in that
     // if a local org already exists with the given clerkId for the clerk org, we do nothing.
     async createLocalOrganization(organizationData: OrganizationDataProps) : Promise<Organization> {
@@ -216,102 +302,35 @@ export class EZNotificationService {
             ],
         });
 
-        console.log('  createLocalOrganization, find existing User');
-        // Check if the user already exists based on its clerk id
-        const existingUser = await this.userRepository.findOne({
-            where: [
-                { clerkId: organizationData.clerkCreatorId }
-            ],
-        });
-
-        console.log('  createLocalOrganization, find existing Organization');
+        console.log('--> createLocalOrganization, fetch existing Organization');
         const existingOrganization = await this.organizationRepository.findOne({
             where: [
                 { clerkOrganizationId: organizationData.clerkOrganizationId }
             ],
         });
 
-        if (existingUser && existingOrganization) {
-            console.log('  createLocalOrganization, find existing Userorganization');
-            existingUserOrganization = await this.userOrganizationRepository.findOne({
-                where: [
-                    {
-                        user: { uuid: existingUser.uuid },
-                        organization: { uuid: existingOrganization.uuid },
-                    }
-                ],
-            });
-        }
-
-        // check if an org already exists with the given clerkid. If not, create it and bind this user to it.
-        if (existingOrganization === null) {
-            // no org exists with this clerk id, so we need to create a local org according to the passed in data,
-            return this.organizationRepository.manager.transaction(async (transactionalEntityManager) => {
-                const newOrganization = await transactionalEntityManager.create(Organization, {
+        // check if an org already exists with the given clerkid. If not, create it.
+        if (existingOrganization !== null) {
+            throw new NotFoundException(`We already have an existing organization for ` +
+                `clerk org id: ${organizationData.clerkOrganizationId}.`);
+        } else {
+            // No organization exists with this clerk id, so we need to create a local organization.
+            try {
+                const newOrganization = await this.organizationRepository.create({
                     name: organizationData.organizationName,
                     clerkCreatorId: organizationData.clerkCreatorId,
-                    clerkOrganizationId: organizationData.clerkOrganizationId, // the organization clerk id
+                    clerkOrganizationId: organizationData.clerkOrganizationId,
                     preferredTimezone: organizationData.timezone,
                     refreshFrequency: organizationData.refreshFrequency,
                     pricingModel: basePricingModel,
                 });
-
-                await transactionalEntityManager.save(newOrganization);
-                theOrganization = newOrganization;
                 console.log(`Created a new organization with id: ${newOrganization.uuid}`);
-
-                // Create or update a user record as the owner of the new org.
-                // (Logical upsert to Users table; if already exists just make sure primary email gets updated if required.)
-                let theUser;
-                if (existingUser) {
-                    // User exists, update primaryEmail if it's different
-                    if (existingUser.primaryEmail !== organizationData.clerkEmail) {
-                        await transactionalEntityManager.update(User, { clerkId: organizationData.clerkCreatorId }, { primaryEmail: organizationData.clerkEmail });
-                        theUser = await this.userRepository.findOne({
-                            where: [
-                                { clerkId: organizationData.clerkCreatorId }
-                            ],
-                        });
-                    } else {
-                        theUser = existingUser;
-                    }
-                } else {
-                    // Create a new user record
-                    const newUser = transactionalEntityManager.create(User, {
-                        primaryEmail: organizationData.clerkEmail,
-                        clerkId: organizationData.clerkCreatorId,
-                    });
-                    await transactionalEntityManager.save(newUser);
-                    theUser = newUser;
-                }
-
-                if (existingUserOrganization) {
-                    // set the existingUserOrganization to point to theOrganization
-                    await transactionalEntityManager.update(
-                        UserOrganization,
-                        {
-                            organization: { uuid: existingOrganization.uuid },
-                            user: { uuid: existingUser.uuid },
-                        },
-                        {
-                            organization: { uuid: theOrganization.uuid },
-                            user: { uuid: theUser.uuid },
-                            role: existingUserOrganization.role,
-                        });
-                } else {
-                    const newUserOrganization = transactionalEntityManager.create(UserOrganization, {
-                        user: existingUser,
-                        organization: theOrganization,
-                        type: 'Admin',
-                    });
-                    await transactionalEntityManager.save(newUserOrganization);
-                    console.log(`Created a new user_organization with id: ${newUserOrganization.uuid}`);
-                }
-                return theOrganization;
-            });
+                return this.organizationRepository.save(newOrganization);
+            } catch (error) {
+                throw new NotFoundException(`Unable to create an organization for ` +
+                    `clerk org id: ${organizationData.clerkOrganizationId}.`);
+            }
         }
-        // we did nothing
-        return null;
     }
 
     async createApiKey(apiKeyType: string, clerkId: string): Promise<ApiKey> {

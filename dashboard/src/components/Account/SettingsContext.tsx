@@ -61,11 +61,11 @@ export const SettingsProvider = ({ children }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     organizationName: organizationName,
+                    clerkCreatorId: clerkCreatorId,
                     clerkOrganizationId: clerkOrganizationId,
                     timezone: timezone,
                     permittedDomains: permittedDomains,
                     refreshFrequency: refreshFrequency,
-                    clerkCreatorId: clerkCreatorId,
                 })
             });
             if (!response.ok) {
@@ -79,6 +79,37 @@ export const SettingsProvider = ({ children }) => {
             throw error;
         }
         return false;
+    }
+
+    const createLocalUser = async () => {
+        const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/user/create`;
+        const clerkUserId = user.id;
+        const primaryEmail = user.primaryEmailAddress.emailAddress;
+        console.log(`In createLocalUser: calling API to to create local user for clerk user id: ` +
+            `${clerkUserId} with email ${primaryEmail}.`);
+        try {
+            const userObject = { 
+                clerkUserId : clerkUserId,
+                primaryEmail : primaryEmail
+            };
+            console.log(`Send this to backend: ${JSON.stringify(userObject,null,2)}`);
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userObject)
+            });
+            if (!response.ok) {
+                throw new Error (`HTTP error! status: ${response.status}`);
+            } else {
+                const userData = await response.json();
+                console.log(`Created new user: ${JSON.stringify(userData,null,2)}`);
+                return userData;
+            }
+        } catch (error) {
+            console.error(`Error creating local user: ( ${error} ).`);
+            throw error;
+        }
+
     }
 
     const createLocalOrganization = async (organizationData: OrganizationDataProps) => {
@@ -107,7 +138,32 @@ export const SettingsProvider = ({ children }) => {
                 console.log('Stored all settings.');
             }
         } catch (error) {
-            console.error(`Error saving settings: ( ${error} ).`);
+            console.error(`Error creating local org: ( ${error} ).`);
+            throw error;
+        }
+    }
+
+    const addUserToOurOrg = async(clerkOrganizationId: string) => {
+        const clerkUserId = user.id;
+        console.log('in addUserToOurOrg, calling API to attach current user to the correct org.');
+        const apiUrl = `${window.location.protocol}//${window.location.hostname}` +
+            `/api/eznotifications/user/attach-to-organization`;
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    clerkUserId:         clerkUserId,
+                    clerkOrganizationId: clerkOrganizationId,
+                })
+            });
+            if (!response.ok) {
+                throw new Error (`HTTP error! status: ${response.status}`);
+            } else {
+                console.log(`Locally attached clerk user ${clerkUserId} to clerk org ${clerkOrganizationId}.`);
+            }
+        } catch (error) {
+            console.error(`Error attaching clerk user ${clerkUserId} to clerk org ${clerkOrganizationId}.`);
             throw error;
         }
 
@@ -118,7 +174,9 @@ export const SettingsProvider = ({ children }) => {
         value={{ 
             getSettings,
             saveSettings,
+            createLocalUser,
             createLocalOrganization,
+            addUserToOurOrg,
             organizationName,
             setOrganizationName,
             timezone,
