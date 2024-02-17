@@ -8,6 +8,7 @@ import PreviewModal from '../Preview/PreviewModal';
 import NotificationsHeader from './NotificationsHeader';
 import NotificationsList from './NotificationsList';
 import NotificationsModal from './NotificationsModal';
+import ResetViewsModal from './ResetViewsModal';
 import DeleteModal from './DeleteModal';
 import { useSettings } from '../Account/SettingsContext';
 import { useAPIKeys } from '../Account/APIKeysContext';
@@ -41,6 +42,7 @@ const Notifications = () => {
             <PreviewBanner />
             <PreviewModal />
             <DeleteModal />
+            <ResetViewsModal />
             <Toaster />
           </NotificationsProvider>
       </>

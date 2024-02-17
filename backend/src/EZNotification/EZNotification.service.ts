@@ -102,14 +102,29 @@ export class EZNotificationService {
             const userOrganization = await this.findUserOrganizationByClerkId(queryParams.clerkUserId);
             if (userOrganization.length > 0) {
                 const organizationUuid = userOrganization[0].organization.uuid;
-                return this.ezNotificationRepository.find({
-                    where: {
-                        deleted: false,
-                        organization: {
-                            uuid : organizationUuid
-                        }
-                    },
-                });
+
+                return this.ezNotificationRepository.createQueryBuilder('notification')
+                    .leftJoinAndSelect('notification.creator', 'creator')
+                    .select([
+                        'notification.id',
+                        'notification.content',
+                        'notification.createdAt',
+                        'notification.updatedAt',
+                        'notification.deleted',
+                        'notification.deletedAt',
+                        'notification.live',
+                        'notification.pageId',
+                        'notification.startDate',
+                        'notification.endDate',
+                        'notification.notificationType',
+                        'notification.notificationTypeOther',
+                        'notification.environments',
+                        'creator.primaryEmail',
+                    ])
+                    .where('notification.deleted = :deleted', { deleted: false })
+                    .andWhere('notification.organizationUuid = :organizationUuid', { organizationUuid })
+                    .getMany();
+
             } else {
                 throw new NotFoundException(`Cannot find organization for clerk user id: ${queryParams.clerkUserId}`);
             }

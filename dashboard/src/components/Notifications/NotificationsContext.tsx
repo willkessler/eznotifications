@@ -1,5 +1,10 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useUser } from "@clerk/clerk-react";
+import { Pill, Tooltip } from '@mantine/core';
+import {  IconInfoCircle, IconAlertTriangle, IconExchange,
+          IconCloudStorm, IconExclamationCircle, IconDots,
+          IconQuestionMark,
+          IconSpeakerphone} from '@tabler/icons-react';
 
 const NotificationsContext = createContext({
 });
@@ -11,13 +16,101 @@ export const NotificationsProvider = ({ children }) => {
     const [notificationsLastUpdated, setNotificationsLastUpdated] = useState([null]);
     const [notificationsLoading, setNotificationsLoading] = useState(true);
     const { user } = useUser();
-
     // When we create or update a notification, we'll highlight it in the notificationsList.
     const [highlightedId, setHighlightedId] = useState(null);
 
-    // State of the create/edit notification modal
+    const formatDisplayDate = (prefix, date) => {
+        return (date == null ? '' : 
+            prefix + ': ' +
+            new Date(date).toLocaleString('en-US', 
+                                          { weekday: 'short', 
+                                            year: 'numeric', 
+                                            month: 'short', 
+                                            day: 'numeric', 
+                                            hour: '2-digit', 
+                                            minute: '2-digit' }
+                                         )
+               );
+    };
+
+    function formatDisplayTime(date) {
+        if (!date) return '';
+
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+
+    const formatCreateInfo = (notificationData) => {
+        const jsDate = new Date(notificationData.createdAt);
+        const humanFormattedDate = jsDate.toLocaleDateString() + ' ' + jsDate.toLocaleTimeString();
+        return (
+            <>
+                Created: {humanFormattedDate} by {notificationData.creator?.primaryEmail}
+            </>
+        );
+    };
+
+    const formatNotificationType = (prefix, data) => {
+        let typeMap = {
+            'info' : { icon: IconInfoCircle,
+                       title: 'Info',
+                       bgColor: '2f2'
+                     },
+            'change' : { icon: IconExchange,
+                       title: 'Breaking change',
+                       bgColor: 'aaf'
+                     },
+            'alert' : { icon: IconAlertTriangle,
+                        title: 'Alert',
+                        bgColor: '#fa0'
+                      },
+            'outage' : { icon: IconCloudStorm,
+                        title: 'Outage',
+                        bgColor: '#f22'
+                      },
+            'call_to_action' : { icon: IconCloudStorm,
+                                 title: 'Call to action',
+                                 bgColor: 'ff2'
+                               },
+            'other' : { icon: IconCloudStorm,
+                        title: 'Other',
+                        bgColor: '666'
+                      },
+        };
+        
+        let elem;
+        let icon;
+        let title;
+        let bgColor;
+        let tooltip;
+        if (data.notificationType === null) {
+            icon = IconQuestionMark;
+            title = 'Not yet set';
+            bgColor = 'fff';
+        } else {
+            elem = typeMap[data.notificationType];
+            icon = elem.icon;
+            title = elem.title;
+            bgColor = elem.bgColor;
+        }
+
+        return (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                {prefix}:
+                <Tooltip openDelay={500} label={title} position="bottom" withArrow>
+                   {React.createElement(icon, { style: { color:bgColor}} ) }
+                </Tooltip>
+            </div>
+        );
+    }
+
+    //
+    // Show & hide the create/edit notification modal
+    //
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalInitialData, setModalInitialData] = useState(null);
+
     const openModal = useCallback((data = null) => {
         setModalInitialData(data);
         setIsModalOpen(true);
@@ -28,8 +121,9 @@ export const NotificationsProvider = ({ children }) => {
         setModalInitialData(null); // Reset initial data on close
     }, []);
 
+    //
     // Show and hide the demo banner
-    // state of the banner preview
+    //
     const [isBannerVisible, setIsBannerVisible] = useState(false);
     const [bannerContent, setBannerContent] = useState('');
     const showBanner = (bannerText) => {
@@ -40,7 +134,9 @@ export const NotificationsProvider = ({ children }) => {
         setIsBannerVisible(false);
     }
 
+    //
     // Show and hide the notification preview modal
+    //
     const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
     const [previewModalContent, setPreviewModalContent] = useState('');
     const showPreviewModal = (contents) => {
@@ -52,10 +148,13 @@ export const NotificationsProvider = ({ children }) => {
         setIsPreviewModalOpen(false);
     };
 
-    // Show and hide the delete confirmation modal
+    //
+    // Delete a notification
+    //
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [deletedNotificationId, setDeletedNotificationId] = useState(null);
     const [deletedNotificationContents, setDeletedNotificationContents] = useState('');
+
     const showDeleteModal = (notification) => {
         //console.log('deleting this notif', notification);
         setDeletedNotificationId(notification.id);
@@ -72,7 +171,8 @@ export const NotificationsProvider = ({ children }) => {
     const actuallyDeleteNotification = useCallback(async (deletedNotificationId) => {
         try {
             const method = 'DELETE';
-            const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/notifications/${deletedNotificationId}`;
+            const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/notifications/` +
+                `${deletedNotificationId}`;
             //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
             const response = await fetch(apiUrl, {
                 method: method
@@ -95,6 +195,52 @@ export const NotificationsProvider = ({ children }) => {
         setIsDeleteModalOpen(false);
         setDeletedNotificationContents('');
         setDeletedNotificationId(null);
+    };
+
+    //
+    // Reset views on a notification
+    //
+    const [ isResetViewsModalOpen,setIsResetViewsModalOpen ] = useState(false);
+    const [ resetViewsNotificationId, setResetViewsNotificationId] = useState(null);
+    const [ resetViewsNotificationContents, setResetViewsNotificationContents] = useState('');
+
+    const showResetViewsModal = (notification) => {
+        console.log('resetting views on this notif', notification);
+        setResetViewsNotificationId(notification.id);
+        setResetViewsNotificationContents(notification.content);
+        setIsResetViewsModalOpen(true);
+    };
+
+    const closeResetViewsModal = () => {
+        setResetViewsNotificationContents('');
+        setResetViewsNotificationId(null);
+        setIsResetViewsModalOpen(false);
+    };
+
+    const actuallyResetViews = useCallback(async (resetViewsNotificationId) => {
+        try {
+            const method = 'PUT';
+            const apiUrl = 
+                `${window.location.protocol}//${window.location.hostname}/api/eznotifications/notifications` +
+                `/reset/${resetViewsNotificationId}`;
+            //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
+            const response = await fetch(apiUrl, {
+                method: method
+            });
+            if (!response.ok) throw new Error('Failed to reset notification with id: ' + resetViewsNotificationId);
+
+        } catch (error) {
+            console.error(`Error resetting views on notification with id:${resetViewsNotificationId}`, error);
+            return false;
+        }
+    }, []);
+    
+    const resetViewsForNotification = () => {
+        //console.log('Actually resetting views for notification with id:', resetViewsNotificationId);
+        actuallyResetViews(resetViewsNotificationId);
+        setIsResetViewsModalOpen(false);
+        setResetViewsNotificationContents('');
+        setResetViewsNotificationId(null);
     };
 
     const sortNotifications = (data) => {
@@ -190,6 +336,11 @@ export const NotificationsProvider = ({ children }) => {
 
   return (
     <NotificationsContext.Provider value={{ 
+        formatDisplayDate,
+        formatDisplayTime,
+        formatCreateInfo,
+        formatNotificationType,
+
         notifications,
         fetchNotifications, 
         submitNotification,
@@ -219,6 +370,11 @@ export const NotificationsProvider = ({ children }) => {
         closeDeleteModal,
         deleteNotification,
         deletedNotificationContents,
+        
+        isResetViewsModalOpen,
+        resetViewsNotificationContents,
+        closeResetViewsModal,
+        showResetViewsModal,
     }}>
       {children}
     </NotificationsContext.Provider>

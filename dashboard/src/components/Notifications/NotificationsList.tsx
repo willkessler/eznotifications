@@ -9,6 +9,7 @@ import { IconArrowElbowRight,
          IconAlignBoxCenterMiddle, 
          IconCopy, 
          IconInfoCircle,
+         IconRotate,
          IconTrash,
          IconFidgetSpinner } from '@tabler/icons-react';
 import classes from './Notifications.module.css';
@@ -20,10 +21,15 @@ import { addPreviewCaveatToString } from '../../lib/RenderMarkdown';
 
 const NotificationsList = () => {
     const [ scrolled, setScrolled ] = useState(false);
-    const { openModal, showBanner, showPreviewModal, showDeleteModal, 
+    const { openModal, showBanner, 
+            showPreviewModal, showDeleteModal, showResetViewsModal,
             highlightedId, notifications, submitNotification, 
             fetchNotifications,
-            notificationsLoading
+            notificationsLoading,
+            formatDisplayTime, 
+            formatDisplayDate,
+            formatCreateInfo,
+            formatNotificationType,
           } = useNotifications();
     const { isSetupComplete } = useSettings();
     const { isSignedIn, user, isLoaded } = useUser();
@@ -78,16 +84,6 @@ const NotificationsList = () => {
       notificationDataCopy.clerkUserId = user?.id;
       await submitNotification(notificationDataCopy);
   }
-
-  const formatCreateInfo = (notificationData) => {
-    const jsDate = new Date(notificationData.createdAt);
-    const humanFormattedDate = jsDate.toLocaleDateString() + ' ' + jsDate.toLocaleTimeString();
-    return (
-        <>
-        Created: {humanFormattedDate} by Schmingle
-      </>
-    );
-  };
   
     useEffect(() => {
         const fetchData = async () => {
@@ -100,19 +96,6 @@ const NotificationsList = () => {
         }
     }, [fetchNotifications, isSetupComplete]);
     
-    const formatDisplayDate = (prefix, date) => {
-      return (date == null ? '' : 
-          prefix + ': ' +
-          new Date(date).toLocaleString('en-US', 
-                                        { weekday: 'short', 
-                                          year: 'numeric', 
-                                          month: 'short', 
-                                          day: 'numeric', 
-                                          hour: '2-digit', 
-                                          minute: '2-digit' }
-                                       )
-           );
-  };
     
   let rows;
   if (notificationsLoading) {
@@ -147,14 +130,14 @@ const NotificationsList = () => {
   rows = notifications.map((row, index) => (
       <Table.Tr key={row.id || index} className={row.id === highlightedId ? classes['highlighted-row'] : ''} >
       <Table.Td className={classes.tableCellToTop}>
-        <Switch
-          color="lime"
-          checked={row.live}
-          size="sm"
-          onLabel="ON"
-          offLabel="OFF"
-          onChange={(event) => handleSwitchChange(row, event.currentTarget.checked)}
-        />
+            <Switch
+              color="lime"
+              checked={row.live}
+              size="sm"
+              onLabel="ON"
+              offLabel="OFF"
+              onChange={(event) => handleSwitchChange(row, event.currentTarget.checked)}
+          />
       </Table.Td>
       <Table.Td className={`${classes.tableCellToTop} ${classes.tableCellWithHover}`}>
          <Box w="400">
@@ -162,9 +145,19 @@ const NotificationsList = () => {
               <Text>{row.content.length === 0 ? '(Not set)' : row.content}</Text>
             </Spoiler>
             <div className={`${classes.hoverIcons}`}>
+              <Tooltip openDelay={1000} label={formatCreateInfo(row)} position="bottom" withArrow>
+               <Anchor component="button" type="button">
+                  <IconInfoCircle size={20}  style={{ marginRight: '10px' }} />
+                </Anchor>
+              </Tooltip>
               <Tooltip openDelay={1000} label="Edit this notification" position="bottom" withArrow>
                <Anchor component="button" type="button" onClick={ () => { openModal(row)}} >
                   <IconEdit size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
+                </Anchor>
+              </Tooltip>
+              <Tooltip openDelay={1000} label="Reset views" position="bottom" withArrow>
+                <Anchor component="button" type="button" onClick={ () => { showResetViewsModal(row)}} >
+                  <IconRotate size={20}  style={{ marginRight: '10px' }} />
                 </Anchor>
               </Tooltip>
               <Tooltip openDelay={1000} label="Delete this notification" position="bottom" withArrow>
@@ -172,23 +165,18 @@ const NotificationsList = () => {
                   <IconTrash size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
-              <Tooltip openDelay={1000} label={formatCreateInfo(row)} position="bottom" withArrow>
-               <Anchor component="button" type="button">
-                  <IconInfoCircle size={20}  style={{ marginRight: '10px' }} />
-                </Anchor>
-              </Tooltip>
               &nbsp;&nbsp;&mdash;&nbsp;&nbsp;
-              <Tooltip openDelay={1000} label="Banner preview" position="bottom" withArrow>
+              <Tooltip openDelay={1000} label="Show Banner preview" position="bottom" withArrow>
                 <Anchor component="button" type="button" onClick={ () => { showBanner(row.content.length==0 ? '(Not set)' : row.content) }}>
                   <IconLayoutNavbarExpand size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
-              <Tooltip openDelay={1000} label="Modal preview" position="bottom" withArrow>
+              <Tooltip openDelay={1000} label="Show Modal preview" position="bottom" withArrow>
                 <Anchor component="button" type="button" onClick={ () => { showPreviewModal(row.content.length==0 ? '(Not set)' : row.content) }}>
                   <IconAlignBoxCenterMiddle size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
-              <Tooltip openDelay={1000} label="Toast preview" position="bottom" withArrow>
+              <Tooltip openDelay={1000} label="Show Toast preview" position="bottom" withArrow>
                 <Anchor component="button" type="button" onClick={ () => { toastNotify(row.content.length==0 ? '(Not set)' : row.content) }}>
                   <IconMessageDown size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
@@ -212,7 +200,7 @@ const NotificationsList = () => {
       <Table.Td className={classes.tableCellToTop}>
           Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'1px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '<not set>')}<br/>
           Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy', marginTop:'2px' }} radius="md">{row.environments != null ? (row.environments.length ? row.environments.join(', ') : 'Any') : 'Any'}</Pill><br/>
-          Type:<Pill style={{ color:"white", backgroundColor:'#151', marginTop:'2px'}} radius="md">{row.notificationType ? row.notificationType : '<not set>'}</Pill>
+          {formatNotificationType('Type',row)}
       </Table.Td>
     </Table.Tr>
   ));

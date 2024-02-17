@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Anchor, Button, Modal, MultiSelect, Paper, Textarea, TextInput } from '@mantine/core';
+import { Anchor, Button, Modal, MultiSelect, Paper, Textarea, Text, TextInput, Title } from '@mantine/core';
 import { DateTimePicker, DatePickerInput, TimeInput } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
@@ -11,7 +11,14 @@ import { NotificationTypeSelector } from '../../lib/NotificationTypeSelector';
 import { useNotifications } from './NotificationsContext';
 
 const NotificationsModal = () => {
-  const { isModalOpen, modalInitialData, closeModal, submitNotification } = useNotifications();
+  const { isModalOpen, 
+          modalInitialData, 
+          closeModal, 
+          submitNotification,
+          formatDisplayTime, 
+          formatDisplayDate,
+          formatCreateInfo,
+        } = useNotifications();
   const editing = (modalInitialData != null);
   const { user } = useUser();
   //console.log('modalInitialData:', modalInitialData, ' editing:', editing);
@@ -170,13 +177,6 @@ const NotificationsModal = () => {
     }
   }
   
-  function formatTime(date) {
-    if (!date) return '';
-
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
-  }
 
   useEffect(() => {
     if (editing) {
@@ -207,7 +207,7 @@ const NotificationsModal = () => {
         startDate: null,
         endDate: null,
         live: false,
-        environments: [],
+        environments: ['Development'],
       });
     }
   }, [modalInitialData, editing]);
@@ -222,9 +222,10 @@ const NotificationsModal = () => {
     <div>
       <Modal
         title={editing ? 'Update this notification' : 'Create a new notification'}
+        caption="doo"
         opened={isModalOpen}
         onClose={() => handleModalClose() }
-        size="auto"
+        size="lg"
         radius="md"
         closeOnClickOutside={false}
         centered>
@@ -238,7 +239,7 @@ const NotificationsModal = () => {
               minRows={4}
               maxRows={10}
               onChange={handleTextChange}
-              label="Notification's contents"
+              label="Contents of this notification"
               placeholder="Enter notification text"
               description="Enter anything you want to show your users. (Markdown and HTML are OK too)."
             />
@@ -275,7 +276,7 @@ const NotificationsModal = () => {
                 value={notificationData.pageId}
                 onChange={handleTextChange}
                 label="Page ID (Optional)"
-                style={{marginTop:'15px'}}
+                style={{marginTop:'0px'}}
                 placeholder="Enter page ID"
                 description="Enter an ID to limit this notification to a specific page or section of your application."
                 />
@@ -302,12 +303,15 @@ const NotificationsModal = () => {
               </Paper>
             </Expando>
           </Paper>
-      <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px', marginBottom: '20px' }}>
         <Button variant="filled" type="submit">{editing ? 'Update' : 'Create'}</Button>
         <Anchor component="button" type="button" onClick={handleModalClose} style={{marginLeft:'10px', color:'#999'}} >
           Cancel
         </Anchor>
       </div>
+          <Text size="xs" style={{marginTop:'10px',paddingTop:'10px',marginLeft:'10px',borderTop:'1px solid #888'}}>
+            {formatCreateInfo(notificationData)}
+          </Text>
         </form>
       </Modal>
     </div>

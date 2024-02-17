@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Anchor, Collapse, Text } from '@mantine/core';
+import classes from './Expando.module.css';
 
 interface ExpandoProps {
   children: ReactNode;
@@ -40,9 +41,14 @@ const Expando: React.FC<ExpandoProps> = ({
 
   return (
     <div style={{...outerStyle}}>
-      <Anchor component="button" type="button" style={{ color: '#000' }} onClick={() => setOpened((o) => !o)}>
+      <Anchor
+        component="button" 
+        type="button" 
+        style={{ ...titleStyle }} 
+        className={classes.noUnderlineHover}
+        onClick={() => setOpened((o) => !o)}>
         <span style={triangleStyle}></span>
-        <Text style={{...titleStyle}} span="component">{opened ? openTitle : closedTitle}</Text>
+        <Text span="component">{opened ? openTitle : closedTitle}</Text>
       </Anchor>
       <Collapse in={opened}>
         <div>{children}</div>
