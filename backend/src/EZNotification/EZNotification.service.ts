@@ -93,6 +93,30 @@ export class EZNotificationService {
         return null;
     }
 
+    async resetNotificationViews(notificationId: string): Promise<EZNotification> {
+        const ezNotification = await this.ezNotificationRepository.findOneBy({ id: notificationId });
+        if (ezNotification) {
+            console.log(`Resetting views for notification id: ${notificationId}.`);
+            try {
+                const results = 
+                    await this.endUsersServedRepository
+                        .createQueryBuilder()
+                        .update(EndUsersServed)
+                        .set({ ignored: true })
+                        .where("notification_id = :notificationId", { notificationId })
+                        .andWhere("ignored = :ignored", { ignored: false })
+                        .execute();
+                console.log(`Set ignored flag on ${results.affected} end_users_served rows.`);
+                return ezNotification;
+            } catch (error) {
+                throw new NotFoundException(`Cannot update end_users_served rows for notification id: ${notificationId}.`);
+            }
+        } else {
+            throw new NotFoundException(`Notification w/id ${notificationId} not found.`);
+        }
+        return null;
+    }
+
     async findAllNotifications(queryParams: QueryParamProps): Promise<EZNotification[]> {
         console.log('findAll queryParams:', queryParams);
         if (queryParams.clerkUserId !== null) {

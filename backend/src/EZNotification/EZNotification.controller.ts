@@ -150,9 +150,15 @@ export class EZNotificationController {
         return this.EZNotificationService.updateNotification(id, ezNotificationDto.EZNotificationData, ezNotificationDto.clerkCreatorId);
     }
 
+    // this should use the dto so we know who deleted the notification
     @Delete('/notifications/:id')
     deleteNotification(@Param('id') id: string): Promise<void> {
         return this.EZNotificationService.deleteNotification(id);
+    }
+
+    @Put('/notifications/:id/reset-views')
+    resetNotificationViews(@Param('id') id: string): Promise<EZNotification> {
+        return this.EZNotificationService.resetNotificationViews(id);
     }
 
 }

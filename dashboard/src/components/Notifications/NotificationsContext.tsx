@@ -222,12 +222,12 @@ export const NotificationsProvider = ({ children }) => {
             const method = 'PUT';
             const apiUrl = 
                 `${window.location.protocol}//${window.location.hostname}/api/eznotifications/notifications` +
-                `/reset/${resetViewsNotificationId}`;
+                `/${resetViewsNotificationId}/reset-views`;
             //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
             const response = await fetch(apiUrl, {
                 method: method
             });
-            if (!response.ok) throw new Error('Failed to reset notification with id: ' + resetViewsNotificationId);
+            if (!response.ok) throw new Error('Failed to reset views for notification w/id: ' + resetViewsNotificationId);
 
         } catch (error) {
             console.error(`Error resetting views on notification with id:${resetViewsNotificationId}`, error);
@@ -373,6 +373,7 @@ export const NotificationsProvider = ({ children }) => {
         
         isResetViewsModalOpen,
         resetViewsNotificationContents,
+        resetViewsForNotification,
         closeResetViewsModal,
         showResetViewsModal,
     }}>

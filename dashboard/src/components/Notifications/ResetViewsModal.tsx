@@ -7,7 +7,8 @@ import { useUser } from "@clerk/clerk-react";
 
 const ResetViewsModal = () => {
   const { user } = useUser();
-  const { isResetViewsModalOpen, resetViewsNotification, closeResetViewsModal, resetViewsNotificationContents } = useNotifications();
+  const { isResetViewsModalOpen, resetViewsForNotification, 
+          closeResetViewsModal, resetViewsNotificationContents } = useNotifications();
   const doubleCheckContentsMd = renderMarkdown(resetViewsNotificationContents, false);
   
   return (
