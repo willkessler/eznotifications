@@ -199,7 +199,7 @@ const NotificationsList = () => {
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
           Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'1px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '<not set>')}<br/>
-          Environments: <Pill style={{ backgroundColor: 'lightblue', color: 'navy', marginTop:'2px' }} radius="md">{row.environments != null ? (row.environments.length ? row.environments.join(', ') : 'Any') : 'Any'}</Pill><br/>
+          Envs: <Pill style={{ backgroundColor: 'lightblue', color: 'navy', marginTop:'2px' }} radius="md">{row.environments != null ? (row.environments.length ? row.environments.join(', ') : 'Any') : 'Any'}</Pill><br/>
           {formatNotificationType('Type',row)}
       </Table.Td>
     </Table.Tr>
