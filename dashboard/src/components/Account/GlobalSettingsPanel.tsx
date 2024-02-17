@@ -103,7 +103,7 @@ example2.com
 
         <Text size="sm" style={{marginTop:'10px'}}>Refresh Frequency (seconds)</Text>
         <TextInput
-          description="Enter how frequently you want the SDK to check for new notifications for an active user. (Note: if you are calling the 'This is Not a Drill!' API directly, this won't apply to you.)"
+          description="Enter how frequently you want the client SDK to check for new notifications for an active user."
           style={{maxWidth:'620px',marginTop:'5px'}}
           size="sm"
           value={refreshFrequency || 300}

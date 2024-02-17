@@ -145,7 +145,7 @@ const NotificationsList = () => {
     );
   } else {
   rows = notifications.map((row, index) => (
-    <Table.Tr key={row.id || index} className={row.id === highlightedId ? classes['highlighted-row'] : ''}>
+      <Table.Tr key={row.id || index} className={row.id === highlightedId ? classes['highlighted-row'] : ''} >
       <Table.Td className={classes.tableCellToTop}>
         <Switch
           color="lime"

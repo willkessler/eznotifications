@@ -277,7 +277,7 @@ const NotificationsModal = () => {
                 label="Page ID (Optional)"
                 style={{marginTop:'15px'}}
                 placeholder="Enter page ID"
-                description="Enter a page ID you can use to target this notification."
+                description="Enter an ID to limit this notification to a specific page or section of your application."
                 />
                 <div style={{ display: 'flex', width: '90%' }}>
                   <NotificationTypeSelector

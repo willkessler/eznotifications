@@ -86,3 +86,7 @@
 .tableCellToTop {
   vertical-align: top;
 }
+
+.mantine-Switch-root {
+  cursor: pointer;
+}
