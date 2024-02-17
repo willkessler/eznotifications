@@ -34,7 +34,7 @@ const Tutorial = () => {
       },
       {
         target: '[data-tour="sandbox"]',
-        content: 'After setting up a notification or two, you can try it out in the sandbox to kick the tires.', 
+        content: 'After setting up a notification or two, you can quickly try it out in the sandbox.', 
         disableBeacon: true,
         placement: 'right-end',
       },
@@ -94,7 +94,7 @@ const Tutorial = () => {
                 )}
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems:'center', marginTop:'30px' }}>
-                <Anchor onClick={() => { closeTutorialModal() }} style={{ color:'#ccc', fontStyle:'italic', marginRight:'10px', color:'#999'}}>No thanks, I got this!</Anchor>
+                <Anchor onClick={() => { closeTutorialModal() }} style={{ fontStyle:'italic', marginRight:'10px', color:'#999'}}>No thanks, I got this!</Anchor>
                 <Button onClick={() => { takeTheTour() }}>Take the 30-second tour!</Button>
               </div>
             </Modal.Body>

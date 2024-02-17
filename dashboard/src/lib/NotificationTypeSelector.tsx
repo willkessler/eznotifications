@@ -38,8 +38,8 @@ export function NotificationTypeSelector({ value, notificationTypeOther, onSelec
         style={{width:'300px'}}
         value={selectedType} 
         onChange={handleTypeChange}
-        label="Notification type (optional)"
-        description="Set the type for this notification, so you can decorate it appropriately in your app."
+        label="Notification type"
+        description="(Optional)"
         className={classes.notificationTypeChoice}
       >
         <Radio value="info" label="Info" />

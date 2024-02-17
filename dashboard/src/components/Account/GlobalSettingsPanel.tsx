@@ -1,7 +1,7 @@
 import moment from 'moment-timezone';
 import React, { useEffect, useState } from 'react';
 import { useUser } from "@clerk/clerk-react";
-import { Anchor, Button, Menu, rem, Select, Text, TextInput, Textarea } from '@mantine/core';
+import { Anchor, Button, Menu, rem, Select, Title, Text, TextInput, Textarea } from '@mantine/core';
 import classes from './css/Settings.module.css';
 import { useSettings } from './SettingsContext';
 import {
@@ -71,7 +71,7 @@ const GlobalSettingsPanel = () => {
 
   return (
       <div className={classes.globalSettingsPanel} >
-        <Text size="xl">Application Settings</Text>
+        <Title style={{borderBottom:'1px solid #555', paddingTop:'15px', marginTop:'5px'}} order={3}>Application Settings</Title>
 
         <Select
           checkIconPosition="left"

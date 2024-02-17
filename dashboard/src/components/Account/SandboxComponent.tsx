@@ -10,7 +10,8 @@ import Navbar from '../Layout/Navbar';
 import UserAuthentication from '../Layout/UserAuthentication';
 import classes from './css/IntroPages.module.css';
 
-const  OnboardComponent = () => {
+
+const SandboxComponent = () => {
   const { isSignedIn } = useUser();
   if (!isSignedIn) {
     return <Navigate to="/login" replace />;
@@ -32,24 +33,28 @@ const  OnboardComponent = () => {
       </AppShell.Header>
       <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
 
-      <AppShell.Navbar p="xl">
+      <AppShell.Navbar p="md">
         <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
         <AppShell.Section>
           <Anchor href="/" className={classes.logoAnchor}>
             <Image src="/ThisIsNotADrill_cutout.png" w={155} />
           </Anchor>
-          {/*<Navbar />*/}
+          <Navbar />
         </AppShell.Section>
       </AppShell.Navbar>
       <AppShell.Main>
         <AppShell.Section style={{paddingTop:'20px'}}>
           <Title order={2}>
-            Welcome to <span className={classes.introBrandTitle}>This is Not A Drill!</span>
+            Using the Sandbox
           </Title>
+          <Text>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </Text>
         </AppShell.Section>
       </AppShell.Main>
     </AppShell>
   );
 };
 
-export default OnboardComponent;
+
+export default SandboxComponent;

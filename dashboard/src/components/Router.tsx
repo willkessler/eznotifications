@@ -8,6 +8,7 @@ import Statistics from './Account/Statistics';
 import LoginComponent from './Account/LoginComponent'; 
 import SignUpComponent from './Account/SignUpComponent'; 
 import OnboardComponent from './Account/OnboardComponent'; 
+import SandboxComponent from './Account/SandboxComponent'; 
 import AuthWrapper from './Account/AuthWrapper'; 
 import { SettingsProvider } from './Account/SettingsContext';
 import { APIKeysProvider } from './Account/APIKeysContext';
@@ -20,6 +21,7 @@ const RouterComponent = () => {
           <Routes>
             <Route path="/login" element={<LoginComponent />} />
             <Route path="/sign-up" element={<SignUpComponent />} />
+            <Route path="/sandbox" element={<SandboxComponent />} />
             <Route path="/onboard" element={<OnboardComponent />} />
             <Route path="/" element={<MainLayout />} >
               <Route index element={<Notifications />} />

@@ -77,7 +77,7 @@ const APIKeysTable = () => {
     ));
     
     return (
-      <div style={{marginTop:'10px'}}>
+      <div style={{marginTop:'5px'}}>
         <Table verticalSpacing="xs" highlightOnHover withTableBorder>
           <Table.Thead>
             <Table.Tr>

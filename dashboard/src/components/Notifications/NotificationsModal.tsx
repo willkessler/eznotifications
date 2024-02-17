@@ -18,6 +18,7 @@ const NotificationsModal = () => {
 
   const [timeInputsDisabled, setTimeInputsDisabled] = useState(true);
   const [notificationType, setNotificationType] = useState('info'); // default is the "info" choice
+  const [dateValue, setDateValue] = useState(null);
 
   const [notificationData, setNotificationData] = useState({
       content: '',
@@ -47,6 +48,19 @@ const NotificationsModal = () => {
     }));
 
   };
+
+  const handleModalClose = () => {
+    setNotificationData({
+      editing:false,
+      content: '',
+      pageId: '',
+      startDate: null,
+      endDate: null,
+      live: false,
+      environments: [],
+    });
+    closeModal();
+  }
 
   const handleEnvironmentsChange = (values) => {
     //console.log('environments change:', values);
@@ -148,6 +162,14 @@ const NotificationsModal = () => {
     </div>
   );
 
+  const handleFocus = () => {
+    if (!dateValue) { // Only set the date if it's not already set
+      const todayAtMidnight = new Date();
+      todayAtMidnight.setHours(0, 0, 0, 0);
+      setDateValue(todayAtMidnight);
+    }
+  }
+  
   function formatTime(date) {
     if (!date) return '';
 
@@ -158,7 +180,7 @@ const NotificationsModal = () => {
 
   useEffect(() => {
     if (editing) {
-        //console.log('useEffect. initialState=', modalInitialData);
+      //console.log('useEffect. initialState=', modalInitialData);
         const formattedStartDate = (modalInitialData.startDate == null ? null : new Date(modalInitialData.startDate));
         const formattedEndDate   = (modalInitialData.endDate == null ? null : new Date(modalInitialData.endDate));
         const initialEnvironmentsArray = modalInitialData.environments;
@@ -201,9 +223,10 @@ const NotificationsModal = () => {
       <Modal
         title={editing ? 'Update this notification' : 'Create a new notification'}
         opened={isModalOpen}
-        onClose={closeModal}
+        onClose={() => handleModalClose() }
         size="auto"
         radius="md"
+        closeOnClickOutside={false}
         centered>
         <form onSubmit={handleSubmit} style={{margin:'10px'}} >
           <Paper padding="md">
@@ -217,7 +240,7 @@ const NotificationsModal = () => {
               onChange={handleTextChange}
               label="Notification's contents"
               placeholder="Enter notification text"
-              description="Enter anything you want to show your users. You must parse whatever format you use on your end (for instance, markdown)."
+              description="Enter anything you want to show your users. (Markdown and HTML are OK too)."
             />
             <div style={{ display: 'flex', width: '90%' }}>
                 <DateTimePicker
@@ -226,6 +249,7 @@ const NotificationsModal = () => {
                   label={dtLabel}
                   value={notificationData.startDate}
                   onChange={(value) => handleDateTimeChange(value, 'startDate')}
+                  onFocus={handleFocus}
                   style={{marginTop:'10px', minWidth:'150px'}}
                />
                 <DateTimePicker
@@ -234,6 +258,7 @@ const NotificationsModal = () => {
                   label="End date/time"
                   value={notificationData.endDate}
                   onChange={(value) => handleDateTimeChange(value, 'endDate')}
+                  onFocus={handleFocus}
                   style={{marginTop:'10px', marginLeft:'10px', minWidth:'150px'}}
                />
             </div>
@@ -279,7 +304,7 @@ const NotificationsModal = () => {
           </Paper>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
         <Button variant="filled" type="submit">{editing ? 'Update' : 'Create'}</Button>
-        <Anchor component="button" type="button" onClick={closeModal} style={{marginLeft:'10px', color:'#999'}} >
+        <Anchor component="button" type="button" onClick={handleModalClose} style={{marginLeft:'10px', color:'#999'}} >
           Cancel
         </Anchor>
       </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActionIcon, Checkbox, CopyButton, Tooltip, rem, Anchor, Button, Text } from '@mantine/core';
+import { ActionIcon, Checkbox, CopyButton, Tooltip, rem, Anchor, Button, Text, Title } from '@mantine/core';
 import { IconCopy, IconCheck } from '@tabler/icons-react';
 import { useUser } from "@clerk/clerk-react";
 import toast, { Toaster } from 'react-hot-toast';
@@ -51,12 +51,12 @@ const APIKeysPanel = () => {
   return (
       <div className={classes.apiKeyPanel} >
         <Toaster />
-        <Text size="xl">Development API Keys</Text>
-
+        <Title style={{borderBottom:'1px solid #555', paddingTop:'15px', marginTop:'5px'}} order={3}>Environments</Title>
+        <Text style={{marginTop:'10px'}} size="lg">Development API Keys</Text>
         <APIKeysTable />
         <Button onClick={() => createAPIKey('development',user.id)} size="xs" style={{marginTop:'10px'}}>Generate new development key</Button>
 
-        <Text size="xl" style={{marginTop:'30px'}}>Your Production API Key</Text>
+        <Text size="lg" style={{marginTop:'30px'}}>Production API Key</Text>
 
         <div className={classes.apiKeyRow}>
           <Text size="sm" className={classes.apiProdKeyDisplay}>
