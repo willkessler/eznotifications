@@ -216,8 +216,12 @@ const NotificationsModal = () => {
         return (<div>&nbsp;</div>);
     } else {
         //console.log('notificationData at render time:', notificationData);
-        const dtLabel = (<CustomLabelWithHint text="Start date/time (optional):" 
-                         hintText="You can either set both dates, or only one date. If you set just the start date/time, this notification will be served forever, AFTER the start date. If you set just an end date/time, the notification will never be served again, AFTER the end date." />);
+      const dtLabel = (<CustomLabelWithHint text="Start date/time (optional):" 
+                                            hintText="You can either set both dates, or only one date. If you set just the start date/time, this notification will be served forever, AFTER the start date. If you set just an end date/time, the notification will no longer be served AFTER the end date." />);
+      const pgLabel = (<CustomLabelWithHint text="Page ID (optional)"
+                                            hintText="You can use any value you like here. When you pass a page ID value (or substring) in your SDK or API calls we will match against this value." />);
+      const envLabel = (<CustomLabelWithHint text="Environments"
+                                             hintText="Depending on which environment you pass in via the SDK or an API call, we will serve to that environment if you specify it here." />);
         return ( 
     <div>
       <Modal
@@ -270,12 +274,12 @@ const NotificationsModal = () => {
               titleStyle={{color:'#aaa'}}
               openOnDisplay={editing}
             >
-              <Paper shadow="sm" p="sm">
+              <Paper p="sm">
                 <TextInput
                 name="pageId"
                 value={notificationData.pageId}
                 onChange={handleTextChange}
-                label="Page ID (Optional)"
+                label={pgLabel}
                 style={{marginTop:'0px'}}
                 placeholder="Enter page ID"
                 description="Enter an ID to limit this notification to a specific page or section of your application."
@@ -292,7 +296,7 @@ const NotificationsModal = () => {
                   value={Array.isArray(notificationData.environments) ? notificationData.environments : []}
                   style={{width:'375px', paddingTop:'20px', paddingLeft: '20px'}}
                   pointer
-                  label="Environments"
+                  label={envLabel}
                   description="Choose the environments to serve this notification to."
                   placeholder="Pick values"
                   data={['Development', 'Staging', 'UAT', 'Production']}
