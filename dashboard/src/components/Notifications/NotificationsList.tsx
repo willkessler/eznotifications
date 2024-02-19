@@ -21,7 +21,7 @@ import { addPreviewCaveatToString } from '../../lib/RenderMarkdown';
 
 const NotificationsList = () => {
     const [ scrolled, setScrolled ] = useState(false);
-    const { openModal, showBanner, 
+    const { openModal, showPreviewBanner, 
             showPreviewModal, showDeleteModal, showResetViewsModal,
             highlightedId, notifications, submitNotification, 
             fetchNotifications,
@@ -40,36 +40,28 @@ const NotificationsList = () => {
 
 
   // Set up the demo toaster
-  const toastNotify = (message) => { 
-    const caveatedMessage = addPreviewCaveatToString(message);
-    toast.success(caveatedMessage, {
-      duration: 4000,
-      position: 'top-center',
+    const toastNotify = (notificationData: EZNotification) => { 
+        const content = (notificationData.content?.length == 0 ? 'not set' : notificationData.content);
+        toast.success(content, {
+            duration: 4000,
+            position: 'top-center',
 
-      // Styling
-      style: {
-        minWidth:'1000px',
-        transition: "all 0.5s ease-out"
-      },
-      className: '',
+            // Styling
+            style: {
+                minWidth:'500px',
+                transition: "all 0.5s ease-out"
+            },
+            className: '',
 
+            // Custom Icon
+            icon: formatNotificationType('', notificationData.notificationType, 35),
 
-
-      // Custom Icon
-      icon: '👏',
-
-      // Change colors of success/error/loading icon
-      iconTheme: {
-        primary: '#000',
-        secondary: '#fff',
-      },
-
-      // Aria
-      ariaProps: {
-        role: 'status',
-        'aria-live': 'polite',
-      },
-    });
+            // Aria
+            ariaProps: {
+                role: 'status',
+                'aria-live': 'polite',
+            },
+        });
   };
   
   // Handle turning a notification on and off
@@ -167,17 +159,17 @@ const NotificationsList = () => {
               </Tooltip>
               &nbsp;&nbsp;&mdash;&nbsp;&nbsp;
               <Tooltip openDelay={1000} label="Show Banner preview" position="bottom" withArrow>
-                <Anchor component="button" type="button" onClick={ () => { showBanner(row.content.length==0 ? '(Not set)' : row.content) }}>
+          <Anchor component="button" type="button" onClick={ () => { showPreviewBanner(row) }}>
                   <IconLayoutNavbarExpand size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
               <Tooltip openDelay={1000} label="Show Modal preview" position="bottom" withArrow>
-                <Anchor component="button" type="button" onClick={ () => { showPreviewModal(row.content.length==0 ? '(Not set)' : row.content) }}>
+                <Anchor component="button" type="button" onClick={ () => { showPreviewModal(row) }}>
                   <IconAlignBoxCenterMiddle size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
               <Tooltip openDelay={1000} label="Show Toast preview" position="bottom" withArrow>
-                <Anchor component="button" type="button" onClick={ () => { toastNotify(row.content.length==0 ? '(Not set)' : row.content) }}>
+                <Anchor component="button" type="button" onClick={ () => { toastNotify(row) }}>
                   <IconMessageDown size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
@@ -199,8 +191,8 @@ const NotificationsList = () => {
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
           Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'1px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '<not set>')}<br/>
-          Envs: <Pill style={{ backgroundColor: 'lightblue', color: 'navy', marginTop:'2px' }} radius="md">{row.environments != null ? (row.environments.length ? row.environments.join(', ') : 'Any') : 'Any'}</Pill><br/>
-          {formatNotificationType('Type',row)}
+          Envs: <Pill style={{ backgroundColor: '#6aa', color: 'navy', margin:'4px' }} radius="md">{row.environments != null ? (row.environments.length ? row.environments.join(', ') : 'Any') : 'Any'}</Pill><br/>
+          {formatNotificationType('Type:',row.notificationType, 24)}
       </Table.Td>
     </Table.Tr>
   ));

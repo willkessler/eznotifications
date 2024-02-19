@@ -51,7 +51,7 @@ export const NotificationsProvider = ({ children }) => {
         );
     };
 
-    const formatNotificationType = (prefix, data) => {
+    const formatNotificationType = (prefix, notificationType, iconSize: number) => {
         let typeMap = {
             'info' : { icon: IconInfoCircle,
                        title: 'Info',
@@ -84,22 +84,22 @@ export const NotificationsProvider = ({ children }) => {
         let title;
         let bgColor;
         let tooltip;
-        if (data.notificationType === null) {
-            icon = IconQuestionMark;
-            title = 'Not yet set';
-            bgColor = 'fff';
-        } else {
-            elem = typeMap[data.notificationType];
+        if (notificationType) {
+            elem = typeMap[notificationType];
             icon = elem.icon;
             title = elem.title;
             bgColor = elem.bgColor;
+        } else {
+            icon = IconQuestionMark;
+            title = 'Not yet set';
+            bgColor = 'fff';
         }
 
         return (
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                {prefix}:
+                {prefix}
                 <Tooltip openDelay={500} label={title} position="bottom" withArrow>
-                   {React.createElement(icon, { style: { color:bgColor}} ) }
+            {React.createElement(icon, { style: { color:bgColor } , size: iconSize} ) }
                 </Tooltip>
             </div>
         );
@@ -124,14 +124,18 @@ export const NotificationsProvider = ({ children }) => {
     //
     // Show and hide the demo banner
     //
-    const [isBannerVisible, setIsBannerVisible] = useState(false);
-    const [bannerContent, setBannerContent] = useState('');
-    const showBanner = (bannerText) => {
-        setBannerContent(bannerText);
-        setIsBannerVisible(true);
+    const [isPreviewBannerVisible, setIsPreviewBannerVisible] = useState(false);
+    const [previewBannerContent, setPreviewBannerContent] = useState('');
+    const [previewNotificationType, setPreviewNotificationType] = useState('info');
+    const showPreviewBanner = (notificationData: EZNotification) => {
+        console.log('notificationData:',notificationData);
+        const content = (notificationData.content?.length == 0 ? 'not set' : notificationData.content);
+        setPreviewBannerContent(content);
+        setPreviewNotificationType(notificationData.notificationType);
+        setIsPreviewBannerVisible(true);
     };
-    const closeBanner = () => {
-        setIsBannerVisible(false);
+    const closePreviewBanner = () => {
+        setIsPreviewBannerVisible(false);
     }
 
     //
@@ -139,8 +143,10 @@ export const NotificationsProvider = ({ children }) => {
     //
     const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
     const [previewModalContent, setPreviewModalContent] = useState('');
-    const showPreviewModal = (contents) => {
-        setPreviewModalContent(contents);
+    const showPreviewModal = (notificationData: EZNotification) => {
+        const content = (notificationData.content?.length == 0 ? 'not set' : notificationData.content);
+        setPreviewModalContent(content);
+        setPreviewNotificationType(notificationData.notificationType);
         setIsPreviewModalOpen(true);
     };
 
@@ -355,15 +361,16 @@ export const NotificationsProvider = ({ children }) => {
         openModal,
         closeModal,
 
-        isBannerVisible,
-        bannerContent,
-        showBanner,
-        closeBanner,
+        isPreviewBannerVisible,
+        previewBannerContent,
+        showPreviewBanner,
+        closePreviewBanner,
         
         isPreviewModalOpen,
         showPreviewModal,
         previewModalContent,
         closePreviewModal,
+        previewNotificationType,
 
         isDeleteModalOpen,
         showDeleteModal,

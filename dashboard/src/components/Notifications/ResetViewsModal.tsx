@@ -9,7 +9,7 @@ const ResetViewsModal = () => {
   const { user } = useUser();
   const { isResetViewsModalOpen, resetViewsForNotification, 
           closeResetViewsModal, resetViewsNotificationContents } = useNotifications();
-  const doubleCheckContentsMd = renderMarkdown(resetViewsNotificationContents, false);
+  const doubleCheckContentsMd = renderMarkdown(resetViewsNotificationContents);
   
   return (
     <Modal.Root size="lg" opened={isResetViewsModalOpen} onClose={closeResetViewsModal} radius="md" centered>

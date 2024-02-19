@@ -197,7 +197,7 @@ export function HomePage() {
             onClose={closePreviewModal}
             radius="md"
             centered>
-            <div dangerouslySetInnerHTML={renderMarkdown(previewModalContents, true)}></div>
+            <div dangerouslySetInnerHTML={renderMarkdown(previewModalContents)}></div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
               <Button onClick={() => { closePreviewModal() }}>OK</Button>
             </div>

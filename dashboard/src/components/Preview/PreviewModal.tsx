@@ -5,7 +5,12 @@ import { renderMarkdown } from '../../lib/RenderMarkdown';
 import { useNotifications } from '../Notifications/NotificationsContext';
 
 const PreviewModal = () => {
-    const { isPreviewModalOpen, previewModalContent, closePreviewModal } = useNotifications();
+  const { isPreviewModalOpen, 
+          previewModalContent, 
+          closePreviewModal,
+          formatNotificationType, 
+          previewNotificationType
+        } = useNotifications();
 
     return (
         <Modal 
@@ -14,7 +19,8 @@ const PreviewModal = () => {
         onClose={closePreviewModal}
         radius="md"
         centered>
-            <div dangerouslySetInnerHTML={renderMarkdown(previewModalContent, true)}></div>
+            <div>{formatNotificationType('', previewNotificationType, 58)}</div>          
+            <div dangerouslySetInnerHTML={renderMarkdown(previewModalContent)}></div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
             <Button onClick={() => { closePreviewModal() }}>OK</Button>
             </div>

@@ -8,7 +8,7 @@ import { useUser } from "@clerk/clerk-react";
 const DeleteModal = () => {
   const { user } = useUser();
   const { isDeleteModalOpen, deleteNotification, closeDeleteModal, deletedNotificationContents } = useNotifications();
-  const doubleCheckContentsMd = renderMarkdown(deletedNotificationContents, false);
+  const doubleCheckContentsMd = renderMarkdown(deletedNotificationContents);
   
   return (
     <Modal.Root size="lg" opened={isDeleteModalOpen} onClose={closeDeleteModal} radius="md" centered>
