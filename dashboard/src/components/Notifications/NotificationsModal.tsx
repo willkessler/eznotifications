@@ -313,10 +313,12 @@ const NotificationsModal = () => {
         <Anchor component="button" type="button" onClick={handleModalClose} style={{marginLeft:'10px', color:'#999'}} >
           Cancel
         </Anchor>
-      </div>
-          <Text size="xs" style={{marginTop:'10px',paddingTop:'10px',marginLeft:'10px',borderTop:'1px solid #888'}}>
+          </div>
+          {editing && (
+          <Text size="xs" style={{marginTop:'10px',paddingTop:'10px',marginLeft:'10px',borderTop:'1px solid #888'}}> 
             {formatCreateInfo(notificationData)}
           </Text>
+          )}
         </form>
       </Modal>
     </div>
