@@ -5,7 +5,7 @@ export class PricingModel {
     @PrimaryGeneratedColumn('uuid')
     uuid: string;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', name: 'created_date' })
+    @Column({ name: 'created_at', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP', name: 'created_date' })
     createdDate: Date;
 
     @Column()

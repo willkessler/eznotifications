@@ -15,10 +15,10 @@ export class User {
     @Column({ name: 'clerk_id'})
     clerkId: string;
 
-    @Column({ name: 'signup_date', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    @Column({ name: 'signup_date', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
     signupDate: Date;
 
-    @Column({ name: 'last_login', type: 'timestamp', nullable: true })
+    @Column({ name: 'last_login', type: 'timestamp with time zone', nullable: true })
     lastLogin: Date;
 
     @Column({ name: 'payment_subscription_id', nullable: true })

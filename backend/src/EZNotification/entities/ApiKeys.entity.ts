@@ -7,10 +7,10 @@ export class ApiKey {
     @PrimaryGeneratedColumn({name: 'uuid'})
     id: string;
 
-    @Column({ name:'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    @Column({ name:'created_at', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
-    @Column({ name:'updated_at', type: 'timestamp' })
+    @Column({ name:'updated_at', type: 'timestamp with time zone' })
     updatedAt: Date;
     
     @Column({ name: 'api_key', nullable: true })

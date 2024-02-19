@@ -36,7 +36,8 @@ import { EZNotification } from '../EZNotification/entities/EZNotification.entity
                        UserEmails, UserOrganization,
                        ApiKey, PermittedDomains],
             synchronize: false,
-            logging: ["query"],
+            timezone: 'UTC',
+            logging: ["query"], // disable when we no longer need to track all queries
         }),
     ],
     controllers: [AppController],

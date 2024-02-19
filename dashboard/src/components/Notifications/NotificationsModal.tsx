@@ -7,6 +7,7 @@ import { useUser } from "@clerk/clerk-react";
 
 import UserHint from '../../lib/UserHint';
 import Expando from '../../lib/Expando';
+import DatetimePickerWithTimezone from '../../lib/DatetimePickerWithTimezone';
 import { NotificationTypeSelector } from '../../lib/NotificationTypeSelector';
 import { useNotifications } from './NotificationsContext';
 
@@ -217,7 +218,7 @@ const NotificationsModal = () => {
     } else {
         //console.log('notificationData at render time:', notificationData);
       const dtLabel = (<CustomLabelWithHint text="Start date/time (optional):" 
-                                            hintText="You can either set both dates, or only one date. If you set just the start date/time, this notification will be served forever, AFTER the start date. If you set just an end date/time, the notification will no longer be served AFTER the end date." />);
+                                            hintText="You can either set both dates, or only one date.  (All dates and times are stored internally in UTC.)   If you set just the Start date-time, this notification will be served forever, beginning at the Start date-time. If you set just an End date-time, the notification will stop being served after the End date-time." />);
       const pgLabel = (<CustomLabelWithHint text="Page ID (optional)"
                                             hintText="You can use any value you like here. When you pass a page ID value (or substring) in your SDK or API calls we will match against this value." />);
       const envLabel = (<CustomLabelWithHint text="Environments"
@@ -248,14 +249,14 @@ const NotificationsModal = () => {
               description="Enter anything you want to show your users. (Markdown and HTML are OK too)."
             />
             <div style={{ display: 'flex', width: '90%' }}>
-                <DateTimePicker
+                <DatetimePickerWithTimezone
                   clearable
                   valueFormat="MMM DD, YYYY HH:mm"
                   label={dtLabel}
                   value={notificationData.startDate}
                   onChange={(value) => handleDateTimeChange(value, 'startDate')}
                   onFocus={handleFocus}
-                  style={{marginTop:'10px', minWidth:'150px'}}
+                  style={{marginTop:'10px',  minWidth:'150px'}}
                />
                 <DateTimePicker
                   clearable

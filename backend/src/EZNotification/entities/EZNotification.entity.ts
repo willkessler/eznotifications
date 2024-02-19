@@ -10,16 +10,16 @@ export class EZNotification {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'created_at', type: 'timestamp', nullable: false })
+  @Column({ name: 'created_at', type: 'timestamp with time zone', nullable: false })
   createdAt: Date;
 
-  @Column({ name: 'updated_at', type: 'timestamp', nullable: true })
+  @Column({ name: 'updated_at', type: 'timestamp with time zone', nullable: true })
   updatedAt: Date;
     
   @Column({ name: 'deleted', default: false })
   deleted: boolean;
 
-  @Column({ name: 'deleted_at', type: 'timestamp', nullable: true })
+  @Column({ name: 'deleted_at', type: 'timestamp with time zone', nullable: true })
   deletedAt: Date;
     
   @Column()
@@ -37,10 +37,10 @@ export class EZNotification {
   @Column({ name: 'page_id' })
   pageId: string;
 
-  @Column({ name: 'start_date', nullable: true })
+  @Column({ name: 'start_date', type: 'timestamp with time zone', nullable: true })
   startDate: Date;
 
-  @Column({ name: 'end_date', nullable: true })
+  @Column({ name: 'end_date',  type: 'timestamp with time zone ', nullable: true })
   endDate: Date;
 
   @Column( { type: 'text', name: 'environments', array: true, nullable: true })

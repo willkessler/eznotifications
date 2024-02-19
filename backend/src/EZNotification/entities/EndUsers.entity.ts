@@ -6,7 +6,7 @@ export class EndUser {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'created_at', type: 'timestamp', nullable: false })
+  @Column({ name: 'created_at', type: 'timestamp with time zone ', nullable: false })
   createdAt: Date;
 
   @Column({ name: 'end_user_id', type: 'varchar', length: '256', nullable: false })

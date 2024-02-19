@@ -7,7 +7,7 @@ export class EndUsersServed {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'created_at', type: 'timestamp', nullable: false })
+  @Column({ name: 'created_at', type: 'timestamp with time zone ', nullable: false })
   createdAt: Date;
 
   @Column({ name: 'access_time', type: 'timestamp with time zone', nullable: false })
