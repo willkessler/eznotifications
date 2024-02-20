@@ -190,7 +190,7 @@ const NotificationsList = () => {
           {(row.endDate === null && row.startDate !== null) && ( <> ...onwards </> )}
       </Table.Td>
       <Table.Td className={classes.tableCellToTop}>
-          Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'1px', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '<not set>')}<br/>
+          Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'2px 4px 2px 4px', backgroundColor:'#559', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '<not set>')}<br/>
           Envs: <Pill style={{ backgroundColor: '#6aa', color: 'navy', margin:'4px' }} radius="md">{row.environments != null ? (row.environments.length ? row.environments.join(', ') : 'Any') : 'Any'}</Pill><br/>
           {formatNotificationType('Type:',row.notificationType, 24)}
       </Table.Td>
