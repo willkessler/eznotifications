@@ -9,6 +9,7 @@ import { theme } from './theme';
 import { ClerkProvider } from '@clerk/clerk-react'
 import { dark } from '@clerk/themes';
 import classes from './pages/NavbarSimple.module.css';
+import { TimezoneProvider } from './lib/TimezoneContext.tsx';
 
 // Import your publishable key for Clerk
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -28,7 +29,9 @@ export default function App() {
     >
         <Router>
           <MantineProvider defaultColorScheme="dark" >
+            <TimezoneProvider>
               <RouterComponent />
+            </TimezoneProvider>
           </MantineProvider>
         </Router>
       </ClerkProvider>

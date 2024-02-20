@@ -18,7 +18,7 @@ export class Organization {
     @Column({ nullable: true })
     name: string;
 
-    @Column({ name: 'created_at', type: 'timestamp with time zone ', default: () => 'CURRENT_TIMESTAMP' })
+    @Column({ name: 'created_at', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
     @Column({ name: 'preferred_timezone', type: 'text' })

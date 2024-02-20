@@ -2,10 +2,13 @@ import { Text } from '@mantine/core';
 import { DateTimePicker, DatePickerInput, TimeInput } from '@mantine/dates';
 import { useState } from 'react';
 import { DateTime } from 'luxon';
+import Expando from './Expando';
+import { useTimezone } from './TimezoneContext';
+import TimezonePicker from './TimezonePicker';
 
 const DatetimePickerWithTimezone = ({ onChange, ...props }) => {
   const [dateValue, setDateValue] = useState(new Date());
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const { userTimezone, setUserTimezone } = useTimezone();
 
   const handleDateChange = (date) => {
     setDateValue(date);
@@ -21,7 +24,15 @@ const DatetimePickerWithTimezone = ({ onChange, ...props }) => {
         onChange={handleDateChange}
         {...props}
       />
-      <Text size="xs">Your timezone: {timeZone}</Text>
+            <Expando
+              closedTitle={`Timezone: ${userTimezone}`}
+              openTitle={`Timezone: ${userTimezone}`}
+    outerStyle={{marginTop:'10px', fontSize:'10px'}}
+              titleStyle={{color:'#aaa'}}
+              openOnDisplay={false}
+              > 
+              <TimezonePicker />
+            </Expando>
     </div>
   );
 };

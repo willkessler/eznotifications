@@ -40,7 +40,7 @@ export class EZNotification {
   @Column({ name: 'start_date', type: 'timestamp with time zone', nullable: true })
   startDate: Date;
 
-  @Column({ name: 'end_date',  type: 'timestamp with time zone ', nullable: true })
+  @Column({ name: 'end_date',  type: 'timestamp with time zone', nullable: true })
   endDate: Date;
 
   @Column( { type: 'text', name: 'environments', array: true, nullable: true })

@@ -7,7 +7,7 @@ export class UserOrganization {
     @PrimaryGeneratedColumn('uuid')
     uuid: number;
 
-    @Column({ name: 'created_at', type: 'timestamp with time zone ', nullable: false })
+    @Column({ name: 'created_at', type: 'timestamp with time zone', nullable: false })
     createdAt: Date;
 
     @ManyToOne(() => User, { onDelete: 'CASCADE' })

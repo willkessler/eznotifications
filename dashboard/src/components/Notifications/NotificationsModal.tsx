@@ -7,9 +7,11 @@ import { useUser } from "@clerk/clerk-react";
 
 import UserHint from '../../lib/UserHint';
 import Expando from '../../lib/Expando';
+import TimezonePicker from '../../lib/TimezonePicker';
 import DatetimePickerWithTimezone from '../../lib/DatetimePickerWithTimezone';
 import { NotificationTypeSelector } from '../../lib/NotificationTypeSelector';
 import { useNotifications } from './NotificationsContext';
+import { useTimezone } from '../../lib/TimezoneContext';
 
 const NotificationsModal = () => {
   const { isModalOpen, 
@@ -22,11 +24,14 @@ const NotificationsModal = () => {
         } = useNotifications();
   const editing = (modalInitialData != null);
   const { user } = useUser();
+  const { timezone, setTimezone } = useTimezone();
+
   //console.log('modalInitialData:', modalInitialData, ' editing:', editing);
 
   const [timeInputsDisabled, setTimeInputsDisabled] = useState(true);
   const [notificationType, setNotificationType] = useState('info'); // default is the "info" choice
   const [dateValue, setDateValue] = useState(null);
+  const [submissionDisabled, setSubmissionDisabled] = useState(true); 
 
   const [notificationData, setNotificationData] = useState({
       content: '',
@@ -79,7 +84,10 @@ const NotificationsModal = () => {
   };
 
   const handleTextChange = e => {
-    setNotificationData({ ...notificationData, [e.target.name]: e.target.value });
+    const currentText = e.target.value;
+    const currentTextTrimmed = currentText.trim();
+    setNotificationData({ ...notificationData, [e.target.name]: currentText });
+    setSubmissionDisabled(currentTextTrimmed.length == 0);
   };
 
   const handleDateTimeChange = (value, name) => {
@@ -197,6 +205,8 @@ const NotificationsModal = () => {
             endDate:   formattedEndDate,
             environments: initialEnvironmentsArray || [],
         });
+        const modalInitialContents = modalInitialData.content.trim();
+        setSubmissionDisabled(modalInitialContents.length == 0);
         //console.log('post setnotif, notificationData:', notificationData);
         //console.log('typeOf startDate:', typeof(formattedStartDate));
     } else {
@@ -227,10 +237,9 @@ const NotificationsModal = () => {
     <div>
       <Modal
         title={editing ? 'Update this notification' : 'Create a new notification'}
-        caption="doo"
         opened={isModalOpen}
         onClose={() => handleModalClose() }
-        size="lg"
+        size="xl"
         radius="md"
         closeOnClickOutside={false}
         centered>
@@ -248,15 +257,16 @@ const NotificationsModal = () => {
               placeholder="Enter notification text"
               description="Enter anything you want to show your users. (Markdown and HTML are OK too)."
             />
-            <div style={{ display: 'flex', width: '90%' }}>
+            <div style={{ display: 'flex', width: '90%', alignItems:'left' }}>
                 <DatetimePickerWithTimezone
                   clearable
+                  locale={timezone}
                   valueFormat="MMM DD, YYYY HH:mm"
                   label={dtLabel}
                   value={notificationData.startDate}
                   onChange={(value) => handleDateTimeChange(value, 'startDate')}
                   onFocus={handleFocus}
-                  style={{marginTop:'10px',  minWidth:'150px'}}
+                  style={{marginTop:'10px',  minWidth:'300px', maxWidth:'300px'}}
                />
                 <DateTimePicker
                   clearable
@@ -265,13 +275,13 @@ const NotificationsModal = () => {
                   value={notificationData.endDate}
                   onChange={(value) => handleDateTimeChange(value, 'endDate')}
                   onFocus={handleFocus}
-                  style={{marginTop:'10px', marginLeft:'10px', minWidth:'150px'}}
+                  style={{marginTop:'10px', marginLeft:'10px', minWidth:'300px', maxWidth:'300px'}}
                />
             </div>
             <Expando
               closedTitle="Advanced options"
               openTitle="Advanced options"
-              outerStyle={{marginTop:'10px'}}
+              outerStyle={{marginTop:'20px'}}
               titleStyle={{color:'#aaa'}}
               openOnDisplay={editing}
             >
@@ -309,7 +319,7 @@ const NotificationsModal = () => {
             </Expando>
           </Paper>
           <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px', marginBottom: '20px' }}>
-        <Button variant="filled" type="submit">{editing ? 'Update' : 'Create'}</Button>
+        <Button variant="filled" disabled={submissionDisabled} type="submit">{editing ? 'Update Notification' : 'Create Notification'}</Button>
         <Anchor component="button" type="button" onClick={handleModalClose} style={{marginLeft:'10px', color:'#999'}} >
           Cancel
         </Anchor>

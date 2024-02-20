@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useUser } from "@clerk/clerk-react";
+import { DateTime } from 'luxon';
 import { Pill, Tooltip } from '@mantine/core';
 import {  IconInfoCircle, IconAlertTriangle, IconExchange,
           IconCloudStorm, IconExclamationCircle, IconDots,
           IconQuestionMark,
           IconSpeakerphone} from '@tabler/icons-react';
+import { useTimezone } from '../../lib/TimezoneContext';
 
 const NotificationsContext = createContext({
 });
@@ -12,6 +14,7 @@ const NotificationsContext = createContext({
 export const useNotifications = () => useContext(NotificationsContext);
 
 export const NotificationsProvider = ({ children }) => {
+    const { userTimezone, setUserTimezone } = useTimezone();
     const [notifications, setNotifications] = useState([]);
     const [notificationsLastUpdated, setNotificationsLastUpdated] = useState([null]);
     const [notificationsLoading, setNotificationsLoading] = useState(true);
@@ -19,18 +22,34 @@ export const NotificationsProvider = ({ children }) => {
     // When we create or update a notification, we'll highlight it in the notificationsList.
     const [highlightedId, setHighlightedId] = useState(null);
 
+    /**
+     * Converts an ISO date string from the API into the user's chosen timezone.
+     * @param {string} apiDate - The ISO date string from the API (e.g., "2024-02-09T17:00:00.665Z").
+     * @param {string} userTimezone - The user's chosen timezone (e.g., "America/New_York").
+     * @returns {string} - The date formatted in the user's timezone.
+     */
     const formatDisplayDate = (prefix, date) => {
-        return (date == null ? '' : 
-            prefix + ': ' +
-            new Date(date).toLocaleString('en-US', 
-                                          { weekday: 'short', 
-                                            year: 'numeric', 
-                                            month: 'short', 
-                                            day: 'numeric', 
-                                            hour: '2-digit', 
-                                            minute: '2-digit' }
-                                         )
-               );
+        if (date === null) {
+            return '';
+        }
+        
+        // Parse the ISO date string as UTC
+        const utcDate = DateTime.fromISO(date, { zone: 'utc' });
+
+        // Convert the DateTime object to the user's timezone
+        const userTimezoneDate = utcDate.setZone(userTimezone);
+
+        // Format the DateTime object for display. Adjust the format as needed.
+        // This example uses a format like "February 9, 2024, 12:00 PM".
+        const displayDate = userTimezoneDate.toLocaleString(DateTime.DATETIME_FULL,
+                                                            { weekday: 'short', 
+                                                              year: 'numeric', 
+                                                              month: 'short', 
+                                                              day: 'numeric', 
+                                                              hour: '2-digit', 
+                                                              minute: '2-digit' }
+                                                           );
+        return displayDate;    
     };
 
     function formatDisplayTime(date) {
@@ -299,8 +318,15 @@ export const NotificationsProvider = ({ children }) => {
         // Remove highlight after 5 seconds
         setTimeout(() => setHighlightedId(null), 5000);
     }, []);
+        
+    const formatDateForAPISubmission = (frontendDate : Date) => {
+        console.log(`Formatting date: ${frontendDate} for backend, timezone: ${userTimezone}`);
+        const backendDateTime = DateTime.fromJSDate(frontendDate, { zone: userTimezone });
+        const backendDateTimeUTC = backendDateTime.toUTC();
+        const backendDateTimeUTCString = backendDateTimeUTC.toISO();
+        return backendDateTimeUTCString;
+    };
     
-
     const submitNotification = useCallback(async (notificationData) => {
         console.log('Notification data on form submit:', notificationData);
         const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
@@ -311,8 +337,8 @@ export const NotificationsProvider = ({ children }) => {
             const postingObject = {
                 EZNotificationData: {
                     content: notificationData.content,
-                    startDate: notificationData.startDate,
-                    endDate: notificationData.endDate,
+                    startDate: formatDateForAPISubmission(notificationData.startDate),
+                    endDate: formatDateForAPISubmission(notificationData.endDate),
                     environments: [...notificationData.environments],
                     live: notificationData.live,
                     notificationType: (notificationData.notificationType ? notificationData.notificationType : 'info'),

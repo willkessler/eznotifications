@@ -7,7 +7,7 @@ export class PermittedDomains {
     @PrimaryGeneratedColumn('uuid')
     uuid: string;
 
-    @Column({ name:'created_at', type: 'timestamp with time zone ', default: () => 'CURRENT_TIMESTAMP' })
+    @Column({ name:'created_at', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
     @Column({ type: 'text' })
