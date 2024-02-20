@@ -26,7 +26,6 @@ interface OrganizationDataProps {
     clerkEmail?: string,
     clerkCreatorId: string,
     clerkOrganizationId: string,
-    timezone: string,
     permittedDomains: string,
     refreshFrequency: number,
 }
@@ -237,7 +236,6 @@ export class EZNotificationService {
             .where('user.clerkId = :clerkId', { clerkId })
             .addSelect('organization.uuid')
             .addSelect('organization.name')
-            .addSelect('organization.preferred_timezone')
             .addSelect('organization.refresh_frequency')
             .addSelect('user.uuid')
             .getMany();
@@ -361,7 +359,6 @@ export class EZNotificationService {
                     name: organizationData.organizationName,
                     clerkCreatorId: organizationData.clerkCreatorId,
                     clerkOrganizationId: organizationData.clerkOrganizationId,
-                    preferredTimezone: organizationData.timezone,
                     refreshFrequency: organizationData.refreshFrequency,
                     pricingModel: basePricingModel,
                 });
@@ -522,7 +519,6 @@ export class EZNotificationService {
             organizationName:    organization.name,
             clerkCreatorId:      organization.clerkCreatorId,
             clerkOrganizationId: organization.clerkOrganizationId,
-            timezone:            organization.preferredTimezone,
             permittedDomains:    permittedDomainsString,
             refreshFrequency:    organization.refreshFrequency
         };
@@ -541,7 +537,6 @@ export class EZNotificationService {
         const organization = userOrganization[0].organization;
         const userUuid = userOrganization[0].user.uuid;
         organization.name = orgConfiguration.organizationName;
-        organization.preferredTimezone = orgConfiguration.timezone;
         organization.refreshFrequency = orgConfiguration.refreshFrequency;
 
         console.log(`Saving organization config for organization: ` +

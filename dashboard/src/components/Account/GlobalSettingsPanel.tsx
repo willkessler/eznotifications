@@ -16,27 +16,14 @@ import {
 const GlobalSettingsPanel = () => {
   const { getSettings,
           saveSettings,
-          timezone,
           permittedDomains,
           refreshFrequency,
-          setTimezone,
           setPermittedDomains,
           setRefreshFrequency,
         } = useSettings();
   const { user } = useUser();
 
-  const timezoneOptions = moment.tz.names().map((zone) => ({
-    value: zone,
-    label: zone,
-  }));
-
   const [isChanged, setIsChanged] = useState(false);
-
-  const handleTimezoneChange = (e) => {
-    console.log('htz:', e);
-    setTimezone(e);
-    setIsChanged(true);
-  };
   
   const handlePermittedDomainsChange = (e) => {
     setPermittedDomains(e.target.value);
@@ -73,20 +60,6 @@ const GlobalSettingsPanel = () => {
       <div className={classes.globalSettingsPanel} >
         <Title style={{borderBottom:'1px solid #555', paddingTop:'15px', marginTop:'5px'}} order={3}>Application Settings</Title>
 
-        <Select
-          checkIconPosition="left"
-          label="Your application's  timezone"
-          description="All of your notifications will be configured in this timezone (regardless of where the recipient is). It's best to set this to a timezone that makes the most sense to you and your team."
-          placeholder="Select your timezone"
-          style={{maxWidth:'620px',marginTop:'10px'}}
-          value={timezone || timezoneOptions[0]}
-          data={timezoneOptions}
-          searchable
-          allowDeselect={false}
-          nothingFoundMessage="Nothing matches..."
-          onChange={(e) => { handleTimezoneChange(e) }}
-        />
-
         <Textarea 
           style={{maxWidth:'620px',marginTop:'10px'}}
           label="Your site's permitted domains"
@@ -101,7 +74,7 @@ example2.com
           onChange={(e) => { handlePermittedDomainsChange(e) }}
         />
 
-        <Text size="sm" style={{marginTop:'10px'}}>Refresh Frequency (seconds)</Text>
+        <Text size="sm" style={{marginTop:'10px'}}>SDK Refresh Frequency (seconds)</Text>
         <TextInput
           description="Enter how frequently you want the client SDK to check for new notifications for an active user."
           style={{maxWidth:'620px',marginTop:'5px'}}

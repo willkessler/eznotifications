@@ -21,9 +21,6 @@ export class Organization {
     @Column({ name: 'created_at', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
-    @Column({ name: 'preferred_timezone', type: 'text' })
-    preferredTimezone: string;
-
     @Column({ name: 'refresh_frequency', type: 'int' })
     refreshFrequency: number;
     

@@ -91,7 +91,6 @@ export class EZNotificationController {
             organizationName,
             clerkCreatorId,
             clerkOrganizationId, 
-            timezone, 
             permittedDomains, 
             refreshFrequency
         });
