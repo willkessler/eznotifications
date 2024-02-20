@@ -12,6 +12,7 @@ import { IconArrowElbowRight,
          IconInfoCircle,
          IconRotate,
          IconTrash,
+         IconChartLine,
          IconFidgetSpinner } from '@tabler/icons-react';
 import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -22,9 +23,14 @@ import { addPreviewCaveatToString } from '../../lib/RenderMarkdown';
 
 const NotificationsList = () => {
     const [ scrolled, setScrolled ] = useState(false);
-    const { openModal, showPreviewBanner, 
-            showPreviewModal, showDeleteModal, showResetViewsModal,
-            highlightedId, notifications, submitNotification, 
+    const { openModal, 
+            showPreviewBanner, 
+            showPreviewModal, 
+            showDeleteModal, 
+            showResetViewsModal,
+            highlightedId, 
+            notifications, 
+            submitNotification, 
             fetchNotifications,
             notificationsLoading,
             formatDisplayTime, 
@@ -149,11 +155,19 @@ const NotificationsList = () => {
                   <IconEdit size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
                 </Anchor>
               </Tooltip>
+          {/*
               <Tooltip openDelay={1000} label="Reset views" position="bottom" withArrow>
                 <Anchor component="button" type="button" onClick={ () => { showResetViewsModal(row)}} >
                   <IconRotate size={20}  style={{ marginRight: '10px' }} />
                 </Anchor>
               </Tooltip>
+           */}
+              <Tooltip openDelay={1000} label="Notification statistics" position="bottom" withArrow>
+                <Anchor component="button" type="button" onClick={ () => { openStatisticsDrawer(row)}} >
+                  <IconChartLine size={20}  style={{ marginRight: '10px' }} />
+                </Anchor>
+              </Tooltip>
+
               <Tooltip openDelay={1000} label="Delete this notification" position="bottom" withArrow>
                <Anchor component="button" type="button" onClick={ () => { showDeleteModal(row)}} >
                   <IconTrash size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />

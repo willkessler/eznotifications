@@ -223,6 +223,26 @@ export const NotificationsProvider = ({ children }) => {
     };
 
     //
+    // Show statistics drawer, which will also have the "Reset Views" button
+    //
+    const [ isStatisticsDrawerOpen,setIsStatisticsDrawerOpen ] = useState(false);
+    const [ statisticsNotificationId, setStatisticsNotificationId] = useState(null);
+    const [ statisticsNotificationContents, setStatisticsNotificationContents] = useState('');
+
+    const openStatisticsDrawer = (notification) => {
+        console.log('resetting views on this notif', notification);
+        setStatisticsNotificationId(notification.id);
+        setStatisticsNotificationContents(notification.content);
+        setIsStatisticsDrawerOpen(true);
+    };
+
+    const closeStatisticsDrawer = () => {
+        setStatisticsNotificationContents('');
+        setStatisticsNotificationId(null);
+        setIsStatisticsDrawerOpen(false);
+    };
+
+    //
     // Reset views on a notification
     //
     const [ isResetViewsModalOpen,setIsResetViewsModalOpen ] = useState(false);
@@ -387,6 +407,11 @@ export const NotificationsProvider = ({ children }) => {
         openModal,
         closeModal,
 
+        isStatisticsDrawerOpen,
+        setIsStatisticsDrawerOpen,
+        openStatisticsDrawer,
+        closeStatisticsDrawer,
+        
         isPreviewBannerVisible,
         previewBannerContent,
         showPreviewBanner,
