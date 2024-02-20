@@ -242,14 +242,15 @@ export const SettingsProvider = ({ children }) => {
         if (user.organizationMemberships.length > 0) {
             // If the user is already part of a clerk org, then try to tie the local user to the matching local org.
             // This case happens when a user is invited to an existing org thorugh the app. (Idempotent.)
-            clerkOrganizationId = user.organizationMemberships[0].organization.id;
             try {
                 console.log(`Adding clerk user id ${userId} to our own org that matches clerk org id ${clerkOrganizationId}.`);
-                const localOrganization = await addUserToOurOrg(clerkOrganizationId);
+                const localOrganization = await addUserToOurOrg(user.organizationMemberships[0].organization.id);
                 outcomes.createdLocalUser = true;
+                // Only set the clerkOrganizationId on successful addUserToOurOrg call.
+                clerkOrganizationId = user.organizationMemberships[0].organization.id;
             } catch (error) {
                 console.error(`Error attaching clerk user id: ${userId} to ` +
-                    `clerk organization id: ${clerkOrganizationId}: ${error}`);
+                    `clerk organization id: ${user.organizationMemberships[0].organization.id}: ${error}`);
             }
         } else {
             // If the user doesn't belong to any organization yet, then
