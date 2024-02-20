@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Anchor, Group, Text } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import classes from './css/Navbar.module.css';
 import { SignOutButton } from "@clerk/clerk-react"
 
@@ -26,13 +27,18 @@ const Navbar = () => {
   const isExternalLink = (url) => /^(http|https):\/\//.test(url);
   const location = useLocation();
   const [activeLink, setActiveLink] = useState('All Notifications');
+  const [opened, { toggle }] = useDisclosure();
 
+  const handleClose = () => {
+    console.log('handleClose');
+    console.log('handleClose:toggling, open=', opened);
+    toggle(); // Close the navbar
+  };  
 
   const navBarData = [
     { link: '/', label: 'Notifications', icon: IconSpeakerphone, dataTour: 'notifications' },
-    { link: '/statistics', label: 'Usage Statistics', icon: IconChartArea, dataTour: 'statistics' },
-    { link: '/settings/account', label: 'Account', icon: IconSettings, dataTour: 'account' },
     { link: '/sandbox', label: 'Sandbox', icon: IconHorseToy, dataTour: 'sandbox' },
+    { link: '/settings/account', label: 'Account', icon: IconSettings, dataTour: 'account' },
     { link: 'https://tellyourusers-help-pages.super.site', label: 'Help', icon: IconHelp, dataTour: 'help' },
     { link: '', label: 'Logout', icon: IconLogout, dataTour: 'logout' },
   ];
@@ -66,7 +72,10 @@ const Navbar = () => {
         className={classes.link}
         data-tour={item.dataTour}
         data-active={isActive || undefined}
-        onClick={() => setActiveLink(item.label)}
+        onClick={() => {
+          setActiveLink(item.label);
+          handleClose(); // close nav bar on link clink (mobile)
+        }}
         key={item.label}
       >
         { (item.label == 'Logout') && 

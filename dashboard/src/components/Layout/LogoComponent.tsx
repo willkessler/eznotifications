@@ -6,7 +6,7 @@ const LogoComponent = () => {
   return (
     <Stack className={classes.logoStack} align="center" justify="space-between">
       <Anchor href="/" className={classes.logoAnchor}>
-      <Image src="/ThisIsNotADrill_cutout.png" h={150} />
+        <Image src="/ThisIsNotADrill_cutout.png" w={155} />
       </Anchor>
       <div className={classes.versionContainer}>
         <Code fw={700}>v1.0</Code>

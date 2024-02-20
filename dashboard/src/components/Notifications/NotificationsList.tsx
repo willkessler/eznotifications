@@ -2,6 +2,7 @@ import cx from 'clsx';
 import { useState, useEffect } from 'react';
 import { useUser } from "@clerk/clerk-react";
 import { Anchor, Box, Button, Menu, Modal, Pill, ScrollArea, Skeleton, Spoiler, Switch, Table, Text, Tooltip, rem } from '@mantine/core';
+import NotificationCard from './NotificationCard';
 import { IconArrowElbowRight, 
          IconEdit, 
          IconLayoutNavbarExpand, 
@@ -107,7 +108,8 @@ const NotificationsList = () => {
             </Table.Td>
             <Table.Td>
               <Text style={{ fontStyle: 'italic' }}>
-                Your notifications will appear here once you have created one.  <Anchor href="https://tellyourusers-help-pages.super.site">Need help?</Anchor>
+                Your notifications will appear here once you have created one.
+                <Anchor href="https://tellyourusers-help-pages.super.site">Need help?</Anchor>
               </Text>
             <Button onClick={() => 
                 { openModal(null) }} style={{ marginTop: '15px', marginLeft:'15px' }}>+ Create my first notification
