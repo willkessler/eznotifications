@@ -1,0 +1,82 @@
+                      {(notification.startDate === null && notification.endDate === null) && ( <> Served all the time </> )}
+                      {(notification.startDate !== null) && formatDisplayDate('From', notification.startDate)}
+                      {(notification.startDate === null && notification.endDate !== null) && ( <> From: Now... </> )}
+                      {((notification.startDate !== null || notification.endDate !== null)) && (
+                        <>
+                          <br />
+                          <IconArrowElbowRight style={{transform: 'rotate(45deg)', marginLeft:'4px',  marginTop:'-3px' }} color="#b63" />
+                        </>
+                      )}
+                  {formatDisplayDate(' Until', notification.endDate)}
+                  {(notification.endDate === null && notification.startDate !== null) && ( <> ...onwards </> )}
+
+
+
+
+                <Grid.Col span={auto} key={'contents_' + notification.id}>
+                      <>
+                      <Spoiler maxHeight={50} showLabel="Show more" hideLabel="Hide">
+                      <Text>{row.content.length === 0 ? '(Not set)' : row.content}</Text>
+                      </Spoiler>
+                      <div className={`${classes.hoverIcons}`}>
+                      <Tooltip openDelay={1000} label={formatCreateInfo(row)} position="bottom" withArrow>
+                      <Anchor component="button" type="button">
+                      <IconInfoCircle size={20}  style={{ marginRight: '10px' }} />
+                      </Anchor>
+                      </Tooltip>
+                      <Tooltip openDelay={1000} label="Edit this notification" position="bottom" withArrow>
+                      <Anchor component="button" type="button" onClick={ () => { openModal(row)}} >
+                      <IconEdit size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
+                      </Anchor>
+                      </Tooltip>
+                      <Tooltip openDelay={1000} label="Notification statistics" position="bottom" withArrow>
+                      <Anchor component="button" type="button" onClick={ () => { openStatisticsDrawer(row)}} >
+                      <IconChartLine size={20}  style={{ marginRight: '10px' }} />
+                      </Anchor>
+                      </Tooltip>
+
+                      <Tooltip openDelay={1000} label="Delete this notification" position="bottom" withArrow>
+                      <Anchor component="button" type="button" onClick={ () => { showDeleteModal(row)}} >
+                      <IconTrash size={20}  style={{ marginRight: '10px', cursor:'pointer' }} />
+                      </Anchor>
+                      </Tooltip>
+                      &nbsp;&nbsp;&mdash;&nbsp;&nbsp;
+                      <Tooltip openDelay={1000} label="Show Banner preview" position="bottom" withArrow>
+                      <Anchor component="button" type="button" onClick={ () => { showPreviewBanner(row) }}>
+                      <IconLayoutNavbarExpand size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
+                      </Anchor>
+                      </Tooltip>
+                      <Tooltip openDelay={1000} label="Show Modal preview" position="bottom" withArrow>
+                      <Anchor component="button" type="button" onClick={ () => { showPreviewModal(row) }}>
+                      <IconAlignBoxCenterMiddle size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
+                      </Anchor>
+                      </Tooltip>
+                      <Tooltip openDelay={1000} label="Show Toast preview" position="bottom" withArrow>
+                      <Anchor component="button" type="button" onClick={ () => { toastNotify(row) }}>
+                      <IconMessageDown size={20} style={{ marginRight: '10px', cursor:'pointer' }} />
+                      </Anchor>
+                      </Tooltip>
+                      </>
+                  </Grid.Col>
+                <Grid.Col span={2} key={'dates_' + notification.id}>
+                      <>
+                      {(row.startDate === null && row.endDate === null) && ( <> Served all the time </> )}
+                  {(row.startDate !== null) && formatDisplayDate('From', row.startDate)}
+                  {(row.startDate === null && row.endDate !== null) && ( <> From: Now... </> )}
+                  {((row.startDate !== null || row.endDate !== null)) && (
+                      <>
+                          <br />
+                          <IconArrowElbowRight style={{transform: 'rotate(45deg)', marginLeft:'4px',  marginTop:'-3px' }} color="#b63" />
+                          </>
+                  )}
+                  {formatDisplayDate(' Until', row.endDate)}
+                  {(row.endDate === null && row.startDate !== null) && ( <> ...onwards </> )}
+                  </>
+                </Grid.col>
+                <Grid.Col span={2} key={'conditions_' + notification.id}>
+                      <div className={classes.tableCellToTop}>
+                      Page: {(row.pageId ? <Text size="sm" style={{ margin:'2px', padding:'2px 4px 2px 4px', backgroundColor:'#559', border: '1px dotted #aaa'}} span className={classes.pageId}>{row.pageId}</Text> : '<not set>')}<br/>
+                      Envs: <Pill style={{ backgroundColor: '#6aa', color: 'navy', margin:'4px' }} radius="md">{row.environments != null ? (row.environments.length ? row.environments.join(', ') : 'Any') : 'Any'}</Pill><br/>
+                      {formatNotificationType('Type:',row.notificationType, 24)}
+                  </div>
+                 </Grid.Col>

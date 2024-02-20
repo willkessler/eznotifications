@@ -26,19 +26,20 @@ import {
 const Navbar = () => {
   const isExternalLink = (url) => /^(http|https):\/\//.test(url);
   const location = useLocation();
-  const [activeLink, setActiveLink] = useState('All Notifications');
-  const [opened, { toggle }] = useDisclosure();
+  const [activeLink, setActiveLink] = useState('All Notifications')
+  const [opened, handlers] = useDisclosure(false);
 
   const handleClose = () => {
     console.log('handleClose');
-    console.log('handleClose:toggling, open=', opened);
-    toggle(); // Close the navbar
+    console.log('handleClose:toggling, opened=', opened);
+    handlers.toggle();
+    handlers.close(); // Close the navbar
   };  
 
   const navBarData = [
     { link: '/', label: 'Notifications', icon: IconSpeakerphone, dataTour: 'notifications' },
     { link: '/sandbox', label: 'Sandbox', icon: IconHorseToy, dataTour: 'sandbox' },
-    { link: '/settings/account', label: 'Account', icon: IconSettings, dataTour: 'account' },
+    { link: '/settings', label: 'Account', icon: IconSettings, dataTour: 'account' },
     { link: 'https://tellyourusers-help-pages.super.site', label: 'Help', icon: IconHelp, dataTour: 'help' },
     { link: '', label: 'Logout', icon: IconLogout, dataTour: 'logout' },
   ];

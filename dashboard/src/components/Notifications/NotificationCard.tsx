@@ -1,16 +1,29 @@
-import { MediaQuery, Card, Text } from '@mantine/core';
+import { Card, Text, Title } from '@mantine/core';
+import { useNotifications } from './NotificationsContext';
+import classes from './Notifications.module.css';
 
 function NotificationCard({ notification }) {
+  const { 
+    formatNotificationDatesBlock,
+    formatNotificationConditionsBlock,
+  } = useNotifications();
+
   return (
-    <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
       <Card shadow="sm" p="lg" radius="md" mb="md">
-        <Text weight={500}>{notification.title}</Text>
-        <Text size="sm">{notification.content}</Text>
-        <Text size="xs">Start: {notification.startDate}</Text>
-        <Text size="xs">End: {notification.endDate}</Text>
-        <Text size="xs">Conditions: {notification.conditions}</Text>
+        <Title order={4}>
+          {notification.content}
+        </Title>
+        <div className={classes.cardDetails}>
+        <div>
+        { formatNotificationDatesBlock(notification) }
+        </div>
+        <div>
+        { formatNotificationConditionsBlock(notification) }
+        </div>
+        <div className={classes.cardControls}>
+        </div>
+      </div>
       </Card>
-    </MediaQuery>
   );
 }
 

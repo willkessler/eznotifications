@@ -1,12 +1,14 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useUser } from "@clerk/clerk-react";
 import { DateTime } from 'luxon';
-import { Pill, Tooltip } from '@mantine/core';
+import { Pill, Text, Tooltip } from '@mantine/core';
 import {  IconInfoCircle, IconAlertTriangle, IconExchange,
+          IconArrowElbowRight,
           IconCloudStorm, IconExclamationCircle, IconDots,
           IconQuestionMark,
           IconSpeakerphone} from '@tabler/icons-react';
 import { useTimezone } from '../../lib/TimezoneContext';
+import classes from './Notifications.module.css';
 
 const NotificationsContext = createContext({
 });
@@ -39,17 +41,12 @@ export const NotificationsProvider = ({ children }) => {
         // Convert the DateTime object to the user's timezone
         const userTimezoneDate = utcDate.setZone(userTimezone);
 
-        // Format the DateTime object for display. Adjust the format as needed.
-        // This example uses a format like "February 9, 2024, 12:00 PM".
-        const displayDate = userTimezoneDate.toLocaleString(DateTime.DATETIME_FULL,
-                                                            { weekday: 'short', 
-                                                              year: 'numeric', 
-                                                              month: 'short', 
-                                                              day: 'numeric', 
-                                                              hour: '2-digit', 
-                                                              minute: '2-digit' }
-                                                           );
-        return displayDate;    
+        // Format the DateTime object for display using toFormat for precise control
+        const displayFormat = "LLL dd, yyyy h:mma";
+        const displayDate = userTimezoneDate.toFormat(displayFormat) + ' ' + userTimezoneDate.offsetNameShort;
+
+        return `${prefix}: ${displayDate}`;
+
     };
 
     function formatDisplayTime(date) {
@@ -58,6 +55,40 @@ export const NotificationsProvider = ({ children }) => {
         const hours = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
         return `${hours}:${minutes}`;
+    }
+
+    const formatNotificationDatesBlock = (notification: EZNotification) => {
+        return (
+            <>
+            {(notification.startDate === null && notification.endDate === null) && ( <> Served all the time </> )}
+            {(notification.startDate !== null) && formatDisplayDate('From', notification.startDate)}
+            {(notification.startDate === null && notification.endDate !== null) && ( <> From: Now... </> )}
+            {((notification.startDate !== null || notification.endDate !== null)) && (
+                <>
+                  <br />
+                  <IconArrowElbowRight 
+                   style={{transform: 'rotate(45deg)', marginLeft:'4px',  marginTop:'-3px' }} color="#5c5" />
+                </>
+            )}
+            {formatDisplayDate(' Until', notification.endDate)}
+            {(notification.endDate === null && notification.startDate !== null) && ( <> ...onwards </> )}
+            </>
+        );
+    }
+
+    const formatNotificationConditionsBlock = (notification: EZNotification) => {
+        return (
+            <>
+                Page: {(notification.pageId ? 
+                    <Text size="sm" style={{ margin:'2px', padding:'2px 4px 2px 4px', border: '1px dotted #aaa'}} span className={classes.pageId}>{notification.pageId}</Text> : '<not set>')}<br/>
+                Envs: 
+                <Pill style={{ backgroundColor: '#6aa', color: 'navy', margin:'4px' }} radius="md">
+                {notification.environments != null ? 
+                    (notification.environments.length ? notification.environments.join(', ') : 'Any') : 'Any'}
+                </Pill><br/>
+                {formatNotificationType('Type:',notification.notificationType, 24)}
+            </>
+        );
     }
 
     const formatCreateInfo = (notificationData) => {
@@ -390,6 +421,8 @@ export const NotificationsProvider = ({ children }) => {
     <NotificationsContext.Provider value={{ 
         formatDisplayDate,
         formatDisplayTime,
+        formatNotificationDatesBlock,
+        formatNotificationConditionsBlock,
         formatCreateInfo,
         formatNotificationType,
 

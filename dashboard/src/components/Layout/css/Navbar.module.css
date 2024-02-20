@@ -38,7 +38,7 @@
     &,
     &:hover {
       background-color: var(--mantine-color-blue-light);
-      color: var(--mantine-color-blue-light-color);
+      color: #03acca;
 
       .linkIcon {
         color: var(--mantine-color-blue-light-color);

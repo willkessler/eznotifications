@@ -43,15 +43,11 @@ const SandboxComponent = () => {
 
       <AppShell.Navbar p="md">
         <AppShell.Section>
-          <Anchor href="/" className={introClasses.logoAnchor}>
-            <Image src="/ThisIsNotADrill_cutout.png" w={155} />
-          </Anchor>
-          <div className={logoClasses.versionContainer}>
-            <Code fw={700}>v1.0</Code>
-          </div>
+          <LogoComponent />
           <Navbar />
         </AppShell.Section>
       </AppShell.Navbar>
+
       <AppShell.Main>
         <AppShell.Section style={{paddingTop:'20px'}}>
           <Title order={2}>

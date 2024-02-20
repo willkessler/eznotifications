@@ -13,7 +13,7 @@ import { ActionIcon, Anchor, AppShell, Burger, Code, CopyButton, Group, Skeleton
 import { useDisclosure } from '@mantine/hooks';
 
 const MainLayout = () => {
-  const [opened, { toggle }] = useDisclosure();
+  const [opened, handlers] = useDisclosure(false);
 
   return (
     <AppShell
@@ -26,7 +26,7 @@ const MainLayout = () => {
           <Anchor href="/" className={introClasses.logoAnchor}></Anchor>
         </Group>
       </AppShell.Header>
-      <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+      <Burger opened={opened} onClick={() => { handlers.open(); handlers.toggle(); }} hiddenFrom="sm" size="sm" />
 
       <AppShell.Navbar p="md">
         <AppShell.Section>
@@ -34,8 +34,9 @@ const MainLayout = () => {
           <Navbar />
         </AppShell.Section>
       </AppShell.Navbar>
+
       <AppShell.Main>
-        <AppShell.Section style={{paddingTop:'20px'}}>
+        <AppShell.Section style={{paddingTop:'8px'}}>
           <main className={mainClasses.mainContent}>
             <Outlet /> {/* This is where the routed content is rendered */}
           </main>

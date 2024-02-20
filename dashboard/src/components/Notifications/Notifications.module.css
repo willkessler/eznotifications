@@ -33,7 +33,8 @@
   }
 }
 
-.tableCellToTop .hoverIcons {
+/*
+.hoverIcons {
   visibility:hidden;
   position: absolute;
   bottom: -8px;
@@ -47,29 +48,27 @@
   color: #555;
 }
 
-.tableCellToTop .hoverIcons svg {
-  color:#999;
-}
-
-.tableCellToTop .hoverIcons svg:hover {
-  opacity:1;
-  color:#eee;
-}
-
-.tableCellWithHover {
-  position: relative;
-  padding-bottom: 30px; /* Adjust this value based on icon size */
-  transition: background-color 1s ease; /* Optional: for background color change */
-}
-
-.tableCellWithHover:hover .hoverIcons {
+.hoverIcons:hover {
   visibility: visible;
   opacity: 0.5;
 }
 
-.tableCellWithHover:hover {
-
+.hoverIcons svg {
+  color:#999;
 }
+
+.hoverIcons svg:hover {
+  opacity:1;
+  color:#eee;
+}
+
+.hoverIcons {
+  position: relative;
+  padding-bottom: 30px; 
+  transition: background-color 1s ease; 
+}
+*/
+
 
 .notificationTypeChoice {
   margin-top:22px;
@@ -89,4 +88,50 @@
 
 .mantine-Switch-root {
   cursor: pointer;
+}
+
+.notificationsListHeader {
+  border-bottom: 1px solid #696;
+  padding-bottom: 4px;
+  margin-bottom: 12px;
+}
+
+.notificationsListContent {
+  margin-right:30px;
+  padding-bottom:10px;
+}
+
+.notificationsListContent .hoverIcons {
+  visibility:visible;
+  opacity:0;
+  margin-top:0px;
+  margin-left:0px;
+}
+
+.notificationsListContent:hover .hoverIcons {
+  transition: visibility 0.3s, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.notificationsListDates {
+  color:#ccc
+}
+
+.notificationsListConditions {
+  color:#ccc;
+}
+
+.notificationsListControlIcons {
+  color: #03acca;
+  margin-right:10px;
+}
+
+.cardDetails {
+  padding:20px;
+  font-size:0.8rem;
+}
+
+.cardControls {
+  border-top:1px dotted #03acca;
+  margin-top:10px;
 }
