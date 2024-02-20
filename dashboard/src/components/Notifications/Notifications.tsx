@@ -10,6 +10,7 @@ import NotificationsList from './NotificationsList';
 import NotificationsModal from './NotificationsModal';
 import ResetViewsModal from './ResetViewsModal';
 import DeleteModal from './DeleteModal';
+import StatisticsDrawer from './StatisticsDrawer';
 import { useSettings } from '../Account/SettingsContext';
 import { useAPIKeys } from '../Account/APIKeysContext';
 import { useUser } from "@clerk/clerk-react";
@@ -43,6 +44,7 @@ const Notifications = () => {
             <PreviewModal />
             <DeleteModal />
             <ResetViewsModal />
+            <StatisticsDrawer />
             <Toaster />
           </NotificationsProvider>
       </>

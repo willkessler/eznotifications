@@ -230,7 +230,7 @@ export const NotificationsProvider = ({ children }) => {
     const [ statisticsNotificationContents, setStatisticsNotificationContents] = useState('');
 
     const openStatisticsDrawer = (notification) => {
-        console.log('resetting views on this notif', notification);
+        console.log('Opening stats drawer for this notification:', notification);
         setStatisticsNotificationId(notification.id);
         setStatisticsNotificationContents(notification.content);
         setIsStatisticsDrawerOpen(true);
@@ -249,10 +249,10 @@ export const NotificationsProvider = ({ children }) => {
     const [ resetViewsNotificationId, setResetViewsNotificationId] = useState(null);
     const [ resetViewsNotificationContents, setResetViewsNotificationContents] = useState('');
 
-    const showResetViewsModal = (notification) => {
-        console.log('resetting views on this notif', notification);
-        setResetViewsNotificationId(notification.id);
-        setResetViewsNotificationContents(notification.content);
+    const showResetViewsModal = () => {
+        console.log('resetting views on this notif', statisticsNotificationId);
+        setResetViewsNotificationId(statisticsNotificationId);
+        setResetViewsNotificationContents(statisticsNotificationContents);
         setIsResetViewsModalOpen(true);
     };
 
