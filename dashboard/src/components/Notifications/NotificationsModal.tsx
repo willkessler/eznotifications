@@ -302,31 +302,30 @@ const NotificationsModal = () => {
                 placeholder="Enter page ID"
                 description="Enter an ID to limit this notification to a specific page or section of your application."
                 />
-                <div style={{ display: 'flex', width: '90%' }}>
+                <Group gap="xl" align="start" style={{marginTop:'20px'}}>
                   <NotificationTypeSelector
                     value={notificationData.notificationType}
                     notificationTypeOther={notificationData.notificationTypeOther}
                     onSelectionChange={handleNotificationTypeChange}
                     onCustomTypeChange={handleCustomNotificationTypeChange}
+                    />
+                  <MultiSelect
+                    name="environments"
+                    value={Array.isArray(notificationData.environments) ? notificationData.environments : []}
+                    pointer
+                    label={envLabel}
+                    description="Choose the environments to serve this notification to."
+                    placeholder="Pick values"
+                    data={['Development', 'Staging', 'UAT', 'Production']}
+                    comboboxProps={{ shadow: 'md' }}
+                    onChange={(value) => handleEnvironmentsChange(value)}
                   />
-                <MultiSelect
-                  name="environments"
-                  value={Array.isArray(notificationData.environments) ? notificationData.environments : []}
-                  style={{width:'375px', paddingTop:'20px', paddingLeft: '20px'}}
-                  pointer
-                  label={envLabel}
-                  description="Choose the environments to serve this notification to."
-                  placeholder="Pick values"
-                  data={['Development', 'Staging', 'UAT', 'Production']}
-                  comboboxProps={{ shadow: 'md' }}
-                  onChange={(value) => handleEnvironmentsChange(value)}
-                />
-                </div>
+                </Group>
               </Paper>
             </Expando>
           </Paper>
           <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px', marginBottom: '20px' }}>
-            <Button style={{backgroundColor:'#03acca', color:'white'}} variant="filled" disabled={submissionDisabled} type="submit">{editing ? 'Update Notification' : 'Create Notification'}</Button>
+            <Button variant="filled" disabled={submissionDisabled} type="submit">{editing ? 'Update Notification' : 'Create Notification'}</Button>
         <Anchor component="button" type="button" onClick={handleModalClose} style={{marginLeft:'10px', color:'#999'}} >
           Cancel
         </Anchor>

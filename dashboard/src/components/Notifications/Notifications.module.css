@@ -33,47 +33,6 @@
   }
 }
 
-/*
-.hoverIcons {
-  visibility:hidden;
-  position: absolute;
-  bottom: -8px;
-  left: 0;
-  width: 100%;
-  display: flex;
-  justify-content: left;
-  transition: visibility 0.3s, opacity 0.3s ease;
-  opacity: 0;
-  margin:0px 0px 5px 10px;
-  color: #555;
-}
-
-.hoverIcons:hover {
-  visibility: visible;
-  opacity: 0.5;
-}
-
-.hoverIcons svg {
-  color:#999;
-}
-
-.hoverIcons svg:hover {
-  opacity:1;
-  color:#eee;
-}
-
-.hoverIcons {
-  position: relative;
-  padding-bottom: 30px; 
-  transition: background-color 1s ease; 
-}
-*/
-
-
-.notificationTypeChoice {
-  margin-top:22px;
-}
-
 .pageId {
   font-family: courier;
 }

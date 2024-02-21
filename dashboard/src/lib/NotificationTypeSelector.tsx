@@ -45,7 +45,6 @@ export function NotificationTypeSelector({ value, notificationTypeOther, onSelec
   return (
     <div>
       <RadioGroup 
-        style={{width:'300px'}}
         value={selectedType} 
         onChange={handleTypeChange}
         label="Notification type"
