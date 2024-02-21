@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { IconCopy, IconCheck } from '@tabler/icons-react';
 import { useUser } from "@clerk/clerk-react";
 import { ActionIcon, Anchor, Code, CopyButton, Group, Skeleton, 
-         Image, Button, rem, Space, Text, TextInput, Title, Tooltip } from '@mantine/core';
+         Image, Button, Paper, rem, Space, Text, TextInput, Title, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
 import LogoComponent from '../Layout/LogoComponent';
@@ -29,7 +29,7 @@ const SandboxComponent = () => {
   };
   
   return (
-    <>
+    <Paper style={{paddingTop:'10px',marginTop:'10px'}} radius="md" p="sm">
       <Title order={2}>
         Sandbox Testing
       </Title>
@@ -65,7 +65,7 @@ const SandboxComponent = () => {
           Generate temporary API key
         </Button>
       </div>
-    </>
+    </Paper>
   );
 };
 

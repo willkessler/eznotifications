@@ -41,7 +41,7 @@ const MainLayout = () => {
         <Navbar toggleMobile={toggleMobile} toggleDesktop={toggleDesktop} />
 
         <Text size="xs" className={logoClasses.versionContainer}>
-          Version: 1.0
+          version: 1.0
         </Text>
 
       </AppShell.Navbar>

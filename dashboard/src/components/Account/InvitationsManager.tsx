@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import classes from './css/InviteUser.module.css';
 import { useUser, useOrganization } from "@clerk/clerk-react";
-import { Anchor, Button, Group, Radio, Table, TextInput, Textarea, Text } from '@mantine/core';
+import { Anchor, Button, Group, Paper, Radio, Stack, TextInput, Textarea, Text } from '@mantine/core';
 
 const InvitationsManager = () => {
   const { isSignedIn, isLoaded } = useUser();
@@ -79,31 +79,21 @@ const InvitationsManager = () => {
   return (
     <div style={{marginTop:'30px'}}>
       <Text size="lg">Pending Teammate Invitations</Text>
-      <Table verticalSpacing="xs" highlightOnHover withColumnBorders withTableBorder>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Email</Table.Th>
-            <Table.Th>Action</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {invitations?.data.map((invitation) => (
-            <Table.Tr key={invitation.id || invitation.emailAddress}>
-              <Table.Td>
-                {invitation.emailAddress} (invited to be a {invitation.role === 'org:member' ? 'member' : 'admin'})
-              </Table.Td>
-              <Table.Td>
-                <Anchor size="xs" component="button" type="button" onClick={() => ResendInvitation(invitation)}>Resend Invitation</Anchor> &nbsp;|&nbsp;
-                <Anchor size="xs" component="button" type="button" onClick={() => RevokeInvitation(invitation)}>Revoke Invitation</Anchor>
-              </Table.Td>
-            </Table.Tr>
-          ))}
-        </Table.Tbody>
-      </Table>
+      {invitations?.data.map((invitation) => (
+        <Paper style={{paddingTop:'10px',marginTop:'10px'}} 
+               radius="md" key={invitation.id} withBorder p="sm">
+          <Stack align="flex-start" justify="flex-start" gap="xs">
+            <Text>{invitation.emailAddress}</Text>
+            <Text size="xs">(invited to be a {invitation.role === 'org:member' ? 'member' : 'admin'})</Text>
+            <Anchor size="xs" component="button" type="button" onClick={() => ResendInvitation(invitation)}>Resend Invitation</Anchor>
+            <Anchor size="xs" component="button" type="button" onClick={() => RevokeInvitation(invitation)}>Revoke Invitation</Anchor>
 
+          </Stack>
+        </Paper>
+      ))}
       <form onSubmit={sendInvitation}>
-        <div className={classes.invitationControls}>
-          <Text size="sm" style={{marginRight:'10px'}}>Add teammates:</Text>
+        <Group justify="flex-start" p="sm" gap="xs">
+          <Text size="md">Add teammates:</Text>
           <TextInput
             size="xs"
             placeholder="teammate@example.com"
@@ -124,10 +114,10 @@ const InvitationsManager = () => {
               <Radio value="org:admin" label="Admin" iconColor="dark.8" color="lime.4"  />
             </Group>
           </Radio.Group>
-          <Button size="xs" type="submit" disabled={disabled || !isValidEmail} style={{marginLeft:'10px'}}>
+          <Button size="xs" type="submit" disabled={disabled || !isValidEmail}>
             {sendLabel}
           </Button>
-        </div>
+        </Group>
       </form>
 
 

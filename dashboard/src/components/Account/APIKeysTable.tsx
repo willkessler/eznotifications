@@ -4,14 +4,11 @@ import { IconCopy, IconCheck } from '@tabler/icons-react';
 import { useUser, useOrganization } from "@clerk/clerk-react";
 import { useAPIKeys } from './APIKeysContext';
 import classes from './css/APIKeys.module.css';
-import { useMediaQuery } from '@mantine/hooks';
 
 const APIKeysTable = () => {
     const { APIKeys, fetchAPIKeys, APIKeysLoading, APIKeysLastUpdated, toggleAPIKeyStatus } = useAPIKeys();
     const { isLoaded } = useOrganization();
     const { user } = useUser();
-    // If on a small screen use cards for the api keys, not a table
-    const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
     const doToggleAPIKeyStatus = (e, apiKeyId) => {
         e.preventDefault();
