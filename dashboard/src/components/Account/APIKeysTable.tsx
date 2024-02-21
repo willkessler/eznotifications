@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActionIcon, Anchor,CopyButton, Tooltip, rem,  Table, Text } from '@mantine/core';
+import { ActionIcon, Anchor,Card, Code, CopyButton, Group, Tooltip, rem,  Table, Text } from '@mantine/core';
 import { IconCopy, IconCheck } from '@tabler/icons-react';
 import { useUser, useOrganization } from "@clerk/clerk-react";
 import { useAPIKeys } from './APIKeysContext';
@@ -28,10 +28,17 @@ const APIKeysTable = () => {
         return null;
     }
     
-    const APIKeysBody = APIKeys.map((apiKeyRecord) => (
-      <Table.Tr key={apiKeyRecord.id} className={apiKeyRecord.isActive ? classes.enabled : classes.disabled}>
-        <Table.Td>
-            { new Date(apiKeyRecord.createdAt).toLocaleString('en-US', 
+    const APIKeysBody = APIKeys.map((apiKeyRecord) => {
+        return (
+            <div className={classes.apiCard}>
+
+            <Card padding="md" shadow="sm" radius="md" key={apiKeyRecord.id}
+           className={apiKeyRecord.isActive ? classes.enabled : classes.disabled}>
+                <Card.Section inheritPadding="true">
+                <Group>
+                <Text fw={800}>Created:</Text>
+                <Text>
+                { new Date(apiKeyRecord.createdAt).toLocaleString('en-US', 
                                                               { weekday: 'short', 
                                                                 year: 'numeric', 
                                                                 month: 'short', 
@@ -39,34 +46,46 @@ const APIKeysTable = () => {
                                                                 hour: '2-digit', 
                                                                 minute: '2-digit' }
                                                              )
-            }
-        </Table.Td>
-        <Table.Td>
-          <div className={classes.apiKeyBlock} >
+                }
+                </Text>
+                    </Group>
+            </Card.Section>
+
+            <Card.Section inheritPadding={true}>
+                <Group>                
+                <Text>Key:</Text>
+            <div className={classes.apiKeyBlock} >
             <CopyButton value={apiKeyRecord.apiKey} timeout={2000}>
             {({ copied, copy }) => (
-              <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-                <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
-                  {copied ? (
-                    <IconCheck style={{ width: rem(16) }} />
-                  ) : (
-                    <IconCopy className={ (apiKeyRecord.isActive ? classes.apiKeyTextEnabled : classes.apiKeyTextDisabled) }
-                              style={{ width: rem(16) }} />
-                  )}
-                </ActionIcon>
-              </Tooltip>
+                <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
+                    <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
+                    {copied ? (
+                        <IconCheck style={{ width: rem(16) }} />
+                    ) : (
+                        <IconCopy className={ (apiKeyRecord.isActive ? classes.apiKeyTextEnabled : classes.apiKeyTextDisabled) }
+                        style={{ width: rem(16) }} />
+                    )}
+                    </ActionIcon>
+                    </Tooltip>
             )}
-            </CopyButton>
-            <span className={classes.apiKeyText}>{apiKeyRecord.apiKey}</span>
+             </CopyButton>
+                <Text className={classes.apiKeyText}>{apiKeyRecord.apiKey}</Text>
             </div>
-        </Table.Td>
-        <Table.Td>
-          {apiKeyRecord.apiKeyType}
-        </Table.Td>
-        <Table.Td>
-          {apiKeyRecord.isActive ? 'Enabled' : 'Disabled'}
-        </Table.Td>
-        <Table.Td>
+                </Group>
+            </Card.Section>
+
+            <Card.Section inheritPadding={true}>
+            Environment: <Code>{apiKeyRecord.apiKeyType}</Code>
+            </Card.Section>
+
+            <Card.Section inheritPadding={true} withBorder={true}>
+                <Group>
+                  <Text>Status:</Text>
+                  <Code>{apiKeyRecord.isActive ? 'Enabled' : 'Disabled'}</Code>
+                </Group>
+            </Card.Section>
+
+            <Card.Section inheritPadding={true}>
             <Anchor 
               className={apiKeyRecord.isActive ? classes.deactivate : classes.activate}
               size="sm" 
@@ -75,26 +94,15 @@ const APIKeysTable = () => {
               onClick={(e) => doToggleAPIKeyStatus(e, apiKeyRecord.id)}>
               {apiKeyRecord.isActive ? 'Disable' : 'Enable'}
             </Anchor>
-        </Table.Td>
-      </Table.Tr>
-    ));
+            </Card.Section>
+                </Card>
+                </div>
+        );
+    });
     
     return (
       <div style={{marginTop:'5px'}}>
-        <Table verticalSpacing="xs" highlightOnHover withTableBorder>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Created On</Table.Th>
-              <Table.Th>API Key</Table.Th>
-              <Table.Th>Environment</Table.Th>
-              <Table.Th>Status</Table.Th>
-              <Table.Th>&nbsp;</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
             {APIKeysBody}
-          </Table.Tbody>
-        </Table>
       </div>
     );
 }
