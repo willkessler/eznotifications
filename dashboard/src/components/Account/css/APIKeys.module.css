@@ -1,8 +1,3 @@
-.apiCard {
-  margin-bottom:20px;
-  width:70%;
-}
-
 .apiKeyPanel {
   padding:15px 0px 30px 40px;
   max-width:1000px;
@@ -42,7 +37,7 @@
 
 .apiKeyTextEnabled {
   font-family: courier;
-  color:#ccc;
+  color:#3f3
 }
 
 .apiKeyTextDisabled {
@@ -52,17 +47,20 @@
 
 .disabled {
   color: #666;
+  margin-bottom:20px;
 }
 
 .enabled {
   color: #ddd;
   cursor: pointer;
+  margin-bottom:20px;
 }
 
 .activate {
-  color: #55f;
+  color: green;
+
 }
 
 .deactivate {
-  color: #a22;
+  color: white;
 }

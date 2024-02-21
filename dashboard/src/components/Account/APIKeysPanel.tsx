@@ -66,7 +66,7 @@ const APIKeysPanel = () => {
           <CopyButton value={productionAPIKeyValue} timeout={2000}>
             {({ copied, copy }) => (
               <Tooltip label={copied ? 'Copied Production API Key!' : 'Copy'} withArrow position="right">
-                <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
+                <ActionIcon color={copied ? '#f33' : 'gray'} variant="subtle" onClick={copy}>
                   {copied ? (
                     <IconCheck style={{ width: rem(16) }} />
                   ) : (
