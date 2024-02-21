@@ -9,29 +9,41 @@ import introClasses from '../Account/css/IntroPages.module.css';
 import logoClasses from '../Layout/css/MainLayout.module.css';
 import Tutorial from './Tutorial';
 import { ActionIcon, Anchor, AppShell, Burger, Code, CopyButton, Group, Skeleton, 
-         Image, Button, rem, Space, Text, TextInput, Title, Tooltip } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+         Image, Button, rem, Space, Text, TextInput, Title, Tooltip, UnstyledButton } from '@mantine/core';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 
 const MainLayout = () => {
-  const [opened, handlers] = useDisclosure(false);
+  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
   return (
     <AppShell
-      navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+      header={{ 
+        height: 80,
+        collapsed: !isSmallScreen,
+      }}
+      navbar={{ 
+        width: 160,
+        breakpoint: 'sm',
+        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+      }}
       padding="md"
     >
-      <AppShell.Header >
-        <Group h="100%" px="md">
-          <Anchor href="/" className={introClasses.logoAnchor}></Anchor>
+      <AppShell.Header>
+        <Group h="100%" px="md" hiddenFrom="sm">
+          <Burger opened={mobileOpened} onClick={toggleMobile} size="sm" />
         </Group>
       </AppShell.Header>
-      <Burger opened={opened} onClick={() => { handlers.open(); handlers.toggle(); }} hiddenFrom="sm" size="md" />
 
-      <AppShell.Navbar p="md">
-        <AppShell.Section>
-          <LogoComponent />
-          <Navbar />
-        </AppShell.Section>
+      <AppShell.Navbar py="md">
+        <LogoComponent />
+        <Navbar toggleMobile={toggleMobile} toggleDesktop={toggleDesktop} />
+
+        <Text size="xs" className={logoClasses.versionContainer}>
+          Version: 1.0
+        </Text>
+
       </AppShell.Navbar>
 
       <AppShell.Main>
@@ -48,3 +60,5 @@ const MainLayout = () => {
 };
 
 export default MainLayout;
+
+

@@ -23,23 +23,16 @@ import {
 } from '@tabler/icons-react';
 
 
-const Navbar = () => {
+const Navbar = ({toggleMobile, toggleDesktop}) => {
   const isExternalLink = (url) => /^(http|https):\/\//.test(url);
   const location = useLocation();
   const [activeLink, setActiveLink] = useState('All Notifications')
   const [opened, handlers] = useDisclosure();
 
-  const handleClose = () => {
-    console.log('handleClose');
-    console.log('handleClose:toggling, opened=', opened);
-    handlers.toggle();
-    handlers.close(); // Close the navbar
-  };  
-
   const navBarData = [
     { link: '/', label: 'Notifications', icon: IconSpeakerphone, dataTour: 'notifications' },
     { link: '/sandbox', label: 'Sandbox', icon: IconHorseToy, dataTour: 'sandbox' },
-    { link: '/settings', label: 'Account', icon: IconSettings, dataTour: 'account' },
+    { link: '/settings/account', label: 'Account', icon: IconSettings, dataTour: 'account' },
     { link: 'https://tellyourusers-help-pages.super.site', label: 'Help', icon: IconHelp, dataTour: 'help' },
     { link: '', label: 'Logout', icon: IconLogout, dataTour: 'logout' },
   ];
@@ -61,7 +54,7 @@ const Navbar = () => {
         rel="noopener noreferrer"
         key={item.label}
       >
-        <Group>
+        <Group style={{ marginLeft:'5px'}}>
           <Icon className={classes.linkIcon} stroke={1.5} />
           <span className={classes.navbarLabel}>{item.label}</span>
         </Group>
@@ -75,20 +68,20 @@ const Navbar = () => {
         data-active={isActive || undefined}
         onClick={() => {
           setActiveLink(item.label);
-          handleClose(); // close nav bar on link clink (mobile)
+          toggleMobile();
         }}
         key={item.label}
       >
         { (item.label == 'Logout') && 
           <SignOutButton>
-            <Group>
+            <Group style={{ marginLeft:'5px'}}>
               <Icon className={classes.linkIcon} stroke={1.5} />
               <span className={classes.navbarLabel}>{item.label}</span>
             </Group>
           </SignOutButton>
         }
         { (item.label !== 'Logout') && 
-            <Group>
+            <Group style={{ marginLeft:'5px'}}>
               <Icon className={classes.linkIcon} stroke={1.5} />
               <span className={classes.navbarLabel}>{item.label}</span>
             </Group>

@@ -17,7 +17,7 @@ const StatisticsDrawer = () => {
           closeResetViewsModal,
           } = useNotifications();
 
-  const [opened] = useDisclosure(false);
+  const [opened] = useDisclosure();
 
   return (
       <Drawer

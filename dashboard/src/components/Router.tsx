@@ -34,8 +34,6 @@ const RouterComponent = () => {
             <Routes>
               <Route path="/login" element={<LoginComponent />} />
               <Route path="/sign-up" element={<SignUpComponent />} />
-              <Route path="/sandbox" element={<SandboxComponent />} />
-              <Route path="/onboard" element={<OnboardComponent />} />
               <Route path="/" element={<MainLayout />} >
                 <Route index element={<Notifications />} />
                 <Route path="statistics" element={<Statistics />} />
@@ -48,6 +46,9 @@ const RouterComponent = () => {
                 <Route path="/settings/app-config" element={<Settings />} />
                 <Route path="/settings/account/tos" element={<Settings />} />
                 <Route path="/settings/account/billing" element={<Settings />} />
+
+                <Route path="/sandbox" element={<SandboxComponent />} />
+
               </Route>
             </Routes>
           </DatesProviderWrapper>

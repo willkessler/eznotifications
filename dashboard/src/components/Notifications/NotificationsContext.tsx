@@ -248,7 +248,7 @@ export const NotificationsProvider = ({ children }) => {
                         </Anchor>
                     </Tooltip>
                 ) : (
-                    <Anchor component="button" type="button" onClick={action}>
+                    <Anchor key={index} component="button" type="button" onClick={action}>
                         <Icon size={20} className={classes.notificationsListControlIcons} />
                     </Anchor>
                 ));
