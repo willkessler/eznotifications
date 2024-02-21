@@ -4,12 +4,13 @@ import classes from './Notifications.module.css';
 
 function NotificationCard({ notification }) {
   const { 
+    formatNotificationControlIcons,
     formatNotificationDatesBlock,
     formatNotificationConditionsBlock,
   } = useNotifications();
 
   return (
-      <Card shadow="sm" p="lg" radius="md" mb="md">
+      <Card shadow="sm" p="lg" radius="md" mb="md" id={notification.id}>
         <Title order={4}>
           {notification.content}
         </Title>
@@ -21,6 +22,7 @@ function NotificationCard({ notification }) {
         { formatNotificationConditionsBlock(notification) }
         </div>
         <div className={classes.cardControls}>
+          {formatNotificationControlIcons(notification,false)}
         </div>
       </div>
       </Card>

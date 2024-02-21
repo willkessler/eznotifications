@@ -26,7 +26,7 @@ const MainLayout = () => {
           <Anchor href="/" className={introClasses.logoAnchor}></Anchor>
         </Group>
       </AppShell.Header>
-      <Burger opened={opened} onClick={() => { handlers.open(); handlers.toggle(); }} hiddenFrom="sm" size="sm" />
+      <Burger opened={opened} onClick={() => { handlers.open(); handlers.toggle(); }} hiddenFrom="sm" size="md" />
 
       <AppShell.Navbar p="md">
         <AppShell.Section>

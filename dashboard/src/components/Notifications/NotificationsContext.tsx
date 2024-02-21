@@ -1,12 +1,27 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useUser } from "@clerk/clerk-react";
 import { DateTime } from 'luxon';
-import { Pill, Text, Tooltip } from '@mantine/core';
-import {  IconInfoCircle, IconAlertTriangle, IconExchange,
-          IconArrowElbowRight,
-          IconCloudStorm, IconExclamationCircle, IconDots,
-          IconQuestionMark,
-          IconSpeakerphone} from '@tabler/icons-react';
+import { Anchor, Pill, Text, Tooltip } from '@mantine/core';
+import toast, { Toaster } from 'react-hot-toast';
+import { IconSpeakerphone,
+         IconInfoCircle, 
+         IconAlertTriangle, 
+         IconExchange,
+         IconArrowElbowRight, 
+         IconCloudStorm, 
+         IconExclamationCircle, 
+         IconDots,
+         IconQuestionMark,
+         IconEdit, 
+         IconLayoutNavbarExpand, 
+         IconMessageDown, 
+         IconAlignBoxCenterMiddle, 
+         IconCopy, 
+         IconRotate,
+         IconTrash,
+         IconChartLine,
+         IconFidgetSpinner } from '@tabler/icons-react';
+
 import { useTimezone } from '../../lib/TimezoneContext';
 import classes from './Notifications.module.css';
 
@@ -67,7 +82,7 @@ export const NotificationsProvider = ({ children }) => {
                 <>
                   <br />
                   <IconArrowElbowRight 
-                   style={{transform: 'rotate(45deg)', marginLeft:'4px',  marginTop:'-3px' }} color="#5c5" />
+                   style={{transform: 'rotate(45deg)', marginLeft:'4px',  marginTop:'-5px' }} color="#5c5" />
                 </>
             )}
             {formatDisplayDate(' Until', notification.endDate)}
@@ -154,6 +169,95 @@ export const NotificationsProvider = ({ children }) => {
             </div>
         );
     }
+
+    const formatNotificationControlIcons = (notification: EZNotification, showTooltip: boolean) => {
+        const controls = [
+            {
+                Icon: IconInfoCircle,
+                label: formatCreateInfo(notification),
+                action: () => {},
+                skip: false,
+            },
+            {
+                Icon: IconEdit,
+                label: 'Edit this notification',
+                action: () => openModal(notification),
+                skip: false,
+            },
+            {
+                Icon: IconChartLine,
+                label: 'Notification Statistics',
+                action: () => openStatisticsDrawer(notification),
+                skip: false,
+            },
+            {
+                Icon: IconTrash,
+                label: 'Delete this notification',
+                action: () => showDeleteModal(notification),
+                skip: false,
+            },
+            {
+                Icon: IconLayoutNavbarExpand,
+                label: 'Preview banner display',
+                action: () => showPreviewBanner(notification),
+                skip: false,
+            },
+            {
+                Icon: IconAlignBoxCenterMiddle,
+                label: 'Preview modal display',
+                action: () => showPreviewModal(notification),
+                skip: false,
+            },
+            {
+                Icon: IconMessageDown,
+                label: 'Preview toast display',
+                action: () => toastNotify(notification),
+                skip: false,
+            },
+        ];            
+                  
+        const controlsJsx = 
+            controls.map(({Icon, label, action}, index) => {
+                return (
+                showTooltip ? (
+                    <Tooltip key={index} openDelay={1200} label={label} position="bottom" withArrow>
+                        <Anchor component="button" type="button" onClick={action}>
+                          <Icon size={20} className={classes.notificationsListControlIcons} />
+                        </Anchor>
+                    </Tooltip>
+                ) : (
+                    <Anchor component="button" type="button" onClick={action}>
+                        <Icon size={20} className={classes.notificationsListControlIcons} />
+                    </Anchor>
+                ));
+            });
+        return controlsJsx;
+    }
+
+    // Set up the demo toaster
+    const toastNotify = (notificationData: EZNotification) => { 
+        const content = (notificationData.content?.length == 0 ? 'not set' : notificationData.content);
+        toast.success(content, {
+            duration: 4000,
+            position: 'top-center',
+
+            // Styling
+            style: {
+                minWidth:'500px',
+                transition: "all 0.5s ease-out"
+            },
+            className: '',
+
+            // Custom Icon
+            icon: formatNotificationType('', notificationData.notificationType, 35),
+
+            // Aria
+            ariaProps: {
+                role: 'status',
+                'aria-live': 'polite',
+            },
+        });
+    };
 
     //
     // Show & hide the create/edit notification modal
@@ -423,6 +527,7 @@ export const NotificationsProvider = ({ children }) => {
         formatDisplayTime,
         formatNotificationDatesBlock,
         formatNotificationConditionsBlock,
+        formatNotificationControlIcons,
         formatCreateInfo,
         formatNotificationType,
 

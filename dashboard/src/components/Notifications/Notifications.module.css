@@ -133,5 +133,6 @@
 
 .cardControls {
   border-top:1px dotted #03acca;
+  padding-top:10px;
   margin-top:10px;
 }

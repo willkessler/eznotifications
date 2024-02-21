@@ -55,6 +55,8 @@ const NotificationsList = () => {
             formatDisplayDate,
             formatCreateInfo,
             formatNotificationDatesBlock,
+            formatNotificationConditionsBlock,
+            formatNotificationControlIcons,
             formatNotificationType,
             openStatisticsDrawer,
           } = useNotifications();
@@ -64,97 +66,9 @@ const NotificationsList = () => {
     if (!isLoaded || !isSignedIn ) {
         return null;
     }
-
-    // Set up the demo toaster
-    const toastNotify = (notificationData: EZNotification) => { 
-        const content = (notificationData.content?.length == 0 ? 'not set' : notificationData.content);
-        toast.success(content, {
-            duration: 4000,
-            position: 'top-center',
-
-            // Styling
-            style: {
-                minWidth:'500px',
-                transition: "all 0.5s ease-out"
-            },
-            className: '',
-
-            // Custom Icon
-            icon: formatNotificationType('', notificationData.notificationType, 35),
-
-            // Aria
-            ariaProps: {
-                role: 'status',
-                'aria-live': 'polite',
-            },
-        });
-  };
   
 
-    const renderNotificationControlIcons = (notification: EZNotification, showTooltip: boolean) => {
-        const controls = [
-            {
-                Icon: IconInfoCircle,
-                label: formatCreateInfo(notification),
-                action: () => {},
-                skip: false,
-            },
-            {
-                Icon: IconEdit,
-                label: 'Edit this notification',
-                action: () => openModal(notification),
-                skip: false,
-            },
-            {
-                Icon: IconChartLine,
-                label: 'Notification Statistics',
-                action: () => openStatisticsDrawer(notification),
-                skip: false,
-            },
-            {
-                Icon: IconTrash,
-                label: 'Delete this notification',
-                action: () => showDeleteModal(notification),
-                skip: false,
-            },
-            {
-                Icon: IconLayoutNavbarExpand,
-                label: 'Preview banner display',
-                action: () => showPreviewBanner(notification),
-                skip: false,
-            },
-            {
-                Icon: IconAlignBoxCenterMiddle,
-                label: 'Preview modal display',
-                action: () => showPreviewModal(notification),
-                skip: false,
-            },
-            {
-                Icon: IconMessageDown,
-                label: 'Preview toast display',
-                action: () => toastNotify(notification),
-                skip: false,
-            },
-        ];            
-                  
-        const controlsJsx = 
-            controls.map(({Icon, label, action}, index) => {
-                showTooltip ? (
-                    <Tooltip key={index} openDelay={1000} label={label} position="botton" withArrow>
-                        <Anchor component="button" type="button" onClick={action}>
-                          <Icon size={20} className={classes.notificationsListControlIcons} />
-                        </Anchor>
-                    </Tooltip>
-                ) : (
-                    <Anchor component="button" type="button" onClick={action}>
-                        <Icon size={20} className={classes.notificationsListControlIcons} />
-                    </Anchor>
-                )
-            });
-
-        return controlsJsx;
-        
-        }
+/*
         if (useHover) 
         
                       <Tooltip openDelay={1000} label={formatCreateInfo(notification)} position="bottom" withArrow>
@@ -201,7 +115,7 @@ const NotificationsList = () => {
                       </Tooltip>
                       </div>
                       </div>
-    }
+    } */
 
   // Handle turning a notification on and off
   const handleSwitchChange = async (notificationData, checked) => {
@@ -386,51 +300,13 @@ const NotificationsList = () => {
                     <Grid.Col span={6}>
                       <div className={classes.notificationsListContent}>
 
-                      <Spoiler maxHeight={50} showLabel="Show more" hideLabel="Hide" style={{paddingBottom:'10px'}}>
-                      <Text>{notification.content.length === 0 ? '(Not set)' : notification.content}</Text>
-                      </Spoiler>
+                        <Spoiler maxHeight={50} showLabel="Show more" hideLabel="Hide" style={{paddingBottom:'10px'}}>
+                          <Text>{notification.content.length === 0 ? '(Not set)' : notification.content}</Text>
+                        </Spoiler>
 
-                      <div className={classes.hoverIcons}>
-
-                      <Tooltip openDelay={1000} label={formatCreateInfo(notification)} position="bottom" withArrow>
-                      <Anchor component="button" type="button">
-                      <IconInfoCircle size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-                      <Tooltip openDelay={1000} label="Edit this notification" position="bottom" withArrow>
-                      <Anchor component="button" type="button" onClick={ () => { openModal(notification)}} >
-                      <IconEdit size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-                      <Tooltip openDelay={1000} label="Notification statistics" position="bottom" withArrow>
-                      <Anchor component="button" type="button" onClick={ () => { openStatisticsDrawer(notification)}} >
-                      <IconChartLine size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-
-                      <Tooltip openDelay={1000} label="Delete this notification" position="bottom" withArrow>
-                      <Anchor component="button" type="button" onClick={ () => { showDeleteModal(notification)}} >
-                      <IconTrash size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-                      &nbsp;&nbsp;<IconDots size={20} style={{color:'#555'}} />
-                      &nbsp;&nbsp;
-                      <Tooltip openDelay={1000} label="Show Banner preview" position="bottom" withArrow>
-                      <Anchor component="button" type="button" onClick={ () => { showPreviewBanner(notification) }}>
-                      <IconLayoutNavbarExpand size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-                      <Tooltip openDelay={1000} label="Show Modal preview" position="bottom" withArrow>
-                      <Anchor component="button" type="button" onClick={ () => { showPreviewModal(notification) }}>
-                      <IconAlignBoxCenterMiddle size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-                      <Tooltip openDelay={1000} label="Show Toast preview" position="bottom" withArrow>
-                      <Anchor component="button" type="button" onClick={ () => { toastNotify(notification) }}>
-                      <IconMessageDown size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-                      </div>
+                        <div className={classes.hoverIcons}>
+                          {formatNotificationControlIcons(notification, true)}
+                        </div>
                       </div>
                     </Grid.Col>
 
