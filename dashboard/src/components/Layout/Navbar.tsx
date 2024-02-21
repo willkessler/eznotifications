@@ -27,7 +27,7 @@ const Navbar = () => {
   const isExternalLink = (url) => /^(http|https):\/\//.test(url);
   const location = useLocation();
   const [activeLink, setActiveLink] = useState('All Notifications')
-  const [opened, handlers] = useDisclosure(false);
+  const [opened, handlers] = useDisclosure();
 
   const handleClose = () => {
     console.log('handleClose');

@@ -8,7 +8,7 @@ interface UserHintProps {
 }
 
 const UserHint: React.FC<UserHintProps> = ({ children, hintText }) => {
-  const [opened, { close, open }] = useDisclosure(false);
+  const [opened, { close, open }] = useDisclosure();
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>

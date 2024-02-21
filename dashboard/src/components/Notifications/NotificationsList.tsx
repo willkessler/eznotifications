@@ -271,6 +271,7 @@ const NotificationsList = () => {
         return (
           <Skeleton visible={notificationsLoading} height="100vh">
             <Grid gutter={{ base: 5, xs: 20, md: 20, xl: 20 }}>
+                {/*
                 <Grid.Col span={1} className={classes.notificationsListHeader}>
                 <span>Active?</span>
                 </Grid.Col>
@@ -283,6 +284,7 @@ const NotificationsList = () => {
                 <Grid.Col span={2} className={classes.notificationsListHeader}>
                 <span style={{color:'#5c5'}}>Where</span> <span style={{color:'#888'}}>Will It Display?</span>
                 </Grid.Col>
+                 */}
 
               {notifications.map((notification) => (
                   <Fragment key={notification.id}>

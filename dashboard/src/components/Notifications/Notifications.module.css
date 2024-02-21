@@ -91,14 +91,17 @@
 }
 
 .notificationsListHeader {
+  width:100%;
   border-bottom: 1px solid #696;
-  padding-bottom: 4px;
   margin-bottom: 12px;
+  position: -webkit-sticky; /* For Safari */
+  top: 0; /* Adjust this value as needed */
+  background: #242424;
 }
 
 .notificationsListContent {
   margin-right:30px;
-  padding-bottom:10px;
+/*  padding-bottom:10px;*/
 }
 
 .notificationsListContent .hoverIcons {

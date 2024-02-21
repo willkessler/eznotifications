@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { DateTime } from 'luxon';
 import Expando from './Expando';
 import { useTimezone } from './TimezoneContext';
-import TimezonePicker from './TimezonePicker';
 
 const DatetimePickerWithTimezone = ({ onChange, ...props }) => {
   const [dateValue, setDateValue] = useState(new Date());
@@ -24,15 +23,6 @@ const DatetimePickerWithTimezone = ({ onChange, ...props }) => {
         onChange={handleDateChange}
         {...props}
       />
-            <Expando
-              closedTitle={`Timezone: ${userTimezone}`}
-              openTitle={`Timezone: ${userTimezone}`}
-    outerStyle={{marginTop:'10px', fontSize:'10px'}}
-              titleStyle={{color:'#aaa'}}
-              openOnDisplay={false}
-              > 
-              <TimezonePicker />
-            </Expando>
     </div>
   );
 };

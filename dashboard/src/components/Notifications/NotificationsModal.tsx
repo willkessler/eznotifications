@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Anchor, Button, Modal, MultiSelect, Paper, Textarea, Text, TextInput, Title } from '@mantine/core';
+import { Anchor, Button, Group, Modal, MultiSelect, Paper, Textarea, Text, TextInput, Title } from '@mantine/core';
 import { DateTimePicker, DatePickerInput, TimeInput } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
@@ -8,7 +8,6 @@ import { useUser } from "@clerk/clerk-react";
 import UserHint from '../../lib/UserHint';
 import Expando from '../../lib/Expando';
 import TimezonePicker from '../../lib/TimezonePicker';
-import DatetimePickerWithTimezone from '../../lib/DatetimePickerWithTimezone';
 import { NotificationTypeSelector } from '../../lib/NotificationTypeSelector';
 import { useNotifications } from './NotificationsContext';
 import { useTimezone } from '../../lib/TimezoneContext';
@@ -24,7 +23,7 @@ const NotificationsModal = () => {
         } = useNotifications();
   const editing = (modalInitialData != null);
   const { user } = useUser();
-  const { timezone, setTimezone } = useTimezone();
+  const { userTimezone, setUserTimezone } = useTimezone();
 
   //console.log('modalInitialData:', modalInitialData, ' editing:', editing);
 
@@ -257,16 +256,15 @@ const NotificationsModal = () => {
               placeholder="Enter notification text"
               description="Enter anything you want to show your users. (Markdown and HTML are OK too)."
             />
-            <div style={{ display: 'flex', width: '90%', alignItems:'left' }}>
-                <DatetimePickerWithTimezone
+          <Group gap="xs">
+                <DateTimePicker
                   clearable
-                  locale={timezone}
                   valueFormat="MMM DD, YYYY HH:mm"
                   label={dtLabel}
                   value={notificationData.startDate}
                   onChange={(value) => handleDateTimeChange(value, 'startDate')}
                   onFocus={handleFocus}
-                  style={{marginTop:'10px',  minWidth:'300px', maxWidth:'300px'}}
+                  style={{marginTop:'10px',  minWidth:'90%', maxWidth:'200px'}}
                />
                 <DateTimePicker
                   clearable
@@ -275,9 +273,18 @@ const NotificationsModal = () => {
                   value={notificationData.endDate}
                   onChange={(value) => handleDateTimeChange(value, 'endDate')}
                   onFocus={handleFocus}
-                  style={{marginTop:'10px', marginLeft:'10px', minWidth:'300px', maxWidth:'300px'}}
+                  style={{marginTop:'10px', minWidth:'90%', maxWidth:'200px'}}
                />
-            </div>
+                <Expando
+                 closedTitle={`Your timezone: ${userTimezone}`}
+                 openTitle={`Your timezone: ${userTimezone}`}
+                 outerStyle={{marginTop:'10px', fontSize:'10px'}}
+                 titleStyle={{color:'#aaa'}}
+                 openOnDisplay={false}
+                >
+              <TimezonePicker />
+            </Expando>
+          </Group>
             <Expando
               closedTitle="Advanced options"
               openTitle="Advanced options"
@@ -319,7 +326,7 @@ const NotificationsModal = () => {
             </Expando>
           </Paper>
           <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px', marginBottom: '20px' }}>
-            <Button style={{backgroundColor:'#03acca'}} variant="filled" disabled={submissionDisabled} type="submit">{editing ? 'Update Notification' : 'Create Notification'}</Button>
+            <Button style={{backgroundColor:'#03acca', color:'white'}} variant="filled" disabled={submissionDisabled} type="submit">{editing ? 'Update Notification' : 'Create Notification'}</Button>
         <Anchor component="button" type="button" onClick={handleModalClose} style={{marginLeft:'10px', color:'#999'}} >
           Cancel
         </Anchor>

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useUser } from "@clerk/clerk-react";
 import { DateTime } from 'luxon';
-import { Anchor, Pill, Text, Tooltip } from '@mantine/core';
+import { Anchor, Group, Pill, Space, Text, Tooltip } from '@mantine/core';
 import toast, { Toaster } from 'react-hot-toast';
 import { IconSpeakerphone,
          IconInfoCircle, 
@@ -176,50 +176,72 @@ export const NotificationsProvider = ({ children }) => {
                 Icon: IconInfoCircle,
                 label: formatCreateInfo(notification),
                 action: () => {},
-                skip: false,
+                skipIfMobile: true,
+                blank: false,
             },
             {
                 Icon: IconEdit,
                 label: 'Edit this notification',
                 action: () => openModal(notification),
-                skip: false,
+                skipIfMobile: false,
+                blank: false,
             },
             {
                 Icon: IconChartLine,
                 label: 'Notification Statistics',
                 action: () => openStatisticsDrawer(notification),
-                skip: false,
+                skipIfMobile: false,
+                blank: false,
             },
             {
                 Icon: IconTrash,
                 label: 'Delete this notification',
                 action: () => showDeleteModal(notification),
-                skip: false,
+                skipIfMobile: false,
+                blank: false,
+            },
+            {
+                Icon: null,
+                label: 'None',
+                action: () => {},
+                skipIfMobile: false,
+                blank: true,
             },
             {
                 Icon: IconLayoutNavbarExpand,
                 label: 'Preview banner display',
                 action: () => showPreviewBanner(notification),
-                skip: false,
+                skipIfMobile: false,
+                blank: false,
             },
             {
                 Icon: IconAlignBoxCenterMiddle,
                 label: 'Preview modal display',
                 action: () => showPreviewModal(notification),
-                skip: false,
+                skipIfMobile: false,
+                blank: false,
             },
             {
                 Icon: IconMessageDown,
                 label: 'Preview toast display',
                 action: () => toastNotify(notification),
-                skip: false,
+                skipIfMobile: false,
+                blank: false,
             },
         ];            
                   
         const controlsJsx = 
-            controls.map(({Icon, label, action}, index) => {
+            controls.map(({Icon, label, action, skipIfMobile, blank}, index) => {
+                if (!showTooltip && skipIfMobile) {
+                    return '';
+                }
+
+                if (blank) {
+                    return ''; // ( <Space w="xs" />);
+                }
+
                 return (
-                showTooltip ? (
+                    showTooltip ? (
                     <Tooltip key={index} openDelay={1200} label={label} position="bottom" withArrow>
                         <Anchor component="button" type="button" onClick={action}>
                           <Icon size={20} className={classes.notificationsListControlIcons} />
@@ -231,7 +253,14 @@ export const NotificationsProvider = ({ children }) => {
                     </Anchor>
                 ));
             });
-        return controlsJsx;
+        if (showTooltip) {
+            return (
+            <Group gap="xs" >{controlsJsx}</Group>
+            );
+        }
+        return (
+            <Group grow wrap="nowrap">{controlsJsx}</Group>
+        );
     }
 
     // Set up the demo toaster

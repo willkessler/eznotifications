@@ -18,8 +18,7 @@ const MainLayout = () => {
   return (
     <AppShell
       navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-      header={{ height: 160, collapsed: { mobile: opened }  }}
-      padding="lg"
+      padding="md"
     >
       <AppShell.Header >
         <Group h="100%" px="md">
@@ -36,13 +35,14 @@ const MainLayout = () => {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <AppShell.Section style={{paddingTop:'8px'}}>
+        <AppShell.Section style={{paddingTop:'4px'}}>
           <main className={mainClasses.mainContent}>
             <Outlet /> {/* This is where the routed content is rendered */}
           </main>
           <Tutorial />
         </AppShell.Section>
       </AppShell.Main>
+
     </AppShell>
   );
 };

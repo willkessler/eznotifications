@@ -19,11 +19,16 @@
   margin: 0 1rem;
 }
 
+.appShellMain {
+  display: flex;
+  flex-direction: column; /* Adjust based on your layout needs */
+  overflow-y:hidden; /* Prevents itself from scrolling */
+}
 
 .mainContent {
-  flex-grow: 1;
-  overflow: auto;
-  padding-right:20px;
+  flex-grow: 1; /* Allows it to expand and fill available space */
+  overflow-y: visible; /* Only vertical scrolling */
+  padding-right: 20px; /* Keeps your right padding */
 }
 
 .logoStack {
