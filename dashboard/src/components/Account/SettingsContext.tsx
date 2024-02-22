@@ -224,7 +224,12 @@ export const SettingsProvider = ({ children }) => {
         // Create a user record for this user if one does not exist on our side.
         let clerkUserId = user.id;
         let clerkOrganizationId = null;
-        let outcomes = {};
+        let outcomes = {
+          createdClerkOrg: false,
+          createdMirrorOrg: false,
+          attachedLocalUser: false,
+          savedSettings: false,
+        };
 
         if (isSetupComplete) {
             return;
@@ -250,6 +255,9 @@ export const SettingsProvider = ({ children }) => {
           const clerkOrganization = await createOrganization({name: organizationName});
           clerkOrganizationId = clerkOrganization.id;
           console.log(`Made clerk create call, new clerk organization id: ${clerkOrganization}`);
+          if (clerkOrganization) {
+            outcomes.createdClerkOrg = true;
+          }
         } catch(error) {
           throw new Error (`Unable to create clerk organization for user ${user.id} with error ${error}`);
         }
@@ -260,7 +268,10 @@ export const SettingsProvider = ({ children }) => {
         try {
           console.log(`Creating a mirror org for clerk org id ${clerkOrganizationId}.`);
           const organizationRecord = await createOurOrganization(clerkOrganizationId);
-          outcomes.createdMirrorOrg = true;
+          console.log(`We got this organizationRecord: ${JSON.stringify(organizationRecord)}`);
+          if (organizationRecord) {
+            outcomes.createdMirrorOrg = true;
+          }
         } catch (error) {
           console.error(`Error creating our mirror organization: ${error}`);
         }
@@ -269,19 +280,23 @@ export const SettingsProvider = ({ children }) => {
         try {
           console.log(`Attaching clerk user id ${clerkUserId} to our own org that matches clerk org id ${clerkOrganizationId}.`);
           const localOrganization = await addUserToOurOrg(clerkOrganizationId);
-          outcomes.attachedLocalUser = true;
+          if (localOrganization) {
+            outcomes.attachedLocalUser = true;
+          }
         } catch (error) {
           console.error(`Error attaching clerk user id: ${clerkUserId} to ` +
                         `clerk organization id: ${clerkOrganizationId}: ${error}`);
         }
       
-        // Try to save settings for the (possibly new) organization.
-        try {
-          console.log(`Saving default settings into the new org with clerk org id: ${clerkOrganizationId}.`);
-          const updatedOrg = await saveSettings(clerkOrganizationId);
-          outcomes.savedSettings = true;
-        } catch (error) {
-          console.error(`Error saving default settings for our mirror organization: ${error}`);
+        // Try to save settings only for a new organization.
+        if (outcomes.createdMirrorOrg) {
+          try {
+            console.log(`Saving default settings into the new org with clerk org id: ${clerkOrganizationId}.`);
+            const updatedOrg = await saveSettings(clerkOrganizationId);
+            outcomes.savedSettings = true;
+          } catch (error) {
+            console.error(`Error saving default settings for our mirror organization: ${error}`);
+          }
         }
       }
 
