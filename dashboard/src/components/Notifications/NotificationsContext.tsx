@@ -360,7 +360,7 @@ export const NotificationsProvider = ({ children }) => {
     const actuallyDeleteNotification = useCallback(async (deletedNotificationId) => {
         try {
             const method = 'DELETE';
-            const apiUrl = `${window.location.origin}/api/eznotifications/notifications/` +
+            const apiUrl = `${window.location.origin}/api/notifications/` +
                 `${deletedNotificationId}`;
             //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
             const response = await fetch(apiUrl, {
@@ -430,7 +430,7 @@ export const NotificationsProvider = ({ children }) => {
         try {
             const method = 'PUT';
             const apiUrl = 
-                `${window.location.origin}/api/eznotifications/notifications` +
+                `${window.location.origin}/api/notifications` +
                 `/${resetViewsNotificationId}/reset-views`;
             //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
             const response = await fetch(apiUrl, {
@@ -481,7 +481,7 @@ export const NotificationsProvider = ({ children }) => {
         setNotificationsLoading(true); // start loading process
         try {
             const queryParams = new URLSearchParams({ clerkUserId: user.id }).toString();
-            const apiUrl = `${window.location.origin}/api/eznotifications/notifications?${queryParams}`;
+            const apiUrl = `${window.location.origin}/api/notifications?${queryParams}`;
             const response = await fetch(apiUrl);
             const data = await response.json();
             if (data && data.length > 0) {
@@ -515,7 +515,7 @@ export const NotificationsProvider = ({ children }) => {
         console.log('Notification data on form submit:', notificationData);
         const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
         const action = (notificationData.editing ? 'updated' : 'created' );
-        const apiUrl = `/api/eznotifications/notifications` + (notificationData.editing ? '/' + notificationData.uuid : '/new');
+        const apiUrl = `/api/notifications` + (notificationData.editing ? '/' + notificationData.uuid : '/new');
 
         try {
             const postingObject = {

@@ -32,7 +32,7 @@ export const APIKeysProvider = ({ children }) => {
     const fetchAPIKeys = useCallback(async (clerkId) => {
         setAPIKeysLoading(true); // start loading process
         try {
-            const APIUrl = `${window.location.origin}/api/eznotifications/api-keys?clerkId=${clerkId}`;
+            const APIUrl = `${window.location.origin}/api/api-keys?clerkId=${clerkId}`;
             const response = await fetch(APIUrl);
             const data = await response.json();
             splitDevelopmentAndProductionKeys(data);
@@ -44,7 +44,7 @@ export const APIKeysProvider = ({ children }) => {
     }, []);
     
     const createAPIKey = useCallback(async (apiKeyType,clerkId) => {
-        const apiUrl = `${window.location.origin}/api/eznotifications/api-keys/create`;
+        const apiUrl = `${window.location.origin}/api/api-keys/create`;
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -65,7 +65,7 @@ export const APIKeysProvider = ({ children }) => {
 
     const toggleAPIKeyStatus = useCallback(async (APIKeyId, clerkId) => {
         try {
-            const APIUrl = `${window.location.origin}/api/eznotifications/api-keys/toggle-active`;
+            const APIUrl = `${window.location.origin}/api/api-keys/toggle-active`;
             const response = await fetch(APIUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

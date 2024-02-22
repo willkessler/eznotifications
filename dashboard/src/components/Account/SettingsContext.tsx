@@ -37,7 +37,7 @@ export const SettingsProvider = ({ children }) => {
 
     const getSettings = async () => {
         const clerkId = user.id;
-        const apiUrl = `${window.location.origin}/api/eznotifications/organization/configure?clerkId=${clerkId}`;
+        const apiUrl = `${window.location.origin}/api/organization/configure?clerkId=${clerkId}`;
         try {
             const response = await fetch(apiUrl);
             if (!response.ok) {
@@ -61,7 +61,7 @@ export const SettingsProvider = ({ children }) => {
         
     const saveSettings = async (clerkOrganizationId: string) => {
         const clerkCreatorId = user.id;
-        const apiUrl = `${window.location.origin}/api/eznotifications/organization/configure`;
+        const apiUrl = `${window.location.origin}/api/organization/configure`;
         console.log('in saveSettings, permittedDomains:', permittedDomains);
         try {
             const response = await fetch(apiUrl, {
@@ -90,7 +90,7 @@ export const SettingsProvider = ({ children }) => {
     }
 
     const createLocalUser = async (clerkUserId) => {
-        const apiUrl = `${window.location.origin}/api/eznotifications/user/create`;
+        const apiUrl = `${window.location.origin}/api/user/create`;
         const primaryEmail = user.primaryEmailAddress.emailAddress;
         console.log(`In createLocalUser: calling API to to create local user for clerk user id: ` +
             `${clerkUserId} with email ${primaryEmail}.`);
@@ -121,7 +121,7 @@ export const SettingsProvider = ({ children }) => {
     }
 
     const createLocalOrganization = async (organizationData: OrganizationDataProps) => {
-        const apiUrl = `${window.location.origin}/api/eznotifications/organization/create`;
+        const apiUrl = `${window.location.origin}/api/organization/create`;
         console.log('in createLocalOrganization, calling API to attempt to create an org.');
         try {
             const response = await fetch(apiUrl, {
@@ -170,7 +170,7 @@ export const SettingsProvider = ({ children }) => {
     const addUserToOurOrg = async(clerkOrganizationId: string) => {
         const clerkUserId = user.id;
         console.log('in addUserToOurOrg, calling API to attach current user to the correct org.');
-        const apiUrl = `${window.location.origin}/api/eznotifications/user/attach-to-organization`;
+        const apiUrl = `${window.location.origin}/api/user/attach-to-organization`;
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',

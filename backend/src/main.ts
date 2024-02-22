@@ -10,7 +10,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule, { bodyParser: false }); // Disable automatic body parsing
 
     // Middleware to capture raw body and make it available as a rawBody attribute on the request
-    app.use('/eznotifications/webhook/clerk', express.raw({ type: 'application/json' }), (req, res, next) => {
+    app.use('/webhook/clerk', express.raw({ type: 'application/json' }), (req, res, next) => {
         req.rawBody = req.body; // Capture raw body
         //console.log('Raw body captured:', req.rawBody);
         next();
@@ -20,8 +20,6 @@ async function bootstrap() {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    app.setGlobalPrefix('eznotifications'); // all API paths must start with 'eznotifications'
-
     app.enableCors({
         origin: 'http://' + process.env.HOST + ':' + process.env.INBOUND_PORT, // Allow only your front-end origin
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Adjust as needed
@@ -29,10 +27,10 @@ async function bootstrap() {
 
     const config = new DocumentBuilder()
         .setTitle('EZNotifications API')
-        .setDescription('The EZNotifications API description')
+        .setDescription('This is Not A Drill (TINAD) API description')
         .setVersion('1.0')
         .addTag('notifications')
-        .addServer('/eznotifications', 'EZNotifications API Base Path')
+        .addServer('/', 'TINAD API Base Path')
         .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
