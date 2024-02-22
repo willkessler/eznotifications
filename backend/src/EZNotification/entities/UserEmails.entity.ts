@@ -4,7 +4,7 @@ import { User } from './Users.entity';
 @Entity('user_emails')
 export class UserEmails {
     @PrimaryGeneratedColumn()
-    id: number;
+    uiid: number;
 
     @Column()
     email: string;

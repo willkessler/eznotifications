@@ -80,8 +80,11 @@ const InvitationsManager = () => {
     <div style={{marginTop:'30px'}}>
       <Text size="lg">Pending Teammate Invitations</Text>
       {invitations?.data.map((invitation) => (
-        <Paper style={{paddingTop:'10px',marginTop:'10px'}} 
-               radius="md" key={invitation.id} withBorder p="sm">
+        <Paper style={{paddingTop:'10px',marginTop:'10px'}}
+               key={invitation.id} 
+               radius="md" 
+               withBorder 
+               p="sm">
           <Stack align="flex-start" justify="flex-start" gap="xs">
             <Text>{invitation.emailAddress}</Text>
             <Text size="xs">(invited to be a {invitation.role === 'org:member' ? 'member' : 'admin'})</Text>

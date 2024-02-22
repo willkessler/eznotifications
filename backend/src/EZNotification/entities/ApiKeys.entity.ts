@@ -5,7 +5,7 @@ import { Organization } from './Organizations.entity';
 @Entity('api_keys')
 export class ApiKey {
     @PrimaryGeneratedColumn({name: 'uuid'})
-    id: string;
+    uuid: string;
 
     @Column({ name:'created_at', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
@@ -13,6 +13,9 @@ export class ApiKey {
     @Column({ name:'updated_at', type: 'timestamp with time zone' })
     updatedAt: Date;
     
+    @Column({ name:'expires_at', type: 'timestamp with time zone' })
+    expiresAt: Date;
+
     @Column({ name: 'api_key', nullable: true })
     apiKey: string;
 

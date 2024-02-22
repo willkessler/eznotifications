@@ -95,7 +95,7 @@ export const NotificationsProvider = ({ children }) => {
         return (
             <>
                 Page: {(notification.pageId ? 
-                    <Text size="sm" style={{ margin:'2px', padding:'2px 4px 2px 4px', border: '1px dotted #aaa'}} span className={classes.pageId}>{notification.pageId}</Text> : '<not set>')}<br/>
+                    <Text size="sm" style={{ margin:'2px', padding:'2px 4px 2px 4px', border: '1px dotted #aaa' }} span className={classes.pageId}>{notification.pageId}</Text> : '<not set>')}<br />
                 Envs: 
                 <Pill style={{ backgroundColor: '#6aa', color: 'navy', margin:'4px' }} radius="md">
                 {notification.environments != null ? 
@@ -346,7 +346,7 @@ export const NotificationsProvider = ({ children }) => {
 
     const showDeleteModal = (notification) => {
         //console.log('deleting this notif', notification);
-        setDeletedNotificationId(notification.id);
+        setDeletedNotificationId(notification.uuid);
         setDeletedNotificationContents(notification.content);
         setIsDeleteModalOpen(true);
     };
@@ -360,7 +360,7 @@ export const NotificationsProvider = ({ children }) => {
     const actuallyDeleteNotification = useCallback(async (deletedNotificationId) => {
         try {
             const method = 'DELETE';
-            const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/notifications/` +
+            const apiUrl = `${window.location.origin}/api/eznotifications/notifications/` +
                 `${deletedNotificationId}`;
             //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
             const response = await fetch(apiUrl, {
@@ -395,7 +395,7 @@ export const NotificationsProvider = ({ children }) => {
 
     const openStatisticsDrawer = (notification) => {
         console.log('Opening stats drawer for this notification:', notification);
-        setStatisticsNotificationId(notification.id);
+        setStatisticsNotificationId(notification.uuid);
         setStatisticsNotificationContents(notification.content);
         setIsStatisticsDrawerOpen(true);
     };
@@ -430,7 +430,7 @@ export const NotificationsProvider = ({ children }) => {
         try {
             const method = 'PUT';
             const apiUrl = 
-                `${window.location.protocol}//${window.location.hostname}/api/eznotifications/notifications` +
+                `${window.location.origin}/api/eznotifications/notifications` +
                 `/${resetViewsNotificationId}/reset-views`;
             //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
             const response = await fetch(apiUrl, {
@@ -481,7 +481,7 @@ export const NotificationsProvider = ({ children }) => {
         setNotificationsLoading(true); // start loading process
         try {
             const queryParams = new URLSearchParams({ clerkUserId: user.id }).toString();
-            const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/notifications?${queryParams}`;
+            const apiUrl = `${window.location.origin}/api/eznotifications/notifications?${queryParams}`;
             const response = await fetch(apiUrl);
             const data = await response.json();
             if (data && data.length > 0) {
@@ -515,7 +515,7 @@ export const NotificationsProvider = ({ children }) => {
         console.log('Notification data on form submit:', notificationData);
         const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
         const action = (notificationData.editing ? 'updated' : 'created' );
-        const apiUrl = `/api/eznotifications/notifications` + (notificationData.editing ? '/' + notificationData.id : '/new');
+        const apiUrl = `/api/eznotifications/notifications` + (notificationData.editing ? '/' + notificationData.uuid : '/new');
 
         try {
             const postingObject = {
@@ -541,7 +541,7 @@ export const NotificationsProvider = ({ children }) => {
             });
             const data = await response.json();
             console.log('Notification was ' + action + ' with:', data);
-            highlightNotification(data.id);
+            highlightNotification(data.uuid);
             await fetchNotifications();
             setNotificationsLastUpdated(Date.now()); // update state to trigger the notifications list to rerender
         } catch(error) {

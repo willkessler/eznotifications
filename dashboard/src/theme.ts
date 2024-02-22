@@ -1,5 +1,8 @@
 import { createTheme } from '@mantine/core';
 
-export const theme = createTheme({
-  /** Put your mantine theme override here */
+const theme = createTheme({
+    colorScheme: 'dark',
+    other: { bodyBackground: 'red' },
 });
+
+export default theme;

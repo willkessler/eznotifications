@@ -30,7 +30,7 @@ const  OnboardForm = () => {
       const organization = user.organizationMemberships[0].organization;
       console.log(`updating organization name to ${organizationName}, org: ${JSON.stringify(organization,null,2)}`);
       await organization.update({ name });
-      setClerkOrganizationId(organization.id);
+      setClerkOrganizationId(organization.uuid);
       return true;
     } catch (error) {
       console.log(`Unable to update a organization, please try again later. (${error})`);

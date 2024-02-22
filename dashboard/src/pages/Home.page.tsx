@@ -127,7 +127,7 @@ export function HomePage() {
     const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
     const action = (notificationData.editing ? 'updated' : 'created' );
     const apiUrl = `/eznotifications` +
-          (notificationData.editing ? '/' + notificationData.id : '/new');
+          (notificationData.editing ? '/' + notificationData.uuid : '/new');
     fetch(apiUrl, {
       method: method,
       headers: { 'Content-Type': 'application/json' },
@@ -137,7 +137,7 @@ export function HomePage() {
       .then((data) => {
         //console.log('Notification ' + action, data);
 
-        highlightNotification(data.id);
+        highlightNotification(data.uuid);
         refreshNotifications();
       })        
       .catch((error) => console.error('Error creating notification:', error));

@@ -174,7 +174,7 @@ const NotificationsList = () => {
     );
   } else {
   rows = notifications.map((row, index) => (
-      <Table.Tr key={row.id || index} className={row.id === highlightedId ? classes['highlighted-row'] : ''} >
+      <Table.Tr key={row.uuid || index} className={row.uuid === highlightedId ? classes['highlighted-row'] : ''} >
       <Table.Td className={classes.tableCellToTop}>
             <Switch
               color="lime"
@@ -260,7 +260,7 @@ const NotificationsList = () => {
             <Skeleton visible={notificationsLoading} height="100vh">
                 <div>
                 {notifications.map(notification => (
-                    <NotificationCard key={notification.id} notification={notification} />
+                    <NotificationCard key={notification.uuid} notification={notification} />
                 ))}
             </div>
                 </Skeleton>
@@ -287,7 +287,7 @@ const NotificationsList = () => {
                  */}
 
               {notifications.map((notification) => (
-                  <Fragment key={notification.id}>
+                  <Fragment key={notification.uuid}>
                       <Grid.Col span={1}>
                       <Switch
                         color="lime"

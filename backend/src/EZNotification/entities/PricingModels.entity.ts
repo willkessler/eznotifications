@@ -8,8 +8,11 @@ export class PricingModel {
     @Column({ name: 'created_at', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
-    @Column()
+    @Column({ name: 'name' })
     name: string;
+
+    @Column({ name: 'is_active', type: 'boolean', default: false })
+    isActive: boolean;
 
     @Column({ type: 'decimal', name: 'price_per_month' })
     pricePerMonth: number;
@@ -22,4 +25,7 @@ export class PricingModel {
 
     @Column({ type: 'decimal', name: 'overage_cost_per_notification' })
     overageCostPerNotification: number;
+        
+    @Column({ name: 'notes' })
+    notes: string;        
 }

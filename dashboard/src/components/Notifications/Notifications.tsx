@@ -21,8 +21,8 @@ const Notifications = () => {
   const { createAPIKey } = useAPIKeys();
   const { user } = useUser();
 
-  const componentLoadCallbackFn = () => {
-    console.log("We've completed setting things up.");
+  const componentLoadCallbackFn = (outcomes: string[]) => {
+    console.log(`We've completed setting things up, outcomes: ${JSON.stringify(Object.keys(outcomes),null,2)}.`);
   };
 
   useEffect(() => {

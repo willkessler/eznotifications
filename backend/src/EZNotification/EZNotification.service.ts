@@ -65,7 +65,7 @@ export class EZNotificationService {
 
     async createNotification(ezNotificationData: Partial<EZNotification>, clerkCreatorId: string): Promise<EZNotification> {
         console.log(`createNotification: ezNotificationData -> ${ezNotificationData}`);
-        if (ezNotificationData.id) {
+        if (ezNotificationData.uuid) {
             throw new NotFoundException('Do not pass an ID to create a new EZNotification.');
         }
         // Look up org for the given user, and the user record to set the creator
@@ -80,38 +80,39 @@ export class EZNotificationService {
         }
     }
 
-    async updateNotification(id: string, updateData: Partial<EZNotification>, clerkCreatorId: string): Promise<EZNotification> {
-        const ezNotification = await this.ezNotificationRepository.findOneBy({ id: id });
+    async updateNotification(uuid: string, updateData: Partial<EZNotification>, clerkCreatorId: string): 
+                             Promise<EZNotification> {
+        const ezNotification = await this.ezNotificationRepository.findOneBy({ uuid: uuid });
         if (ezNotification) {
             console.log(updateData);
             Object.assign(ezNotification, updateData);
             return this.ezNotificationRepository.save(ezNotification);
         } else {
-            throw new NotFoundException(`EZNotification with ID ${id} not found.`);
+            throw new NotFoundException(`EZNotification with uuid: ${uuid} not found.`);
         }
         return null;
     }
 
-    async resetNotificationViews(notificationId: string): Promise<EZNotification> {
-        const ezNotification = await this.ezNotificationRepository.findOneBy({ id: notificationId });
+    async resetNotificationViews(notificationUuid: string): Promise<EZNotification> {
+        const ezNotification = await this.ezNotificationRepository.findOneBy({ uuid: notificationUuid });
         if (ezNotification) {
-            console.log(`Resetting views for notification id: ${notificationId}.`);
+            console.log(`Resetting views for notification uuid: ${notificationUuid}.`);
             try {
                 const results = 
                     await this.endUsersServedRepository
                         .createQueryBuilder()
                         .update(EndUsersServed)
                         .set({ ignored: true })
-                        .where("notification_id = :notificationId", { notificationId })
+                        .where("notification_uuid = :notificationUuid", { notificationUuid })
                         .andWhere("ignored = :ignored", { ignored: false })
                         .execute();
                 console.log(`Set ignored flag on ${results.affected} end_users_served rows.`);
                 return ezNotification;
             } catch (error) {
-                throw new NotFoundException(`Cannot update end_users_served rows for notification id: ${notificationId}.`);
+                throw new NotFoundException(`Cannot update end_users_served rows for notification uuid: ${notificationUuid}.`);
             }
         } else {
-            throw new NotFoundException(`Notification w/id ${notificationId} not found.`);
+            throw new NotFoundException(`Notification w/uuid ${notificationUuid} not found.`);
         }
         return null;
     }
@@ -129,7 +130,7 @@ export class EZNotificationService {
                 return this.ezNotificationRepository.createQueryBuilder('notification')
                     .leftJoinAndSelect('notification.creator', 'creator')
                     .select([
-                        'notification.id',
+                        'notification.uuid',
                         'notification.content',
                         'notification.createdAt',
                         'notification.updatedAt',
@@ -173,7 +174,7 @@ export class EZNotificationService {
                 const query = this.ezNotificationRepository.createQueryBuilder('notifications')
                     .leftJoin('notifications.endUsersServed', 'endUsersServed')
                     .leftJoin('endUsersServed.endUser', 'endUser',`"endUser"."end_user_id" = :userId`, { userId })
-                    .where('endUsersServed.id IS NULL') // exclude notifications already sent to the endUser
+                    .where('endUsersServed.uuid IS NULL') // exclude notifications already sent to the endUser
                     .andWhere(`(notifications.deleted IS FALSE)`)
                     .andWhere(`((notifications.startDate IS NULL OR notifications.endDate IS NULL) OR
                                 (notifications.startDate <= :endOfDay AND notifications.endDate >= :startOfDay) OR
@@ -196,7 +197,8 @@ export class EZNotificationService {
                 for (const notification of notifications) {
                     const endUsersServed = new EndUsersServed();
                     endUsersServed.notification = notification;
-                    endUsersServed.endUser = await transactionalEntityManager.findOne(EndUser, { where: { id: endUser.id } });
+                    endUsersServed.endUser = await transactionalEntityManager.findOne(EndUser,
+                                                                                      { where: { uuid: endUser.uuid } });
                     endUsersServed.accessTime = new Date();
                     await transactionalEntityManager.save(endUsersServed);
                 }
@@ -206,8 +208,8 @@ export class EZNotificationService {
         }
     }
 
-    findOneNotification(id: string): Promise<EZNotification> {
-        return this.ezNotificationRepository.findOneBy({ id: id });
+    findOneNotification(uuid: string): Promise<EZNotification> {
+        return this.ezNotificationRepository.findOneBy({ uuid: uuid });
     }
 
     async deleteNotification(id: string): Promise<void> {
@@ -464,7 +466,7 @@ export class EZNotificationService {
 
     };
 
-    async toggleApiKeyActive(clerkId: string, APIKeyId: string) : Promise<ApiKey> {
+    async toggleApiKeyActive(clerkId: string, APIKeyUuid: string) : Promise<ApiKey> {
         console.log('toggleApiKeyActive');
         const userOrganization = await this.findUserOrganizationByClerkId(clerkId);
         if (userOrganization.length == 0) {
@@ -478,7 +480,7 @@ export class EZNotificationService {
 
         return this.apiKeyRepository.manager.transaction(async (transactionalEntityManager) => {
             // Fetch the API key entity to update
-            const apiKeyEntity = await this.apiKeyRepository.findOneBy({ id: APIKeyId });
+            const apiKeyEntity = await this.apiKeyRepository.findOneBy({ uuid: APIKeyUuid });
             if (!apiKeyEntity) {
                 throw new Error('API key not found');
             }

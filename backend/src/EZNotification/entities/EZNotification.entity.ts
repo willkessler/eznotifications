@@ -8,7 +8,7 @@ import { EndUsersServed } from './EndUsersServed.entity';
 @Entity('notifications')
 export class EZNotification {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  uuid: string;
 
   @Column({ name: 'created_at', type: 'timestamp with time zone', nullable: false })
   createdAt: Date;
@@ -22,17 +22,11 @@ export class EZNotification {
   @Column({ name: 'deleted_at', type: 'timestamp with time zone', nullable: true })
   deletedAt: Date;
     
-  @Column()
-  content: string;
-
-  @Column({ name: 'notification_type', nullable: true })
-  notificationType: string;
-
-  @Column({ name: 'notification_type_other', nullable: true })
-  notificationTypeOther: string;
-    
   @Column({ default: false })
   live: boolean;
+
+  @Column()
+  content: string;
 
   @Column({ name: 'page_id' })
   pageId: string;
@@ -43,6 +37,12 @@ export class EZNotification {
   @Column({ name: 'end_date',  type: 'timestamp with time zone', nullable: true })
   endDate: Date;
 
+  @Column({ name: 'notification_type', nullable: true })
+  notificationType: string;
+
+  @Column({ name: 'notification_type_other', nullable: true })
+  notificationTypeOther: string;
+    
   @Column( { type: 'text', name: 'environments', array: true, nullable: true })
   environments: string[];
     

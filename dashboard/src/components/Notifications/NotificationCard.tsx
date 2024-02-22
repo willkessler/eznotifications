@@ -10,7 +10,7 @@ function NotificationCard({ notification }) {
   } = useNotifications();
 
   return (
-      <Card shadow="sm" p="lg" radius="md" mb="md" key={notification.id}>
+      <Card shadow="sm" p="lg" radius="md" mb="md" key={notification.uuid}>
         <Title order={4}>
           {notification.content}
         </Title>

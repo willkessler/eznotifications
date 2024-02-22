@@ -22,6 +22,12 @@ export class EZNotificationController {
 
     ) {}
 
+    @Get('/status')
+    getStatus() {
+        console.log('Status check');
+        return { status: 'ok' };
+    }
+
     @Post('/user/create')
     async createUser(
         @Body('clerkUserId') clerkUserId: string,

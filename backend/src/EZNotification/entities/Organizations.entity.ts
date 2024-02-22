@@ -21,9 +21,9 @@ export class Organization {
     @Column({ name: 'created_at', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
-    @Column({ name: 'refresh_frequency', type: 'int' })
-    refreshFrequency: number;
-    
+    @Column({ name: 'updated_at', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
+    updatedAt: Date;
+
     // The clerk id of the clerk organization that this local org mirrors.
     @Column({ name: 'clerk_organization_id', type: 'varchar', length: '256', nullable: true })
     clerkOrganizationId: string;
@@ -31,6 +31,9 @@ export class Organization {
     // The clerk id of the user that created this local org when onboarding.
     @Column({ name: 'clerk_creator_id', type: 'varchar', length: '256', nullable: true })
     clerkCreatorId: string;
+
+    @Column({ name: 'refresh_frequency', type: 'int' })
+    refreshFrequency: number;
 
     @ManyToMany(() => User)
     users: User[];

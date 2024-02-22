@@ -10,6 +10,9 @@ export class UserOrganization {
     @Column({ name: 'created_at', type: 'timestamp with time zone', nullable: false })
     createdAt: Date;
 
+    @Column({ name:'updated_at', type: 'timestamp with time zone' })
+    updatedAt: Date;
+
     @ManyToOne(() => User, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'user_uuid' })
     user: User;

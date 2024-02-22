@@ -37,7 +37,7 @@ export const SettingsProvider = ({ children }) => {
 
     const getSettings = async () => {
         const clerkId = user.id;
-        const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/organization/configure?clerkId=${clerkId}`;
+        const apiUrl = `${window.location.origin}/api/eznotifications/organization/configure?clerkId=${clerkId}`;
         try {
             const response = await fetch(apiUrl);
             if (!response.ok) {
@@ -61,7 +61,7 @@ export const SettingsProvider = ({ children }) => {
         
     const saveSettings = async (clerkOrganizationId: string) => {
         const clerkCreatorId = user.id;
-        const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/organization/configure`;
+        const apiUrl = `${window.location.origin}/api/eznotifications/organization/configure`;
         console.log('in saveSettings, permittedDomains:', permittedDomains);
         try {
             const response = await fetch(apiUrl, {
@@ -89,9 +89,8 @@ export const SettingsProvider = ({ children }) => {
         return false;
     }
 
-    const createLocalUser = async () => {
-        const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/user/create`;
-        const clerkUserId = user.id;
+    const createLocalUser = async (clerkUserId) => {
+        const apiUrl = `${window.location.origin}/api/eznotifications/user/create`;
         const primaryEmail = user.primaryEmailAddress.emailAddress;
         console.log(`In createLocalUser: calling API to to create local user for clerk user id: ` +
             `${clerkUserId} with email ${primaryEmail}.`);
@@ -122,7 +121,7 @@ export const SettingsProvider = ({ children }) => {
     }
 
     const createLocalOrganization = async (organizationData: OrganizationDataProps) => {
-        const apiUrl = `${window.location.protocol}//${window.location.hostname}/api/eznotifications/organization/create`;
+        const apiUrl = `${window.location.origin}/api/eznotifications/organization/create`;
         console.log('in createLocalOrganization, calling API to attempt to create an org.');
         try {
             const response = await fetch(apiUrl, {
@@ -171,8 +170,7 @@ export const SettingsProvider = ({ children }) => {
     const addUserToOurOrg = async(clerkOrganizationId: string) => {
         const clerkUserId = user.id;
         console.log('in addUserToOurOrg, calling API to attach current user to the correct org.');
-        const apiUrl = `${window.location.protocol}//${window.location.hostname}` +
-            `/api/eznotifications/user/attach-to-organization`;
+        const apiUrl = `${window.location.origin}/api/eznotifications/user/attach-to-organization`;
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -224,7 +222,7 @@ export const SettingsProvider = ({ children }) => {
     // Set up clerk org, and set up everything on our side to mirror clerk as required.
     const setupClerkOrganizationAndMirrorRecords = async (callbackFn) => {
         // Create a user record for this user if one does not exist on our side.
-        let userId = user.id;
+        let clerkUserId = user.id;
         let clerkOrganizationId = null;
         let outcomes = {};
 
@@ -234,74 +232,62 @@ export const SettingsProvider = ({ children }) => {
         
         try {
             console.log(`Trying to create a local user.`);
-            const localUser = await createLocalUser();
+            const localUser = await createLocalUser(clerkUserId);
         } catch (error) {
             console.error('Error creating local user.');
         }
 
-        if (user.organizationMemberships.length > 0) {
-            // If the user is already part of a clerk org, then try to tie the local user to the matching local org.
-            // This case happens when a user is invited to an existing org thorugh the app. (Idempotent.)
-            try {
-                console.log(`Adding clerk user id ${userId} to our own org that matches clerk org id ${clerkOrganizationId}.`);
-                const localOrganization = await addUserToOurOrg(user.organizationMemberships[0].organization.id);
-                outcomes.createdLocalUser = true;
-                // Only set the clerkOrganizationId on successful addUserToOurOrg call.
-                clerkOrganizationId = user.organizationMemberships[0].organization.id;
-            } catch (error) {
-                console.error(`Error attaching clerk user id: ${userId} to ` +
-                    `clerk organization id: ${user.organizationMemberships[0].organization.id}: ${error}`);
-            }
-        } else {
-            // If the user doesn't belong to any organization yet, then
-            // the overall client is just getting going, so we will need to create a clerk org first.
-            try {
-                console.log(`Trying to create clerk organization with name ${organizationName}`);
-                const clerkOrganization = await createOrganization({name: organizationName});
-                console.log('Made clerk create call');
-                outcomes.createdLocalOrg = true;
-                if (clerkOrganization !== null) {
-                    clerkOrganizationId = clerkOrganization.id;
-                } else {
-                    throw new Error (`Unable to create clerk organization for user ${user.id} with error ${error}`);
-                }
-            } catch (error) {
-                console.error(error);
-            }
+      // If the user doesn't belong to any organization yet, then
+      // the overall client is just getting going, so :
+      // Try to create an organization at clerk first.
+      if (user.organizationMemberships.length > 0) {
+        // If the user is already part of a clerk org, just use that org id and try to create a local org with it.
+        // This case happens when a user is invited to an existing org thorugh the app. (Idempotent.)
+        clerkOrganizationId = user.organizationMemberships[0].organization.id;
+      } else {
+        try {
+          console.log(`Trying to create clerk organization with name ${organizationName}`);
+          const clerkOrganization = await createOrganization({name: organizationName});
+          clerkOrganizationId = clerkOrganization.id;
+          console.log(`Made clerk create call, new clerk organization id: ${clerkOrganization}`);
+        } catch(error) {
+          throw new Error (`Unable to create clerk organization for user ${user.id} with error ${error}`);
+        }
+      }
+      
+      if (clerkOrganizationId) {
+        // Try to create a local organization to mirror any already existing or new clerk organization.
+        try {
+          console.log(`Creating a mirror org for clerk org id ${clerkOrganizationId}.`);
+          const organizationRecord = await createOurOrganization(clerkOrganizationId);
+          outcomes.createdMirrorOrg = true;
+        } catch (error) {
+          console.error(`Error creating our mirror organization: ${error}`);
         }
 
-        // If we have just created a clerk organization, create an org on our side (if required),
-        // and attach our user record to it.
-        if (clerkOrganizationId) {
-            try {
-                console.log(`Creating mirror org for clerk org id ${clerkOrganizationId}.`);
-                const organizationRecord = await createOurOrganization(clerkOrganizationId);
-                outcomes.createdMirrorOrg = true;
-            } catch (error) {
-                console.error(`Error creating our mirror organization: ${error}`);
-            }
-
-            try {
-                console.log(`Adding clerk user id: ${userId} to our new clerk org id: ${clerkOrganizationId}.`);
-                await addUserToOurOrg(clerkOrganizationId);
-                outcomes.addedUserOrganization = true;
-            } catch (error) {
-                console.log(`Error attaching a clerk user id: ${userId} to ` +
-                    `clerk organization id: ${clerkOrganizationId}: ${error}`);
-            }
-            
-            try {
-                console.log(`Saving default settings into the new org with clerk org id: ${clerkOrganizationId}.`);
-                const updatedOrg = await saveSettings(clerkOrganizationId);
-                outcomes.savedSettings = true;
-            } catch (error) {
-                console.error(`Error saving default settings for our mirror organization: ${error}`);
-            }
-
-            if (callbackFn) {
-                callbackFn(outcomes);
-            }
+        // Try to attach the user to the (possibly new) local organization.
+        try {
+          console.log(`Attaching clerk user id ${clerkUserId} to our own org that matches clerk org id ${clerkOrganizationId}.`);
+          const localOrganization = await addUserToOurOrg(clerkOrganizationId);
+          outcomes.attachedLocalUser = true;
+        } catch (error) {
+          console.error(`Error attaching clerk user id: ${clerkUserId} to ` +
+                        `clerk organization id: ${clerkOrganizationId}: ${error}`);
         }
+      
+        // Try to save settings for the (possibly new) organization.
+        try {
+          console.log(`Saving default settings into the new org with clerk org id: ${clerkOrganizationId}.`);
+          const updatedOrg = await saveSettings(clerkOrganizationId);
+          outcomes.savedSettings = true;
+        } catch (error) {
+          console.error(`Error saving default settings for our mirror organization: ${error}`);
+        }
+      }
+
+      if (callbackFn) {
+        callbackFn(outcomes);
+      }
 
     };
 
