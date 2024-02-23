@@ -1,4 +1,6 @@
-import { Controller, Get, Post, Query, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { EitherAuthGuard } from '../auth/either-auth.guard';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,6 +25,7 @@ export class EZNotificationController {
     ) {}
 
     @Get('/status')
+    @UseGuards(EitherAuthGuard)
     getStatus() {
         console.log('Status check');
         return { status: 'ok' };
@@ -111,6 +114,7 @@ export class EZNotificationController {
     }
 
     @Post('/api-keys/create')
+    @UseGuards(EitherAuthGuard)
     async createApiKey(
                        @Body('apiKeyType') apiKeyType: string,
                        @Body('clerkId') clerkId: string,

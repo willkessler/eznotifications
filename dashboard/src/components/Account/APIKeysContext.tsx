@@ -47,9 +47,10 @@ export const APIKeysProvider = ({ children }) => {
         const apiUrl = `${window.location.origin}/api/api-keys/create`;
         try {
             const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ apiKeyType, clerkId }),
+              method: 'POST',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ apiKeyType, clerkId }),
             });
             if (!response.ok) {
                 throw new Error (`HTTP error! status: ${response.status}`);

@@ -427,6 +427,7 @@ export class EZNotificationService {
             });
         } else {
             // development key generation
+            console.log('Generating dev api key');
             const newApiKey = this.apiKeyRepository.create ({
                 apiKey : apiKeyValue,
                 apiKeyType: apiKeyType,
