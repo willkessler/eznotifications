@@ -56,6 +56,7 @@ export class ApiKeyAuthGuard implements CanActivate {
 
         const results = await queryBuilder.getMany();
         const domains = results.flatMap(result => result.organization.permittedDomains.map(pd => pd.domain));
+        console.log(`validateFrontendApiKey, domains: ${domains}`);
 
         if (!apiKeyEntity || !apiKeyEntity.isActive || !domains.includes(domain)) {
             throw new UnauthorizedException('Invalid API key or domain');
@@ -68,9 +69,9 @@ export class ApiKeyAuthGuard implements CanActivate {
         // Here, you would query your database to find the API key and check if it's active
         const apiKeyEntity = await this.apiKeyRepository.findOne({ where: { apiKey, isActive: true } });
         if (!apiKeyEntity) {
-            throw new UnauthorizedException('Invalid API key');
+            throw new UnauthorizedException('Unknown API key');
         }
-
+        console.log(`Found valid api key:${apiKeyEntity.apiKey}`);
         return true;
     }
 }

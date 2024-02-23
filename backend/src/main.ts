@@ -12,6 +12,9 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule, { bodyParser: false }); // Disable automatic body parsing
 
     app.use(cookieParser());
+
+    /* Used only to debug cookie reception */
+    /*
     app.use((req, res, next) => {
         if (Object.keys(req.cookies).length > 0) {
             console.log('Parsed cookies: ', req.cookies);
@@ -20,6 +23,7 @@ async function bootstrap() {
         }
         next();
     });
+    */
 
     // Middleware to capture raw body and make it available as a rawBody attribute on the request
     app.use('/webhook/clerk', express.raw({ type: 'application/json' }), (req, res, next) => {

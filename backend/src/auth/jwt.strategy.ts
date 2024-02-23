@@ -42,14 +42,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       return user;
   }
 
-  async validate(payload: any) {
-    // Your validation logic here
-      if (!payload) {
-          console.log('Crashing...');
-         // throw new UnauthorizedException();
-      }
-      return { userId: payload.sub, username: payload.username };
-  }
 */
+
+    async validate(payload: any) {
+        // Your validation logic here
+        if (!payload) {
+            console.log('Crashing...');
+            // throw new UnauthorizedException();
+        }
+        return { userId: payload.sub, username: payload.username };
+    }
 
 }
