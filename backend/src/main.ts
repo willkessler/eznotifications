@@ -44,10 +44,10 @@ async function bootstrap() {
     });
 
     const config = new DocumentBuilder()
-        .setTitle('EZNotifications API')
-        .setDescription('This is Not A Drill (TINAD) API description')
+        .setTitle('This Is Not a Drill! API')
+        .setDescription('Below you will find a list of all available endpoints that you can access either via REST calls with an API key, or by using the client SDK. Some of these endpoints are designed for use by the client dashboard only and are not for use with the SDK or direct REST access. See our documentation for more detail.')
         .setVersion('1.0')
-        .addTag('EZnotifications API endpoints')
+        .addTag('All endpoints')
         .addServer('/', 'TINAD API Base Path')
         .build();
     const document = SwaggerModule.createDocument(app, config);

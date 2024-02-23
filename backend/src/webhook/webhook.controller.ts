@@ -1,4 +1,3 @@
-// src/webhook/webhook.controller.ts
 import { Controller, Req, Res, Post, Body, Headers, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { Response } from 'express'; // Import Response from Express
 import { WebhookVerificationError, Webhook } from 'svix';
@@ -15,7 +14,6 @@ import { ApiKey } from '../EZNotification/entities/ApiKeys.entity';
 interface RawBodyRequest extends Request {
   rawBody: Buffer;
 }
-
 
 @Controller('webhook')
 export class WebhookController {
@@ -75,7 +73,7 @@ export class WebhookController {
         }
     };
 
-     @Post('/clerk')
+    @Post('/clerk')
     async handleClerkWebhook(@Req() req: Request, @Res() res: Response): Promise<Response> {
         console.log('*** CLERK WEBHOOK received ***');
         

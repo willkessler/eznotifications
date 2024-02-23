@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Query, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiKeyAuthGuard } from '../auth/api-key-auth.guard';
 import { EitherAuthGuard } from '../auth/either-auth.guard';
@@ -26,6 +27,7 @@ export class EZNotificationController {
     ) {}
 
     @Get('/status')
+    @ApiOperation({summary: 'Run liveness check against API.'})
     @UseGuards(EitherAuthGuard)
     getStatus() {
         console.log('Status check executed.');
@@ -33,6 +35,7 @@ export class EZNotificationController {
     }
 
     @Post('/user/create')
+    @ApiOperation({summary: 'Create dashboard user. (Not for direct client use)'})
     @UseGuards(JwtAuthGuard)
     async createUser(
         @Body('clerkUserId') clerkUserId: string,
@@ -43,6 +46,7 @@ export class EZNotificationController {
     }
     
     @Post('/user/attach-to-organization')
+    @ApiOperation({summary: 'Attach dashboard user to an organization. (Not for direct client use)'})
     @UseGuards(JwtAuthGuard)
     async attachUserToOrganization(
         @Body('clerkUserId') clerkUserId: string,
@@ -52,8 +56,8 @@ export class EZNotificationController {
         return newUserOrganization;
     }
 
-
     @Post('/organization/create')
+    @ApiOperation({summary: 'Create an organization. (Not for direct client use)'})
     @UseGuards(JwtAuthGuard)
     async createOrganization(
         @Body('organizationName') organizationName: string,
@@ -83,6 +87,7 @@ export class EZNotificationController {
     }
 
     @Get('/organization/configure')
+    @ApiOperation({summary: 'Fetch organization settings. (Not for direct client use)'})
     @UseGuards(JwtAuthGuard)
     getAppConfiguration(
         @Query('clerkId') clerkId: string
@@ -92,6 +97,7 @@ export class EZNotificationController {
     };
 
     @Post('/organization/configure')
+    @ApiOperation({summary: 'Save organization settings. (Not for direct client use)'})
     @UseGuards(JwtAuthGuard)
     async saveOrgConfiguration(
         @Body('organizationName') organizationName: string,
@@ -112,6 +118,7 @@ export class EZNotificationController {
     }
 
     @Get('/api-keys')
+    @ApiOperation({summary: 'Fetch all available api keys. (Not for direct client use)'})
     @UseGuards(JwtAuthGuard)
     findApiKeys(
         @Query('clerkId') clerkId: string
@@ -121,6 +128,7 @@ export class EZNotificationController {
     }
 
     @Post('/api-keys/create')
+    @ApiOperation({summary: 'Create an api key. (Not for direct client use)'})
     @UseGuards(JwtAuthGuard)
     async createApiKey(
                        @Body('apiKeyType') apiKeyType: string,
@@ -130,6 +138,7 @@ export class EZNotificationController {
     }
 
     @Post('/api-keys/toggle-active')
+    @ApiOperation({summary: 'Change liveness of an api key. (Not for direct client use)'})
     @UseGuards(JwtAuthGuard)
     async toggleApiKeyStatus(
         @Body('clerkId') clerkId: string,
@@ -140,6 +149,8 @@ export class EZNotificationController {
     }
 
     @Get('/notifications')
+    @ApiOperation({summary: 'Fetch all current notifications, with filters applied. Filters required for SDK use.'})
+    @ApiResponse({ status: 200, description: 'Return all current notifications for given filters.' })
     @UseGuards(EitherAuthGuard)
     findAllNotifications(
         @Query('userId') userId: string,
@@ -153,32 +164,44 @@ export class EZNotificationController {
     }
 
     @Get('/notifications/:id')
+    @ApiOperation({summary: 'Fetch a single notification by its id.'})
+    @ApiResponse({ status: 200, description: 'Return a single notification\'s data.' })
+    @ApiResponse({ status: 404, description: 'Notification with given id not found.' })
     @UseGuards(EitherAuthGuard)
     findOneNotification(@Param('id') id: string): Promise<EZNotification> {
         return this.EZNotificationService.findOneNotification(id);
     }
 
     @Post('/notifications/new')
+    @ApiOperation({summary: 'Create a new notification. (Not for direct client use)'})
+    @ApiResponse({ status: 200, description: 'Returns the new notification\'s data.' })
     @UseGuards(JwtAuthGuard)
     async createNotification(@Body() ezNotificationDto: EZNotificationDto): Promise<EZNotification> {
         console.log(`ezNotificationDto: ${JSON.stringify(ezNotificationDto,null,2)}`);
-        return this.EZNotificationService.createNotification(ezNotificationDto.EZNotificationData, ezNotificationDto.clerkCreatorId);
+        return this.EZNotificationService.createNotification(ezNotificationDto.EZNotificationData, 
+                                                             ezNotificationDto.clerkCreatorId);
     }
 
     @Put('/notifications/:id')
+    @ApiOperation({summary: 'Update a single notification. (Not for direct client use)'})
+    @ApiResponse({ status: 200, description: 'Returns the notification\'s updated data.' })
     @UseGuards(JwtAuthGuard)
     updateNotification(@Param('id') id: string, @Body() ezNotificationDto: EZNotificationDto): Promise<EZNotification> {
         return this.EZNotificationService.updateNotification(id, ezNotificationDto.EZNotificationData, ezNotificationDto.clerkCreatorId);
     }
 
-    // this should use the dto so we know who deleted the notification
+    // This should use the dto so we know who deleted the notification
     @Delete('/notifications/:id')
+    @ApiOperation({summary: 'Delete a single notification. (Not for direct client use)'})
+    @ApiResponse({ status: 200, description: 'Returns success.' })
     @UseGuards(JwtAuthGuard)
     deleteNotification(@Param('id') id: string): Promise<void> {
         return this.EZNotificationService.deleteNotification(id);
     }
 
     @Put('/notifications/:id/reset-views')
+    @ApiOperation({summary: 'Reset views on a single notification. (Not for direct client use)'})
+    @ApiResponse({ status: 200, description: 'Returns success.' })
     @UseGuards(JwtAuthGuard)
     resetNotificationViews(@Param('id') id: string): Promise<EZNotification> {
         return this.EZNotificationService.resetNotificationViews(id);
