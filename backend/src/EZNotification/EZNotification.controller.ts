@@ -131,10 +131,11 @@ export class EZNotificationController {
     @ApiOperation({summary: 'Create an api key. (Not for direct client use)'})
     @UseGuards(JwtAuthGuard)
     async createApiKey(
-                       @Body('apiKeyType') apiKeyType: string,
-                       @Body('clerkId') clerkId: string,
+        @Body('apiKeyType') apiKeyType: string,
+        @Body('clerkId') clerkId: string,
+        @Body('temporary') temporary: boolean,
     ): Promise<ApiKey> {
-        return this.EZNotificationService.createApiKey(apiKeyType, clerkId);
+        return this.EZNotificationService.createApiKey(apiKeyType, clerkId, temporary);
     }
 
     @Post('/api-keys/toggle-active')

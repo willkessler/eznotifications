@@ -4,6 +4,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Connection, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes } from 'crypto';
+import { DateTime } from 'luxon';
 import { EZNotification } from './entities/EZNotification.entity';
 import { User } from './entities/Users.entity';
 import { Organization } from './entities/Organizations.entity';
@@ -375,7 +376,7 @@ export class EZNotificationService {
         }
     }
 
-    async createApiKey(apiKeyType: string, clerkId: string): Promise<ApiKey> {
+    async createApiKey(apiKeyType: string, clerkId: string, temporary: boolean): Promise<ApiKey> {
         const apiKeyValue = this.generateRandomKey(8);
         const userOrganization = await this.findUserOrganizationByClerkId(clerkId);
         console.log('createApiKey has apiKeyType:', apiKeyType, 'clerkId:', clerkId, 'userOrg:', userOrganization[0]);
@@ -426,12 +427,20 @@ export class EZNotificationService {
                 return newApiKey;
             });
         } else {
-            // development key generation
+            // Development api key generation. If temporary, set expiry to one hour from now.
+            // Any api keys with expiration dates aren't shown in the dashboard and are just used
+            // for sandbox testing.
             console.log('Generating dev api key');
+            let expireISO = null;
+            if (temporary) {
+                const oneHourFromNow = DateTime.now().plus({ hours: 1});
+                expireISO = oneHourFromNow.toISO();
+            }
             const newApiKey = this.apiKeyRepository.create ({
                 apiKey : apiKeyValue,
                 apiKeyType: apiKeyType,
                 creator: { uuid: userUuid },
+                expiresAt: expireISO,
                 updatedBy: { uuid: userUuid },
                 organization: { uuid: organizationUuid },
                 isActive: true,

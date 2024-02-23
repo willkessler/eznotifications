@@ -5,6 +5,7 @@ import { useUser } from "@clerk/clerk-react";
 import { ActionIcon, Anchor, Code, CopyButton, Group, Skeleton, 
          Image, Button, Paper, rem, Space, Text, TextInput, Title, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { useAPIKeys } from './APIKeysContext';
 
 import LogoComponent from '../Layout/LogoComponent';
 import Navbar from '../Layout/Navbar';
@@ -13,15 +14,28 @@ import introClasses from './css/IntroPages.module.css';
 import logoClasses from '../Layout/css/MainLayout.module.css';
 import apiKeyClasses from './css/APIKeys.module.css';
 
-
 const SandboxComponent = () => {
-  const { isSignedIn } = useUser();
+  const { isSignedIn,user } = useUser();
+  const { createAPIKey, fetchAPIKeys, sandboxAPIKeys } = useAPIKeys();
+
   if (!isSignedIn) {
     return <Navigate to="/login" replace />;
   }
     
   const [opened, { toggle }] = useDisclosure();
   const [ temporaryAPIKeyValue,  setTemporaryAPIKeyValue ] = useState(null);
+
+  const createTemporaryKey = async () => {
+    if (!isSignedIn) {
+      return; // can't do it if you ain't signed in
+    }
+    await createAPIKey('development', user.id, true);
+    await fetchAPIKeys(user.id);
+    if (sandboxAPIKeys.length > 0) {
+      console.log(`Temporary key: ${sandboxAPIKeys[sandboxAPIKeys.length]}`);
+      setTemporaryAPIKeyValue(sandboxAPIKeys[sandboxAPIKeys.length - 1]); // show latest one
+    }
+  }
 
   const gotoSandbox = () => {
     const codeSandboxUrl = 'https://codesandbox.io/p/github/codesandbox/codesandbox-template-vite-react/main';
@@ -61,7 +75,7 @@ const SandboxComponent = () => {
         </Button>
       </div>
       <div>
-        <Button size="xs" variant="white" color="gray" style={{ marginTop: '10px' }}>
+        <Button onClick={createTemporaryKey} size="xs" variant="white" color="gray" style={{ marginTop: '10px' }}>
           Generate temporary API key
         </Button>
       </div>
