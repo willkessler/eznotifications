@@ -6,7 +6,7 @@ import { ActionIcon, Anchor, Code, CopyButton, Group, Skeleton,
          Image, Button, Paper, rem, Space, Text, TextInput, Title, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useAPIKeys } from './APIKeysContext';
-import { useNotifications } from '../Notifications/NotificationsContext';
+import { useDateFormatters } from '../../lib/DateFormattersProvider';
 
 import LogoComponent from '../Layout/LogoComponent';
 import Navbar from '../Layout/Navbar';
@@ -18,7 +18,7 @@ import apiKeyClasses from './css/APIKeys.module.css';
 const SandboxComponent = () => {
   const { isSignedIn,user } = useUser();
   const { createAPIKey, fetchAPIKeys, sandboxAPIKeys } = useAPIKeys();
-  const { formatDisplayDate, formatDisplayTime } = useNotifications();
+  const { pastTense, formatDisplayDate, formatDisplayTime } = useDateFormatters();
 
   if (!isSignedIn) {
     return <Navigate to="/login" replace />;
@@ -44,11 +44,14 @@ const SandboxComponent = () => {
 
   useEffect(() => {
     if (sandboxAPIKeys.length > 0) {
-      const temporaryKeyVal = sandboxAPIKeys[0].apiKey;
-      const temporaryKeyExpiration = formatDisplayDate('Expires:', sandboxAPIKeys[0].expiresAt);
-      console.log(`Temporary API key: ${temporaryKeyVal}`);
-      setTemporaryAPIKeyValue(temporaryKeyVal); // show latest one
-      setTemporaryAPIKeyExpiration(temporaryKeyExpiration);
+      if (!pastTense(sandboxAPIKeys[0].expiresAt)) {
+        const temporaryKeyVal = sandboxAPIKeys[0].apiKey;
+
+        const temporaryKeyExpiration = formatDisplayDate('expire on', sandboxAPIKeys[0].expiresAt);
+        console.log(`Temporary API key: ${temporaryKeyVal}`);
+        setTemporaryAPIKeyValue(temporaryKeyVal); // show latest one
+        setTemporaryAPIKeyExpiration(temporaryKeyExpiration);
+      }
     }
   }, [sandboxAPIKeys]);
   
@@ -93,6 +96,11 @@ const SandboxComponent = () => {
         <Button onClick={createTemporaryKey} size="xs" variant="white" color="gray" style={{ marginTop: '10px' }}>
           Generate temporary API key
         </Button>
+        { temporaryAPIKeyValue && (
+            <Text fs="italic" style={{paddingTop:'15px'}}>
+            The sandbox key <span style={{padding:'2px', border:'1px dotted #666', fontStyle:'normal', color:'green'}}>{temporaryAPIKeyValue}</span>
+              &nbsp;is temporary and will {temporaryAPIKeyExpiration ? temporaryAPIKeyExpiration : ''}</Text>
+          ) }
       </div>
     </Paper>
   );

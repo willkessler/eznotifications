@@ -2,6 +2,7 @@ import cx from 'clsx';
 import { useState, useEffect, Fragment } from 'react';
 import { useUser } from "@clerk/clerk-react";
 import { useMediaQuery } from '@mantine/hooks';
+import { useDateFormatters } from '../../lib/DateFormattersProvider';
 import { AppShell, 
          Anchor,
          Box,
@@ -51,8 +52,6 @@ const NotificationsList = () => {
             submitNotification, 
             fetchNotifications,
             notificationsLoading,
-            formatDisplayTime, 
-            formatDisplayDate,
             formatCreateInfo,
             formatNotificationDatesBlock,
             formatNotificationConditionsBlock,
@@ -62,61 +61,12 @@ const NotificationsList = () => {
           } = useNotifications();
     const { isSetupComplete } = useSettings();
     const { isSignedIn, user, isLoaded } = useUser();
+    const { formatDisplayDate, formatDisplayTime } = useDateFormatters();
 
     if (!isLoaded || !isSignedIn ) {
         return null;
     }
   
-
-/*
-        if (useHover) 
-        
-                      <Tooltip openDelay={1000} label={formatCreateInfo(notification)} position="bottom" withArrow>
-                      <Anchor component="button" type="button">
-                      <IconInfoCircle size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-
-                      <Tooltip openDelay={1000} label="Edit this notification" position="bottom" withArrow>
-                      <Anchor component="button" type="button" onClick={ () => { openModal(notification)}} >
-                      <IconEdit size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-
-                      <Tooltip openDelay={1000} label="Notification statistics" position="bottom" withArrow>
-                      <Anchor component="button" type="button" onClick={ () => { openStatisticsDrawer(notification)}} >
-                      <IconChartLine size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-
-                      <Tooltip openDelay={1000} label="Delete this notification" position="bottom" withArrow>
-                      <Anchor component="button" type="button" onClick={ () => { showDeleteModal(notification)}} >
-                      <IconTrash size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-
-                      &nbsp;&nbsp;<IconDots size={20} style={{color:'#555'}} />
-                      &nbsp;&nbsp;
-
-                      <Tooltip openDelay={1000} label="Show Banner preview" position="bottom" withArrow>
-                      <Anchor component="button" type="button" onClick={ () => { showPreviewBanner(notification) }}>
-                      <IconLayoutNavbarExpand size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-                      <Tooltip openDelay={1000} label="Show Modal preview" position="bottom" withArrow>
-                      <Anchor component="button" type="button" onClick={ () => { showPreviewModal(notification) }}>
-                      <IconAlignBoxCenterMiddle size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-                      <Tooltip openDelay={1000} label="Show Toast preview" position="bottom" withArrow>
-                      <Anchor component="button" type="button" onClick={ () => { toastNotify(notification) }}>
-                      <IconMessageDown size={20} className={classes.notificationsListControlIcons} />
-                      </Anchor>
-                      </Tooltip>
-                      </div>
-                      </div>
-    } */
-
   // Handle turning a notification on and off
   const handleSwitchChange = async (notificationData, checked) => {
       const notificationDataCopy = {

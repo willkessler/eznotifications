@@ -21,7 +21,7 @@ import { IconSpeakerphone,
          IconTrash,
          IconChartLine,
          IconFidgetSpinner } from '@tabler/icons-react';
-
+import { useDateFormatters } from '../../lib/DateFormattersProvider';
 import { useTimezone } from '../../lib/TimezoneContext';
 import classes from './Notifications.module.css';
 
@@ -32,45 +32,13 @@ export const useNotifications = () => useContext(NotificationsContext);
 
 export const NotificationsProvider = ({ children }) => {
     const { userTimezone, setUserTimezone } = useTimezone();
+    const { formatDisplayDate, formatDisplayTime } = useDateFormatters();
     const [notifications, setNotifications] = useState([]);
     const [notificationsLastUpdated, setNotificationsLastUpdated] = useState([null]);
     const [notificationsLoading, setNotificationsLoading] = useState(true);
     const { user } = useUser();
     // When we create or update a notification, we'll highlight it in the notificationsList.
     const [highlightedId, setHighlightedId] = useState(null);
-
-    /**
-     * Converts an ISO date string from the API into the user's chosen timezone.
-     * @param {string} apiDate - The ISO date string from the API (e.g., "2024-02-09T17:00:00.665Z").
-     * @param {string} userTimezone - The user's chosen timezone (e.g., "America/New_York").
-     * @returns {string} - The date formatted in the user's timezone.
-     */
-    const formatDisplayDate = (prefix, date) => {
-        if (date === null) {
-            return '';
-        }
-        
-        // Parse the ISO date string as UTC
-        const utcDate = DateTime.fromISO(date, { zone: 'utc' });
-
-        // Convert the DateTime object to the user's timezone
-        const userTimezoneDate = utcDate.setZone(userTimezone);
-
-        // Format the DateTime object for display using toFormat for precise control
-        const displayFormat = "LLL dd, yyyy h:mma";
-        const displayDate = userTimezoneDate.toFormat(displayFormat) + ' ' + userTimezoneDate.offsetNameShort;
-
-        return `${prefix}: ${displayDate}`;
-
-    };
-
-    function formatDisplayTime(date) {
-        if (!date) return '';
-
-        const hours = date.getHours().toString().padStart(2, '0');
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        return `${hours}:${minutes}`;
-    }
 
     const formatNotificationDatesBlock = (notification: EZNotification) => {
         return (
@@ -552,8 +520,6 @@ export const NotificationsProvider = ({ children }) => {
 
   return (
     <NotificationsContext.Provider value={{ 
-        formatDisplayDate,
-        formatDisplayTime,
         formatNotificationDatesBlock,
         formatNotificationConditionsBlock,
         formatNotificationControlIcons,
