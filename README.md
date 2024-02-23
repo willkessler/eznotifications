@@ -30,4 +30,3 @@ easy to integrate into your app with a one-liner.
 
 In this repo you'll find TINAD's API, the dashboard, and the client
 SDK that is published to npm.
-
