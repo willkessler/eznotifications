@@ -6,6 +6,7 @@ import { ActionIcon, Anchor, Code, CopyButton, Group, Skeleton,
          Image, Button, Paper, rem, Space, Text, TextInput, Title, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useAPIKeys } from './APIKeysContext';
+import { useNotifications } from '../Notifications/NotificationsContext';
 
 import LogoComponent from '../Layout/LogoComponent';
 import Navbar from '../Layout/Navbar';
@@ -17,6 +18,7 @@ import apiKeyClasses from './css/APIKeys.module.css';
 const SandboxComponent = () => {
   const { isSignedIn,user } = useUser();
   const { createAPIKey, fetchAPIKeys, sandboxAPIKeys } = useAPIKeys();
+  const { formatDisplayDate, formatDisplayTime } = useNotifications();
 
   if (!isSignedIn) {
     return <Navigate to="/login" replace />;
@@ -24,6 +26,7 @@ const SandboxComponent = () => {
     
   const [opened, { toggle }] = useDisclosure();
   const [ temporaryAPIKeyValue,  setTemporaryAPIKeyValue ] = useState(null);
+  const [ temporaryAPIKeyExpiration,  setTemporaryAPIKeyExpiration ] = useState(null);
 
   const createTemporaryKey = async () => {
     if (!isSignedIn) {
@@ -31,12 +34,24 @@ const SandboxComponent = () => {
     }
     await createAPIKey('development', user.id, true);
     await fetchAPIKeys(user.id);
-    if (sandboxAPIKeys.length > 0) {
-      console.log(`Temporary key: ${sandboxAPIKeys[sandboxAPIKeys.length]}`);
-      setTemporaryAPIKeyValue(sandboxAPIKeys[sandboxAPIKeys.length - 1]); // show latest one
-    }
   }
 
+  useEffect(() => {
+    if (user && user.id) {
+      fetchAPIKeys(user.id);
+    }
+  }, [fetchAPIKeys, user]);
+
+  useEffect(() => {
+    if (sandboxAPIKeys.length > 0) {
+      const temporaryKeyVal = sandboxAPIKeys[0].apiKey;
+      const temporaryKeyExpiration = formatDisplayDate('Expires:', sandboxAPIKeys[0].expiresAt);
+      console.log(`Temporary API key: ${temporaryKeyVal}`);
+      setTemporaryAPIKeyValue(temporaryKeyVal); // show latest one
+      setTemporaryAPIKeyExpiration(temporaryKeyExpiration);
+    }
+  }, [sandboxAPIKeys]);
+  
   const gotoSandbox = () => {
     const codeSandboxUrl = 'https://codesandbox.io/p/github/codesandbox/codesandbox-template-vite-react/main';
     window.open(codeSandboxUrl, '_blank');

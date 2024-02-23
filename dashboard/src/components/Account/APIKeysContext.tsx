@@ -18,13 +18,18 @@ export const APIKeysProvider = ({ children }) => {
     const splitDevelopmentAndProductionKeys = (data: any) => {
         // pull out all development keys
         console.log('filtering on data:', data);
-        const developmentKeys = data.filter(apiKeyRecord => 
-          apiKeyRecord.apiKeyType === 'development' && apiKeyRecord.isActive === true);
+        const developmentKeys = data
+            .filter(apiKeyRecord => 
+                apiKeyRecord.apiKeyType === 'development' && 
+                apiKeyRecord.isActive === true &&
+                apiKeyRecord.expiresAt === null);
         setAPIKeys(developmentKeys);
-        const sandboxKeys = data.filter(apiKeyRecord => 
-            apiKeyRecord.apiKeyType === 'development' && 
-            apiKeyRecord.isActive === true &&
-            apiKeyRecord.expiresAt !== null);
+        const sandboxKeys = data
+            .filter(apiKeyRecord => 
+                apiKeyRecord.apiKeyType === 'development' && 
+                apiKeyRecord.isActive === true &&
+                apiKeyRecord.expiresAt !== null)
+            .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
         setSandboxAPIKeys(sandboxKeys);
         const productionKeys = data.filter(apiKeyRecord => 
             apiKeyRecord.apiKeyType === 'production' && apiKeyRecord.isActive === true );
