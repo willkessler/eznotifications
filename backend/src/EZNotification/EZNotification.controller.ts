@@ -33,6 +33,7 @@ export class EZNotificationController {
     }
 
     @Post('/user/create')
+    @UseGuards(JwtAuthGuard)
     async createUser(
         @Body('clerkUserId') clerkUserId: string,
         @Body('primaryEmail') primaryEmail: string,
@@ -42,6 +43,7 @@ export class EZNotificationController {
     }
     
     @Post('/user/attach-to-organization')
+    @UseGuards(JwtAuthGuard)
     async attachUserToOrganization(
         @Body('clerkUserId') clerkUserId: string,
         @Body('clerkOrganizationId') clerkOrganizationId: string,
@@ -52,6 +54,7 @@ export class EZNotificationController {
 
 
     @Post('/organization/create')
+    @UseGuards(JwtAuthGuard)
     async createOrganization(
         @Body('organizationName') organizationName: string,
         @Body('clerkCreatorId') clerkCreatorId: string,
@@ -80,6 +83,7 @@ export class EZNotificationController {
     }
 
     @Get('/organization/configure')
+    @UseGuards(JwtAuthGuard)
     getAppConfiguration(
         @Query('clerkId') clerkId: string
     ) {
@@ -88,6 +92,7 @@ export class EZNotificationController {
     };
 
     @Post('/organization/configure')
+    @UseGuards(JwtAuthGuard)
     async saveOrgConfiguration(
         @Body('organizationName') organizationName: string,
         @Body('clerkCreatorId') clerkCreatorId: string,
@@ -107,6 +112,7 @@ export class EZNotificationController {
     }
 
     @Get('/api-keys')
+    @UseGuards(JwtAuthGuard)
     findApiKeys(
         @Query('clerkId') clerkId: string
     ) {
@@ -115,7 +121,7 @@ export class EZNotificationController {
     }
 
     @Post('/api-keys/create')
-    @UseGuards(EitherAuthGuard)
+    @UseGuards(JwtAuthGuard)
     async createApiKey(
                        @Body('apiKeyType') apiKeyType: string,
                        @Body('clerkId') clerkId: string,
@@ -124,6 +130,7 @@ export class EZNotificationController {
     }
 
     @Post('/api-keys/toggle-active')
+    @UseGuards(JwtAuthGuard)
     async toggleApiKeyStatus(
         @Body('clerkId') clerkId: string,
         @Body('APIKeyId') APIKeyId: string,
@@ -133,6 +140,7 @@ export class EZNotificationController {
     }
 
     @Get('/notifications')
+    @UseGuards(EitherAuthGuard)
     findAllNotifications(
         @Query('userId') userId: string,
         @Query('environments') environments: string,
@@ -145,28 +153,33 @@ export class EZNotificationController {
     }
 
     @Get('/notifications/:id')
+    @UseGuards(EitherAuthGuard)
     findOneNotification(@Param('id') id: string): Promise<EZNotification> {
         return this.EZNotificationService.findOneNotification(id);
     }
 
     @Post('/notifications/new')
+    @UseGuards(JwtAuthGuard)
     async createNotification(@Body() ezNotificationDto: EZNotificationDto): Promise<EZNotification> {
         console.log(`ezNotificationDto: ${JSON.stringify(ezNotificationDto,null,2)}`);
         return this.EZNotificationService.createNotification(ezNotificationDto.EZNotificationData, ezNotificationDto.clerkCreatorId);
     }
 
     @Put('/notifications/:id')
+    @UseGuards(JwtAuthGuard)
     updateNotification(@Param('id') id: string, @Body() ezNotificationDto: EZNotificationDto): Promise<EZNotification> {
         return this.EZNotificationService.updateNotification(id, ezNotificationDto.EZNotificationData, ezNotificationDto.clerkCreatorId);
     }
 
     // this should use the dto so we know who deleted the notification
     @Delete('/notifications/:id')
+    @UseGuards(JwtAuthGuard)
     deleteNotification(@Param('id') id: string): Promise<void> {
         return this.EZNotificationService.deleteNotification(id);
     }
 
     @Put('/notifications/:id/reset-views')
+    @UseGuards(JwtAuthGuard)
     resetNotificationViews(@Param('id') id: string): Promise<EZNotification> {
         return this.EZNotificationService.resetNotificationViews(id);
     }

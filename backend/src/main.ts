@@ -26,11 +26,13 @@ async function bootstrap() {
     */
 
     // Middleware to capture raw body and make it available as a rawBody attribute on the request
+    /*
     app.use('/webhook/clerk', express.raw({ type: 'application/json' }), (req, res, next) => {
         req.rawBody = req.body; // Capture raw body
         //console.log('Raw body captured:', req.rawBody);
         next();
     });
+    */
 
     // Re-enable body parsing for other routes
     app.use(express.json());
@@ -45,7 +47,7 @@ async function bootstrap() {
         .setTitle('EZNotifications API')
         .setDescription('This is Not A Drill (TINAD) API description')
         .setVersion('1.0')
-        .addTag('notifications')
+        .addTag('EZnotifications API endpoints')
         .addServer('/', 'TINAD API Base Path')
         .build();
     const document = SwaggerModule.createDocument(app, config);

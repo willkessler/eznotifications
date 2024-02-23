@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 
 import { LoggerMiddleware } from './loggerMiddleware';
-import { AppController } from './app.controller';
+//import { AppController } from './app.controller';
 import { AuthModule } from '../auth/auth.module';
 
 import { ApiKey } from '../EZNotification/entities/ApiKeys.entity';
@@ -41,7 +41,8 @@ import { EZNotification } from '../EZNotification/entities/EZNotification.entity
             logging: ["error"],
         }),
     ],
-    controllers: [AppController],
+    //controllers: [AppController],
+    controllers: [],
 
 })
 
