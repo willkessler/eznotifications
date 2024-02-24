@@ -37,7 +37,7 @@ import { EZNotification } from '../EZNotification/entities/EZNotification.entity
                        ApiKey, PermittedDomains],
             synchronize: false,
 //            logging: ["query"], // disable when we no longer need to track all queries
-            logging: ["error"],
+            logging: ["query", "error"],
         }),
     ],
     controllers: [],

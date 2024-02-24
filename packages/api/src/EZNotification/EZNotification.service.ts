@@ -20,6 +20,7 @@ interface QueryParamProps {
     clerkUserId? : string,
     pageId? : string,
     environments?: string[],
+    organization?: Organization,
 }
 
 interface OrganizationDataProps {
@@ -120,7 +121,7 @@ export class EZNotificationService {
 
     async findAllNotifications(queryParams: QueryParamProps): Promise<EZNotification[]> {
         console.log('findAll queryParams:', queryParams);
-        if (queryParams.clerkUserId !== null) {
+        if (queryParams.clerkUserId) {
             // The dashboard will send a clerk user id, we can use this to find the org for that user
             // and then pull up notifs for that org.
             console.log(`Finding notifications for clerk id: ${queryParams.clerkUserId}`);
@@ -157,6 +158,9 @@ export class EZNotificationService {
             const userId = queryParams.userId;
             const pageId = queryParams.pageId;
             const environments = queryParams.environments;
+            const organization = queryParams.organization;
+            console.log('We found organization with uuid:', organization?.uuid);
+            
             return this.connection.transaction(async transactionalEntityManager => {
                 // Convert today's date to the user's local timezone
                 const today = new Date();
@@ -166,7 +170,10 @@ export class EZNotificationService {
                 // Check if EndUser record corresponding to the passed user id exists, and if not, create it.
                 let endUser = await transactionalEntityManager.findOne(EndUser, { where: { endUserId: userId } });
                 if (!endUser) {
-                    endUser = transactionalEntityManager.create(EndUser, { endUserId: userId });
+                    endUser = transactionalEntityManager.create(EndUser, { 
+                        endUserId: userId,
+                        organization: organization,
+                    });
                     await transactionalEntityManager.save(EndUser, endUser);
                 }
 
@@ -195,6 +202,7 @@ export class EZNotificationService {
                 const notifications = await query.getMany();
 
                 // Persist the served notifications as EndUsersServed
+                console.log('Persisting endUserServed records.');
                 for (const notification of notifications) {
                     const endUsersServed = new EndUsersServed();
                     endUsersServed.notification = notification;

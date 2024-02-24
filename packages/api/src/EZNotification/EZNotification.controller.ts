@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body, Param, Put, Delete, Req, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiKeyAuthGuard } from '../auth/api-key-auth.guard';
@@ -17,6 +17,8 @@ import { UserOrganization } from './entities/UserOrganizations.entity';
 import { EndUser } from './entities/EndUsers.entity';
 import { EndUsersServed } from './entities/EndUsersServed.entity';
 import { ApiKey } from './entities/ApiKeys.entity';
+import CustomRequest from '../auth/custom-request';
+
 
 @Controller()
 export class EZNotificationController {
@@ -154,13 +156,15 @@ export class EZNotificationController {
     @ApiResponse({ status: 200, description: 'Return all current notifications for given filters.' })
     @UseGuards(EitherAuthGuard)
     findAllNotifications(
+        @Req() request: CustomRequest,
         @Query('userId') userId: string,
         @Query('environments') environments: string,
         @Query('pageId') pageId: string,
         @Query('clerkUserId') clerkUserId: string,
     ) {
         const environmentsArray = environments ? environments.split(',') : [];
-        const query = { userId, environments: environmentsArray, pageId, clerkUserId };
+        const organization = request.organization;
+        const query = { userId, environments: environmentsArray, pageId, clerkUserId, organization };
         return this.EZNotificationService.findAllNotifications(query);
     }
 

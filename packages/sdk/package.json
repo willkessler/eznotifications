@@ -1,0 +1,16 @@
+{
+  "name": "@thisisnotadrill/sdk",
+  "version": "1.0.0",
+  "description": "Client SDKs for \"This is Not A Drill!\" service",
+  "main": "src/fetchNotificationsWithPolling.ts",
+  "repository": "https://github.com/willkessler/eznotifications",
+  "author": "Will Kessler",
+  "license": "MIT",
+  "dependencies": {
+    "@tanstack/react-query": "^5.22.2",
+    "axios": "^1.6.7",
+    "openapi-typescript": "^7.0.0-next.7",
+    "react": "^18.2.0",
+    "typescript": "^5.3.3"
+  }
+}

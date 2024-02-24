@@ -19,7 +19,7 @@ export const AppDataSource = new DataSource({
     database: 'notifications_dev2',
     entities: [EZNotification, EndUser, EndUsersServed, Organization, User, UserEmails, ApiKey, PermittedDomains, PricingModel],
     synchronize: false,
-    migrations: ["migration/*.ts"],
+    migrations: ["src/migration/*.ts"],
     // other options
     logging: true,
 });

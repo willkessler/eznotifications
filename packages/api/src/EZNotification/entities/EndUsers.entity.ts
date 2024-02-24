@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, OneToMany } from 'typeorm';
+import { Organization } from './Organizations.entity';
 import { EndUsersServed } from './EndUsersServed.entity';
 
 @Entity('end_users')
@@ -18,4 +19,12 @@ export class EndUser {
   // Relationship: One EndUser can have multiple EndUsersServed records
   @OneToMany(() => EndUsersServed, endUsersServed => endUsersServed.endUser)
   endUsersServed: EndUsersServed[];
+
+  @Column({ name: 'organization_uuid', type: 'uuid', nullable: true })
+  organizationUuid: string;
+
+  @OneToOne(() => Organization)
+  @JoinColumn({ name: 'organization_uuid' })
+  organization: Organization;
+
 }

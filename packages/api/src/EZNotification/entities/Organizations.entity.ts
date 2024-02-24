@@ -3,6 +3,7 @@ import { User } from './Users.entity';
 import { PricingModel } from './PricingModels.entity';
 import { PermittedDomains } from './PermittedDomains.entity';
 import { ApiKey } from './ApiKeys.entity';
+import { EndUser } from './EndUsers.entity';
 
 // Getting all permitted domains for an org:
 // const organization = await organizationRepository.findOne({
@@ -47,4 +48,7 @@ export class Organization {
 
     @OneToMany(() => PermittedDomains, (permittedDomains) => permittedDomains.organization)
     permittedDomains: PermittedDomains[];    
+
+    @OneToMany(() => EndUser, EndUser => EndUser.organization)
+    endUsers: EndUser[];
 }
