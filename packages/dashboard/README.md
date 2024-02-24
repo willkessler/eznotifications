@@ -1,34 +1,16 @@
-# Mantine Vite template
+# This Is Not a Drill! Dashboard
 
-## Features
+<img src="./public/ThisIsNotADrill_cutout.png" width="250" height="250">
 
-This template comes with the following features:
+This package contains the client dashboard for the **This Is Not A
+Drill!** (TINAD) notification system.
 
-- [PostCSS](https://postcss.org/) with [mantine-postcss-preset](https://mantine.dev/styles/postcss-preset)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Storybook](https://storybook.js.org/)
-- [Vitest](https://vitest.dev/) setup with [React Testing Library](https://testing-library.com/docs/react-testing-library/intro)
-- ESLint setup with [eslint-config-mantine](https://github.com/mantinedev/eslint-config-mantine)
+It was built on top of a Mantine + Vite template (see that README file
+in this directory).
 
-## npm scripts
+To use it, copy `.env_example` to `.env` and set the required
+environment variables up to talk to the TINAD API.
 
-## Build and dev scripts
-
-- `dev` – start development server
-- `build` – build production version of the app
-- `preview` – locally preview production build
-
-### Testing scripts
-
-- `typecheck` – checks TypeScript types
-- `lint` – runs ESLint
-- `prettier:check` – checks files with Prettier
-- `vitest` – runs vitest tests
-- `vitest:watch` – starts vitest watch
-- `test` – runs `vitest`, `prettier:check`, `lint` and `typecheck` scripts
-
-### Other scripts
-
-- `storybook` – starts storybook dev server
-- `storybook:build` – build production storybook bundle to `storybook-static`
-- `prettier:write` – formats all files with Prettier
+Then you can start the dashboard up locally with `npm run dev` and
+visit `localhost:5173`. The TINAD API must be up on port 5000 by
+default, see `/packages/api/README.md` for details.
