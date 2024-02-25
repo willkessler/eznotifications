@@ -155,7 +155,9 @@ export class EZNotificationService {
                 throw new NotFoundException(`Cannot find organization for clerk user id: ${queryParams.clerkUserId}`);
             }
         } else {
-            const userId = queryParams.userId;
+            // The userId must always be passed in. If a react-sdk user forgets to do this, the react-sdk will generate
+            // a user id, and store it in a cookie for subsequent requests.
+            const userId = queryParams.userId; 
             const pageId = queryParams.pageId;
             const environments = queryParams.environments;
             const organization = queryParams.organization;

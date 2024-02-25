@@ -10,9 +10,7 @@ interface Notification {
 
 const NotificationsComponent = () => {
   const { data: notifications, isLoading, error } = 
-        useFetchData({
-          userId: 'userAbc',
-        });
+        useFetchData({ /* no userId passed, testing whether we auto-create one */ });
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
