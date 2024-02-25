@@ -202,16 +202,17 @@ export class EZNotificationService {
                 const notifications = await query.getMany();
 
                 // Persist the served notifications as EndUsersServed
-                console.log('Persisting endUserServed records.');
-                for (const notification of notifications) {
-                    const endUsersServed = new EndUsersServed();
-                    endUsersServed.notification = notification;
-                    endUsersServed.endUser = await transactionalEntityManager.findOne(EndUser,
-                                                                                      { where: { uuid: endUser.uuid } });
-                    endUsersServed.accessTime = new Date();
-                    await transactionalEntityManager.save(endUsersServed);
+                if (notifications.length > 0) {
+                    console.log('Persisting endUserServed records.');
+                    for (const notification of notifications) {
+                        const endUsersServed = new EndUsersServed();
+                        endUsersServed.notification = notification;
+                        endUsersServed.endUser = await transactionalEntityManager.findOne(EndUser,
+                                                                                          { where: { uuid: endUser.uuid } });
+                        endUsersServed.accessTime = new Date();
+                        await transactionalEntityManager.save(endUsersServed);
+                    }
                 }
-
                 return notifications;
             });
         }
