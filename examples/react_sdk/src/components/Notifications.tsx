@@ -1,30 +1,25 @@
 import React from 'react';
-import useFetchData from '@thisisnotadrill/sdk';
-
-interface Notification {
-  content: string;
-  pageId: string;
-  notificationType: string;
-  environments: [string];
-}
+import useFetchData, { TinadNotification } from '@thisisnotadrill/sdk';
 
 const NotificationsComponent = () => {
-  const { data: notifications, isLoading, error } = 
-        useFetchData({ /* no userId passed, testing whether we auto-create one */ });
+    const { data: tinadNotifications, isLoading, isError, error } =
+        useFetchData({
+            userId: 'userTron',
+        });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+    if (isLoading) return <div>Loading...</div>;
+    if (isError) return <div>Error: {error.message}</div>;
 
-  return (
-    <ul>
-      {notifications?.map((notification:Notification, index:number) => (
-          <li key={index}>
-              - Message: {notification.content}<br />
-              - Type: {notification.notificationType}<br />
-          </li> // Assuming notifications have a 'message' property
-      ))}
-    </ul>
-  );
+    return (
+        <ul>
+            {tinadNotifications?.map((tinadNotification:TinadNotification, index:number) => (
+                <li key={index}>
+                    - Message: {tinadNotification.content}<br />
+                    - Type: {tinadNotification.notificationType}<br />
+                    </li>
+            ))}
+        </ul>
+    );
 };
 
 export default NotificationsComponent;

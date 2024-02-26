@@ -1,6 +1,9 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
+import pkg from  'rollup-plugin-analyzer';
+
+const { plugin: analyze } = pkg;
 
 // Custom warning handler
 const onwarn = (warning, warn) => {
@@ -12,8 +15,8 @@ const onwarn = (warning, warn) => {
 };
 
 export default {
-  input: 'src/fetchNotificationsWithPolling.ts', // Your main TypeScript file
-  external: ['react', 'react-dom', '@tanstack/react-query'],
+  input: 'src/fetchNotificationsSwr.ts', // Your main TypeScript file
+  external: ['react', 'react-dom', 'swr'],
   output: [
     {
       file: 'dist/bundle.esm.js',
@@ -28,6 +31,7 @@ export default {
     nodeResolve(), // Tells Rollup how to find node modules in node_modules
     commonjs(), // Converts CommonJS modules to ES6, so they can be included in a Rollup bundle
     typescript({ tsconfig: './tsconfig.json' }), // Compile TypeScript files
+    analyze({summaryOnly: true}),
   ],
   onwarn, 
 };
