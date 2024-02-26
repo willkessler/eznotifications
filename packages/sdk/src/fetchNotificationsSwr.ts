@@ -26,7 +26,7 @@ interface UseFetchDataReturn {
 }
 
 
-const useFetchData = (params: FetchParams) => {
+const useFetchData = (params: FetchParams): UseFetchDataReturn => {
     console.log('SWR useFetchData');
     const apiUrl = new URL('http://localhost:5000/notifications');
 
@@ -91,7 +91,7 @@ const useFetchData = (params: FetchParams) => {
     });
 
     const { data, error, isLoading } = useSWR<TinadNotification[]>(apiUrl.toString(), fetcher, { 
-        refreshInterval: 15000,
+        refreshInterval: 10000,
     });
 
     // Side effect to set the cookie
