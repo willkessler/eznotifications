@@ -7,6 +7,7 @@ import { ActionIcon, Anchor, Code, CopyButton, Group, Skeleton,
 import { useDisclosure } from '@mantine/hooks';
 import { useAPIKeys } from './APIKeysContext';
 import { useDateFormatters } from '../../lib/DateFormattersProvider';
+import sdk from '@stackblitz/sdk';
 
 import LogoComponent from '../Layout/LogoComponent';
 import Navbar from '../Layout/Navbar';
@@ -35,6 +36,18 @@ const SandboxComponent = () => {
     await createAPIKey('development', user.id, true);
     await fetchAPIKeys(user.id);
   }
+
+  const openStackblitz = async () => {
+    await sdk.openGithubProject('willkessler/eznotifications', {
+      openFile:'examples/react_sdk/src/App.tsx',
+      env: {
+        'VITE_CLERK_PUBLISHABLE_KEY' : 'pk_test_YXNzdXJlZC1yYWNlci02My5jbGVyay5hY2NvdW50cy5kZXYk',
+      },
+      newWindow: true,
+      height: '800px',
+    });
+  }
+
 
   useEffect(() => {
     if (user && user.id) {
@@ -101,6 +114,10 @@ const SandboxComponent = () => {
             The sandbox key <span style={{padding:'2px', border:'1px dotted #666', fontStyle:'normal', color:'green'}}>{temporaryAPIKeyValue}</span>
               &nbsp;is temporary and will {temporaryAPIKeyExpiration ? temporaryAPIKeyExpiration : ''}</Text>
           ) }
+      </div>
+      <div>
+        <Title p="xl" order={5}>Stackblitz demo</Title>
+        <Button target="_blank" onClick={openStackblitz} size="md">Open sandbox</Button>
       </div>
     </Paper>
   );

@@ -1,5 +1,4 @@
 import useSWR from 'swr';
-
 import { v4 as uuidv4 } from 'uuid';
 
 interface FetchParams {
@@ -9,12 +8,14 @@ interface FetchParams {
 }
 
 export interface TinadNotification {
+    id: string,
+    createdAt: Date,
     content: string;
     pageId?: string;
     notificationType: string;
     environments: [string];
-    startDate?: string;
-    endDate?: string;
+    startDate?: Date;
+    endDate?: Date;
     live: boolean;
 }
 
@@ -59,18 +60,77 @@ const useFetchData = (params: FetchParams): UseFetchDataReturn => {
         return 'tinad_user_' + uuidv4(); // This will generate a random UUID
     };
 
-    const fetcher = async (apiUrl: string) => {
+    const fetcher = async (apiUrl: string): Promise<TinadNotification[]> => {
         console.log('Fetcher running on url:', apiUrl);
         const response = await fetch(apiUrl, {
             headers: {
                 "Authorization": "Bearer KB4seNru"
             }
         });
+        console.log('Fetcher ran fetch');
         if (!response.ok) {
+            console.log('network error');
             throw new Error('Network response was not ok');
         }
-        return response.json();
+        console.log('Fetcher fetching json');
+        const data = await response.json();
+        console.log('Fetcher mapping');
+        return data.map((notification: any) => ({
+            ...notification,
+            createdAt: new Date(notification.createdAt),
+            startDate: notification.startDate ? new Date(notification.startDate) : undefined,
+            endDate: notification.endDate ? new Date(notification.endDate) : undefined,
+        }));
     };
+
+    // Function to determine the latest date between startDate and endDate
+    const getLatestDate = (startDate?: string, endDate?: string): Date => {
+        if (!startDate) return endDate!;
+        if (!endDate) return startDate;
+        return startDate > endDate ? startDate : endDate;
+    };
+
+
+    const sortAndGroupNotifications = (data: TinadNotification[]) => {
+        // Sort the results into two (subsorted) groups, those with start and/or end dates, and those without.
+        const noDateNotifications: TinadNotification[] = [];
+        const withDateNotifications: TinadNotification[] = [];
+
+        console.log(`Got data: ${JSON.stringify(data)}`);
+        data.forEach((notification: any) => { // 
+            // Convert date strings to Date objects
+            const tinadNotification: TinadNotification = {
+                ...notification,
+                createdAt: new Date(notification.createdAt),
+                startDate: notification.startDate ? new Date(notification.startDate) : undefined,
+                endDate: notification.endDate ? new Date(notification.endDate) : undefined,
+            };
+
+            if (!tinadNotification.startDate && !tinadNotification.endDate) {
+                noDateNotifications.push(tinadNotification);
+            } else {
+                withDateNotifications.push(tinadNotification);
+            }
+        });
+
+        // Sort noDateNotifications by createdAt descending
+        noDateNotifications.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+        // Sort withDateNotifications by the logic described
+        withDateNotifications.sort((a, b) => {
+            const latestDateA = getLatestDate(a.startDate, a.endDate);
+            const latestDateB = getLatestDate(b.startDate, b.endDate);
+            return latestDateB.getTime() - latestDateA.getTime(); // Assuming you want the most recent date first
+        });
+
+        // Concatenate the two arrays, with noDateNotifications first
+        const sortedNotifications = noDateNotifications.concat(withDateNotifications);
+        return sortedNotifications;
+    };
+
+    //
+    // Main code for SDK starts here
+    //
 
     let userId = params.userId || getCookie('sdkUserId');
     let userIdWasProvided = true;
@@ -90,7 +150,9 @@ const useFetchData = (params: FetchParams): UseFetchDataReturn => {
         }
     });
 
-    const { data, error, isLoading } = useSWR<TinadNotification[]>(apiUrl.toString(), fetcher, { 
+    const apiUrlString = apiUrl.toString();
+    console.log('Fetching data from : ' + apiUrlString);
+    const { data, error, isLoading } = useSWR<TinadNotification[]>(apiUrlString, fetcher, { 
         refreshInterval: 10000,
     });
 
@@ -99,10 +161,13 @@ const useFetchData = (params: FetchParams): UseFetchDataReturn => {
         setCookie('sdkUserId', userId, 365); // Set for 365 days, for example
     }
 
+    // Only process data if it's not undefined
+    const sortedAndGroupedNotifications = data ? (data.length > 0 ? sortAndGroupNotifications(data) : []) : null;
+
     const returnObj =  {
-        data,
-        isLoading,
-        isError: error,
+        data: sortedAndGroupedNotifications,
+        isLoading: !data && !error,
+        isError: !!error,
         error,
     };
     console.log(`Returning this object: ${JSON.stringify(returnObj,null,2)}`);
