@@ -9,7 +9,7 @@ import RouterComponent from './components/Router';
 import { ClerkProvider } from '@clerk/clerk-react'
 import { dark } from '@clerk/themes';
 import classes from './pages/NavbarSimple.module.css';
-import { TimezoneProvider } from './lib/TimezoneContext.tsx';
+import { TimezoneProvider } from './lib/TimezoneContext';
 
 // Import your publishable key for Clerk
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -24,7 +24,7 @@ export default function App() {
       publishableKey={CLERK_PUBLISHABLE_KEY}
       appearance={{
         baseTheme: dark,
-        signIn: { baseTheme: 'neobrutalism' }
+        signIn: { baseTheme: 'neobrutalism' as any }
       }}
     >
         <Router>

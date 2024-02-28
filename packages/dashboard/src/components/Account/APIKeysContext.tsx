@@ -1,22 +1,53 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import APIKey from '../../lib/shared_dts/APIKey.def';
 
-const APIKeysContext = createContext({
+interface APIKeysContextType {
+    APIKeys: APIKey[];
+    sandboxAPIKeys: APIKey[];
+    fetchAPIKeys: (clerkId: any) => Promise<void>;
+    APIKeysLoading: boolean;
+    APIKeysLastUpdated: number | undefined;
+    toggleAPIKeyStatus: (APIKeyId: string, clerkId: string) => Promise<boolean>;
+    productionAPIKeyValue: string | undefined;
+    createAPIKey: (apiKeyType: string, clerkId: string, temporary?: boolean) => void;
+}
+
+
+const APIKeysContext = createContext<APIKeysContextType>({
     APIKeys: [],
-    fetchAPIKeys: () => {},
-    APIKeysLoading: true,
+    sandboxAPIKeys: [],
+    fetchAPIKeys: async (clerkId: any) => {},
+    APIKeysLoading: false,
+    APIKeysLastUpdated: 0,
+    toggleAPIKeyStatus: (APIKeyId: string, clerkId: string) => Promise.resolve(true),
+    productionAPIKeyValue: '',
+    createAPIKey: (apiKeyType: string, clerkId: string, temporary?: boolean) => {},
 });
 
 export const useAPIKeys = () => useContext(APIKeysContext);
 
 export const APIKeysProvider = ({ children }) => {
-    const [APIKeys, setAPIKeys] = useState([]);
-    const [sandboxAPIKeys, setSandboxAPIKeys] = useState([]);
-    const [APIKeysLastUpdated, setAPIKeysLastUpdated] = useState(null);
+    const [APIKeys, setAPIKeys] = useState<APIKey[]>([]);
+    const [sandboxAPIKeys, setSandboxAPIKeys] = useState<APIKey[]>([]);
+    const [APIKeysLastUpdated, setAPIKeysLastUpdated] = useState<number>();
     const [APIKeysLoading, setAPIKeysLoading] = useState(true);
-    const [productionAPIKeyValue, setProductionAPIKeyValue] = useState(null);
+    const [productionAPIKeyValue, setProductionAPIKeyValue] = useState<string>();
 
-    const splitDevelopmentAndProductionKeys = (data: any) => {
+    const transformToAPIKey = (raw: any): APIKey => {
+        return {
+            uuid: raw.uuid,
+            createdAt: new Date(raw.createdAt),
+            updatedAt: raw.updatedAt ? new Date(raw.updatedAt) : undefined,
+            expiresAt: raw.expiresAt ? new Date(raw.expiresAt) : undefined,
+            apiKey: raw.apiKey,
+            apiKeyType: raw.apiKeyType,
+            isActive: raw.isActive === 'true' || raw.isActive === true, // Assuming isActive comes as a string "true"/"false" or boolean
+        };
+    };
+
+    const splitDevelopmentAndProductionKeys = (data: APIKey[]) => {
         // pull out all development keys
+
         console.log('filtering on data:', data);
         const developmentKeys = data
             .filter(apiKeyRecord => 
@@ -29,7 +60,7 @@ export const APIKeysProvider = ({ children }) => {
                 apiKeyRecord.apiKeyType === 'development' && 
                 apiKeyRecord.isActive === true &&
                 apiKeyRecord.expiresAt !== null)
-            .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+            .sort((a: APIKey, b: APIKey) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         setSandboxAPIKeys(sandboxKeys);
         const productionKeys = data.filter(apiKeyRecord => 
             apiKeyRecord.apiKeyType === 'production' && apiKeyRecord.isActive === true );
@@ -48,7 +79,8 @@ export const APIKeysProvider = ({ children }) => {
             const APIUrl = `${window.location.origin}/api/api-keys?clerkId=${clerkId}`;
             const response = await fetch(APIUrl);
             const data = await response.json();
-            splitDevelopmentAndProductionKeys(data);
+            const apiKeys = data.map(transformToAPIKey);
+            splitDevelopmentAndProductionKeys(apiKeys);
         } catch (error) {
             console.error('Error fetching notifications:', error);
         } finally {
@@ -75,7 +107,7 @@ export const APIKeysProvider = ({ children }) => {
             console.error(`Error creating API key of type: ( ${apiKeyType} ).`, error);
             throw error;
         }
-    });
+    }, []);
 
     const toggleAPIKeyStatus = useCallback(async (APIKeyId, clerkId) => {
         try {
@@ -92,6 +124,7 @@ export const APIKeysProvider = ({ children }) => {
             return false;
         } finally {
             setAPIKeysLoading(false);
+            return true;
         }
     }, []);
     
