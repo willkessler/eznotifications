@@ -10,13 +10,15 @@ const APIKeysTable = () => {
     const { isLoaded } = useOrganization();
     const { user } = useUser();
 
-    const doToggleAPIKeyStatus = (e, apiKeyId) => {
-        e.preventDefault();
+    const doToggleAPIKeyStatus = (e: React.MouseEvent, apiKeyId: string) => {
+      e.preventDefault();
+      if (user) {
         toggleAPIKeyStatus(apiKeyId, user.id);
+      }
     };
     
     useEffect(() => {
-        if (isLoaded) {
+        if (isLoaded && user) {
             fetchAPIKeys(user.id);
         }
     }, [fetchAPIKeys, APIKeysLastUpdated]);
@@ -30,7 +32,7 @@ const APIKeysTable = () => {
             <div className={classes.apiCard} key={apiKeyRecord.uuid}>
                 <Paper radius="md"  withBorder p="sm"
                        className={apiKeyRecord.isActive ? classes.enabled : classes.disabled}>
-                  <Group padding="lg">
+                  <Group>
                     <Text fw={800} size="md">Key:</Text>
                       <div className={classes.apiKeyBlock} >
                         <CopyButton value={apiKeyRecord.apiKey} timeout={2000}>
@@ -51,14 +53,14 @@ const APIKeysTable = () => {
                         <CopyButton value={apiKeyRecord.apiKey} timeout={2000}>
                           {({ copied, copy }) => (
                             <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="bottom">
-                              <Code size="md" onClick={copy}>{apiKeyRecord.apiKey}</Code>
+                              <Code onClick={copy}>{apiKeyRecord.apiKey}</Code>
                             </Tooltip>
                           )}
                         </CopyButton>
                       </div>
                 </Group>
 
-                  <Group padding="lg" style={{marginTop:'10px'}}>
+                  <Group style={{marginTop:'10px'}}>
                     <Text fw={800} size="sm">Created:</Text>
                     <Text size="sm">
                       { new Date(apiKeyRecord.createdAt).toLocaleString('en-US', 

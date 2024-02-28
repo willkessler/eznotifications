@@ -8,8 +8,8 @@ interface APIKeysContextType {
     APIKeysLoading: boolean;
     APIKeysLastUpdated: number | undefined;
     toggleAPIKeyStatus: (APIKeyId: string, clerkId: string) => Promise<boolean>;
-    productionAPIKeyValue: string | undefined;
-    createAPIKey: (apiKeyType: string, clerkId: string, temporary?: boolean) => void;
+    productionAPIKeyValue: string;
+    createAPIKey: (apiKeyType: string, clerkId?: string, temporary?: boolean) => Promise<boolean>;
 }
 
 
@@ -21,7 +21,7 @@ const APIKeysContext = createContext<APIKeysContextType>({
     APIKeysLastUpdated: 0,
     toggleAPIKeyStatus: (APIKeyId: string, clerkId: string) => Promise.resolve(true),
     productionAPIKeyValue: '',
-    createAPIKey: (apiKeyType: string, clerkId: string, temporary?: boolean) => {},
+    createAPIKey: (apiKeyType: string, clerkId?: string, temporary?: boolean) => Promise.resolve(true),
 });
 
 export const useAPIKeys = () => useContext(APIKeysContext);
@@ -31,7 +31,7 @@ export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ childre
     const [sandboxAPIKeys, setSandboxAPIKeys] = useState<APIKey[]>([]);
     const [APIKeysLastUpdated, setAPIKeysLastUpdated] = useState<number>();
     const [APIKeysLoading, setAPIKeysLoading] = useState(true);
-    const [productionAPIKeyValue, setProductionAPIKeyValue] = useState<string>();
+    const [productionAPIKeyValue, setProductionAPIKeyValue] = useState<string>('');
 
     const transformToAPIKey = (raw: any): APIKey => {
         return {
@@ -88,7 +88,10 @@ export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ childre
         }
     }, []);
     
-    const createAPIKey = useCallback(async (apiKeyType:string, clerkId:string, temporary:boolean = false) => {
+    const createAPIKey = useCallback(async (apiKeyType:string, clerkId?:string, temporary:boolean = false) => {
+        if (!clerkId) {
+            return false;
+        }
         const apiUrl = `${window.location.origin}/api/api-keys/create`;
         try {
             const response = await fetch(apiUrl, {
@@ -105,8 +108,9 @@ export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ childre
             }
         } catch (error) {
             console.error(`Error creating API key of type: ( ${apiKeyType} ).`, error);
-            throw error;
+            return false;
         }
+        return true;
     }, []);
 
     const toggleAPIKeyStatus = useCallback(async (APIKeyId:string, clerkId:string) => {

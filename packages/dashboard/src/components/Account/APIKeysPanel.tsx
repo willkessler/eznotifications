@@ -10,11 +10,22 @@ import classes from './css/APIKeys.module.css';
 const APIKeysPanel = () => {
   const [agreeToRegenerateProdKey, setAgreeToRegenerateProdKey] = useState(false);
   const { user } = useUser();
-  const { APIKeys, fetchAPIKeys, createAPIKey, 
-          APIKeysLoading, APIKeysLastUpdated, productionAPIKeyValue } = useAPIKeys();
+  const { APIKeys, 
+          fetchAPIKeys, 
+          createAPIKey, 
+          APIKeysLoading,
+          APIKeysLastUpdated, 
+          productionAPIKeyValue
+        } = useAPIKeys();
+
+  const createDevelopmentApiKey = () => {
+    if (user) {
+      createAPIKey('development', user.id);
+    }
+  };
 
   const createProdApiKey = () => {
-    if (agreeToRegenerateProdKey) {
+    if (agreeToRegenerateProdKey && user) {
       console.log('Generating new production API key.');
       createAPIKey('production', user.id);
       setAgreeToRegenerateProdKey(false);
@@ -44,17 +55,13 @@ const APIKeysPanel = () => {
   };
 
 
-  const handleCopy = () => {
-    copy(text);
-  };
-  
   return (
       <div className={classes.apiKeyPanel} >
         <Toaster />
         <Title style={{borderBottom:'1px solid #555', paddingTop:'15px', marginTop:'5px'}} order={3}>Environments</Title>
         <Text style={{marginTop:'10px'}} size="lg">Development API Keys</Text>
         <APIKeysTable />
-        <Button onClick={() => createAPIKey('development',user.id)} size="xs" style={{marginTop:'10px'}}>Generate new development key</Button>
+        <Button onClick={createDevelopmentApiKey} size="xs" style={{marginTop:'10px'}}>Generate new development key</Button>
 
         <Text size="lg" style={{marginTop:'30px'}}>Production API Key</Text>
 
