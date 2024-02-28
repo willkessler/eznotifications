@@ -26,7 +26,7 @@ const APIKeysContext = createContext<APIKeysContextType>({
 
 export const useAPIKeys = () => useContext(APIKeysContext);
 
-export const APIKeysProvider = ({ children }) => {
+export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
     const [APIKeys, setAPIKeys] = useState<APIKey[]>([]);
     const [sandboxAPIKeys, setSandboxAPIKeys] = useState<APIKey[]>([]);
     const [APIKeysLastUpdated, setAPIKeysLastUpdated] = useState<number>();
@@ -73,7 +73,7 @@ export const APIKeysProvider = ({ children }) => {
         }
     };
 
-    const fetchAPIKeys = useCallback(async (clerkId) => {
+    const fetchAPIKeys = useCallback(async (clerkId:string) => {
         setAPIKeysLoading(true); // start loading process
         try {
             const APIUrl = `${window.location.origin}/api/api-keys?clerkId=${clerkId}`;
@@ -88,7 +88,7 @@ export const APIKeysProvider = ({ children }) => {
         }
     }, []);
     
-    const createAPIKey = useCallback(async (apiKeyType, clerkId, temporary = false) => {
+    const createAPIKey = useCallback(async (apiKeyType:string, clerkId:string, temporary:boolean = false) => {
         const apiUrl = `${window.location.origin}/api/api-keys/create`;
         try {
             const response = await fetch(apiUrl, {
@@ -109,7 +109,7 @@ export const APIKeysProvider = ({ children }) => {
         }
     }, []);
 
-    const toggleAPIKeyStatus = useCallback(async (APIKeyId, clerkId) => {
+    const toggleAPIKeyStatus = useCallback(async (APIKeyId:string, clerkId:string) => {
         try {
             const APIUrl = `${window.location.origin}/api/api-keys/toggle-active`;
             const response = await fetch(APIUrl, {
