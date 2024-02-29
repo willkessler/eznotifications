@@ -3,16 +3,20 @@ import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Paper, Stack, Table, TextInput, Text } from '@mantine/core';
 import { useUser, useOrganization } from "@clerk/clerk-react";
 import classes from './css/InviteUser.module.css';
-import InviteMember from './InviteMember';
-import PendingInvitationsList from './PendingInvitations';
 import { useMediaQuery } from '@mantine/hooks';
+import { OrganizationMembershipResource, MembershipRole, UserResource } from "@clerk/types";
  
 const AdminControls = ({ membership }: { membership: OrganizationMembershipResource }) => {
   const [disabled, setDisabled] = useState(false);
 
-  const {
-    user: { id: userId },
-  } = useUser();
+    const { user } = useUser();
+    if (!user) {
+        return null;
+    }
+    // Now safe to destructure `id` because we've ensured `user` is defined.
+    const { id: userId } = user;
+
+
   const { memberships } = useOrganization({
     memberships: {
       infinite: true,
@@ -70,10 +74,10 @@ const MembersManager = () => {
     return null;
   }
  
-  const isCurrentUserAdmin = membership.role === "org:admin";
+  const isCurrentUserAdmin = (membership && membership.role ? membership.role === "org:admin" : false);
  
   if (isSmallScreen) {
-    const memberCards = memberships.data.map((m) => (
+    const memberCards = memberships.data?.map((m) => (
         <Paper style={{paddingTop:'10px',marginTop:'10px'}} 
                radius="md" key={m.publicUserData.identifier} withBorder p="sm">
           <Stack align="flex-start" justify="flex-start" gap="xs">
@@ -86,7 +90,7 @@ const MembersManager = () => {
     ));
     return memberCards;
   } else {
-    const memberRows = memberships.data.map((m) => (
+    const memberRows = memberships.data?.map((m) => (
       <Table.Tr key={m.publicUserData.identifier}>
         <Table.Td>{m.publicUserData.firstName} {m.publicUserData.lastName}</Table.Td>
         <Table.Td>{m.publicUserData.identifier}</Table.Td>

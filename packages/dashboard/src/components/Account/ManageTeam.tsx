@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Group, Radio, Table, TextInput, Textarea, Text } from '@mantine/core';
 import { useUser, useOrganization } from "@clerk/clerk-react";
 import classes from './css/InviteUser.module.css';
-import InviteMember from './InviteMember';
 import MembersManager from './MembersManager';
 import InvitationsManager from './InvitationsManager';
  
