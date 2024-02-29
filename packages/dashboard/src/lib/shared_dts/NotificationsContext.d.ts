@@ -18,7 +18,7 @@ export interface NotificationsContextType {
     notifications: EZNotification[];
     fetchNotifications: () => Promise<void>;
     submitNotification: (notification: EZNotification) => Promise<void>;
-    notificationsLastUpdated: Date | null;
+    notificationsLastUpdated: number | null;
     notificationsLoading: boolean;
 
     highlightedId: string | null;
@@ -26,8 +26,8 @@ export interface NotificationsContextType {
 
     isModalOpen : boolean;
     modalInitialData  : EZNotification;
-    openModal:  (data : EZNotification) => void;
-    closeModal: (data : EZNotification) => void;
+    openModal:  (data : EZNotification | null) => void;
+    closeModal: () => void;
 
     isStatisticsDrawerOpen : boolean;
     setIsStatisticsDrawerOpen: (statisticsDrawerOpen: boolean) => void;

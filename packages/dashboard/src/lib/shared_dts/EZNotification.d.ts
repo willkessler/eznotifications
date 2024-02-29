@@ -31,4 +31,9 @@ export default interface EZNotification {
         refreshFrequency:    number;
         // pricingModel, apiKeys, users, permittedDomains, endUsers to be added to org model
     };
+
+    // These properties are not in the db schema, it is only in the dashboard version of the EZNotification object
+    editing: boolean; 
+    clerkCreatorId: null | string;
+    
 };

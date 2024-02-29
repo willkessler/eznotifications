@@ -46,7 +46,7 @@ const defaultContextValue: NotificationsContextType = {
     isModalOpen : false,
     modalInitialData: null,
     openModal:  (data: EZNotification) => {},
-    closeModal: (data: EZNotification) => {},
+    closeModal: () => {},
 
     isPreviewBannerVisible: false,
     setIsPreviewBannerVisible: (previewBannerVisible: boolean) => {},
@@ -78,6 +78,10 @@ const defaultContextValue: NotificationsContextType = {
     resetViewsNotificationContents: '',
     resetViewsForNotification: () => Promise.resolve(),
     closeResetViewsModal: () => {},
+
+    editing: false,
+    clerkCreatorId: null,
+
 };
 
 const NotificationsContext = createContext<NotificationsContextType>(defaultContextValue);
@@ -88,11 +92,11 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     const { userTimezone, setUserTimezone } = useTimezone();
     const { formatDisplayDate, formatDisplayTime } = useDateFormatters();
     const [notifications, setNotifications] = useState<EZNotification[]>([]);
-    const [notificationsLastUpdated, setNotificationsLastUpdated] = useState(null);
+    const [notificationsLastUpdated, setNotificationsLastUpdated] = useState<number | null>(null);
     const [notificationsLoading, setNotificationsLoading] = useState(true);
     const { user } = useUser();
     // When we create or update a notification, we'll highlight it in the notificationsList.
-    const [highlightedId, setHighlightedId] = useState(null);
+    const [highlightedId, setHighlightedId] = useState<string | null>(null);
     const notificationTypeMap: { [key in NotificationType]: TypeMapValue } = {
         info: { icon: IconInfoCircle,
                 title: 'Info',
@@ -257,25 +261,29 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         const controlsJsx = 
             controls.map(({Icon, label, action, skipIfMobile, blank}, index) => {
                 if (!showTooltip && skipIfMobile) {
-                    return '';
+                    return null;
                 }
 
                 if (blank) {
-                    return ''; // ( <Space w="xs" />);
+                    return null;
                 }
+
+                const iconElement = Icon ? (
+                    <Icon size={20} className={classes.notificationsListControlIcons} />
+                ) : null; // Conditionally render the Icon component
 
                 return (
                     showTooltip ? (
                     <Tooltip key={index} openDelay={1200} label={label} position="bottom" withArrow>
                         <Anchor component="button" type="button" onClick={action}>
-                          <Icon size={20} className={classes.notificationsListControlIcons} />
+                            {iconElement}
                         </Anchor>
                     </Tooltip>
                 ) : (
-                    <Anchor key={index} component="button" type="button" onClick={action}>
-                        <Icon size={20} className={classes.notificationsListControlIcons} />
-                    </Anchor>
-                ));
+                        <Anchor key={index} component="button" type="button" onClick={action}>
+                            {iconElement}
+                        </Anchor>
+                    ));
             });
         if (showTooltip) {
             return (
@@ -288,8 +296,11 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     }
 
     // Set up the demo toaster
-    const toastNotify = (notificationData: EZNotification) => { 
-        const content = (notificationData.content?.length == 0 ? 'not set' : notificationData.content);
+    const toastNotify = (notification: EZNotification) => { 
+        const content = (notification.content?.length == 0 ? 'not set' : notification.content);
+        const notificationType: NotificationType = 
+            (notification.notificationType as NotificationType) in notificationTypeMap ? 
+            notification.notificationType as NotificationType : 'info';
         toast.success(content, {
             duration: 4000,
             position: 'top-center',
@@ -302,7 +313,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             className: '',
 
             // Custom Icon
-            icon: formatNotificationType('', notificationData.notificationType, 35),
+            icon: formatNotificationType('', notificationType, 35),
 
             // Aria
             ariaProps: {
@@ -315,10 +326,10 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     //
     // Show & hide the create/edit notification modal
     //
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalInitialData, setModalInitialData] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [modalInitialData, setModalInitialData] = useState<EZNotification | null>(null);
 
-    const openModal = useCallback((data:EZNotification = null) => {
+    const openModal = useCallback((data:EZNotification | null = null) => {
         setModalInitialData(data);
         setIsModalOpen(true);
     }, []);
@@ -365,7 +376,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     // Delete a notification
     //
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [deletedNotificationId, setDeletedNotificationId] = useState(null);
+    const [deletedNotificationId, setDeletedNotificationId] = useState<string | null>(null);
     const [deletedNotificationContents, setDeletedNotificationContents] = useState('');
 
     const showDeleteModal = (notification: EZNotification) => {
@@ -381,7 +392,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         setIsDeleteModalOpen(false);
     };
 
-    const actuallyDeleteNotification = useCallback(async (deletedNotificationId): Promise<boolean> => {
+    const actuallyDeleteNotification = useCallback(async (): Promise<boolean> => {
         let success = false;
         try {
             const method = 'DELETE';
@@ -406,7 +417,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     
     const deleteNotification = async () => {
         //console.log('Actually deleting notification with id:', deletedNotificationId);
-        await actuallyDeleteNotification(deletedNotificationId);
+        await actuallyDeleteNotification();
         setIsDeleteModalOpen(false);
         setDeletedNotificationContents('');
         setDeletedNotificationId(null);
@@ -415,11 +426,11 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     //
     // Show statistics drawer, which will also have the "Reset Views" button
     //
-    const [ isStatisticsDrawerOpen,setIsStatisticsDrawerOpen ] = useState(false);
-    const [ statisticsNotificationId, setStatisticsNotificationId] = useState(null);
-    const [ statisticsNotificationContents, setStatisticsNotificationContents] = useState('');
+    const [ isStatisticsDrawerOpen,setIsStatisticsDrawerOpen ] = useState<boolean>(false);
+    const [ statisticsNotificationId, setStatisticsNotificationId] = useState<string | null>(null);
+    const [ statisticsNotificationContents, setStatisticsNotificationContents] = useState<string>('');
 
-    const openStatisticsDrawer = (notification) => {
+    const openStatisticsDrawer = (notification: EZNotification) => {
         console.log('Opening stats drawer for this notification:', notification);
         setStatisticsNotificationId(notification.uuid);
         setStatisticsNotificationContents(notification.content);
@@ -436,7 +447,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     // Reset views on a notification
     //
     const [ isResetViewsModalOpen,setIsResetViewsModalOpen ] = useState(false);
-    const [ resetViewsNotificationId, setResetViewsNotificationId] = useState(null);
+    const [ resetViewsNotificationId, setResetViewsNotificationId] = useState<string | null>(null);
     const [ resetViewsNotificationContents, setResetViewsNotificationContents] = useState('');
 
     const showResetViewsModal = () => {
@@ -452,7 +463,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         setIsResetViewsModalOpen(false);
     };
 
-    const actuallyResetViews = useCallback(async (resetViewsNotificationId) => {
+    const actuallyResetViews = useCallback(async (): Promise<boolean> => {
         try {
             const method = 'PUT';
             const apiUrl = 
@@ -468,17 +479,18 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             console.error(`Error resetting views on notification with id:${resetViewsNotificationId}`, error);
             return false;
         }
+        return true;
     }, []);
     
     const resetViewsForNotification = async () => {
         //console.log('Actually resetting views for notification with id:', resetViewsNotificationId);
-        await actuallyResetViews(resetViewsNotificationId);
+        await actuallyResetViews();
         setIsResetViewsModalOpen(false);
         setResetViewsNotificationContents('');
         setResetViewsNotificationId(null);
     };
 
-    const sortNotifications = (data) => {
+    const sortNotifications = (data: EZNotification[]) => {
         return [...data].sort((a, b) => {
             // Group 1: Non-null startDate and not canceled
             if ((a.startDate !== null && a.live) && (b.startDate === null || !b.live)) {
@@ -502,24 +514,25 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         });
     };
 
-    const fetchNotifications = useCallback(async () => {
-        console.log(`Inside fetchNotifications, user.id = ${user.id}`);
-        setNotificationsLoading(true); // start loading process
-        try {
-            const queryParams = new URLSearchParams({ clerkUserId: user.id }).toString();
-            const apiUrl = `${window.location.origin}/api/notifications?${queryParams}`;
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-            if (data && data.length > 0) {
-                const sortedNotifications = sortNotifications(data);
-                setNotifications(sortedNotifications);
-            } else {
-                setNotifications([]);
+    const fetchNotifications = useCallback(async (): Promise<void> => {
+        if (user) {
+            setNotificationsLoading(true); // start loading process
+            try {
+                const queryParams = new URLSearchParams({ clerkUserId: user.id }).toString();
+                const apiUrl = `${window.location.origin}/api/notifications?${queryParams}`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    const sortedNotifications = sortNotifications(data);
+                    setNotifications(sortedNotifications);
+                } else {
+                    setNotifications([]);
+                }
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+            } finally {
+                setNotificationsLoading(false);
             }
-        } catch (error) {
-            console.error('Error fetching notifications:', error);
-        } finally {
-            setNotificationsLoading(false);
         }
     }, []);
     
@@ -537,7 +550,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         return backendDateTimeUTCString;
     };
     
-    const submitNotification = useCallback(async (notificationData) => {
+    const submitNotification = useCallback(async (notificationData: EZNotification): Promise<void> => {
         console.log('Notification data on form submit:', notificationData);
         const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
         const action = (notificationData.editing ? 'updated' : 'created' );
@@ -604,15 +617,18 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         closeStatisticsDrawer,
         
         isPreviewBannerVisible,
+        setIsPreviewBannerVisible,
         previewBannerContent,
         showPreviewBanner,
         closePreviewBanner,
         
         isPreviewModalOpen,
+        setIsPreviewModalOpen,
         showPreviewModal,
         previewModalContent,
         closePreviewModal,
         previewNotificationType,
+        setPreviewNotificationType,
 
         isDeleteModalOpen,
         showDeleteModal,
