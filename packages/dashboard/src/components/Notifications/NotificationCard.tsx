@@ -1,8 +1,9 @@
 import { Card, Text, Title } from '@mantine/core';
+import type EZNotification from '../../lib/shared_dts/EZNotification';
 import { useNotifications } from './NotificationsContext';
 import classes from './Notifications.module.css';
 
-function NotificationCard({ notification }) {
+function NotificationCard({ notification } : {notification : EZNotification }) {
   const { 
     formatNotificationControlIcons,
     formatNotificationDatesBlock,

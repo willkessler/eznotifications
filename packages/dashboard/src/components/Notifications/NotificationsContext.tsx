@@ -23,8 +23,8 @@ import { IconSpeakerphone,
          IconFidgetSpinner } from '@tabler/icons-react';
 import { useDateFormatters } from '../../lib/DateFormattersProvider';
 import { useTimezone } from '../../lib/TimezoneContext';
-import { EZNotification } from '../../../../api/src/EZNotifications/EZNotifications.entity';
-import NotificationsContextType from '../../lib/shared_dts/NotificationsContext.d';
+import type EZNotification from '../../lib/shared_dts/EZNotification';
+import { NotificationType, NotificationsContextType, TypeMapValue } from '../../lib/shared_dts/NotificationsContext.d';
 import classes from './Notifications.module.css';
 
 const defaultContextValue: NotificationsContextType = {
@@ -32,11 +32,11 @@ const defaultContextValue: NotificationsContextType = {
     formatNotificationConditionsBlock: (notification: EZNotification) => <></>,
     formatNotificationControlIcons: (notification: EZNotification, showTooltip: boolean) => <></>,
     formatCreateInfo : (notification: EZNotification) => <></>,
-    formatNotificationType: (prefix: string, notificationType: string, iconSize: number) => <></>,
+    formatNotificationType: (prefix: string, notificationType: NotificationType, iconSize: number) => <></>,
 
     notifications: [],
-    fetchNotifications: () => Promise<void>,
-    submitNotification: (notification: EZNotification) => Promise<void>,
+    fetchNotifications: () => Promise.resolve(),
+    submitNotification: (notification: EZNotification) => Promise.resolve(),
     notificationsLastUpdated: null,
     notificationsLoading: false,
 
@@ -49,15 +49,18 @@ const defaultContextValue: NotificationsContextType = {
     closeModal: (data: EZNotification) => {},
 
     isPreviewBannerVisible: false,
+    setIsPreviewBannerVisible: (previewBannerVisible: boolean) => {},
     previewBannerContent: '',
     showPreviewBanner: (notification: EZNotification) => {},
     closePreviewBanner: () => {},
 
     isPreviewModalOpen: false,
+    setIsPreviewModalOpen: (previewModalOpen: boolean) => {},
     showPreviewModal: (notification: EZNotification) => {},
     previewModalContent: '',
     closePreviewModal: () => {},
     previewNotificationType: 'info',
+    setPreviewNotificationType: (notificationType: string) => {},
 
     isStatisticsDrawerOpen : false,
     setIsStatisticsDrawerOpen: (statisticsDrawerOpen: boolean) => {},
@@ -90,6 +93,32 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     const { user } = useUser();
     // When we create or update a notification, we'll highlight it in the notificationsList.
     const [highlightedId, setHighlightedId] = useState(null);
+    const notificationTypeMap: { [key in NotificationType]: TypeMapValue } = {
+        info: { icon: IconInfoCircle,
+                title: 'Info',
+                bgColor: '2f2'
+              },
+        change: { icon: IconExchange,
+                  title: 'Breaking change',
+                  bgColor: 'aaf'
+                },
+        alert: { icon: IconAlertTriangle,
+                 title: 'Alert',
+                 bgColor: '#fa0'
+               },
+        outage: { icon: IconCloudStorm,
+                  title: 'Outage',
+                  bgColor: '#f22'
+                },
+        call_to_action: { icon: IconCloudStorm,
+                          title: 'Call to action',
+                          bgColor: 'ff2'
+                        },
+        other: { icon: IconCloudStorm,
+                 title: 'Other',
+                 bgColor: '666'
+               },
+    };  
 
     const formatNotificationDatesBlock = (notification: EZNotification) => {
         return (
@@ -111,6 +140,9 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     }
 
     const formatNotificationConditionsBlock = (notification: EZNotification) => {
+        const notificationType: NotificationType = 
+            (notification.notificationType as NotificationType) in notificationTypeMap ? 
+            notification.notificationType as NotificationType : 'info';
         return (
             <>
                 Page: {(notification.pageId ? 
@@ -120,7 +152,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
                 {notification.environments != null ? 
                     (notification.environments.length ? notification.environments.join(', ') : 'Any') : 'Any'}
                 </Pill><br/>
-                {formatNotificationType('Type:',notification.notificationType, 24)}
+                {formatNotificationType('Type:',notificationType, 24)}
             </>
         );
     }
@@ -135,41 +167,14 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         );
     };
 
-    const formatNotificationType = (prefix: string, notificationType: string, iconSize: number) => {
-        let typeMap = {
-            'info' : { icon: IconInfoCircle,
-                       title: 'Info',
-                       bgColor: '2f2'
-                     },
-            'change' : { icon: IconExchange,
-                       title: 'Breaking change',
-                       bgColor: 'aaf'
-                     },
-            'alert' : { icon: IconAlertTriangle,
-                        title: 'Alert',
-                        bgColor: '#fa0'
-                      },
-            'outage' : { icon: IconCloudStorm,
-                        title: 'Outage',
-                        bgColor: '#f22'
-                      },
-            'call_to_action' : { icon: IconCloudStorm,
-                                 title: 'Call to action',
-                                 bgColor: 'ff2'
-                               },
-            'other' : { icon: IconCloudStorm,
-                        title: 'Other',
-                        bgColor: '666'
-                      },
-        };
-        
+    const formatNotificationType = (prefix: string, notificationType: NotificationType , iconSize: number) => {
         let elem;
         let icon;
         let title;
         let bgColor;
         let tooltip;
         if (notificationType) {
-            elem = typeMap[notificationType];
+            elem = notificationTypeMap[notificationType];
             icon = elem.icon;
             title = elem.title;
             bgColor = elem.bgColor;

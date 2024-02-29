@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+import type { OrganizationDataProps, CallbackOutcomes, SettingsContextType } from  '../../lib/shared_dts/SettingsContext';
 import { NotificationsProvider, useNotifications } from './NotificationsContext';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -21,7 +22,7 @@ const Notifications = () => {
   const { createAPIKey } = useAPIKeys();
   const { user } = useUser();
 
-  const componentLoadCallbackFn = (outcomes: string[]) => {
+  const componentLoadCallbackFn = (outcomes: CallbackOutcomes) => {
     console.log(`We've completed setting things up, outcomes: ${JSON.stringify(Object.keys(outcomes),null,2)}.`);
   };
 

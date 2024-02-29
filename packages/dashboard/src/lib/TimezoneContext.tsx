@@ -1,7 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import type TimezoneContextType from '../../lib/shared_dts/TimezoneContext';
 
-// Create a context
-const TimezoneContext = createContext();
+const defaultTimezoneContextValue: TimezoneContextType = {
+  userTimezone: '',
+  setUserTimezone: (tz: string) => {},
+};
+
+// Create a context with the defaults from above.
+const TimezoneContext = createContext(defaultTimezoneContextValue);
 
 // Provide a context provider
 export const TimezoneProvider = ({ children }) => {

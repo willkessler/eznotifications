@@ -1,11 +1,19 @@
-import { EZNotification } from '../../../../api/src/EZNotifications/EZNotifications.entity';
+// Define a type for the keys of typeMap
+export type NotificationType = 'info' | 'change' | 'alert' | 'outage' | 'call_to_action' | 'other';
 
-export default interface NotificationsContextType {
+// Define the structure of the objects in typeMap
+export interface TypeMapValue {
+  icon: (props: TablerIconsProps) => JSX.Element;
+  title: string;
+  bgColor: string;
+};
+
+export interface NotificationsContextType {
     formatNotificationDatesBlock: (notification: EZNotification) => React.ReactNode;
     formatNotificationConditionsBlock: (notification: EZNotification) => React.ReactNode;
     formatNotificationControlIcons: (notification: EZNotification, showTooltip: boolean) => React.ReactNode;
-    formatCreateInfo : (notification: EZNotification) => null;
-    formatNotificationType: (prefix: string, notificationType: string, iconSize: number) => {};
+    formatCreateInfo : (notification: EZNotification) => React.ReactNode;
+    formatNotificationType: (prefix: string, notificationType: NotificationType, iconSize: number) => React.ReactNode;
 
     notifications: EZNotification[];
     fetchNotifications: () => Promise<void>;
@@ -52,3 +60,4 @@ export default interface NotificationsContextType {
     showResetViewsModal: (notification: EZNotification) => void;
     closeResetViewsModal: () => void;
 };
+

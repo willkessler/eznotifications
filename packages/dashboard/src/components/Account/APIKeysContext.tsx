@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import APIKey from '../../lib/shared_dts/APIKey.d';
+import type APIKey from '../../lib/shared_dts/APIKey';
 
 interface APIKeysContextType {
     APIKeys: APIKey[];
@@ -11,7 +11,6 @@ interface APIKeysContextType {
     productionAPIKeyValue: string;
     createAPIKey: (apiKeyType: string, clerkId?: string, temporary?: boolean) => Promise<boolean>;
 };
-
 
 const APIKeysContext = createContext<APIKeysContextType>({
     APIKeys: [],
