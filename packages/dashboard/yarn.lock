@@ -1684,6 +1684,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@clerk/types@npm:^3.62.1":
+  version: 3.62.1
+  resolution: "@clerk/types@npm:3.62.1"
+  dependencies:
+    csstype: "npm:3.1.1"
+  checksum: fedaa915402a1288a5fe4a079fc50cccdc9c36542fd07d9d0c88aa5ad234e2ec4e22e6fc3f1327d2f9dd1a20b8dec4498e64173e12d556bd86f9edfe65c223d0
+  languageName: node
+  linkType: hard
+
 "@colors/colors@npm:1.5.0":
   version: 1.5.0
   resolution: "@colors/colors@npm:1.5.0"
@@ -9910,6 +9919,7 @@ __metadata:
   dependencies:
     "@clerk/clerk-react": "npm:^4.30.3"
     "@clerk/themes": "npm:^1.7.9"
+    "@clerk/types": "npm:^3.62.1"
     "@kinde-oss/kinde-auth-react": "npm:^3.0.24"
     "@mantine/carousel": "npm:^7.4.2"
     "@mantine/charts": "npm:^7.4.2"

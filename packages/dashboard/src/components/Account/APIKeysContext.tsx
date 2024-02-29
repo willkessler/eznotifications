@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import APIKey from '../../lib/shared_dts/APIKey.def';
+import APIKey from '../../lib/shared_dts/APIKey.d';
 
 interface APIKeysContextType {
     APIKeys: APIKey[];

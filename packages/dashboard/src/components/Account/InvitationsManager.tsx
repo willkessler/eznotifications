@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import classes from './css/InviteUser.module.css';
 import { useUser, useOrganization } from "@clerk/clerk-react";
+import { OrganizationInvitationResource } from "@clerk/types";
 import { Anchor, Button, Group, Paper, Radio, Stack, TextInput, Textarea, Text } from '@mantine/core';
 
 const InvitationsManager = () => {
@@ -23,26 +24,25 @@ const InvitationsManager = () => {
       setDisabled(false);
   }, [invitations]);
 
-  const validateEmail = (email) => {
+  const validateEmail = (email:string) => {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
   };
 
   // Handle email input changes
-  const handleEmailChange = (event) => {
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const emailInput = event.target.value;
     setEmailAddress(emailInput);
     setIsValidEmail(validateEmail(emailInput));
   };
 
-  const sendInvitation = async (e) => {
-    e.preventDefault();
+  const sendInvitation = async () => {
     setDisabled(true);
     console.log(`sendInvitation, organization:${JSON.stringify(organization, null, 2)}, organization.inviteMember: $`);
     setDisabled(true);
     setSendLabel('...working...');
     try {
-      await organization.inviteMember({ emailAddress, role });
+      await organization?.inviteMember({ emailAddress, role });
     } catch (error) {
       console.log(`Cannot send invitation to ${emailAddress}, they are already invited.`);
     }
@@ -51,35 +51,35 @@ const InvitationsManager = () => {
     setRole(role);
   };
 
-  const ResendInvitation = async (invitation) => {
-    const emailAddress = invitation.emailAddress;
-    let role = invitation.role;
-    if (role == 'org:admin') {
-      role = 'admin';
-    }
-    console.log('invitation:', invitation, emailAddress, role);
-    await invitation.revoke();
-    await organization.inviteMember({emailAddress, role});
-    await invitations?.revalidate?.();
-    console.log(`Resent invitation : ${invitation}.`);
-  };
+    const ResendInvitation = async (invitation: OrganizationInvitationResource) => {
+        const emailAddress = invitation.emailAddress;
+        let role = invitation.role;
+        if (role == 'org:admin') {
+            role = 'admin';
+        }
+        console.log('invitation:', invitation, emailAddress, role);
+        await invitation.revoke();
+        await organization?.inviteMember({emailAddress, role});
+        await invitations?.revalidate?.();
+        console.log(`Resent invitation : ${invitation}.`);
+    };
 
-  const RevokeInvitation = async (invitation) => {
-    const emailAddress = invitation.emailAddress;
-    let role = invitation.role;
-    if (role == 'org:admin') {
-      role = 'admin';
-    }
-    console.log('invitation:', invitation, emailAddress, role);
-    await invitation.revoke();
-    await invitations?.revalidate?.();
-    console.log(`Revoked invitation : ${invitation}.`);
-  };
+    const RevokeInvitation = async (invitation: OrganizationInvitationResource) => {
+        const emailAddress = invitation.emailAddress;
+        let role = invitation.role;
+        if (role == 'org:admin') {
+            role = 'admin';
+        }
+        console.log('invitation:', invitation, emailAddress, role);
+        await invitation.revoke();
+        await invitations?.revalidate?.();
+        console.log(`Revoked invitation : ${invitation}.`);
+    };
 
   return (
     <div style={{marginTop:'30px'}}>
       <Text size="lg">Pending Teammate Invitations</Text>
-      {invitations?.data.map((invitation) => (
+      {invitations?.data?.map((invitation) => (
         <Paper style={{paddingTop:'10px',marginTop:'10px'}}
                key={invitation.id} 
                radius="md" 
@@ -91,7 +91,7 @@ const InvitationsManager = () => {
             <Anchor size="xs" component="button" type="button" onClick={() => ResendInvitation(invitation)}>Resend Invitation</Anchor>
             <Anchor size="xs" component="button" type="button" onClick={() => RevokeInvitation(invitation)}>Revoke Invitation</Anchor>
 
-          </Stack>
+              </Stack>
         </Paper>
       ))}
       <form onSubmit={sendInvitation}>

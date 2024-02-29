@@ -21,6 +21,7 @@
   "dependencies": {
     "@clerk/clerk-react": "^4.30.3",
     "@clerk/themes": "^1.7.9",
+    "@clerk/types": "^3.62.1",
     "@kinde-oss/kinde-auth-react": "^3.0.24",
     "@mantine/carousel": "^7.4.2",
     "@mantine/charts": "^7.4.2",
