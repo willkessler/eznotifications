@@ -7,12 +7,23 @@ import { useTimezone } from './TimezoneContext';
   Used heavily by the NotificationsList, but also by the Sandbox interstitial.
 */
 
-const DateFormattersContext = createContext({
+interface DateFormattersContextType {
+    pastTense: (dateInISO: string) => boolean;
+    formatDisplayDate: (prefix: string, date: Date) => string;
+    formatDisplayTime: (date: Date) => string;
+    formatDateForAPISubmission: (frontendDate: Date) => string;
+};
+
+const DateFormattersContext = createContext<DateFormattersContextType>({
+    pastTense: (dateInISO: string) => false,
+    formatDisplayDate: (prefix: string, date: Date) => '', 
+    formatDisplayTime: (date: Date) => '',
+    formatDateForAPISubmission: (frontendDate: Date) => '',
 });
 
 export const useDateFormatters = () => useContext(DateFormattersContext);
 
-export const DateFormattersProvider = ({ children }) => {
+export const DateFormattersProvider: React.FC<{children: React.ReactNode}>  = ({ children }) => {
   // We need to get user's local timezone to format dates appropriated. 
     const { userTimezone, setUserTimezone } = useTimezone();
 

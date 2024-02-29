@@ -10,7 +10,7 @@ interface APIKeysContextType {
     toggleAPIKeyStatus: (APIKeyId: string, clerkId: string) => Promise<boolean>;
     productionAPIKeyValue: string;
     createAPIKey: (apiKeyType: string, clerkId?: string, temporary?: boolean) => Promise<boolean>;
-}
+};
 
 
 const APIKeysContext = createContext<APIKeysContextType>({

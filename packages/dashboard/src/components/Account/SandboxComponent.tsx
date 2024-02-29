@@ -26,8 +26,8 @@ const SandboxComponent = () => {
   }
     
   const [opened, { toggle }] = useDisclosure();
-  const [ temporaryAPIKeyValue,  setTemporaryAPIKeyValue ] = useState(null);
-  const [ temporaryAPIKeyExpiration,  setTemporaryAPIKeyExpiration ] = useState(null);
+  const [ temporaryAPIKeyValue,  setTemporaryAPIKeyValue ] = useState('');
+  const [ temporaryAPIKeyExpiration,  setTemporaryAPIKeyExpiration ] = useState('');
 
   const createTemporaryKey = async () => {
     if (!isSignedIn) {
@@ -40,11 +40,7 @@ const SandboxComponent = () => {
   const openStackblitz = async () => {
     await sdk.openGithubProject('willkessler/eznotifications', {
       openFile:'examples/react_sdk/src/App.tsx',
-      env: {
-        'VITE_CLERK_PUBLISHABLE_KEY' : 'pk_test_YXNzdXJlZC1yYWNlci02My5jbGVyay5hY2NvdW50cy5kZXYk',
-      },
       newWindow: true,
-      height: '800px',
     });
   }
 
@@ -57,13 +53,15 @@ const SandboxComponent = () => {
 
   useEffect(() => {
     if (sandboxAPIKeys.length > 0) {
-      if (!pastTense(sandboxAPIKeys[0].expiresAt)) {
-        const temporaryKeyVal = sandboxAPIKeys[0].apiKey;
+      if (sandboxAPIKeys[0]?.expiresAt) {
+        if (!pastTense(sandboxAPIKeys[0].expiresAt.toISOString())) {
+          const temporaryKeyVal = sandboxAPIKeys[0].apiKey;
 
-        const temporaryKeyExpiration = formatDisplayDate('expire on', sandboxAPIKeys[0].expiresAt);
-        console.log(`Temporary API key: ${temporaryKeyVal}`);
-        setTemporaryAPIKeyValue(temporaryKeyVal); // show latest one
-        setTemporaryAPIKeyExpiration(temporaryKeyExpiration);
+          const temporaryKeyExpiration = formatDisplayDate('expire on', sandboxAPIKeys[0].expiresAt);
+          console.log(`Temporary API key: ${temporaryKeyVal}`);
+          setTemporaryAPIKeyValue(temporaryKeyVal); // show latest one
+          setTemporaryAPIKeyExpiration(temporaryKeyExpiration);
+        }
       }
     }
   }, [sandboxAPIKeys]);
@@ -117,7 +115,7 @@ const SandboxComponent = () => {
       </div>
       <div>
         <Title p="xl" order={5}>Stackblitz demo</Title>
-        <Button target="_blank" onClick={openStackblitz} size="md">Open sandbox</Button>
+        <Button onClick={openStackblitz} size="md">Open sandbox</Button>
       </div>
     </Paper>
   );

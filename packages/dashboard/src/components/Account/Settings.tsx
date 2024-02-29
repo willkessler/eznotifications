@@ -5,7 +5,14 @@ import AccountPanel from './AccountPanel';
 import OrgAndTeamPanel from './OrgAndTeamPanel';
 import AppConfigPanel from './AppConfigPanel';
 
-const tabMapping = {
+type TabMappingKey = 
+    '/settings/account' |
+    '/settings/billing' |
+    '/settings/team' |
+    '/settings/tos' |
+    '/settings/app-config';
+
+const tabMapping: { [key in TabMappingKey]: string } = {
   '/settings/account': 'account',
   '/settings/billing': 'billing',
   '/settings/team': 'team',
@@ -13,15 +20,32 @@ const tabMapping = {
   '/settings/app-config' : 'appConfig',
 };
 
+const defaultTab = 'account';
+
 const Settings = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const currentTab = tabMapping[location.pathname];
+    const location = useLocation();
+    const navigate = useNavigate();
+    const currentTabKey = location.pathname as TabMappingKey;
+    const currentTab = 
+        Object.keys(tabMapping).includes(location.pathname) ? 
+        tabMapping[location.pathname as TabMappingKey] : 
+        defaultTab;
 
   // When a tab is selected, change the URL
-  const handleTabChange = (value) => {
-    const url = Object.keys(tabMapping).find(key => tabMapping[key] === value);
-    navigate(url);
+  const handleTabChange = (value: string | null) => {
+      const url = Object.keys(tabMapping).find((key): key is TabMappingKey => tabMapping[key as TabMappingKey] === value);
+      if (url === undefined) {
+          console.error ('No tab found for the given value:', value);
+          const defaultUrl = 
+              Object.keys(tabMapping).find((key): key is TabMappingKey => tabMapping[key as TabMappingKey] === defaultTab);
+          if (defaultUrl !== undefined) {
+              navigate(defaultUrl);
+          } else {
+              console.error('Default URL not found. Unable to navigate.');
+          }
+      } else {
+          navigate(url);
+      }
   };  
   
   return (

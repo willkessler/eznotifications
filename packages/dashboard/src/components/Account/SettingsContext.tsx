@@ -27,7 +27,7 @@ interface SettingsContextType {
     setOrganizationName: (name: string) => void;
 }
 
-const SettingsContext = createContext({
+const SettingsContext = createContext<SettingsContextType>({
     organizationName: 'My Team',
     timezone: 'America/Los_Angeles',
     refreshFrequency: 300, // 5 minutes, in seconds
