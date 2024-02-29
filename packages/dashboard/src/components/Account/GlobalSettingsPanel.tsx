@@ -25,19 +25,18 @@ const GlobalSettingsPanel = () => {
 
   const [isChanged, setIsChanged] = useState(false);
   
-  const handlePermittedDomainsChange = (e) => {
-    setPermittedDomains(e.target.value);
-    setIsChanged(true);
+  const handlePermittedDomainsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setPermittedDomains(e.target.value);
+      setIsChanged(true);
   };
 
-  const handleRefreshFrequencyChange = (e) => {
-    const newValue = event.target.value;
-  
-    // Use a regular expression to allow only numbers
-    if (/^[0-9]*$/.test(newValue)) {
-      setRefreshFrequency(newValue);
-      setIsChanged(true);
-    }
+  const handleRefreshFrequencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
+      // Use a regular expression to allow only numbers
+      if (/^[0-9]*$/.test(newValue)) {
+          setRefreshFrequency(parseInt(newValue));
+          setIsChanged(true);
+      }
   };
   
   const revertValues = () => {
@@ -46,8 +45,10 @@ const GlobalSettingsPanel = () => {
   };
 
   const handleSaveSettings = () => {
-    saveSettings();
-    setIsChanged(false);
+      if (user) {
+          saveSettings(user.id);
+          setIsChanged(false);
+      }
   };
   
   useEffect(() => {

@@ -11,11 +11,26 @@ interface OrganizationDataProps {
     refreshFrequency: number,
 }
 
+interface SettingsContextType {
+  organizationName: string;
+  timezone: string;
+  refreshFrequency: number;
+  permittedDomains: string;
+  getSettings: () => Promise<void>;
+  saveSettings: (clerkOrganizationId: string) => Promise<boolean>;
+  setPermittedDomains: (domains: string) => void;
+  setRefreshFrequency: (frequency: number) => void;
+}
+
 const SettingsContext = createContext({
     organizationName: 'My Team',
     timezone: 'America/Los_Angeles',
     refreshFrequency: 300, // 5 minutes, in seconds
     permittedDomains: 'stackblitz.io\ncodesandbox.io\n',
+    getSettings: async () => {},
+    saveSettings: async (clerkOrganizationId: string) => Promise.resolve(true),
+    setPermittedDomains: (domains:string) => {},
+    setRefreshFrequency: (frequency:number) => {},
 });
 
 export const useSettings = () => useContext(SettingsContext);

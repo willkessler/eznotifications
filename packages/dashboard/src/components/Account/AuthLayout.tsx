@@ -6,7 +6,7 @@ import { IconArrowElbowRight,
          IconTrash
        } from '@tabler/icons-react';
 
-const AuthLayout = ({ children, imageUrl }) => (
+const AuthLayout:React.FC<{children: React.ReactNode, imageUrl: string }> = ({children, imageUrl}) => (
   <div className={classes.authContainer}>
     <div className={classes.leftColumn} style={{ backgroundImage: `url(${imageUrl})` }}>
       {/* This div will have the background image */}

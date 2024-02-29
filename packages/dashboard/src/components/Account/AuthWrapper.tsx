@@ -2,7 +2,7 @@ import React from 'react';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { Navigate, useLocation } from 'react-router-dom';
 
-const AuthWrapper = ({ children }) => {
+const AuthWrapper:React.FC<{ children: React.ReactNode}> = ({ children }) => {
   const { isSignedIn, user } = useUser();
   const { isLoaded } = useAuth();
   const location = useLocation();
