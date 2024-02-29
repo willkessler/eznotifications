@@ -23,18 +23,69 @@ import { IconSpeakerphone,
          IconFidgetSpinner } from '@tabler/icons-react';
 import { useDateFormatters } from '../../lib/DateFormattersProvider';
 import { useTimezone } from '../../lib/TimezoneContext';
+import { EZNotification } from '../../../../api/src/EZNotifications/EZNotifications.entity';
+import NotificationsContextType from '../../lib/shared_dts/NotificationsContext.d';
 import classes from './Notifications.module.css';
 
-const NotificationsContext = createContext({
-});
+const defaultContextValue: NotificationsContextType = {
+    formatNotificationDatesBlock: (notification: EZNotification) => <></>,
+    formatNotificationConditionsBlock: (notification: EZNotification) => <></>,
+    formatNotificationControlIcons: (notification: EZNotification, showTooltip: boolean) => <></>,
+    formatCreateInfo : (notification: EZNotification) => <></>,
+    formatNotificationType: (prefix: string, notificationType: string, iconSize: number) => <></>,
+
+    notifications: [],
+    fetchNotifications: () => Promise<void>,
+    submitNotification: (notification: EZNotification) => Promise<void>,
+    notificationsLastUpdated: null,
+    notificationsLoading: false,
+
+    highlightedId: null,
+    highlightNotification: (id: string) => {},
+
+    isModalOpen : false,
+    modalInitialData: null,
+    openModal:  (data: EZNotification) => {},
+    closeModal: (data: EZNotification) => {},
+
+    isPreviewBannerVisible: false,
+    previewBannerContent: '',
+    showPreviewBanner: (notification: EZNotification) => {},
+    closePreviewBanner: () => {},
+
+    isPreviewModalOpen: false,
+    showPreviewModal: (notification: EZNotification) => {},
+    previewModalContent: '',
+    closePreviewModal: () => {},
+    previewNotificationType: 'info',
+
+    isStatisticsDrawerOpen : false,
+    setIsStatisticsDrawerOpen: (statisticsDrawerOpen: boolean) => {},
+    openStatisticsDrawer: (notification: EZNotification) => {},
+    closeStatisticsDrawer: () => {},
+
+    isDeleteModalOpen: false,
+    showDeleteModal: (notification: EZNotification) => {},
+    closeDeleteModal: () => {},
+    deleteNotification: async () => Promise.resolve(),
+    deletedNotificationContents: '',
+
+    isResetViewsModalOpen: false,
+    showResetViewsModal: () => {},
+    resetViewsNotificationContents: '',
+    resetViewsForNotification: () => Promise.resolve(),
+    closeResetViewsModal: () => {},
+};
+
+const NotificationsContext = createContext<NotificationsContextType>(defaultContextValue);
 
 export const useNotifications = () => useContext(NotificationsContext);
 
-export const NotificationsProvider = ({ children }) => {
+export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ children }) => {
     const { userTimezone, setUserTimezone } = useTimezone();
     const { formatDisplayDate, formatDisplayTime } = useDateFormatters();
-    const [notifications, setNotifications] = useState([]);
-    const [notificationsLastUpdated, setNotificationsLastUpdated] = useState([null]);
+    const [notifications, setNotifications] = useState<EZNotification[]>([]);
+    const [notificationsLastUpdated, setNotificationsLastUpdated] = useState(null);
     const [notificationsLoading, setNotificationsLoading] = useState(true);
     const { user } = useUser();
     // When we create or update a notification, we'll highlight it in the notificationsList.
@@ -74,7 +125,7 @@ export const NotificationsProvider = ({ children }) => {
         );
     }
 
-    const formatCreateInfo = (notificationData) => {
+    const formatCreateInfo = (notificationData: EZNotification) => {
         const jsDate = new Date(notificationData.createdAt);
         const humanFormattedDate = jsDate.toLocaleDateString() + ' ' + jsDate.toLocaleTimeString();
         return (
@@ -84,7 +135,7 @@ export const NotificationsProvider = ({ children }) => {
         );
     };
 
-    const formatNotificationType = (prefix, notificationType, iconSize: number) => {
+    const formatNotificationType = (prefix: string, notificationType: string, iconSize: number) => {
         let typeMap = {
             'info' : { icon: IconInfoCircle,
                        title: 'Info',
@@ -262,7 +313,7 @@ export const NotificationsProvider = ({ children }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalInitialData, setModalInitialData] = useState(null);
 
-    const openModal = useCallback((data = null) => {
+    const openModal = useCallback((data:EZNotification = null) => {
         setModalInitialData(data);
         setIsModalOpen(true);
     }, []);
@@ -312,7 +363,7 @@ export const NotificationsProvider = ({ children }) => {
     const [deletedNotificationId, setDeletedNotificationId] = useState(null);
     const [deletedNotificationContents, setDeletedNotificationContents] = useState('');
 
-    const showDeleteModal = (notification) => {
+    const showDeleteModal = (notification: EZNotification) => {
         //console.log('deleting this notif', notification);
         setDeletedNotificationId(notification.uuid);
         setDeletedNotificationContents(notification.content);
@@ -325,7 +376,8 @@ export const NotificationsProvider = ({ children }) => {
         setIsDeleteModalOpen(false);
     };
 
-    const actuallyDeleteNotification = useCallback(async (deletedNotificationId) => {
+    const actuallyDeleteNotification = useCallback(async (deletedNotificationId): Promise<boolean> => {
+        let success = false;
         try {
             const method = 'DELETE';
             const apiUrl = `${window.location.origin}/api/notifications/` +
@@ -336,19 +388,20 @@ export const NotificationsProvider = ({ children }) => {
             });
             if (!response.ok) throw new Error('Failed to delete notification with id: ' + deletedNotificationId);
 
+            success = true;
             await fetchNotifications();
             setNotificationsLastUpdated(Date.now()); // update state to trigger the notifications list to rerender
         } catch (error) {
             console.error(`Error deleting notification with id:${deletedNotificationId}`, error);
-            return false;
         } finally {
             setNotificationsLoading(false);
+            return success;
         }
     }, []);
     
-    const deleteNotification = () => {
+    const deleteNotification = async () => {
         //console.log('Actually deleting notification with id:', deletedNotificationId);
-        actuallyDeleteNotification(deletedNotificationId);
+        await actuallyDeleteNotification(deletedNotificationId);
         setIsDeleteModalOpen(false);
         setDeletedNotificationContents('');
         setDeletedNotificationId(null);
@@ -412,9 +465,9 @@ export const NotificationsProvider = ({ children }) => {
         }
     }, []);
     
-    const resetViewsForNotification = () => {
+    const resetViewsForNotification = async () => {
         //console.log('Actually resetting views for notification with id:', resetViewsNotificationId);
-        actuallyResetViews(resetViewsNotificationId);
+        await actuallyResetViews(resetViewsNotificationId);
         setIsResetViewsModalOpen(false);
         setResetViewsNotificationContents('');
         setResetViewsNotificationId(null);
@@ -465,7 +518,7 @@ export const NotificationsProvider = ({ children }) => {
         }
     }, []);
     
-    const highlightNotification = useCallback((id) => {
+    const highlightNotification = useCallback((id:string) => {
         setHighlightedId(id);
         // Remove highlight after 5 seconds
         setTimeout(() => setHighlightedId(null), 5000);
