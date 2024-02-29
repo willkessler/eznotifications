@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Text, TextInput } from '@mantine/core';
-import CreateTeam from './CreateTeam';
 import ManageTeam from './ManageTeam';
 import classes from './css/Settings.module.css';
 import { useUser, useOrganization, useOrganizationList, OrganizationList } from "@clerk/clerk-react";
@@ -10,10 +9,13 @@ const TeamPanel = () => {
   const { createOrganization } = useOrganizationList();
   const { isLoaded } = useOrganization();
   const { user } = useUser();
-  const [teamExists, setTeamExists] = useState(user.organizationMemberships.length > 0);
-  const [isAdmin, setIsAdmin] = 
-        useState(user.organizationMemberships.length > 0 && user.organizationMemberships[0].role);
 
+  if (!user) {
+    return null;
+  }
+
+  const [teamExists, setTeamExists] = useState(user?.organizationMemberships.length > 0);
+  const [isAdmin, setIsAdmin] = useState(false);
   if (!isLoaded) {
     return null;
   }
@@ -37,7 +39,7 @@ const TeamPanel = () => {
       organization = user.organizationMemberships[0].organization;
       //console.log('updating team, org:', organization);
       await organization.update({ name });
-    } else {
+    } else if (createOrganization !== undefined) {
       try {
         organization = await createOrganization({name});
         setTeamExists(true);

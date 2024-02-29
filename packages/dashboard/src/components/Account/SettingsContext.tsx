@@ -12,14 +12,19 @@ interface OrganizationDataProps {
 }
 
 interface SettingsContextType {
-  organizationName: string;
-  timezone: string;
-  refreshFrequency: number;
-  permittedDomains: string;
-  getSettings: () => Promise<void>;
-  saveSettings: (clerkOrganizationId: string) => Promise<boolean>;
-  setPermittedDomains: (domains: string) => void;
-  setRefreshFrequency: (frequency: number) => void;
+    organizationName: string;
+    timezone: string;
+    refreshFrequency: number;
+    permittedDomains: string;
+    getSettings: () => Promise<void>;
+    saveSettings: (clerkOrganizationId: string) => Promise<boolean>;
+    setPermittedDomains: (domains: string) => void;
+    setRefreshFrequency: (frequency: number) => void;
+    createLocalUser:  (clerkUserId: string) => Promise<any>;
+    createLocalOrganization: (organization: OrganizationDataProps) => Promise<void>;
+    addUserToOurOrg:  (clerkOrganizationId: string) => Promise<void>;
+    setupClerkOrganizationAndMirrorRecords: ({}) => Promise<void>;
+    setOrganizationName: (name: string) => void;
 }
 
 const SettingsContext = createContext({
@@ -31,6 +36,11 @@ const SettingsContext = createContext({
     saveSettings: async (clerkOrganizationId: string) => Promise.resolve(true),
     setPermittedDomains: (domains:string) => {},
     setRefreshFrequency: (frequency:number) => {},
+    createLocalUser: async (clerkUserId: string) => {},
+    createLocalOrganization: async (clerkOrganizationId: string) => {},
+    addUserToOurOrg: async (clerkOrganizationId: string) => {},
+    setupClerkOrganizationAndMirrorRecords: async ({}) => {},
+    setOrganizationName: (name:string) => {},
 });
 
 export const useSettings = () => useContext(SettingsContext);

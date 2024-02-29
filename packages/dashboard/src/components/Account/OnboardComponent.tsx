@@ -21,7 +21,7 @@ const  OnboardComponent = () => {
   return (
     <AppShell
       navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-      header={{ height: 160, collapsed: { mobile: opened }  }}
+      header={{ height: 160, collapsed: opened  }}
       padding="lg"
     >
       <AppShell.Header >

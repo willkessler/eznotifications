@@ -15,7 +15,7 @@ const  OnboardForm = () => {
           setupClerkOrganizationAndMirrorRecords, saveSettings, 
           permittedDomains, setPermittedDomains,
           organizationName, setOrganizationName } = useSettings();
-  const [ clerkOrganizationId, setClerkOrganizationId ] = useState(null);
+  const [ clerkOrganizationId, setClerkOrganizationId ] = useState('');
   const [ saveButtonDisabled, setSaveButtonDisabled ] = useState(false);
   const [ shouldRender, setShouldRender ] = useState(false);
 
@@ -27,10 +27,10 @@ const  OnboardForm = () => {
   const setOrganizationNameAtClerk = async () => {
     const name = organizationName;
     try {
-      const organization = user.organizationMemberships[0].organization;
+      const organization = user?.organizationMemberships[0].organization;
       console.log(`updating organization name to ${organizationName}, org: ${JSON.stringify(organization,null,2)}`);
-      await organization.update({ name });
-      setClerkOrganizationId(organization.uuid);
+      await organization?.update({ name });
+      setClerkOrganizationId(organization?.id ?? '');
       return true;
     } catch (error) {
       console.log(`Unable to update a organization, please try again later. (${error})`);
@@ -51,7 +51,7 @@ const  OnboardForm = () => {
       if (updatedOrg) {
         // Forward to the playground
         setSaveButtonDisabled(true);
-        window.location = '/';
+        window.location.assign('/');
       }
     }
   }
@@ -68,7 +68,7 @@ const  OnboardForm = () => {
         if (user.organizationMemberships.length > 0) {
           // This user already has an org or belongs to an org so send them back to the home page
           console.log('  Sending user to home page since already a member.');
-          window.location = '/';
+          window.location.assign('/');
         }
       };
 
@@ -87,7 +87,7 @@ const  OnboardForm = () => {
     )
   }
 
-  const handlePermittedDomainsChange = (e) => {
+  const handlePermittedDomainsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newPermittedDomains = e.target.value;
     console.log(`handlePermittedDomainsChange, Updating permittedDomains to ${permittedDomains}`);
     setPermittedDomains(newPermittedDomains);
