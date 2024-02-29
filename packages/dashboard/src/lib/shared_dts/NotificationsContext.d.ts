@@ -48,6 +48,8 @@ export interface NotificationsContextType {
     previewNotificationType: string;
     setPreviewNotificationType: (notificationType: string) => void;
 
+    toastNotify: (notification: EZNotification) => void;
+
     isDeleteModalOpen: boolean;
     deletedNotificationContents: string;
     showDeleteModal: (notification: EZNotification) => void;

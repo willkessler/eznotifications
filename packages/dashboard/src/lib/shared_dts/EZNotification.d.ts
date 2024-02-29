@@ -35,5 +35,6 @@ export default interface EZNotification {
     // These properties are not in the db schema, it is only in the dashboard version of the EZNotification object
     editing: boolean; 
     clerkCreatorId: null | string;
+    clerkUserId: null | string;
     
 };

@@ -67,6 +67,8 @@ const defaultContextValue: NotificationsContextType = {
     openStatisticsDrawer: (notification: EZNotification) => {},
     closeStatisticsDrawer: () => {},
 
+    toastNotify: (notification: EZNotification) => {},
+
     isDeleteModalOpen: false,
     showDeleteModal: (notification: EZNotification) => {},
     closeDeleteModal: () => {},
@@ -78,9 +80,6 @@ const defaultContextValue: NotificationsContextType = {
     resetViewsNotificationContents: '',
     resetViewsForNotification: () => Promise.resolve(),
     closeResetViewsModal: () => {},
-
-    editing: false,
-    clerkCreatorId: null,
 
 };
 
@@ -630,6 +629,8 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         previewNotificationType,
         setPreviewNotificationType,
 
+        toastNotify,
+        
         isDeleteModalOpen,
         showDeleteModal,
         closeDeleteModal,

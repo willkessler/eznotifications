@@ -34,6 +34,7 @@ import { IconArrowElbowRight,
          IconFidgetSpinner } from '@tabler/icons-react';
 import classes from './Notifications.module.css';
 import toast, { Toaster } from 'react-hot-toast';
+import type EZNotification from '../../lib/shared_dts/EZNotification';
 
 import { useNotifications } from './NotificationsContext';
 import { useSettings } from '../Account/SettingsContext';
@@ -52,6 +53,7 @@ const NotificationsList = () => {
             submitNotification, 
             fetchNotifications,
             notificationsLoading,
+            toastNotify,
             formatCreateInfo,
             formatNotificationDatesBlock,
             formatNotificationConditionsBlock,
@@ -68,14 +70,14 @@ const NotificationsList = () => {
     }
   
   // Handle turning a notification on and off
-  const handleSwitchChange = async (notificationData, checked) => {
-      const notificationDataCopy = {
+  const handleSwitchChange = async (notificationData: EZNotification, checked: boolean) => {
+      const notificationDataCopy:EZNotification = {
           ...notificationData,
       };
 
       notificationDataCopy.live = checked;
       notificationDataCopy.editing = true;
-      notificationDataCopy.updatedAt = new Date().toISOString();
+      notificationDataCopy.updatedAt = new Date();
       notificationDataCopy.clerkUserId = user?.id;
       await submitNotification(notificationDataCopy);
   }
