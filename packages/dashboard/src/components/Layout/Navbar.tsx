@@ -22,9 +22,14 @@ import {
   IconLogout,
 } from '@tabler/icons-react';
 
+interface NavbarProps {
+  toggleMobile: () => void;
+  toggleDesktop: () => void;
+}
 
-const Navbar = ({toggleMobile, toggleDesktop}) => {
-  const isExternalLink = (url) => /^(http|https):\/\//.test(url);
+
+const Navbar: React.FC<NavbarProps> = ({ toggleMobile, toggleDesktop }) => {
+  const isExternalLink = (url:string):boolean => /^(http|https):\/\//.test(url);
   const location = useLocation();
   const [activeLink, setActiveLink] = useState('All Notifications')
   const [opened, handlers] = useDisclosure();

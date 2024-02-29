@@ -5,6 +5,19 @@ import mainClasses from './css/MainLayout.module.css';
 import navClasses from './css/Navbar.module.css';
 import { useSettings } from '../Account/SettingsContext';
 
+// Define the step type explicitly, including the Placement type for the placement property
+type Placement = 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end';
+
+interface Step {
+  target: string;
+  content: string;
+  disableBeacon: boolean;
+  placement: Placement; // Use the Placement type here
+  locale?: {
+    skip: React.ReactNode;
+  };
+}
+
 const Tutorial = () => {
 
   const { createdLocalUser, createdLocalOrg } = useSettings();
@@ -24,7 +37,7 @@ const Tutorial = () => {
     setIsTutorialModeOpen(false);
   };
 
-  const steps = [
+  const steps:Step[] = [
       {
         target: '[data-tour="notifications"]',
         content: 'Start at the Notifications page: create and configure notifications to show your users.', 
