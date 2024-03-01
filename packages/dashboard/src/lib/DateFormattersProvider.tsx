@@ -44,13 +44,16 @@ export const DateFormattersProvider: React.FC<{children: React.ReactNode}>  = ({
         return isInPast;
     };
     
-    const formatDisplayDate = (prefix:string , date: Date) => {
+    const formatDisplayDate = (prefix:string , date: Date | null) => {
         if (date === null) {
             return '';
         }
+
+        // Convert the Date object to an ISO string
+        const isoDate = date.toISOString();
         
         // Parse the ISO date string as UTC
-        const utcDate = DateTime.fromISO(date, { zone: 'utc' });
+        const utcDate = DateTime.fromISO(isoDate, { zone: 'utc' });
 
         // Convert the DateTime object to the user's timezone
         const userTimezoneDate = utcDate.setZone(userTimezone);
@@ -63,7 +66,7 @@ export const DateFormattersProvider: React.FC<{children: React.ReactNode}>  = ({
 
     };
 
-    function formatDisplayTime(date) {
+    function formatDisplayTime(date: Date | null) {
         if (!date) return '';
 
         const hours = date.getHours().toString().padStart(2, '0');

@@ -3,6 +3,7 @@ import { Button, Modal } from '@mantine/core';
 import classes from './Banner.module.css';
 import { renderMarkdown } from '../../lib/RenderMarkdown';
 import { useNotifications } from '../Notifications/NotificationsContext';
+import { NotificationType } from '../../lib/shared_dts/NotificationsContext.d';
 
 const PreviewModal = () => {
   const { isPreviewModalOpen, 
@@ -19,7 +20,7 @@ const PreviewModal = () => {
         onClose={closePreviewModal}
         radius="md"
         centered>
-            <div>{formatNotificationType('', previewNotificationType, 58)}</div>          
+            <div>{formatNotificationType('', previewNotificationType as NotificationType, 58)}</div>          
             <div dangerouslySetInnerHTML={renderMarkdown(previewModalContent)}></div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
             <Button onClick={() => { closePreviewModal() }}>OK</Button>

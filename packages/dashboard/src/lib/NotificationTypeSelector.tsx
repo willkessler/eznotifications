@@ -1,72 +1,93 @@
 import React, { useState, useEffect } from 'react';
 import { RadioGroup, Radio, TextInput } from '@mantine/core';
 import classes from '../components/Notifications/Notifications.module.css';
-import {  IconInfoCircle, IconAlertTriangle, IconExchange,
-          IconCloudStorm, IconExclamationCircle, IconDots,
-          IconSpeakerphone} from '@tabler/icons-react';
+import { IconInfoCircle, IconAlertTriangle, IconExchange,
+         IconCloudStorm, IconExclamationCircle, IconDots,
+         IconSpeakerphone} from '@tabler/icons-react';
+import type { TablerIconsProps } from '@tabler/icons-react';
+import { NotificationType } from './shared_dts/NotificationsContext.d';
 
-export function NotificationTypeSelector({ value, notificationTypeOther, onSelectionChange, onCustomTypeChange }) {
-  const [selectedType, setSelectedType] = useState(value || 'info');
-  const [customType, setCustomType] = useState('');
+interface NotificationTypeSelectorProps {
+    value: string;
+    notificationTypeOther: string | null;
+    onSelectionChange: (selectType: string) => void;
+    onCustomTypeChange: (customType: string) => void;
+}
 
-  const handleTypeChange = (value) => {
-    setSelectedType(value);
-    onSelectionChange(value); // Always call onSelectionChange with the current radio selection
+export const NotificationTypeSelector: React.FC<NotificationTypeSelectorProps> = ( { 
+    value,
+    notificationTypeOther,
+    onSelectionChange, 
+    onCustomTypeChange,
+}) => {
+    const [selectedType, setSelectedType] = useState(value || 'info');
+    const [customType, setCustomType] = useState('');
 
-    if (value === 'other') {
-      // If 'other' is selected, also call onCustomTypeChange with the current custom type
-      onCustomTypeChange(customType);
-    } else {
-      // Reset customType if 'other' is not selected
-      setCustomType('');
-    }
-  };
+    const handleTypeChange = (valueStr: string) => {
+        const value = valueStr as NotificationType;
+        setSelectedType(value);
+        onSelectionChange(value); // Always call onSelectionChange with the current radio selection
 
-  const handleCustomTypeChange = (event) => {
-    const newCustomType = event.currentTarget.value;
-    setCustomType(newCustomType);
-    if (selectedType === 'other') {
-      onCustomTypeChange(newCustomType); // Only call onCustomTypeChange if 'other' is selected
-    }
-  };
+        if (value === 'other') {
+            // If 'other' is selected, also call onCustomTypeChange with the current custom type
+            onCustomTypeChange(customType);
+        } else {
+            // Reset customType if 'other' is not selected
+            setCustomType('');
+        }
+    };
 
-  const customLabel = (icon, text, bgColor) => (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      {React.createElement(icon, { style: { marginLeft:'0px', marginRight: '5px', paddingBottom:'2px', color:bgColor } })}
-      {text}
-    </div>
-  );
+    const handleCustomTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newCustomType = event.currentTarget.value;
+        setCustomType(newCustomType);
+        if (selectedType === 'other') {
+            onCustomTypeChange(newCustomType); // Only call onCustomTypeChange if 'other' is selected
+        }
+    };
 
-  useEffect(() => {
-    setSelectedType(value || 'info');
-    setCustomType(notificationTypeOther || '');
-  }, [value, notificationTypeOther]);
+    type IconType = React.FC<TablerIconsProps>;
 
-  return (
-    <div>
-      <RadioGroup 
+    const CustomLabel: React.FC<{ Icon: IconType; text: string; bgColor: string }> = ({
+        Icon,
+        text,
+        bgColor
+    }) => (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Icon style={{ marginLeft:'0px', marginRight: '5px', paddingBottom:'2px', color:bgColor }} />
+            {text}
+        </div>
+    );
+
+    useEffect(() => {
+        setSelectedType(value || 'info');
+        setCustomType(notificationTypeOther || '');
+    }, [value, notificationTypeOther]);
+
+    return (
+        <div>
+            <RadioGroup 
         value={selectedType} 
         onChange={handleTypeChange}
         label="Notification type"
         description="(Optional)"
         className={classes.notificationTypeChoice}
-      >
-        <Radio value="info" label={customLabel(IconInfoCircle,"Info", "#2f2")} />
-        <Radio value="change" label={customLabel(IconExchange, "Breaking change", "#aaf")} />
-        <Radio value="alert" label={customLabel(IconAlertTriangle, "Alert", "orange")} />
-        <Radio value="outage" label={customLabel(IconCloudStorm, "Outage", "#f22")} />
-        <Radio value="call_to_action" label={customLabel(IconSpeakerphone, "Call to Action", "#ff2")} />
-        <Radio value="other" label={customLabel(IconDots, "Other", "#666")} />
-      </RadioGroup>
+            >
+            <Radio value="info" label={<CustomLabel Icon={IconInfoCircle} text="Info" bgColor="#2f2" />} />
+            <Radio value="change" label={<CustomLabel Icon={IconExchange} text="Info" bgColor="aaf" />} />
+            <Radio value="alert" label={<CustomLabel Icon={IconAlertTriangle} text="Info" bgColor="#orange" />} />
+            <Radio value="outage" label={<CustomLabel Icon={IconCloudStorm} text="Info" bgColor="#f22" />} />
+            <Radio value="call_to_action" label={<CustomLabel Icon={IconSpeakerphone} text="Info" bgColor="#ff2" />} />
+            <Radio value="other" label={<CustomLabel Icon={IconDots} text="Other" bgColor="#666" />} />
+         </RadioGroup>
 
-      {selectedType === 'other' && (
-        <TextInput
-          label="Specify other type:"
-          placeholder="Type here"
-          value={customType}
-          onChange={handleCustomTypeChange}
-        />
-      )}
-    </div>
-  );
+            {selectedType === 'other' && (
+                <TextInput
+                label="Specify other type:"
+                placeholder="Type here"
+                value={customType}
+                onChange={handleCustomTypeChange}
+                    />
+            )}
+        </div>
+    );
 };

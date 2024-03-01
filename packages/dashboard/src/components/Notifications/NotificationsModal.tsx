@@ -6,6 +6,7 @@ import { IconClock } from '@tabler/icons-react';
 import { useUser } from "@clerk/clerk-react";
 
 import type EZNotification from '../../lib/shared_dts/EZNotification';
+import { NotificationType } from '../../lib/shared_dts/NotificationsContext.d';
 import { createBlankEZNotification } from '../../lib//EZNotificationUtilities';
 import UserHint from '../../lib/UserHint';
 import Expando from '../../lib/Expando';
@@ -302,9 +303,9 @@ const NotificationsModal = () => {
             description="Enter an ID to limit this notification to a specific page or section of your application."
                 />
                 <Group gap="xl" align="start" style={{marginTop:'20px'}}>
-                <NotificationTypeSelector
-            value={notificationData?.notificationType}
-            notificationTypeOther={notificationData?.notificationTypeOther}
+            <NotificationTypeSelector
+            value={notificationData?.notificationType as NotificationType}
+            notificationTypeOther={(notificationData?.notificationTypeOther ? notificationData?.notificationTypeOther : null)}
             onSelectionChange={handleNotificationTypeChange}
             onCustomTypeChange={handleCustomNotificationTypeChange}
                 />

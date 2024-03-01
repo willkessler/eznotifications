@@ -5,6 +5,7 @@ import { useNotifications } from '../Notifications/NotificationsContext';
 import {  IconInfoCircle, IconAlertTriangle, IconExchange,
           IconCloudStorm, IconExclamationCircle, IconDots,
           IconSpeakerphone} from '@tabler/icons-react';
+import { NotificationType } from '../../lib/shared_dts/NotificationsContext.d';
 
 const PreviewBanner = () => {
   const { isPreviewBannerVisible, 
@@ -13,7 +14,7 @@ const PreviewBanner = () => {
           formatNotificationType, 
           previewNotificationType
         } = useNotifications();
-  const [ isClosing, setIsClosing ] = useState();
+  const [ isClosing, setIsClosing ] = useState<null|boolean>(false);
 
   const handleClose = () => {
     setIsClosing(true); // start closing animation
@@ -50,7 +51,7 @@ const PreviewBanner = () => {
         className={`${classes.banner} ${isClosing ? classes.slideUp : ''}`}
         onAnimationEnd={() => isClosing && closePreviewBanner()}
       >
-        <div>{formatNotificationType('', previewNotificationType, 58)}</div>
+        <div>{formatNotificationType('', previewNotificationType as NotificationType, 58)}</div>
         <div dangerouslySetInnerHTML={caveatedBannerContent}></div>
         <button className={classes.closeButton} onClick={handleClose}>X</button>
       </div>

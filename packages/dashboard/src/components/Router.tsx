@@ -16,7 +16,7 @@ import { SettingsProvider } from './Account/SettingsContext';
 import { APIKeysProvider } from './Account/APIKeysContext';
 import { useTimezone } from '../lib/TimezoneContext';
 
-const DatesProviderWrapper = ({ children }) => {
+const DatesProviderWrapper: React.FC<{children: React.ReactNode}> = ({ children }) => {
   const { userTimezone } = useTimezone(); // Now safely within the context
   return (
     <DatesProvider settings={{ timezone: userTimezone }}>

@@ -1,10 +1,8 @@
-import type EZNotification from './lib/shared_dts/EZNotification';
+import type EZNotification from './shared_dts/EZNotification';
 
 export const createBlankEZNotification = (): EZNotification => {
     return {
         uuid: '', 
-        creatorUuid: '',
-        organizationUuid: '',
         createdAt: new Date(),
         deletedAt: null,
         updatedAt: null,
@@ -15,6 +13,7 @@ export const createBlankEZNotification = (): EZNotification => {
         content: '',
         pageId: null,
         notificationType: 'info',
+        notificationTypeOther: null,
         environments: ['Development'],
 
         creator: null,

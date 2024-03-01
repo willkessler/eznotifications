@@ -46,7 +46,7 @@ export interface NotificationsContextType {
     closePreviewModal: () => void;
     previewModalContent: string;
     previewNotificationType: string;
-    setPreviewNotificationType: (notificationType: string) => void;
+    setPreviewNotificationType: (notificationType: NotificationType) => void;
 
     toastNotify: (notification: EZNotification) => void;
 
@@ -59,7 +59,7 @@ export interface NotificationsContextType {
     isResetViewsModalOpen: boolean;
     resetViewsNotificationContents: string;
     resetViewsForNotification: () => Promise<void>;
-    showResetViewsModal: (notification: EZNotification) => void;
+    showResetViewsModal: () => void;
     closeResetViewsModal: () => void;
 };
 

@@ -343,12 +343,12 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     //
     const [isPreviewBannerVisible, setIsPreviewBannerVisible] = useState(false);
     const [previewBannerContent, setPreviewBannerContent] = useState('');
-    const [previewNotificationType, setPreviewNotificationType] = useState('info');
+    const [previewNotificationType, setPreviewNotificationType] = useState<NotificationType>('info');
     const showPreviewBanner = (notificationData: EZNotification) => {
         console.log('notificationData:',notificationData);
         const content = (notificationData.content?.length == 0 ? 'not set' : notificationData.content);
         setPreviewBannerContent(content);
-        setPreviewNotificationType(notificationData.notificationType);
+        setPreviewNotificationType(notificationData.notificationType as NotificationType);
         setIsPreviewBannerVisible(true);
     };
     const closePreviewBanner = () => {
@@ -363,7 +363,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     const showPreviewModal = (notificationData: EZNotification) => {
         const content = (notificationData.content?.length == 0 ? 'not set' : notificationData.content);
         setPreviewModalContent(content);
-        setPreviewNotificationType(notificationData.notificationType);
+        setPreviewNotificationType(notificationData.notificationType as NotificationType);
         setIsPreviewModalOpen(true);
     };
 

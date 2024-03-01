@@ -2,7 +2,7 @@ export default interface EZNotification {
     uuid:                  string;
     createdAt:             Date;
     updatedAt:             Date | null;
-    deletedAt:             Date;
+    deletedAt:             Date | null;
     startDate:             Date | null,
     endDate:               Date | null,
     deleted:               boolean;
@@ -20,7 +20,7 @@ export default interface EZNotification {
         clerkId:           string;
         lastLoginAt:       string;
         isBanned:          boolean;
-    };
+    } | null;
     organization?: {
         uuid:      string;
         name:      string;
@@ -30,11 +30,11 @@ export default interface EZNotification {
         clerkCreatorId:      string;
         refreshFrequency:    number;
         // pricingModel, apiKeys, users, permittedDomains, endUsers to be added to org model
-    };
+    } | null;
 
     // These properties are not in the db schema, it is only in the dashboard version of the EZNotification object
     editing: boolean; 
-    clerkCreatorId: null | string;
-    clerkUserId: null | string;
+    clerkCreatorId: string | null;
+    clerkUserId: string | null;
     
 };
