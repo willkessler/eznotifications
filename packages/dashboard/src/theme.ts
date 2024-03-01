@@ -1,7 +1,7 @@
 import { createTheme } from '@mantine/core';
 
 const theme = createTheme({
-    colorScheme: 'dark',
+    cursorType: 'pointer',
     other: { bodyBackground: 'red' },
 });
 

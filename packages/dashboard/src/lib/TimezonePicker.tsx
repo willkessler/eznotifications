@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 import { useTimezone } from './TimezoneContext';
-import { Select } from '@mantine/core';
+import { Select, ComboboxItem } from '@mantine/core';
 import { DateTime } from 'luxon';
 
 const timezoneOptions = moment.tz.names().map((zone) => ({
@@ -11,9 +11,13 @@ const timezoneOptions = moment.tz.names().map((zone) => ({
 const TimezonePicker = () => {
   const { userTimezone, setUserTimezone } = useTimezone();
 
-  const onTimezoneChange = (selectedTimezone) => {
-    setUserTimezone(selectedTimezone);
-    localStorage.setItem('userTimezone', selectedTimezone);
+    const onTimezoneChange = (selectedTimezone: string | null, option?:ComboboxItem) => {
+      if (selectedTimezone === null) {
+          console.error('No timezone selected.');
+      } else {
+          setUserTimezone(selectedTimezone);
+          localStorage.setItem('userTimezone', selectedTimezone);
+      }
   };
 
   return (

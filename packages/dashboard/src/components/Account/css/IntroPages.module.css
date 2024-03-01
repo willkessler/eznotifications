@@ -43,7 +43,7 @@
 }
 
 .logoAnchor {
-  alignSelf: center;
+  align-self: center;
   width: 100%; /* Make the anchor take up the full width to center the logo */
 }
 

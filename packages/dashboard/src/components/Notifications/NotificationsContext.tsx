@@ -379,7 +379,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     const [deletedNotificationContents, setDeletedNotificationContents] = useState('');
 
     const showDeleteModal = (notification: EZNotification) => {
-        //console.log('deleting this notif', notification);
+        console.log('deleting this notif', notification);
         setDeletedNotificationId(notification.uuid);
         setDeletedNotificationContents(notification.content);
         setIsDeleteModalOpen(true);
@@ -392,6 +392,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     };
 
     const actuallyDeleteNotification = useCallback(async (): Promise<boolean> => {
+        console.log(`Trying to delete notif id: ${deletedNotificationId}`);
         let success = false;
         try {
             const method = 'DELETE';

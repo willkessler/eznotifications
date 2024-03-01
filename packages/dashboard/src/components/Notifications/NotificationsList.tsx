@@ -38,7 +38,6 @@ import type EZNotification from '../../lib/shared_dts/EZNotification';
 
 import { useNotifications } from './NotificationsContext';
 import { useSettings } from '../Account/SettingsContext';
-import { addPreviewCaveatToString } from '../../lib/RenderMarkdown';
 
 const NotificationsList = () => {
     const isSmallScreen = useMediaQuery('(max-width: 768px)');

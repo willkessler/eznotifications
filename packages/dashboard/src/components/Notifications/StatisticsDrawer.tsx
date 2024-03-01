@@ -29,10 +29,11 @@ const StatisticsDrawer = () => {
           setIsStatisticsDrawerOpen(false); 
           console.log('Statistics Drawer close') }
               }>
-          <Title order={1}> Notification Statistics </Title>
+      <Title style={{borderBottom:'1px dotted #666', marginBottom:'20px', padding:'10px 0 10px 0px'}} order={2}> Notification Statistics </Title>
         <Tooltip openDelay={1000} label="Reset view counts on this notification" position="left" withArrow>
           <Button size="sm" onClick={ () => { closeStatisticsDrawer(); showResetViewsModal() }} >Reset views</Button>
         </Tooltip>
+      &nbsp;&nbsp;
         <Button size="sm" onClick={ () => { closeStatisticsDrawer(); }} >Done</Button>
      </Drawer>
   );

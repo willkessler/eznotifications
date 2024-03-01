@@ -2,7 +2,6 @@ import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
-import theme from './theme';
 import { Anchor, Button, Code, Group, Image, Modal, Textarea, Text } from '@mantine/core';
 import { IconLogout } from '@tabler/icons-react';
 import RouterComponent from './components/Router';

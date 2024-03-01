@@ -1,11 +1,8 @@
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
-export function renderMarkdown(markdownText) {
-  const rawMarkup = marked(markdownText);
-  return { __html: DOMPurify.sanitize(rawMarkup) };
-}
-
-export function addPreviewCaveatToString(rawString) {
-  return (rawString + previewCaveatText);
+export const renderMarkdown = (markdownText:string): { __html: string  } => {
+    const rawMarkup = marked(markdownText) + '';
+    const sanitizedMarkup = DOMPurify.sanitize(rawMarkup);
+    return { __html: sanitizedMarkup };
 }

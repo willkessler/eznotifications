@@ -44,13 +44,18 @@ export const DateFormattersProvider: React.FC<{children: React.ReactNode}>  = ({
         return isInPast;
     };
     
-    const formatDisplayDate = (prefix:string , date: Date | null) => {
+    const formatDisplayDate = (prefix:string , date: Date | string | null) => {
         if (date === null) {
             return '';
         }
 
-        // Convert the Date object to an ISO string
-        const isoDate = date.toISOString();
+        let isoDate;
+        // Convert the Date object to an ISO string if required
+        if (typeof(date) !== 'string') {
+            isoDate = date.toISOString();
+        } else {
+            isoDate = date;
+        }
         
         // Parse the ISO date string as UTC
         const utcDate = DateTime.fromISO(isoDate, { zone: 'utc' });

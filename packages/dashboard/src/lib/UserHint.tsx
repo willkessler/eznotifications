@@ -3,7 +3,7 @@ import { Text, Popover } from '@mantine/core';
 import React from 'react';
 
 interface UserHintProps {
-  children: ReactNode;
+  children: React.ReactNode;
   hintText: string;
 }
 
