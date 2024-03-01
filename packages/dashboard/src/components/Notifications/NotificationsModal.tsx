@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Anchor, Button, Group, Modal, MultiSelect, Paper, Textarea, Text, TextInput, Title } from '@mantine/core';
-import { DateTimePicker, DatePickerInput, TimeInput } from '@mantine/dates';
+import { DateTimePicker, DatePickerInput, TimeInput, DateValue } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
 import { useUser } from "@clerk/clerk-react";
@@ -75,15 +75,14 @@ const NotificationsModal = () => {
         }));
     };
 
-    const handleTextChange = (e:React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleTextChange = (e:React.ChangeEvent<HTMLTextAreaElement>|React.ChangeEvent<HTMLInputElement>) => {
         const currentText = e.target.value;
         const currentTextTrimmed = currentText.trim();
         setNotificationData({ ...notificationData as EZNotification, [e.target.name]: currentText });
         setSubmissionDisabled(currentTextTrimmed.length == 0);
     };
 
-    const handleDateTimeChange = (value:string, name:string) => {
-        const valueAsDate = (value === null ? null : new Date(value));
+    const handleDateTimeChange = (value: DateValue, name:string) => {
         if (notificationData === undefined) {
             console.error('Cannot handleDateTimeChange because notificationData is not set.');
         } else {
@@ -95,24 +94,24 @@ const NotificationsModal = () => {
                     endDate: null,
                 }));
             } else if ((name === 'startDate') && 
-                (valueAsDate &&
+                (value &&
                     notificationData.endDate && 
-                    valueAsDate >= notificationData.endDate)) {
+                    value >= notificationData.endDate)) {
                 setNotificationData(prevData => ({
                     ...prevData as EZNotification,
-                    startDate: valueAsDate,
+                    startDate: value,
                     endDate: null,
                 }));
             } else if ((name === 'endDate') &&
-                (valueAsDate && notificationData.startDate &&
-                    valueAsDate <= notificationData.startDate)) {
+                (value && notificationData.startDate &&
+                    value <= notificationData.startDate)) {
                 setNotificationData(prevData => ({
                     ...prevData as EZNotification,
                     startDate: null,
-                    endDate: valueAsDate,
+                    endDate: value,
                 }));
             } else {
-                setNotificationData({ ...notificationData as EZNotification, [name]: valueAsDate  });
+                setNotificationData({ ...notificationData as EZNotification, [name]: value });
             }
         }
     };
@@ -269,7 +268,7 @@ const NotificationsModal = () => {
             clearable
             valueFormat="MMM DD, YYYY HH:mm"
             label="End date/time"
-            value={notificationData.endDate}
+            value={notificationData?.endDate}
             onChange={(value) => handleDateTimeChange(value, 'endDate')}
             onFocus={handleFocus}
             style={{marginTop:'10px', minWidth:'90%', maxWidth:'200px'}}
@@ -292,9 +291,10 @@ const NotificationsModal = () => {
             openOnDisplay={editing}
                 >
                 <Paper p="sm">
-                <TextInput
+
+            <TextInput
             name="pageId"
-            value={notificationData.pageId}
+            value={(notificationData?.pageId ? notificationData.pageId : '')}
             onChange={handleTextChange}
             label={pgLabel}
             style={{marginTop:'0px'}}
@@ -303,14 +303,14 @@ const NotificationsModal = () => {
                 />
                 <Group gap="xl" align="start" style={{marginTop:'20px'}}>
                 <NotificationTypeSelector
-            value={notificationData.notificationType}
-            notificationTypeOther={notificationData.notificationTypeOther}
+            value={notificationData?.notificationType}
+            notificationTypeOther={notificationData?.notificationTypeOther}
             onSelectionChange={handleNotificationTypeChange}
             onCustomTypeChange={handleCustomNotificationTypeChange}
                 />
                 <MultiSelect
             name="environments"
-            value={Array.isArray(notificationData.environments) ? notificationData.environments : []}
+            value={Array.isArray(notificationData?.environments) ? notificationData?.environments : []}
             pointer
             label={envLabel}
             description="Choose the environments to serve this notification to."

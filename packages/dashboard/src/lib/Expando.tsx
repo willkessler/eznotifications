@@ -6,8 +6,8 @@ interface ExpandoProps {
   children: ReactNode;
   openTitle: string;
   closedTitle: string;
-  titleTextColor?: React.CSSProperties;
   outerStyle?: React.CSSProperties;
+  titleStyle?: React.CSSProperties;
   openOnDisplay?: boolean;
 }
 
