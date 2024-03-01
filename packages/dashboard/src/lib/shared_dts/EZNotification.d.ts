@@ -1,16 +1,16 @@
 export default interface EZNotification {
     uuid:                  string;
     createdAt:             Date;
-    updatedAt:             Date;
+    updatedAt:             Date | null;
     deletedAt:             Date;
-    startDate:             Date,
-    endDate:               Date,
+    startDate:             Date | null,
+    endDate:               Date | null,
     deleted:               boolean;
     live:                  boolean;
     content:               string;
-    pageId:                string;
+    pageId:                string | null;
     notificationType:      string;
-    notificationTypeOther: string;
+    notificationTypeOther: string | null;
     environments:          string[];
     creator?: {
         uuid:              string;

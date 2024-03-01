@@ -9,16 +9,16 @@ import { useTimezone } from './TimezoneContext';
 
 interface DateFormattersContextType {
     pastTense: (dateInISO: string) => boolean;
-    formatDisplayDate: (prefix: string, date: Date) => string;
-    formatDisplayTime: (date: Date) => string;
-    formatDateForAPISubmission: (frontendDate: Date) => string;
+    formatDisplayDate: (prefix: string, date: Date | null) => string;
+    formatDisplayTime: (date: Date | null) => string;
+    formatDateForAPISubmission: (frontendDate: Date | null) => string | null;
 };
 
 const DateFormattersContext = createContext<DateFormattersContextType>({
     pastTense: (dateInISO: string) => false,
-    formatDisplayDate: (prefix: string, date: Date) => '', 
-    formatDisplayTime: (date: Date) => '',
-    formatDateForAPISubmission: (frontendDate: Date) => '',
+    formatDisplayDate: (prefix: string, date: Date | null) => '', 
+    formatDisplayTime: (date: Date | null) => '',
+    formatDateForAPISubmission: (frontendDate: Date | null) => '',
 });
 
 export const useDateFormatters = () => useContext(DateFormattersContext);
@@ -44,7 +44,7 @@ export const DateFormattersProvider: React.FC<{children: React.ReactNode}>  = ({
         return isInPast;
     };
     
-    const formatDisplayDate = (prefix, date) => {
+    const formatDisplayDate = (prefix:string , date: Date) => {
         if (date === null) {
             return '';
         }
@@ -71,12 +71,17 @@ export const DateFormattersProvider: React.FC<{children: React.ReactNode}>  = ({
         return `${hours}:${minutes}`;
     }
 
-    const formatDateForAPISubmission = (frontendDate : Date) => {
+    const formatDateForAPISubmission = (frontendDate : Date | null) => {
         console.log(`Formatting date: ${frontendDate} for backend, timezone: ${userTimezone}`);
-        const backendDateTime = DateTime.fromJSDate(frontendDate, { zone: userTimezone });
-        const backendDateTimeUTC = backendDateTime.toUTC();
-        const backendDateTimeUTCString = backendDateTimeUTC.toISO();
-        return backendDateTimeUTCString;
+        if (frontendDate) {
+            const backendDateTime = DateTime.fromJSDate(frontendDate, { zone: userTimezone });
+            const backendDateTimeUTC = backendDateTime.toUTC();
+            const backendDateTimeUTCString = backendDateTimeUTC.toISO();
+            return backendDateTimeUTCString;
+        } else {
+            console.log('Undefined frontendDate passed in.');
+            return null;
+        }
     };
 
     return (

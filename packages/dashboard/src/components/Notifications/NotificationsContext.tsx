@@ -559,8 +559,8 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             const postingObject = {
                 EZNotificationData: {
                     content: notificationData.content,
-                    startDate: formatDateForAPISubmission(notificationData.startDate),
-                    endDate: formatDateForAPISubmission(notificationData.endDate),
+                    startDate: notificationData.startDate ? formatDateForAPISubmission(notificationData.startDate) : null,
+                    endDate: notificationData.endDate ? formatDateForAPISubmission(notificationData.endDate) : null,
                     environments: [...notificationData.environments],
                     live: notificationData.live,
                     notificationType: (notificationData.notificationType ? notificationData.notificationType : 'info'),
