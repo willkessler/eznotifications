@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  dashboard:
+    build:
+      context: ./packages/dashboard
+      # Optionally pass the API target as a build arg if your setup requires it
+      # args:
+      #   VITE_API_TARGET: http://api:8080
+      args:
+        VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY}
+    ports:
+      - "80:80"
+    env_file:
+      - ./packages/dashboard/.env
+    environment:
+      - VITE_API_TARGET=http://api:8080
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: ./packages/api
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./packages/api/.env
+    environment:
+      - NODE_ENV=production
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"

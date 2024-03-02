@@ -14,7 +14,6 @@ async function bootstrap() {
     app.use(cookieParser());
 
     /* Used only to debug cookie reception */
-    /*
     app.use((req, res, next) => {
         if (Object.keys(req.cookies).length > 0) {
             console.log('Parsed cookies: ', req.cookies);
@@ -23,7 +22,6 @@ async function bootstrap() {
         }
         next();
     });
-    */
 
     // Middleware to capture raw body and make it available as a rawBody attribute on the request
     /*
@@ -33,14 +31,25 @@ async function bootstrap() {
         next();
     });
     */
+    
+    // Middleware to log every request just to debug
+    app.use((req, res, next) => {
+        console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl} - Origin: ${req.headers.origin}`);
+        next();
+    });
 
     // Re-enable body parsing for other routes
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
+    const origin = process.env.INBOUND_PORT === '80' || process.env.INBOUND_PORT === '443' ?
+        `http://${process.env.HOST}` :
+        `http://${process.env.HOST}:${process.env.INBOUND_PORT}`;
+
+    console.log(`Enabling cors with origin ${origin}`);
     app.enableCors({
-        origin: 'http://' + process.env.HOST + ':' + process.env.INBOUND_PORT, // Allow only your front-end origin
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Adjust as needed
+        origin: origin, // This now correctly handles default ports
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     });
 
     const config = new DocumentBuilder()
@@ -57,6 +66,7 @@ async function bootstrap() {
     app.useGlobalFilters(new UnauthorizedExceptionFilter());
 
     const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+    console.log(`API listening on port ${port}`);
 
     await app.listen(port);
 }

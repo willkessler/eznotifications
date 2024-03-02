@@ -3339,6 +3339,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stackblitz/sdk@npm:^1.9.0":
+  version: 1.9.0
+  resolution: "@stackblitz/sdk@npm:1.9.0"
+  checksum: 12e01d35d64b6fb4c6c64c1b46bd8cdc7af961baf8559822d79c02e4c511cced0802879af7484081054898237ae4eed260b79156e45990924d1743bbfad3619a
+  languageName: node
+  linkType: hard
+
 "@storybook/addon-actions@npm:7.6.6":
   version: 7.6.6
   resolution: "@storybook/addon-actions@npm:7.6.6"
@@ -9933,6 +9940,7 @@ __metadata:
     "@mantine/nprogress": "npm:^7.4.2"
     "@mantine/spotlight": "npm:^7.4.2"
     "@mantine/tiptap": "npm:^7.4.2"
+    "@stackblitz/sdk": "npm:^1.9.0"
     "@storybook/addon-essentials": "npm:^7.6.6"
     "@storybook/addon-interactions": "npm:^7.6.6"
     "@storybook/addon-links": "npm:^7.6.6"
