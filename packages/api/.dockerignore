@@ -1,2 +1,7 @@
 *.env
 *.env_railway
+node_modules
+dist
+.git
+.env
+docker.env

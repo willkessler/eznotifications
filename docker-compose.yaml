@@ -18,6 +18,7 @@ services:
       - api
 
   api:
+    image: thisisnotadrillapi:latest
     build:
       context: ./packages/api
     ports:

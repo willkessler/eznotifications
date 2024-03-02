@@ -1,25 +1,31 @@
-# Use the official Node.js 16 image as the base image
-FROM node:16 as build-stage
+# Use the official Node.js image as the base image
+#FROM node:18-alpine
+FROM node:20.9
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the package.json and package-lock.json (if available)
-COPY package*.json ./
+# Copy the top-level yarn.lock into the container
+COPY yarn.lock packages/api/package.json ./
 
-RUN echo "here"
+# Copy the package.json (and possibly package-lock.json) of the API package
+COPY packages/api/package.json ./
 
-# Install all dependencies
-RUN npm install
+# Install dependencies
+RUN yarn install --frozen-lockfile
 
-# Copy the rest of the application code
-COPY . .
+# Copy the rest of the API package into the container
+COPY packages/api ./
 
 # Build the application (if necessary)
-RUN npm run build
+RUN yarn run build
 
 # Expose the port the app runs on
 EXPOSE 8080
 
 # Command to run the application
-CMD ["npm", "run", "start:prod"]
+#CMD [ "ls", "-lR", "node_modules"]
+#CMD ["node", "dist/main"]
+CMD [ "npm", "run",  "start:prod" ]
+
+
