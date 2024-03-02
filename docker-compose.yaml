@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   dashboard:
+    image: thisisnotadrilldash:latest
     build:
       context: ./packages/dashboard
       # Optionally pass the API target as a build arg if your setup requires it
@@ -14,6 +15,7 @@ services:
       - ./packages/dashboard/.env
     environment:
       - VITE_API_TARGET=http://api:8080
+      - CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
     depends_on:
       - api
 
