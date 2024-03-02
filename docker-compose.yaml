@@ -15,9 +15,12 @@ services:
       - ./packages/dashboard/.env
     environment:
       - VITE_API_TARGET=http://api:8080
-      - CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
+      - VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
     depends_on:
       - api
+#    stdin_open: true
+#    tty: true
+#    command: ["/bin/sh"]
 
   api:
     image: thisisnotadrillapi:latest

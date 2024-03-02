@@ -1,6 +1,6 @@
 # Stage 1: Build the React application
-#FROM node:latest as build-stage
-FROM node:20.9 as build-stage
+FROM node:latest as build-stage
+#FROM node:20.9 as build-stage
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ COPY yarn.lock .
 #COPY packages/dashboard/package.json .
 
 # Copy the rest of your application's source code
-COPY packages/dashboard .
+COPY . .
 
 # Install dependencies
 #RUN npm install
@@ -36,10 +36,11 @@ COPY --from=build-stage /app/dist /usr/share/nginx/html
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Copy a custom nginx configuration (if needed)
-COPY packages/dashboard/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80 to the Docker host, so we can access it from the outside.
 EXPOSE 80
 
 # The default command to run when starting the container
+#CMD [ "/bin/sh" ]
 CMD ["nginx", "-g", "daemon off;"]
