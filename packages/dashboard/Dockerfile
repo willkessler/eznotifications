@@ -1,7 +1,5 @@
-# Stage 1: Build the React application
-# Use the official Node.js image as the base image
-#FROM node:latest as build-stage
-FROM node:20.9 as build-stage
+# Stage 1: Build the React application. Use the official Node.js image as the base image
+FROM node:latest as build-stage
 
 WORKDIR /app
 
@@ -14,13 +12,6 @@ COPY packages/dashboard/package.json .
 # Install dependencies at the root level, respecting workspaces
 RUN yarn install --frozen-lockfile
 
-# Change WORKDIR to the dashboard package
-#WORKDIR /app/packages/dashboard
-
-#RUN yarn install --frozen-lockfile
-# Switch back to the root level
-#WORKDIR /app
-
 # Copy the rest of your application's source code
 COPY packages/dashboard .
 
@@ -30,7 +21,7 @@ ENV VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
 ARG VITE_API_TARGET
 ENV VITE_API_TARGET=${VITE_API_TARGET}
 
-RUN echo "VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}"
+# RUN echo "VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}"
 
 # Build your application
 RUN yarn run build
@@ -51,5 +42,7 @@ COPY packages/dashboard/nginx/default.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 
 # The default command to run when starting the container
-#CMD [ "/bin/sh" ]
 CMD ["nginx", "-g", "daemon off;"]
+
+# For debugging only
+#CMD [ "/bin/sh" ]
