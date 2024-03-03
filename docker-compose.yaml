@@ -4,7 +4,7 @@ services:
     image: thisisnotadrilldash:latest
     build:
       context: .
-      dockerfile: packages/dashboard/Dockerfile
+      dockerfile: packages/dashboard/docker-compose/Dockerfile
       args:
         VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY}
         VITE_API_TARGET: ${VITE_API_TARGET}
@@ -26,7 +26,7 @@ services:
     image: thisisnotadrillapi:latest
     build:
       context: .
-      dockerfile: packages/api/Dockerfile
+      dockerfile: packages/api/docker-compose/Dockerfile
     ports:
       - "8080:8080"
     env_file:
