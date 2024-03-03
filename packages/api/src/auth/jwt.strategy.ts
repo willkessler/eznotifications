@@ -37,7 +37,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                 jwksUri: process.env.CLERK_JWKS_ENDPOINT,
             }),
             //      audience: 'ThisIsNotADrillDashboard',
-            issuer: 'https://assured-racer-63.clerk.accounts.dev', // move this to an env var
+            issuer: process.env.CLERK_JWT_ISSUER,
             algorithms: ['RS256'],
         });
     }

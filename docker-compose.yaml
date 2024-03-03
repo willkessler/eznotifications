@@ -3,7 +3,8 @@ services:
   dashboard:
     image: thisisnotadrilldash:latest
     build:
-      context: ./packages/dashboard
+      context: .
+      dockerfile: packages/dashboard/Dockerfile
       args:
         VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY}
         VITE_API_TARGET: ${VITE_API_TARGET}
@@ -24,7 +25,8 @@ services:
   api:
     image: thisisnotadrillapi:latest
     build:
-      context: ./packages/api
+      context: .
+      dockerfile: packages/api/Dockerfile
     ports:
       - "8080:8080"
     env_file:
@@ -34,6 +36,7 @@ services:
       - HOST=localhost
       - INBOUND_PORT=80
       - PROTOCOL=http
+      - CLERK_JWT_ISSUER=${CLERK_JWT_ISSUER}
     extra_hosts:
       # Access to local postgres
       - "host.docker.internal:172.17.0.1"
