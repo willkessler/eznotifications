@@ -16,15 +16,6 @@ export default ({ mode }) => {
       environment: 'jsdom',
       setupFiles: './vitest.setup.mjs',
     },
-    server: {
-      proxy: {
-        '/api': {
-          target: apiTarget,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        },
-      }
-    }
   });
 };
 
