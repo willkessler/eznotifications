@@ -14,6 +14,7 @@ async function bootstrap() {
     app.use(cookieParser());
 
     /* Used only to debug cookie reception */
+    /*
     app.use((req, res, next) => {
         if (Object.keys(req.cookies).length > 0) {
             console.log('Parsed cookies: ', req.cookies);
@@ -22,6 +23,7 @@ async function bootstrap() {
         }
         next();
     });
+    */
 
     // Middleware to capture raw body and make it available as a rawBody attribute on the request
     /*
@@ -42,15 +44,46 @@ async function bootstrap() {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
+    // defeating CORS because we'll check domain access for API calls via SDKs, and check user-level access
+    // via clerk JWKS instead of CORS. CORS doesn't work if the Origin header isn't passed, which is sometimes
+    // the case if running the dashboard on port 80.
+    /*
     const origin = process.env.INBOUND_PORT === '80' || process.env.INBOUND_PORT === '443' ?
         `http://${process.env.HOST}` :
         `http://${process.env.HOST}:${process.env.INBOUND_PORT}`;
 
-    console.log(`Enabling cors with origin ${origin}`);
     app.enableCors({
         origin: origin, // This now correctly handles default ports
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     });
+    */
+
+    app.enableCors({
+        origin: '*', // Note: Use with caution and only in controlled environments
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    });
+
+/*
+    console.log(`Enabling cors. process.env.HOST=${process.env.HOST} ` +
+        `INBOUND_PORT=${process.env.INBOUND_PORT}`);
+
+    app.enableCors({
+        origin: (origin, callback) => {
+            let allowedOrigin = origin;
+            if (origin === undefined) {
+                if (process.env.INBOUND_PORT === '80' || process.env.INBOUND_PORT === '443') {
+                    allowedOrigin = `${process.env.PROTOCOL}://${process.env.HOST}`;
+                } else {
+                    allowedOrigin = `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.INBOUND_PORT}`;
+                }
+            }
+            console.log(`origin=${origin}`);
+            console.log(`allowedOrigin=${allowedOrigin}`);
+            callback(null, allowedOrigin);
+        },
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    });
+*/
 
     const config = new DocumentBuilder()
         .setTitle('This Is Not a Drill! API')
