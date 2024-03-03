@@ -21,6 +21,7 @@ import { IconSpeakerphone,
          IconTrash,
          IconChartLine,
          IconFidgetSpinner } from '@tabler/icons-react';
+import { useConfig } from '../../lib/ConfigContext';
 import { useDateFormatters } from '../../lib/DateFormattersProvider';
 import { useTimezone } from '../../lib/TimezoneContext';
 import type EZNotification from '../../lib/shared_dts/EZNotification';
@@ -88,6 +89,7 @@ const NotificationsContext = createContext<NotificationsContextType>(defaultCont
 export const useNotifications = () => useContext(NotificationsContext);
 
 export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ children }) => {
+    const { apiBaseUrl, getBearerHeader } = useConfig();
     const { userTimezone, setUserTimezone } = useTimezone();
     const { formatDisplayDate, formatDisplayTime } = useDateFormatters();
     const [notifications, setNotifications] = useState<EZNotification[]>([]);
@@ -396,11 +398,11 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         let success = false;
         try {
             const method = 'DELETE';
-            const apiUrl = `${window.location.origin}/api/notifications/` +
-                `${deletedNotificationId}`;
+            const apiUrl = `${apiBaseUrl}/notifications/${deletedNotificationId}`;
             //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
             const response = await fetch(apiUrl, {
-                method: method
+                method: method,
+                headers: await getBearerHeader(),
             });
             if (!response.ok) throw new Error('Failed to delete notification with id: ' + deletedNotificationId);
 
@@ -466,12 +468,11 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     const actuallyResetViews = useCallback(async (): Promise<boolean> => {
         try {
             const method = 'PUT';
-            const apiUrl = 
-                `${window.location.origin}/api/notifications` +
-                `/${resetViewsNotificationId}/reset-views`;
+            const apiUrl = `${apiBaseUrl}/notifications/${resetViewsNotificationId}/reset-views`;
             //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
             const response = await fetch(apiUrl, {
-                method: method
+                method: method,
+                headers: await getBearerHeader(),
             });
             if (!response.ok) throw new Error('Failed to reset views for notification w/id: ' + resetViewsNotificationId);
 
@@ -519,8 +520,11 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             setNotificationsLoading(true); // start loading process
             try {
                 const queryParams = new URLSearchParams({ clerkUserId: user.id }).toString();
-                const apiUrl = `${window.location.origin}/api/notifications?${queryParams}`;
-                const response = await fetch(apiUrl);
+                const apiUrl = `${apiBaseUrl}/notifications?${queryParams}`;
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: await getBearerHeader(),
+                });
                 const data = await response.json();
                 if (data && data.length > 0) {
                     const sortedNotifications = sortNotifications(data);
@@ -554,7 +558,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         console.log('Notification data on form submit:', notificationData);
         const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
         const action = (notificationData.editing ? 'updated' : 'created' );
-        const apiUrl = `/api/notifications` + (notificationData.editing ? '/' + notificationData.uuid : '/new');
+        const apiUrl = `${apiBaseUrl}/notifications` + (notificationData.editing ? '/' + notificationData.uuid : '/new');
 
         try {
             const postingObject = {
@@ -575,7 +579,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             console.log(`submitNotification with body: ${JSON.stringify(postingObject)}`);
             const response = await fetch(apiUrl, {
                 method: method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: await getBearerHeader ({ 'Content-Type': 'application/json' }),
                 body: postingObjectString,
             });
             const data = await response.json();

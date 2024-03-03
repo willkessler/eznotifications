@@ -10,12 +10,23 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             // Use the custom extractor here
             jwtFromRequest: ExtractJwt.fromExtractors([
                 (request) => {
-                    //console.log("jwt-strategy: Request cookies:", request.cookies);
+                    // Attempt to extract the token from the cookies first
                     let token = null;
                     if (request && request.cookies) {
                         token = request.cookies['__session'];
-                        //console.log(`Extracted token: ${token}`);
+                        //console.log(`Extracted token from cookies: ${token}`);
                     }
+
+                    // If the token was not found in the cookies, try the Authorization header
+                    if (!token && request.headers.authorization) {
+                        const authHeader = request.headers.authorization;
+                        const match = authHeader.match(/Bearer\s+(\S+)/);
+                        if (match) {
+                            token = match[1];
+                            //console.log(`Extracted token from Authorization header: ${token}`);
+                        }
+                    }
+
                     return token;
                 }
             ]),
@@ -26,7 +37,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                 jwksUri: process.env.CLERK_JWKS_ENDPOINT,
             }),
             //      audience: 'ThisIsNotADrillDashboard',
-            issuer: 'https://assured-racer-63.clerk.accounts.dev',
+            issuer: 'https://assured-racer-63.clerk.accounts.dev', // move this to an env var
             algorithms: ['RS256'],
         });
     }

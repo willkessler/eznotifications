@@ -4,20 +4,19 @@ services:
     image: thisisnotadrilldash:latest
     build:
       context: ./packages/dashboard
-      # Optionally pass the API target as a build arg if your setup requires it
-      # args:
-      #   VITE_API_TARGET: http://api:8080
       args:
         VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY}
+        VITE_API_TARGET: ${VITE_API_TARGET}
     ports:
       - "80:80"
     env_file:
       - ./packages/dashboard/.env
     environment:
-      - VITE_API_TARGET=http://api:8080
       - VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
+      - VITE_API_TARGET=http://api:8080
     depends_on:
       - api
+      # These are just for debugging if container problems arise
 #    stdin_open: true
 #    tty: true
 #    command: ["/bin/sh"]
@@ -36,4 +35,5 @@ services:
       - INBOUND_PORT=80
       - PROTOCOL=http
     extra_hosts:
+      # Access to local postgres
       - "host.docker.internal:172.17.0.1"

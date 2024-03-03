@@ -5,6 +5,7 @@ import { MantineProvider } from '@mantine/core';
 import { Anchor, Button, Code, Group, Image, Modal, Textarea, Text } from '@mantine/core';
 import { IconLogout } from '@tabler/icons-react';
 import RouterComponent from './components/Router';
+import { ConfigProvider } from './lib/ConfigContext';
 import { ClerkProvider } from '@clerk/clerk-react'
 import { dark } from '@clerk/themes';
 import classes from './pages/NavbarSimple.module.css';
@@ -26,13 +27,15 @@ export default function App() {
         signIn: { baseTheme: 'neobrutalism' as any }
       }}
     >
+      <ConfigProvider>
         <Router>
           <MantineProvider defaultColorScheme="dark" >
             <TimezoneProvider>
               <RouterComponent />
             </TimezoneProvider>
           </MantineProvider>
-        </Router>
+         </Router>
+       </ConfigProvider>
       </ClerkProvider>
     );
 }

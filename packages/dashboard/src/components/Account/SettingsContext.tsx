@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { useUser, useOrganization, useOrganizationList } from "@clerk/clerk-react";
+import { useConfig } from '../../lib/ConfigContext';
 import type { OrganizationDataProps, CallbackOutcomes, SettingsContextType } from  '../../lib/shared_dts/SettingsContext';
 
 const SettingsContext = createContext<SettingsContextType>({
@@ -28,6 +29,7 @@ const SettingsContext = createContext<SettingsContextType>({
 export const useSettings = () => useContext(SettingsContext);
 
 export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
+    const { apiBaseUrl, getBearerHeader } = useConfig();
     const { user } = useUser();
     const { createOrganization, setActive } = useOrganizationList();
     const [ organizationName, setOrganizationName ] = useState('My Team');
@@ -45,9 +47,12 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
     const getSettings = async () => {
         if (user) {
             const clerkId = user.id;
-            const apiUrl = `${window.location.origin}/api/organization/configure?clerkId=${clerkId}`;
+            const apiUrl = `${apiBaseUrl}/organization/configure?clerkId=${clerkId}`;
             try {
-                const response = await fetch(apiUrl);
+                const response = await fetch(apiUrl, {
+                    method:'GET',
+                    headers: await getBearerHeader(),
+                });
                 if (!response.ok) {
                     if (response.status === 404) {
                         console.log('Organization settings not found.');
@@ -71,12 +76,12 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
     const saveSettings = async (clerkOrganizationId: string) => {
         if (user) {
             const clerkCreatorId = user.id;
-            const apiUrl = `${window.location.origin}/api/organization/configure`;
+            const apiUrl = `${apiBaseUrl}/organization/configure`;
             console.log('in saveSettings, permittedDomains:', permittedDomains);
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: await getBearerHeader({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify({
                         organizationName: organizationName,
                         clerkCreatorId: clerkCreatorId,
@@ -101,7 +106,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
     }
 
     const createLocalUser = async (clerkUserId: string): Promise<boolean> => {
-        const apiUrl = `${window.location.origin}/api/user/create`;
+        const apiUrl = `${apiBaseUrl}/user/create`;
         if (user) {
             const primaryEmail = user.primaryEmailAddress?.emailAddress;
             console.log(`In createLocalUser: calling API to to create local user for clerk user id: ` +
@@ -114,7 +119,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                 console.log(`Send this to backend: ${JSON.stringify(userObject,null,2)}`);
                 const response = await fetch(apiUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: await getBearerHeader({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify(userObject)
                 });
                 if (!response.ok) {
@@ -133,12 +138,12 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
     }
 
     const createLocalOrganization = async (organizationData: OrganizationDataProps): Promise<boolean> => {
-        const apiUrl = `${window.location.origin}/api/organization/create`;
+        const apiUrl = `${apiBaseUrl}/organization/create`;
         console.log('in createLocalOrganization, calling API to attempt to create an org.');
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: await getBearerHeader({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify({ 
                     organizationName:    organizationData.organizationName,
                     clerkCreatorId:      organizationData.clerkCreatorId,
@@ -184,11 +189,11 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
         if (user) {
             const clerkUserId = user.id;
             console.log('in addUserToOurOrg, calling API to attach current user to the correct org.');
-            const apiUrl = `${window.location.origin}/api/user/attach-to-organization`;
+            const apiUrl = `${apiBaseUrl}/user/attach-to-organization`;
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: await getBearerHeader({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify({ 
                         clerkUserId:         clerkUserId,
                         clerkOrganizationId: clerkOrganizationId,
