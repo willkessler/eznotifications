@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import type APIKey from '../../lib/shared_dts/APIKey';
+import { useConfig } from '../../lib/ConfigContext';
 
 interface APIKeysContextType {
     APIKeys: APIKey[];
@@ -26,6 +27,7 @@ const APIKeysContext = createContext<APIKeysContextType>({
 export const useAPIKeys = () => useContext(APIKeysContext);
 
 export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
+    const { apiBaseUrl, getBearerHeader } = useConfig();
     const [APIKeys, setAPIKeys] = useState<APIKey[]>([]);
     const [sandboxAPIKeys, setSandboxAPIKeys] = useState<APIKey[]>([]);
     const [APIKeysLastUpdated, setAPIKeysLastUpdated] = useState<number>();
@@ -51,14 +53,13 @@ export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ childre
         const developmentKeys = data
             .filter(apiKeyRecord => 
                 apiKeyRecord.apiKeyType === 'development' && 
-                apiKeyRecord.isActive === true &&
-                apiKeyRecord.expiresAt === null);
+                !apiKeyRecord.expiresAt);
         setAPIKeys(developmentKeys);
         const sandboxKeys = data
             .filter(apiKeyRecord => 
                 apiKeyRecord.apiKeyType === 'development' && 
                 apiKeyRecord.isActive === true &&
-                apiKeyRecord.expiresAt !== null)
+                apiKeyRecord.expiresAt)
             .sort((a: APIKey, b: APIKey) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         setSandboxAPIKeys(sandboxKeys);
         const productionKeys = data.filter(apiKeyRecord => 
@@ -75,8 +76,12 @@ export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ childre
     const fetchAPIKeys = useCallback(async (clerkId:string) => {
         setAPIKeysLoading(true); // start loading process
         try {
-            const APIUrl = `${window.location.origin}/api/api-keys?clerkId=${clerkId}`;
-            const response = await fetch(APIUrl);
+            const APIUrl = `${apiBaseUrl}/api-keys?clerkId=${clerkId}`;
+            const response = await fetch(APIUrl, {
+                method: 'GET',
+                credentials: 'include',
+                headers: await getBearerHeader(),
+            });
             const data = await response.json();
             const apiKeys = data.map(transformToAPIKey);
             splitDevelopmentAndProductionKeys(apiKeys);
@@ -91,13 +96,16 @@ export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ childre
         if (!clerkId) {
             return false;
         }
-        const apiUrl = `${window.location.origin}/api/api-keys/create`;
+        const apiUrl = `${apiBaseUrl}/api-keys/create`;
         try {
             const response = await fetch(apiUrl, {
-              method: 'POST',
-              credentials: 'include',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ apiKeyType, clerkId, temporary }),
+                method: 'POST',
+                credentials: 'include',
+                headers: await getBearerHeader({ 'Content-Type': 'application/json' }),
+                body: JSON.stringify({ 
+                    apiKeyType, 
+                    clerkId, 
+                    temporary }),
             });
             if (!response.ok) {
                 throw new Error (`HTTP error! status: ${response.status}`);
@@ -114,9 +122,10 @@ export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ childre
 
     const toggleAPIKeyStatus = useCallback(async (APIKeyId:string, clerkId:string) => {
         try {
-            const APIUrl = `${window.location.origin}/api/api-keys/toggle-active`;
+            const APIUrl = `${apiBaseUrl}/api-keys/toggle-active`;
             const response = await fetch(APIUrl, {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ clerkId, APIKeyId }),
             });

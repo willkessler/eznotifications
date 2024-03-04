@@ -23,7 +23,7 @@ export interface SettingsContextType {
     setTimezone: (timezone: string) => void;
     refreshFrequency: number;
     permittedDomains: string;
-    getSettings: () => Promise<null>;
+    getSettings: () => Promise<OrganizationDataProps | null>;
     saveSettings: (clerkOrganizationId: string) => Promise<boolean>;
     setPermittedDomains: (domains: string) => void;
     setRefreshFrequency: (frequency: number) => void;

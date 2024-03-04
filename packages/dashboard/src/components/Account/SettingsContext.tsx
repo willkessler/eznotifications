@@ -44,13 +44,14 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
     // In that case, we tell the tutorial to do something a bit different.
     let userRecordCreated = false;    
 
-    const getSettings = async () => {
+    const getSettings = async (): Promise<OrganizationDataProps | null> => {
         if (user) {
             const clerkId = user.id;
             const apiUrl = `${apiBaseUrl}/organization/configure?clerkId=${clerkId}`;
             try {
                 const response = await fetch(apiUrl, {
                     method:'GET',
+                    credentials: 'include',
                     headers: await getBearerHeader(),
                 });
                 if (!response.ok) {
@@ -62,9 +63,11 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                 } else {
                     const data = await response.json();
                     console.log('Fetched stored settings, now storing in context.');
-                    setTimezone(data.timezone);
-                    setPermittedDomains(data.permittedDomains);
-                    setRefreshFrequency(data.refreshFrequency);
+                    const orgProps = data as OrganizationDataProps;
+                    setTimezone(orgProps.timezone);
+                    setPermittedDomains(orgProps.permittedDomains);
+                    setRefreshFrequency(orgProps.refreshFrequency);
+                    return orgProps;
                 }
             } catch (error) {
                 console.error(`Error getting org settings: ${error}`);
@@ -73,7 +76,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
         return null;
     };
         
-    const saveSettings = async (clerkOrganizationId: string) => {
+    const saveSettings = async (clerkOrganizationId: string, userDriven?: boolean) => {
         if (user) {
             const clerkCreatorId = user.id;
             const apiUrl = `${apiBaseUrl}/organization/configure`;
@@ -81,6 +84,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
+                    credentials: 'include',
                     headers: await getBearerHeader({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify({
                         organizationName: organizationName,
@@ -119,6 +123,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                 console.log(`Send this to backend: ${JSON.stringify(userObject,null,2)}`);
                 const response = await fetch(apiUrl, {
                     method: 'POST',
+                    credentials: 'include',
                     headers: await getBearerHeader({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify(userObject)
                 });
@@ -143,6 +148,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
+                credentials: 'include',
                 headers: await getBearerHeader({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify({ 
                     organizationName:    organizationData.organizationName,
@@ -193,6 +199,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
+                    credentials: 'include',
                     headers: await getBearerHeader({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify({ 
                         clerkUserId:         clerkUserId,
@@ -320,9 +327,14 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                 // Try to save settings only for a new organization.
                 if (outcomes.createdMirrorOrg) {
                     try {
-                        console.log(`Saving default settings into the new org with clerk org id: ${clerkOrganizationId}.`);
-                        const updatedOrg = await saveSettings(clerkOrganizationId);
-                        outcomes.savedSettings = true;
+                        console.log('Fetching settings if they exist from a previous session.')
+                        const orgProps = await getSettings();
+                        // only save the default permitted domains if there are none stored.
+                        if (orgProps && orgProps.permittedDomains && orgProps.permittedDomains.length === 0) { 
+                            console.log(`Saving default settings into the new org with clerk org id: ${clerkOrganizationId}.`);
+                            const updatedOrg = await saveSettings(clerkOrganizationId);
+                            outcomes.savedSettings = true;
+                        }
                     } catch (error) {
                         console.error(`Error saving default settings for our mirror organization: ${error}`);
                     }
@@ -335,8 +347,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
 
             // If we get here, everything that we did was successful.
             return (true);
-                
-            
     };
 
 

@@ -82,7 +82,7 @@ export class EZNotificationService {
         }
     }
 
-    async updateNotification(uuid: string, updateData: Partial<EZNotification>, clerkCreatorId: string): 
+    async updateNotification(uuid: string, updateData: Partial<EZNotification>, clerkCreatorId: string):
                              Promise<EZNotification> {
         const ezNotification = await this.ezNotificationRepository.findOneBy({ uuid: uuid });
         if (ezNotification) {
@@ -100,7 +100,7 @@ export class EZNotificationService {
         if (ezNotification) {
             console.log(`Resetting views for notification uuid: ${notificationUuid}.`);
             try {
-                const results = 
+                const results =
                     await this.endUsersServedRepository
                         .createQueryBuilder()
                         .update(EndUsersServed)
@@ -157,12 +157,12 @@ export class EZNotificationService {
         } else {
             // The userId must always be passed in. If a react-sdk user forgets to do this, the react-sdk will generate
             // a user id, and store it in a cookie for subsequent requests.
-            const userId = queryParams.userId; 
+            const userId = queryParams.userId;
             const pageId = queryParams.pageId;
             const environments = queryParams.environments;
             const organization = queryParams.organization;
             console.log('We found organization with uuid:', organization?.uuid);
-            
+
             return this.connection.transaction(async transactionalEntityManager => {
                 // Convert today's date to the user's local timezone
                 const today = new Date();
@@ -172,7 +172,7 @@ export class EZNotificationService {
                 // Check if EndUser record corresponding to the passed user id exists, and if not, create it.
                 let endUser = await transactionalEntityManager.findOne(EndUser, { where: { endUserId: userId } });
                 if (!endUser) {
-                    endUser = transactionalEntityManager.create(EndUser, { 
+                    endUser = transactionalEntityManager.create(EndUser, {
                         endUserId: userId,
                         organization: organization,
                     });
@@ -573,7 +573,8 @@ export class EZNotificationService {
 
         // Split permittedDomainsString into an array, removing empty strings
         if (orgConfiguration.permittedDomains) {
-            const permittedDomains = orgConfiguration.permittedDomains.split(/[\s,]+/).filter(domain => domain.trim().length > 0);
+            const permittedDomains = orgConfiguration.permittedDomains.split(/[\s,]+/)
+                .filter(domain => domain.trim().length > 0);
 
             console.log('saving organization:', organization);
             console.log('permittedDomains after splitting:', permittedDomains);
@@ -592,6 +593,11 @@ export class EZNotificationService {
 
             // Save new permitted domain records
             await this.permittedDomainsRepository.save(permittedDomainEntities);
+        } else {
+            // if no permitted domains passed in, then delete existing ones
+            // Remove any previous permitted domains
+            console.log('Deleting existing permitted domains.');
+            await this.permittedDomainsRepository.delete({ organization: { uuid: organization.uuid } });
         }
 
         // Return the updated organization entity (optionally refresh it from the database if needed)

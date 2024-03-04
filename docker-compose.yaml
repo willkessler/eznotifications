@@ -32,8 +32,9 @@ services:
     env_file:
       - ./packages/api/.env
     environment:
-      - NODE_ENV=production
-      - HOST=localhost
+      - NODE_ENV=development
+      - DASHBOARD_HOST=localhost
+      - API_HOST=localhost
       - INBOUND_PORT=80
       - PROTOCOL=http
       - CLERK_JWT_ISSUER=${CLERK_JWT_ISSUER}

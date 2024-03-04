@@ -12,7 +12,8 @@ export class CorsOverrideMiddleware implements NestMiddleware {
         // Define a default CORS policy for the dashboard
         const dashboardCorsOptions = {
             origin: process.env.DASHBOARD_HOST, // Allow only the dashboard domain
-            methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+            methods: 'OPTIONS,GET,HEAD,PUT,PATCH,POST,DELETE',
+            credentials: true,
         };
 
         // Define a more permissive CORS policy for global access endpoints

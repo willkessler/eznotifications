@@ -73,10 +73,10 @@ export const NotificationTypeSelector: React.FC<NotificationTypeSelectorProps> =
         className={classes.notificationTypeChoice}
             >
             <Radio value="info" label={<CustomLabel Icon={IconInfoCircle} text="Info" bgColor="#2f2" />} />
-            <Radio value="change" label={<CustomLabel Icon={IconExchange} text="Info" bgColor="aaf" />} />
-            <Radio value="alert" label={<CustomLabel Icon={IconAlertTriangle} text="Info" bgColor="#orange" />} />
-            <Radio value="outage" label={<CustomLabel Icon={IconCloudStorm} text="Info" bgColor="#f22" />} />
-            <Radio value="call_to_action" label={<CustomLabel Icon={IconSpeakerphone} text="Info" bgColor="#ff2" />} />
+            <Radio value="change" label={<CustomLabel Icon={IconExchange} text="Change" bgColor="aaf" />} />
+            <Radio value="alert" label={<CustomLabel Icon={IconAlertTriangle} text="Alert" bgColor="#orange" />} />
+            <Radio value="outage" label={<CustomLabel Icon={IconCloudStorm} text="Outage" bgColor="#f22" />} />
+            <Radio value="call_to_action" label={<CustomLabel Icon={IconSpeakerphone} text="Call to action" bgColor="#ff2" />} />
             <Radio value="other" label={<CustomLabel Icon={IconDots} text="Other" bgColor="#666" />} />
          </RadioGroup>
 

@@ -381,7 +381,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     const [deletedNotificationContents, setDeletedNotificationContents] = useState('');
 
     const showDeleteModal = (notification: EZNotification) => {
-        console.log('deleting this notif', notification);
+        console.log('deleting this notification uuid:', notification.uuid);
         setDeletedNotificationId(notification.uuid);
         setDeletedNotificationContents(notification.content);
         setIsDeleteModalOpen(true);
@@ -402,6 +402,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
             const response = await fetch(apiUrl, {
                 method: method,
+                credentials: 'include',
                 headers: await getBearerHeader(),
             });
             if (!response.ok) throw new Error('Failed to delete notification with id: ' + deletedNotificationId);
@@ -415,10 +416,10 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             setNotificationsLoading(false);
             return success;
         }
-    }, []);
+    }, [deletedNotificationId]);
     
     const deleteNotification = async () => {
-        //console.log('Actually deleting notification with id:', deletedNotificationId);
+        console.log('Actually deleting notification with id:', deletedNotificationId);
         await actuallyDeleteNotification();
         setIsDeleteModalOpen(false);
         setDeletedNotificationContents('');
@@ -472,6 +473,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
             const response = await fetch(apiUrl, {
                 method: method,
+                credentials: 'include',
                 headers: await getBearerHeader(),
             });
             if (!response.ok) throw new Error('Failed to reset views for notification w/id: ' + resetViewsNotificationId);
@@ -523,6 +525,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
                 const apiUrl = `${apiBaseUrl}/notifications?${queryParams}`;
                 const response = await fetch(apiUrl, {
                     method: 'GET',
+                    credentials: 'include',
                     headers: await getBearerHeader(),
                 });
                 const data = await response.json();
@@ -579,6 +582,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             console.log(`submitNotification with body: ${JSON.stringify(postingObject)}`);
             const response = await fetch(apiUrl, {
                 method: method,
+                credentials: 'include',
                 headers: await getBearerHeader ({ 'Content-Type': 'application/json' }),
                 body: postingObjectString,
             });
