@@ -11,12 +11,15 @@ async function bootstrap() {
     dotenv.config();
     const app = await NestFactory.create(AppModule, { bodyParser: false }); // Disable automatic body parsing
 
+    app.use(cookieParser());
+
+    /* Used only to debug all inbound headers */
+    /*
     app.use((req, res, next) => {
         console.log(req.method, ':', req.headers);
         next();
     });
-    
-    app.use(cookieParser());
+    */    
 
     /* Used only to debug cookie reception */
     /*
@@ -40,10 +43,12 @@ async function bootstrap() {
     */
     
     // Middleware to log every request just to debug
+    /*
     app.use((req, res, next) => {
         console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl} - Origin: ${req.headers.origin}`);
         next();
     });
+    */
 
     // Re-enable body parsing for other routes
     app.use(express.json());
@@ -54,22 +59,15 @@ async function bootstrap() {
     // the case if running the dashboard on port 80.
     /*
     const origin = process.env.INBOUND_PORT === '80' || process.env.INBOUND_PORT === '443' ?
-        `http://${process.env.HOST}` :
-        `http://${process.env.HOST}:${process.env.INBOUND_PORT}`;
+        `http://${process.env.DASHBOARD_HOST}` :
+        `http://${process.env.DASHBOARD_HOST}:${process.env.INBOUND_PORT}`;
 
     app.enableCors({
         origin: origin, // This now correctly handles default ports
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     });
-    */
 
-    app.enableCors({
-        origin: '*', // Note: Use with caution and only in controlled environments
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    });
-
-/*
-    console.log(`Enabling cors. process.env.HOST=${process.env.HOST} ` +
+    console.log(`Enabling cors. process.env.DASHBOARD_HOST=${process.env.DASHBOARD_HOST} ` +
         `INBOUND_PORT=${process.env.INBOUND_PORT}`);
 
     app.enableCors({
@@ -77,9 +75,9 @@ async function bootstrap() {
             let allowedOrigin = origin;
             if (origin === undefined) {
                 if (process.env.INBOUND_PORT === '80' || process.env.INBOUND_PORT === '443') {
-                    allowedOrigin = `${process.env.PROTOCOL}://${process.env.HOST}`;
+                    allowedOrigin = `${process.env.PROTOCOL}://${process.env.DASHBOARD_HOST}`;
                 } else {
-                    allowedOrigin = `${process.env.PROTOCOL}://${process.env.HOST}:${process.env.INBOUND_PORT}`;
+                    allowedOrigin = `${process.env.PROTOCOL}://${process.env.DASHBOARD_HOST}:${process.env.INBOUND_PORT}`;
                 }
             }
             console.log(`origin=${origin}`);

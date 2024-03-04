@@ -3,7 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 
-import { LoggerMiddleware } from './loggerMiddleware';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { CorsOverrideMiddleware } from './cors-override.middleware';
+import { LoggerMiddleware } from './logger.middleware';
 import { AuthModule } from '../auth/auth.module';
 
 import { ApiKey } from '../EZNotification/entities/ApiKeys.entity';
@@ -36,8 +38,7 @@ import { EZNotification } from '../EZNotification/entities/EZNotification.entity
                        UserEmails, UserOrganization,
                        ApiKey, PermittedDomains],
             synchronize: false,
-//            logging: ["query"], // disable when we no longer need to track all queries
-            logging: ["query", "error"],
+            logging: process.env.NODE_ENV === 'production' ? ["error"] : ["query", "error"],
         }),
     ],
     controllers: [],
@@ -47,7 +48,8 @@ import { EZNotification } from '../EZNotification/entities/EZNotification.entity
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(LoggerMiddleware)
-      .forRoutes('*'); // Apply for all routes or specify certain routes
+        .apply(LoggerMiddleware)
+        .apply(CorsOverrideMiddleware)
+        .forRoutes('*'); // Apply for all routes or specify certain routes
   }
 }
