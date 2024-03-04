@@ -11,6 +11,11 @@ async function bootstrap() {
     dotenv.config();
     const app = await NestFactory.create(AppModule, { bodyParser: false }); // Disable automatic body parsing
 
+    app.use((req, res, next) => {
+        console.log(req.method, ':', req.headers);
+        next();
+    });
+    
     app.use(cookieParser());
 
     /* Used only to debug cookie reception */
