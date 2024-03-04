@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { CorsOverrideMiddleware } from './cors-override.middleware';
 import { LoggerMiddleware } from './logger.middleware';
 import { AuthModule } from '../auth/auth.module';
