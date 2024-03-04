@@ -47,8 +47,7 @@ import { EZNotification } from '../EZNotification/entities/EZNotification.entity
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-        .apply(LoggerMiddleware)
-        .apply(CorsOverrideMiddleware)
+        .apply(LoggerMiddleware, CorsOverrideMiddleware)
         .forRoutes('*'); // Apply for all routes or specify certain routes
   }
 }

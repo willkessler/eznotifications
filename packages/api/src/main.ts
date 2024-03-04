@@ -13,27 +13,8 @@ async function bootstrap() {
 
     app.use(cookieParser());
 
-    /* Used only to debug all inbound headers */
-    /*
-    app.use((req, res, next) => {
-        console.log(req.method, ':', req.headers);
-        next();
-    });
-    */    
-
-    /* Used only to debug cookie reception */
-    /*
-    app.use((req, res, next) => {
-        if (Object.keys(req.cookies).length > 0) {
-            console.log('Parsed cookies: ', req.cookies);
-        } else {
-            console.log('Raw Cookie Header: ', req.headers.cookie);
-        }
-        next();
-    });
-    */
-
-    // Middleware to capture raw body and make it available as a rawBody attribute on the request
+    // Middleware to capture raw body and make it available as a rawBody attribute on the request for
+    // webhooks from clerk.
     /*
     app.use('/webhook/clerk', express.raw({ type: 'application/json' }), (req, res, next) => {
         req.rawBody = req.body; // Capture raw body
@@ -42,14 +23,6 @@ async function bootstrap() {
     });
     */
     
-    // Middleware to log every request just to debug
-    /*
-    app.use((req, res, next) => {
-        console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl} - Origin: ${req.headers.origin}`);
-        next();
-    });
-    */
-
     // Re-enable body parsing for other routes
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
