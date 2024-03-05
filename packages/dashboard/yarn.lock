@@ -2378,27 +2378,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kinde-oss/kinde-auth-pkce-js@npm:^3.0.28":
-  version: 3.0.30
-  resolution: "@kinde-oss/kinde-auth-pkce-js@npm:3.0.30"
-  dependencies:
-    jwt-decode: "npm:^4.0.0"
-  checksum: 491f47a30016765244d9adfec9fd1b63532193610c69d1522f925e4df9a92e4fc26b7c6286bc3ccfdde355dda90e5353b2f301baf4cab3a7abc5ef9b5d99107e
-  languageName: node
-  linkType: hard
-
-"@kinde-oss/kinde-auth-react@npm:^3.0.24":
-  version: 3.0.24
-  resolution: "@kinde-oss/kinde-auth-react@npm:3.0.24"
-  dependencies:
-    "@kinde-oss/kinde-auth-pkce-js": "npm:^3.0.28"
-  peerDependencies:
-    react: ^17.0.2 || ^18
-    react-dom: ^17.0.2 || ^18
-  checksum: 1b70ff0acd277e313cc4eb00f0ec5b9ed71728b136ebdb1ca3a709a20888f4d12a57d9b5171d589c485a8ee759beb831cebd6b391304f3deda909264580450ab
-  languageName: node
-  linkType: hard
-
 "@mantine/carousel@npm:^7.4.2":
   version: 7.4.2
   resolution: "@mantine/carousel@npm:7.4.2"
@@ -9616,13 +9595,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jwt-decode@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "jwt-decode@npm:4.0.0"
-  checksum: de75bbf89220746c388cf6a7b71e56080437b77d2edb29bae1c2155048b02c6b8c59a3e5e8d6ccdfd54f0b8bda25226e491a4f1b55ac5f8da04cfbadec4e546c
-  languageName: node
-  linkType: hard
-
 "keyv@npm:^4.5.3":
   version: 4.5.4
   resolution: "keyv@npm:4.5.4"
@@ -9927,7 +9899,6 @@ __metadata:
     "@clerk/clerk-react": "npm:^4.30.3"
     "@clerk/themes": "npm:^1.7.9"
     "@clerk/types": "npm:^3.62.1"
-    "@kinde-oss/kinde-auth-react": "npm:^3.0.24"
     "@mantine/carousel": "npm:^7.4.2"
     "@mantine/charts": "npm:^7.4.2"
     "@mantine/code-highlight": "npm:^7.4.2"

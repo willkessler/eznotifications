@@ -2,7 +2,10 @@
   "name": "root",
   "private": true,
   "workspaces": [
-    "packages/*",
+    "packages/dashboard",
+    "packages/api",
+    "packages/sdk/react-core",
+    "packages/sdk/react-ui",
     "examples/react_sdk"
   ],
   "dependencies": {},

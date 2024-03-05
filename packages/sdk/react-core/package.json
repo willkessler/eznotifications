@@ -1,11 +1,15 @@
 {
   "name": "@thisisnotadrill/sdk",
+  "private" : false,
   "version": "1.0.0",
-  "description": "Client SDKs for \"This is Not A Drill!\" service",
+  "description": "Core SDK for deploying the This is Not A Drill! service in client React apps.",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",
   "types": "dist/fetchNotificationsSwr.d.ts",
-  "repository": "https://github.com/willkessler/eznotifications",
+  "repository": {
+    "url" : "https://github.com/willkessler/eznotifications",
+    "type" : "git"
+  },
   "author": "Will Kessler",
   "license": "MIT",
   "dependencies": {
