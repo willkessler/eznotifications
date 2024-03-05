@@ -20,7 +20,7 @@ export interface TinadNotification {
 }
 
 interface UseFetchDataReturn {
-    data: TinadNotification[] | undefined;
+    data: TinadNotification[] | null;
     isLoading: boolean;
     isError: boolean;
     error: any;
@@ -84,14 +84,14 @@ const useFetchData = (params: FetchParams): UseFetchDataReturn => {
     };
 
     // Function to determine the latest date between startDate and endDate
-    const getLatestDate = (startDate?: string, endDate?: string): Date => {
+    const getLatestDate = (startDate?: Date, endDate?: Date): Date => {
         if (!startDate) return endDate!;
         if (!endDate) return startDate;
         return startDate > endDate ? startDate : endDate;
     };
 
 
-    const sortAndGroupNotifications = (data: TinadNotification[]) => {
+    const sortAndGroupNotifications = (data: TinadNotification[]): TinadNotification[] => {
         // Sort the results into two (subsorted) groups, those with start and/or end dates, and those without.
         const noDateNotifications: TinadNotification[] = [];
         const withDateNotifications: TinadNotification[] = [];
@@ -164,7 +164,7 @@ const useFetchData = (params: FetchParams): UseFetchDataReturn => {
     // Only process data if it's not undefined
     const sortedAndGroupedNotifications = data ? (data.length > 0 ? sortAndGroupNotifications(data) : []) : null;
 
-    const returnObj =  {
+    const returnObj: UseFetchDataReturn = {
         data: sortedAndGroupedNotifications,
         isLoading: !data && !error,
         isError: !!error,

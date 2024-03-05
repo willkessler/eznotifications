@@ -70,7 +70,7 @@ const APIKeysPanel = () => {
             {productionAPIKeyValue === null ? '<not set yet>' : productionAPIKeyValue}
           </Text>
 
-          <CopyButton value={productionAPIKeyValue} timeout={2000}>
+          <CopyButton value={productionAPIKeyValue ? productionAPIKeyValue : ''} timeout={2000}>
             {({ copied, copy }) => (
               <Tooltip label={copied ? 'Copied Production API Key!' : 'Copy'} withArrow position="right">
                 <ActionIcon color={copied ? '#f33' : 'gray'} variant="subtle" onClick={copy}>
