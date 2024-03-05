@@ -5,12 +5,13 @@ import type { SDKConfig, SDKNotification, SDKDataReturn } from './types';
 export { SDKConfig, SDKNotification, SDKDataReturn } from './types';
 import { getSDKConfig, setSDKConfig } from './config';
 
+console.log('the core index file');
 // Main TINAD core initialization function.
 export const init = (config: Partial<SDKConfig>) : void => {
     setSDKConfig(config);
 }
 
-export const useSDKData = (): SDKDataReturn => {
+export const useSDKData = () => {
     console.log('TINAD: useSDKData');
     let sdkConfig = getSDKConfig();
     

@@ -9,7 +9,7 @@ interface SDKConfig {
 
 // Initial configuration with default values
 let sdkConfig: SDKConfig = {
-    apiBaseUrl: 'https://api.thisisnotadrill.com/',
+    apiBaseUrl: 'http://localhost:8080/',
     userId: null,
     pageId: null,
     environments: [],

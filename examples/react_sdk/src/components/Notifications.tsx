@@ -1,17 +1,15 @@
 import React from 'react';
-import useSDKData, { SDKNotification } from '@thisisnotadrill/react-core';
+import { useSDKData, SDKNotification } from '@thisisnotadrill/react-core';
 
 const NotificationsComponent = () => {
-  const { data: SDKNotification[], isLoading, isError, error } =
-        useSDKData({
-        });
+    const { data: sdkNotifications, isLoading, isError, error } = useSDKData();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError || !sdkNotifications) return <div>Error: {error?.message || "No notifications"}</div>;
+    if (isLoading) return <div>Loading...</div>;
+    if (isError || !sdkNotifications) return <div>Error: {error?.message || "No notifications"}</div>;
 
     return (
         <ul>
-            {sdkNotifications?.map((sdkNotification:SdkNotification, index:number) => (
+            {sdkNotifications?.map((sdkNotification: SDKNotification, index:number) => (
                 <li key={index}>
                     - Message: {sdkNotification.content}<br />
                     - Type: {sdkNotification.notificationType}<br />
