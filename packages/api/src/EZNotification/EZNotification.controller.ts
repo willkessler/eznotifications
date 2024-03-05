@@ -66,7 +66,6 @@ export class EZNotificationController {
         @Body('clerkCreatorId') clerkCreatorId: string,
         @Body('clerkOrganizationId') clerkOrganizationId: string,
         @Body('clerkEmail') clerkEmail: string,
-        @Body('timezone') timezone: string,
         @Body('permittedDomains') permittedDomains: string,
         @Body('refreshFrequency') refreshFrequency: number,
     ): Promise<Organization> {
@@ -75,7 +74,6 @@ export class EZNotificationController {
             clerkCreatorId,
             clerkOrganizationId,
             clerkEmail,
-            timezone,
             permittedDomains,
             refreshFrequency
         };
@@ -105,7 +103,6 @@ export class EZNotificationController {
         @Body('organizationName') organizationName: string,
         @Body('clerkCreatorId') clerkCreatorId: string,
         @Body('clerkOrganizationId') clerkOrganizationId: string,
-        @Body('timezone') timezone: string,
         @Body('permittedDomains') permittedDomains: string,
         @Body('refreshFrequency') refreshFrequency: number,
     ): Promise<Organization> {

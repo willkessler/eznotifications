@@ -7,8 +7,6 @@ const SettingsContext = createContext<SettingsContextType>({
     isSetupComplete: false,
     setIsSetupComplete: (setupComplete: boolean) => {},
     organizationName: 'My Team',
-    timezone: 'America/Los_Angeles',
-    setTimezone: (timezone: string) => {},
     refreshFrequency: 300, // 5 minutes, in seconds
     permittedDomains: 'stackblitz.io\ncodesandbox.io\n',
     getSettings: async () => Promise.resolve(null),
@@ -33,7 +31,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
     const { user } = useUser();
     const { createOrganization, setActive } = useOrganizationList();
     const [ organizationName, setOrganizationName ] = useState('My Team');
-    const [ timezone, setTimezone ] = useState('America/Los_Angeles');
     const [ permittedDomains, setPermittedDomains ] = useState('stackblitz.io\ncodesandbox.io\n');
     const [ refreshFrequency, setRefreshFrequency ] = useState(300); // seconds
     const [ isSetupComplete, setIsSetupComplete ] = useState(false);
@@ -64,7 +61,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                     const data = await response.json();
                     console.log('Fetched stored settings, now storing in context.');
                     const orgProps = data as OrganizationDataProps;
-                    setTimezone(orgProps.timezone);
                     setPermittedDomains(orgProps.permittedDomains);
                     setRefreshFrequency(orgProps.refreshFrequency);
                     return orgProps;
@@ -90,7 +86,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                         organizationName: organizationName,
                         clerkCreatorId: clerkCreatorId,
                         clerkOrganizationId: clerkOrganizationId,
-                        timezone: timezone,
                         permittedDomains: permittedDomains,
                         refreshFrequency: refreshFrequency,
                     })
@@ -155,7 +150,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                     clerkCreatorId:      organizationData.clerkCreatorId,
                     clerkOrganizationId: organizationData.clerkOrganizationId,
                     clerkEmail:          organizationData.clerkEmail,
-                    timezone:            organizationData.timezone, 
                     permittedDomains:    organizationData.permittedDomains, 
                     refreshFrequency:    organizationData.refreshFrequency }),
             });
@@ -176,7 +170,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                 throw new Error (`HTTP error! status: ${response.status}`);
             } else {
                 setOrganizationName(organizationData.organizationName);
-                setTimezone(organizationData.timezone);
                 setPermittedDomains(organizationData.permittedDomains);
                 setRefreshFrequency(organizationData.refreshFrequency);
                 // Tell the Notifications.tsx file that this is the first time an account admin has signed in
@@ -240,7 +233,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                         clerkEmail: user.primaryEmailAddress?.emailAddress,
                         clerkCreatorId: user.id, // clerkId of the owner of the new org.
                         clerkOrganizationId: clerkOrgId,
-                        timezone: 'America/Los_Angeles',
                         permittedDomains: permittedDomains,
                         refreshFrequency: 300,
                     });
@@ -368,8 +360,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
             setupClerkOrganizationAndMirrorRecords,
             organizationName,
             setOrganizationName,
-            timezone,
-            setTimezone,
             permittedDomains,
             setPermittedDomains,
             refreshFrequency,

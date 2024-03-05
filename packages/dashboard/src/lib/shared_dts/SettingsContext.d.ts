@@ -3,7 +3,6 @@ export interface OrganizationDataProps {
     clerkEmail?: string,
     clerkCreatorId: string,
     clerkOrganizationId: string,
-    timezone: string,
     permittedDomains: string,
     refreshFrequency: number,
 }
@@ -19,8 +18,6 @@ export interface SettingsContextType {
     isSetupComplete: boolean;
     setIsSetupComplete: (setupComplete: boolean) => void;
     organizationName: string;
-    timezone: string;
-    setTimezone: (timezone: string) => void;
     refreshFrequency: number;
     permittedDomains: string;
     getSettings: () => Promise<OrganizationDataProps | null>;
