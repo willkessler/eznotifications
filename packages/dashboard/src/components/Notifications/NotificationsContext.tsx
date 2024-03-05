@@ -82,6 +82,8 @@ const defaultContextValue: NotificationsContextType = {
     resetViewsForNotification: () => Promise.resolve(),
     closeResetViewsModal: () => {},
 
+    displayPastNotifications: false,
+    setDisplayPastNotifications: (newSetting: boolean) => {},
 };
 
 const NotificationsContext = createContext<NotificationsContextType>(defaultContextValue);
@@ -95,6 +97,11 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     const [notifications, setNotifications] = useState<EZNotification[]>([]);
     const [notificationsLastUpdated, setNotificationsLastUpdated] = useState<number | null>(null);
     const [notificationsLoading, setNotificationsLoading] = useState(true);
+    const [displayPastNotifications, setDisplayPastNotifications] = useState(() => {
+        const saved = localStorage.getItem('displayPastNotifications');
+        return saved ? saved === 'true' : false;
+    });
+
     const { user } = useUser();
     // When we create or update a notification, we'll highlight it in the notificationsList.
     const [highlightedId, setHighlightedId] = useState<string | null>(null);
@@ -530,8 +537,21 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
                 });
                 const data = await response.json();
                 if (data && data.length > 0) {
-                    const sortedNotifications = sortNotifications(data);
-                    setNotifications(sortedNotifications);
+                    let filteredNotifications;
+                    if (displayPastNotifications) {
+                        //console.log('Displaying all notifs');
+                        filteredNotifications = sortNotifications(data);
+                    } else {
+                        //console.log('Displaying none of the past notifs out of data:', data);
+                        const now = new Date();
+                        filteredNotifications = sortNotifications(data)
+                            .filter(notification =>
+                                ((notification.endDate === null) ||
+                                    (notification.endDate &&
+                                        new Date(notification.endDate) > now)));
+                        //console.log('filteredNotifications:', filteredNotifications);
+                    };
+                    setNotifications(filteredNotifications);
                 } else {
                     setNotifications([]);
                 }
@@ -541,7 +561,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
                 setNotificationsLoading(false);
             }
         }
-    }, []);
+    }, [displayPastNotifications]);
     
     const highlightNotification = useCallback((id:string) => {
         setHighlightedId(id);
@@ -651,6 +671,9 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         resetViewsForNotification,
         closeResetViewsModal,
         showResetViewsModal,
+        displayPastNotifications,
+        setDisplayPastNotifications,
+        
     }}>
       {children}
     </NotificationsContext.Provider>

@@ -59,6 +59,8 @@ const NotificationsList = () => {
             formatNotificationControlIcons,
             formatNotificationType,
             openStatisticsDrawer,
+            displayPastNotifications,
+            setDisplayPastNotifications,
           } = useNotifications();
     const { isSetupComplete } = useSettings();
     const { isSignedIn, user, isLoaded } = useUser();
