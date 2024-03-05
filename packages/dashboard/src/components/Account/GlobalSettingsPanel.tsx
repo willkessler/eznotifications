@@ -47,7 +47,7 @@ const GlobalSettingsPanel = () => {
   const handleSaveSettings = () => {
       if (user) {
           const userDriven = true; // ensure whatever data the user has set in the form will override whatever is in the db.
-          saveSettings(user.id, userDriven);
+          saveSettings(user.id);
           setIsChanged(false);
       }
   };

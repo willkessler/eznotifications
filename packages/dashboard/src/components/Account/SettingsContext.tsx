@@ -76,7 +76,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
         return null;
     };
         
-    const saveSettings = async (clerkOrganizationId: string, userDriven?: boolean) => {
+    const saveSettings = async (clerkOrganizationId: string) => {
         if (user) {
             const clerkCreatorId = user.id;
             const apiUrl = `${apiBaseUrl}/organization/configure`;
