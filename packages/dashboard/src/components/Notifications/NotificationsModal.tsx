@@ -167,6 +167,9 @@ const NotificationsModal = () => {
         if (user) {
             formData.clerkCreatorId = user.id;
             submitNotification(formData);
+            // clear stored notification data for the next one to be submitted
+            const blankEZNotification = createBlankEZNotification();
+            setNotificationData(blankEZNotification);
         } else {
             console.error('Clerk user not found, cannot submit.');
         }
