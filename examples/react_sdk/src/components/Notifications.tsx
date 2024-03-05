@@ -1,20 +1,20 @@
 import React from 'react';
-import useFetchData, { TinadNotification } from '@thisisnotadrill/sdk';
+import useSDKData, { SDKNotification } from '@thisisnotadrill/react-core';
 
 const NotificationsComponent = () => {
-  const { data: tinadNotifications, isLoading, isError, error } =
-        useFetchData({
+  const { data: SDKNotification[], isLoading, isError, error } =
+        useSDKData({
         });
 
   if (isLoading) return <div>Loading...</div>;
-  if (isError || !tinadNotifications) return <div>Error: {error?.message || "No notifications"}</div>;
+  if (isError || !sdkNotifications) return <div>Error: {error?.message || "No notifications"}</div>;
 
     return (
         <ul>
-            {tinadNotifications?.map((tinadNotification:TinadNotification, index:number) => (
+            {sdkNotifications?.map((sdkNotification:SdkNotification, index:number) => (
                 <li key={index}>
-                    - Message: {tinadNotification.content}<br />
-                    - Type: {tinadNotification.notificationType}<br />
+                    - Message: {sdkNotification.content}<br />
+                    - Type: {sdkNotification.notificationType}<br />
                     </li>
             ))}
         </ul>

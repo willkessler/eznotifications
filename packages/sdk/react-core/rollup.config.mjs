@@ -15,7 +15,7 @@ const onwarn = (warning, warn) => {
 };
 
 export default {
-  input: 'src/fetchNotificationsSwr.ts', // Your main TypeScript file
+  input: 'src/index.ts', // Your main TypeScript file
   external: ['react', 'react-dom', 'swr'],
   output: [
     {

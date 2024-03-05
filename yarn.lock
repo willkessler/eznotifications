@@ -2301,20 +2301,6 @@
   resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@kinde-oss/kinde-auth-pkce-js@^3.0.30":
-  version "3.0.30"
-  resolved "https://registry.yarnpkg.com/@kinde-oss/kinde-auth-pkce-js/-/kinde-auth-pkce-js-3.0.30.tgz#4bd05b8c35416fbcc40f6d57cfa0d0c5d26bb571"
-  integrity sha512-X9BAt7BgBJMjmTP6rTwe1nrvMVFhIcbYCCiObluHSJxB/GQA2zhbISyzcggPjGGGZmNbiVXr5FVLAunS+qFsIg==
-  dependencies:
-    jwt-decode "^4.0.0"
-
-"@kinde-oss/kinde-auth-react@^3.0.24":
-  version "3.0.26"
-  resolved "https://registry.yarnpkg.com/@kinde-oss/kinde-auth-react/-/kinde-auth-react-3.0.26.tgz#32165a6febf0af8ff932c4856189a27fb8d77d72"
-  integrity sha512-UFZLzPDm7vQ/vetoHvz+3GKom4kFiqnEkom8VqI8ySg08GmGmEhaxKSpyiHWZxX+EMysojK4FixnxCmTOSBd1w==
-  dependencies:
-    "@kinde-oss/kinde-auth-pkce-js" "^3.0.30"
-
 "@leichtgewicht/ip-codec@^2.0.1":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
@@ -4349,18 +4335,6 @@
   version "2.47.0"
   resolved "https://registry.yarnpkg.com/@tabler/icons/-/icons-2.47.0.tgz#c41c680d1947e3ab2d60af3febc4132287c60596"
   integrity sha512-4w5evLh+7FUUiA1GucvGj2ReX2TvOjEr4ejXdwL/bsjoSkof6r1gQmzqI+VHrE2CpJpB3al7bCTulOkFa/RcyA==
-
-"@tanstack/query-core@5.24.2":
-  version "5.24.2"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.24.2.tgz#3babdf66417712f20d9b08a47550cc54cc1313b1"
-  integrity sha512-GD1z7Ehl5bBLBZkt+imENuGvfk/hf+I2FihsQvtC4rOTF1rW+FDYCO8Ds5vwnO5Bcshr73/mS3BhWPSwc1bogA==
-
-"@tanstack/react-query@^5.22.2":
-  version "5.24.2"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.24.2.tgz#8296943b152d8e4148d91fc4e43121b28e6155ba"
-  integrity sha512-3DgDWb36gQdcPjmDbSfk7HcWhMRhaPezE8cmLlCudFYBkWRNjb3oFivL4S7YhDkncoGJuBC3oIVEbOrAkLXWLA==
-  dependencies:
-    "@tanstack/query-core" "5.24.2"
 
 "@testing-library/dom@^8.5.0":
   version "8.20.1"
@@ -12112,11 +12086,6 @@ jws@^3.2.2:
   dependencies:
     jwa "^1.4.1"
     safe-buffer "^5.0.1"
-
-jwt-decode@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-4.0.0.tgz#2270352425fd413785b2faf11f6e755c5151bd4b"
-  integrity sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==
 
 keyv@^4.5.3, keyv@^4.5.4:
   version "4.5.4"

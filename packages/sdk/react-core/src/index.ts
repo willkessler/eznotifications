@@ -1,35 +1,20 @@
 import useSWR from 'swr';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import type { SDKConfig, SDKNotification, SDKDataReturn } from './types';
+export { SDKConfig, SDKNotification, SDKDataReturn } from './types';
+import { getSDKConfig, setSDKConfig } from './config';
 
-interface FetchParams {
-    userId?: string;
-    pageId?: string;
-    environments?: string[];
+// Main TINAD core initialization function.
+export const init = (config: Partial<SDKConfig>) : void => {
+    setSDKConfig(config);
 }
 
-export interface TinadNotification {
-    id: string,
-    createdAt: Date,
-    content: string;
-    pageId?: string;
-    notificationType: string;
-    environments: [string];
-    startDate?: Date;
-    endDate?: Date;
-    live: boolean;
-}
-
-interface UseFetchDataReturn {
-    data: TinadNotification[] | null;
-    isLoading: boolean;
-    isError: boolean;
-    error: any;
-}
-
-
-const useFetchData = (params: FetchParams): UseFetchDataReturn => {
-    console.log('SWR useFetchData');
-    const apiUrl = new URL('http://localhost:5000/notifications');
+export const useSDKData = (): SDKDataReturn => {
+    console.log('TINAD: useSDKData');
+    let sdkConfig = getSDKConfig();
+    
+    const apiUrl = new URL(sdkConfig.apiBaseUrl + '/notifications');
 
     // Function to get a cookie by name
     const getCookie = (name: string): string | null => {
@@ -60,7 +45,7 @@ const useFetchData = (params: FetchParams): UseFetchDataReturn => {
         return 'tinad_user_' + uuidv4(); // This will generate a random UUID
     };
 
-    const fetcher = async (apiUrl: string): Promise<TinadNotification[]> => {
+    const fetcher = async (apiUrl: string): Promise<SDKNotification[]> => {
         console.log('Fetcher running on url:', apiUrl);
         const response = await fetch(apiUrl, {
             headers: {
@@ -91,25 +76,25 @@ const useFetchData = (params: FetchParams): UseFetchDataReturn => {
     };
 
 
-    const sortAndGroupNotifications = (data: TinadNotification[]): TinadNotification[] => {
+    const sortAndGroupNotifications = (data: SDKNotification[]): SDKNotification[] => {
         // Sort the results into two (subsorted) groups, those with start and/or end dates, and those without.
-        const noDateNotifications: TinadNotification[] = [];
-        const withDateNotifications: TinadNotification[] = [];
+        const noDateNotifications: SDKNotification[] = [];
+        const withDateNotifications: SDKNotification[] = [];
 
         console.log(`Got data: ${JSON.stringify(data)}`);
         data.forEach((notification: any) => { // 
             // Convert date strings to Date objects
-            const tinadNotification: TinadNotification = {
+            const sdkNotification: SDKNotification = {
                 ...notification,
                 createdAt: new Date(notification.createdAt),
                 startDate: notification.startDate ? new Date(notification.startDate) : undefined,
                 endDate: notification.endDate ? new Date(notification.endDate) : undefined,
             };
 
-            if (!tinadNotification.startDate && !tinadNotification.endDate) {
-                noDateNotifications.push(tinadNotification);
+            if (!sdkNotification.startDate && !sdkNotification.endDate) {
+                noDateNotifications.push(sdkNotification);
             } else {
-                withDateNotifications.push(tinadNotification);
+                withDateNotifications.push(sdkNotification);
             }
         });
 
@@ -132,27 +117,20 @@ const useFetchData = (params: FetchParams): UseFetchDataReturn => {
     // Main code for SDK starts here
     //
 
-    let userId = params.userId || getCookie('sdkUserId');
+    let userId = sdkConfig.userId || getCookie('sdkUserId');
     let userIdWasProvided = true;
     if (!userId) {
         userId = generateUniqueId();
         console.log(`Generated user id ${userId}`);
         userIdWasProvided = false;
     }
-    params.userId = userId; // ensure userId is included in params
-
-    Object.keys(params).forEach(key => {
-        if (key === 'userId' || key === 'pageId' || key === 'environments') {
-            apiUrl.searchParams.append(key, params[key] as string);
-        }
-        if (key === 'environments') {
-            (params[key] as string[]).forEach(value => apiUrl.searchParams.append(key, value));
-        }
-    });
+    apiUrl.searchParams.append('userId', userId);
+    apiUrl.searchParams.append('pageId', sdkConfig.pageId as string);
+    (sdkConfig.environments as string[]).forEach(value => apiUrl.searchParams.append('environments', value));
 
     const apiUrlString = apiUrl.toString();
     console.log('Fetching data from : ' + apiUrlString);
-    const { data, error, isLoading } = useSWR<TinadNotification[]>(apiUrlString, fetcher, { 
+    const { data, error, isLoading } = useSWR<SDKNotification[]>(apiUrlString, fetcher, { 
         refreshInterval: 10000,
     });
 
@@ -164,7 +142,7 @@ const useFetchData = (params: FetchParams): UseFetchDataReturn => {
     // Only process data if it's not undefined
     const sortedAndGroupedNotifications = data ? (data.length > 0 ? sortAndGroupNotifications(data) : []) : null;
 
-    const returnObj: UseFetchDataReturn = {
+    const returnObj: SDKDataReturn = {
         data: sortedAndGroupedNotifications,
         isLoading: !data && !error,
         isError: !!error,
@@ -174,4 +152,3 @@ const useFetchData = (params: FetchParams): UseFetchDataReturn => {
     return returnObj;
 };
 
-export default useFetchData;
