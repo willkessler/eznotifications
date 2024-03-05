@@ -32,7 +32,7 @@ export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ childre
     const [playgroundAPIKeys, setPlaygroundAPIKeys] = useState<APIKey[]>([]);
     const [APIKeysLastUpdated, setAPIKeysLastUpdated] = useState<number>();
     const [APIKeysLoading, setAPIKeysLoading] = useState(true);
-    const [productionAPIKeyValue, setProductionAPIKeyValue] = useState<string>('');
+    const [productionAPIKeyValue, setProductionAPIKeyValue] = useState<string | null>('');
 
     const transformToAPIKey = (raw: any): APIKey => {
         return {
