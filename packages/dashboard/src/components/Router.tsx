@@ -10,7 +10,7 @@ import Statistics from './Account/Statistics';
 import LoginComponent from './Account/LoginComponent'; 
 import SignUpComponent from './Account/SignUpComponent'; 
 import OnboardComponent from './Account/OnboardComponent'; 
-import SandboxComponent from './Account/SandboxComponent'; 
+import PlaygroundComponent from './Account/PlaygroundComponent'; 
 import AuthWrapper from './Account/AuthWrapper'; 
 import { SettingsProvider } from './Account/SettingsContext';
 import { APIKeysProvider } from './Account/APIKeysContext';
@@ -49,7 +49,7 @@ const RouterComponent = () => {
                   <Route path="/settings/account/tos" element={<Settings />} />
                   <Route path="/settings/account/billing" element={<Settings />} />
 
-                  <Route path="/sandbox" element={<SandboxComponent />} />
+                  <Route path="/playground" element={<PlaygroundComponent />} />
 
                 </Route>
               </Routes>

@@ -4,7 +4,7 @@ import { useTimezone } from './TimezoneContext';
 
 /*
   Library of date functionality needed throughout the front end of the app. 
-  Used heavily by the NotificationsList, but also by the Sandbox interstitial.
+  Used heavily by the NotificationsList, but also by the Playground interstitial.
 */
 
 interface DateFormattersContextType {

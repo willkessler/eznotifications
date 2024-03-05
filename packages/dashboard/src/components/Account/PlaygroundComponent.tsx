@@ -16,9 +16,9 @@ import introClasses from './css/IntroPages.module.css';
 import logoClasses from '../Layout/css/MainLayout.module.css';
 import apiKeyClasses from './css/APIKeys.module.css';
 
-const SandboxComponent = () => {
+const PlaygroundComponent = () => {
   const { isSignedIn,user } = useUser();
-  const { createAPIKey, fetchAPIKeys, sandboxAPIKeys } = useAPIKeys();
+  const { createAPIKey, fetchAPIKeys, playgroundAPIKeys } = useAPIKeys();
   const { pastTense, formatDisplayDate, formatDisplayTime } = useDateFormatters();
 
   if (!isSignedIn) {
@@ -52,21 +52,21 @@ const SandboxComponent = () => {
   }, [fetchAPIKeys, user]);
 
   useEffect(() => {
-    if (sandboxAPIKeys.length > 0) {
-      if (sandboxAPIKeys[0]?.expiresAt) {
-        if (!pastTense(sandboxAPIKeys[0].expiresAt.toISOString())) {
-          const temporaryKeyVal = sandboxAPIKeys[0].apiKey;
+    if (playgroundAPIKeys.length > 0) {
+      if (playgroundAPIKeys[0]?.expiresAt) {
+        if (!pastTense(playgroundAPIKeys[0].expiresAt.toISOString())) {
+          const temporaryKeyVal = playgroundAPIKeys[0].apiKey;
 
-          const temporaryKeyExpiration = formatDisplayDate('expire on', sandboxAPIKeys[0].expiresAt);
+          const temporaryKeyExpiration = formatDisplayDate('expire at', playgroundAPIKeys[0].expiresAt);
           console.log(`Temporary API key: ${temporaryKeyVal}`);
           setTemporaryAPIKeyValue(temporaryKeyVal); // show latest one
           setTemporaryAPIKeyExpiration(temporaryKeyExpiration);
         }
       }
     }
-  }, [sandboxAPIKeys]);
+  }, [playgroundAPIKeys]);
   
-  const gotoSandbox = () => {
+  const gotoPlayground = () => {
     const codeSandboxUrl = 'https://codesandbox.io/p/github/codesandbox/codesandbox-template-vite-react/main';
     window.open(codeSandboxUrl, '_blank');
   };
@@ -74,9 +74,9 @@ const SandboxComponent = () => {
   return (
     <Paper style={{paddingTop:'10px',marginTop:'10px'}} radius="md" p="sm">
       <Title order={2}>
-        Sandbox Testing
+        Playground Testing
       </Title>
-      <Text size="md" mt="md">You can try out the service immediately in a sandbox over at <Anchor href="https://codesandbox.io">CodeSandbox</Anchor>.</Text>
+      <Text size="md" mt="md">You can try out the service immediately in a playground over at <Anchor href="https://codesandbox.io">CodeSandbox</Anchor>.</Text>
       <Text size="md" mt="sm">
         Click "Generate" to get a key that is valid for the next hour. 
         Then, click the green button to experiment with the service with your temporary key.
@@ -99,8 +99,8 @@ const SandboxComponent = () => {
             </Tooltip>
           )}
         </CopyButton>
-        <Button onClick={gotoSandbox}
-                size="sm" variant="filled" color="green" style={{ marginLeft:'30px' }}>Open the sandbox!
+        <Button onClick={gotoPlayground}
+                size="sm" variant="filled" color="green" style={{ marginLeft:'30px' }}>Open the playground!
         </Button>
       </div>
       <div>
@@ -109,17 +109,17 @@ const SandboxComponent = () => {
         </Button>
         { temporaryAPIKeyValue && (
             <Text fs="italic" style={{paddingTop:'15px'}}>
-            The sandbox key <span style={{padding:'2px', border:'1px dotted #666', fontStyle:'normal', color:'green'}}>{temporaryAPIKeyValue}</span>
+            The playground key <span style={{padding:'2px', border:'1px dotted #666', fontStyle:'normal', color:'green'}}>{temporaryAPIKeyValue}</span>
               &nbsp;is temporary and will {temporaryAPIKeyExpiration ? temporaryAPIKeyExpiration : ''}</Text>
           ) }
       </div>
       <div>
         <Title p="xl" order={5}>Stackblitz demo</Title>
-        <Button onClick={openStackblitz} size="md">Open sandbox</Button>
+        <Button onClick={openStackblitz} size="md">Open playground</Button>
       </div>
     </Paper>
   );
 };
 
 
-export default SandboxComponent;
+export default PlaygroundComponent;

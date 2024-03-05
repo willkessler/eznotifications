@@ -46,8 +46,8 @@ const Tutorial = () => {
         locale: { skip: <strong aria-label="skip">Skip</strong> },
       },
       {
-        target: '[data-tour="sandbox"]',
-        content: 'After setting up a notification or two, you can quickly try it out in the sandbox.', 
+        target: '[data-tour="playground"]',
+        content: 'After setting up a notification or two, you can quickly try it out in the playground.', 
         disableBeacon: true,
         placement: 'right-end',
       },

@@ -4,7 +4,7 @@ import { useConfig } from '../../lib/ConfigContext';
 
 interface APIKeysContextType {
     APIKeys: APIKey[];
-    sandboxAPIKeys: APIKey[];
+    playgroundAPIKeys: APIKey[];
     fetchAPIKeys: (clerkId: any) => Promise<void>;
     APIKeysLoading: boolean;
     APIKeysLastUpdated: number | undefined;
@@ -15,7 +15,7 @@ interface APIKeysContextType {
 
 const APIKeysContext = createContext<APIKeysContextType>({
     APIKeys: [],
-    sandboxAPIKeys: [],
+    playgroundAPIKeys: [],
     fetchAPIKeys: async (clerkId: any) => {},
     APIKeysLoading: false,
     APIKeysLastUpdated: 0,
@@ -29,7 +29,7 @@ export const useAPIKeys = () => useContext(APIKeysContext);
 export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
     const { apiBaseUrl, getBearerHeader } = useConfig();
     const [APIKeys, setAPIKeys] = useState<APIKey[]>([]);
-    const [sandboxAPIKeys, setSandboxAPIKeys] = useState<APIKey[]>([]);
+    const [playgroundAPIKeys, setPlaygroundAPIKeys] = useState<APIKey[]>([]);
     const [APIKeysLastUpdated, setAPIKeysLastUpdated] = useState<number>();
     const [APIKeysLoading, setAPIKeysLoading] = useState(true);
     const [productionAPIKeyValue, setProductionAPIKeyValue] = useState<string>('');
@@ -55,17 +55,17 @@ export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ childre
                 apiKeyRecord.apiKeyType === 'development' && 
                 !apiKeyRecord.expiresAt);
         setAPIKeys(developmentKeys);
-        const sandboxKeys = data
+        const playgroundKeys = data
             .filter(apiKeyRecord => 
                 apiKeyRecord.apiKeyType === 'development' && 
                 apiKeyRecord.isActive === true &&
                 apiKeyRecord.expiresAt)
             .sort((a: APIKey, b: APIKey) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        setSandboxAPIKeys(sandboxKeys);
+        setPlaygroundAPIKeys(playgroundKeys);
         const productionKeys = data.filter(apiKeyRecord => 
             apiKeyRecord.apiKeyType === 'production' && apiKeyRecord.isActive === true );
         console.log('developmentKeys:', developmentKeys);
-        console.log('sandboxKeys:', sandboxKeys);
+        console.log('playgroundKeys:', playgroundKeys);
         console.log('productionKeys:', productionKeys);
         if (productionKeys.length > 0) {
             console.log('setting prod api key value');
@@ -145,7 +145,7 @@ export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ childre
     return (
         <APIKeysContext.Provider value={{ 
             APIKeys,
-            sandboxAPIKeys,
+            playgroundAPIKeys,
             fetchAPIKeys,
             createAPIKey,
             APIKeysLoading,

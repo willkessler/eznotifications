@@ -36,7 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleMobile, toggleDesktop }) => {
 
   const navBarData = [
     { link: '/', label: 'Notifications', icon: IconSpeakerphone, dataTour: 'notifications' },
-    { link: '/sandbox', label: 'Sandbox', icon: IconHorseToy, dataTour: 'sandbox' },
+    { link: '/playground', label: 'Playground', icon: IconHorseToy, dataTour: 'playground' },
     { link: '/settings/account', label: 'Account', icon: IconSettings, dataTour: 'account' },
     { link: 'https://tellyourusers-help-pages.super.site', label: 'Help', icon: IconHelp, dataTour: 'help' },
     { link: '', label: 'Logout', icon: IconLogout, dataTour: 'logout' },
