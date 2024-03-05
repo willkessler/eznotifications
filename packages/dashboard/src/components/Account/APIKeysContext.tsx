@@ -9,7 +9,7 @@ interface APIKeysContextType {
     APIKeysLoading: boolean;
     APIKeysLastUpdated: number | undefined;
     toggleAPIKeyStatus: (APIKeyId: string, clerkId: string) => Promise<boolean>;
-    productionAPIKeyValue: string;
+    productionAPIKeyValue: string | null;
     createAPIKey: (apiKeyType: string, clerkId?: string, temporary?: boolean) => Promise<boolean>;
 };
 
@@ -20,7 +20,7 @@ const APIKeysContext = createContext<APIKeysContextType>({
     APIKeysLoading: false,
     APIKeysLastUpdated: 0,
     toggleAPIKeyStatus: (APIKeyId: string, clerkId: string) => Promise.resolve(true),
-    productionAPIKeyValue: '',
+    productionAPIKeyValue: null,
     createAPIKey: (apiKeyType: string, clerkId?: string, temporary?: boolean) => Promise.resolve(true),
 });
 
@@ -70,6 +70,8 @@ export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ childre
         if (productionKeys.length > 0) {
             console.log('setting prod api key value');
             setProductionAPIKeyValue(productionKeys[0].apiKey);
+        } else {
+            setProductionAPIKeyValue(null);
         }
     };
 
@@ -126,7 +128,7 @@ export const APIKeysProvider: React.FC<{children: React.ReactNode}> = ({ childre
             const response = await fetch(APIUrl, {
                 method: 'POST',
                 credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
+                headers: await getBearerHeader({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify({ clerkId, APIKeyId }),
             });
             if (!response.ok) throw new Error(`Failed to toggle status of API key with id: ${APIKeyId}`);
