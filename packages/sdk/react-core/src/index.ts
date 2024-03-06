@@ -7,11 +7,11 @@ import { getSDKConfig, setSDKConfig } from './config';
 
 console.log('the core index file');
 // Main TINAD core initialization function.
-export const init = (config: Partial<SDKConfig>) : void => {
+const init = (config: Partial<SDKConfig>) : void => {
     setSDKConfig(config);
 }
 
-export const useSDKData = () => {
+const useSDKData = () => {
     console.log('TINAD: useSDKData');
     let sdkConfig = getSDKConfig();
     
@@ -48,9 +48,10 @@ export const useSDKData = () => {
 
     const fetcher = async (apiUrl: string): Promise<SDKNotification[]> => {
         console.log('Fetcher running on url:', apiUrl);
+        const apiKey = getSDKConfig().apiKey;
         const response = await fetch(apiUrl, {
             headers: {
-                "Authorization": "Bearer KB4seNru"
+                "Authorization": "Bearer " + apiKey,
             }
         });
         console.log('Fetcher ran fetch');
@@ -153,3 +154,9 @@ export const useSDKData = () => {
     return returnObj;
 };
 
+export const TinadSDK = {
+    init,
+    useSDKData,
+};
+
+    

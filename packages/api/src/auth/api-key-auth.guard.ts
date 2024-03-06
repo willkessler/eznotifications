@@ -62,14 +62,20 @@ export class ApiKeyAuthGuard implements CanActivate {
             .innerJoinAndSelect('api_key.organization', 'organization')
             .innerJoinAndSelect('organization.permittedDomains', 'permitted_domains')
             .where('api_key.apiKey = :apiKeyValue', { apiKeyValue })
-            .select('permitted_domains.domain');
+            .select('permitted_domains.domain as domain');
 
         //const results = await queryBuilder.getMany(); // not sure why a regular getMany() didn't work here?
         //const domains = results.flatMap(result => result.organization.permittedDomains.map(pd => pd.domain));
         const results = await queryBuilder.getRawMany();
         console.log('We got these results from getRawMany:', JSON.stringify(results));
-        const domains = results.map(result => result.permitted_domains_domain);
-        console.log(`validateFrontendApiKey, domains: ${domains}`);
+        const domains = results.map(result => result.domain);
+
+        console.log(process.env.NODE_ENV);
+        if (process.env.NODE_ENV && process.env.NODE_ENV === 'development' && process.env.DOMAIN_OVERRIDE) {
+            domains.push(process.env.DOMAIN_OVERRIDE);
+        }
+
+        console.log(`validateFrontendApiKey, domains: ${domains}, seeking domain: ${domain}`);
 
         if (!apiKeyEntity || !apiKeyEntity.isActive || !domains.includes(domain)) {
             throw new UnauthorizedException('Invalid API key or domain');

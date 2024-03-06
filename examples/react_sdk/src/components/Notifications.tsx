@@ -1,8 +1,8 @@
 import React from 'react';
-import { useSDKData, SDKNotification } from '@thisisnotadrill/react-core';
+import { TinadSDK, SDKNotification } from '@thisisnotadrill/react-core';
 
 const NotificationsComponent = () => {
-    const { data: sdkNotifications, isLoading, isError, error } = useSDKData();
+    const { data: sdkNotifications, isLoading, isError, error } = TinadSDK.useSDKData();
 
     if (isLoading) return <div>Loading...</div>;
     if (isError || !sdkNotifications) return <div>Error: {error?.message || "No notifications"}</div>;

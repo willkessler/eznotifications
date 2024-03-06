@@ -1,17 +1,12 @@
 // src/config.ts in @thisisnotadrill/react-core
-
-interface SDKConfig {
-    apiBaseUrl: string;
-    userId: string | null;
-    pageId: string | null;
-    environments: string[] | null;
-}
+import type { SDKConfig, SDKNotification, SDKDataReturn } from './types';
 
 // Initial configuration with default values
 let sdkConfig: SDKConfig = {
-    apiBaseUrl: 'http://localhost:8080/',
-    userId: null,
-    pageId: null,
+    apiKey: '',
+    apiBaseUrl: 'http://localhost:8080',
+    userId: '',
+    pageId: '',
     environments: [],
 };
 
