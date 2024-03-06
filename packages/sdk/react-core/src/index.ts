@@ -132,8 +132,8 @@ const useSDKData = (pageId?: string) => {
 
     const apiUrlString = apiUrl.toString();
     console.log('Fetching data from : ' + apiUrlString);
-    const { data, error, isValidating } = useSWR<SDKNotification[]>(apiUrlString, fetcher, { 
-        refreshInterval: 10000,
+    const { data, error, isLoading } = useSWR<SDKNotification[]>(apiUrlString, fetcher, { 
+        refreshInterval: 5000,
     });
 
     // Side effect to set the cookie
@@ -143,15 +143,14 @@ const useSDKData = (pageId?: string) => {
 
     // Only process data if it's not undefined
     const sortedAndGroupedNotifications = data ? (data.length > 0 ? sortAndGroupNotifications(data) : []) : null;
-    const reducedNotifs = sortedAndGroupedNotifications[0];
 
     const returnObj: SDKDataReturn = {
-        data: reducedNotifs,
-        isLoading: isValidating,
+        data: sortedAndGroupedNotifications,
+        isLoading: isLoading,
         isError: !!error,
         error,
     };
-    console.log(`Returning this object: ${JSON.stringify(returnObj,null,2)}`);
+    //console.log(`Returning this object: ${JSON.stringify(returnObj,null,2)}`);
     return returnObj;
 };
 
