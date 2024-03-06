@@ -11,7 +11,7 @@ const init = (config: Partial<SDKConfig>) : void => {
     setSDKConfig(config);
 }
 
-const useSDKData = () => {
+const useSDKData = (pageId?: string) => {
     console.log('TINAD: useSDKData');
     let sdkConfig = getSDKConfig();
     
@@ -83,7 +83,7 @@ const useSDKData = () => {
         const noDateNotifications: SDKNotification[] = [];
         const withDateNotifications: SDKNotification[] = [];
 
-        console.log(`Got data: ${JSON.stringify(data)}`);
+        //console.log(`sortAndGroupNotifications got data: ${JSON.stringify(data)}`);
         data.forEach((notification: any) => { // 
             // Convert date strings to Date objects
             const sdkNotification: SDKNotification = {
@@ -132,7 +132,7 @@ const useSDKData = () => {
 
     const apiUrlString = apiUrl.toString();
     console.log('Fetching data from : ' + apiUrlString);
-    const { data, error, isLoading } = useSWR<SDKNotification[]>(apiUrlString, fetcher, { 
+    const { data, error, isValidating } = useSWR<SDKNotification[]>(apiUrlString, fetcher, { 
         refreshInterval: 10000,
     });
 
@@ -143,10 +143,11 @@ const useSDKData = () => {
 
     // Only process data if it's not undefined
     const sortedAndGroupedNotifications = data ? (data.length > 0 ? sortAndGroupNotifications(data) : []) : null;
+    const reducedNotifs = sortedAndGroupedNotifications[0];
 
     const returnObj: SDKDataReturn = {
-        data: sortedAndGroupedNotifications,
-        isLoading: !data && !error,
+        data: reducedNotifs,
+        isLoading: isValidating,
         isError: !!error,
         error,
     };
