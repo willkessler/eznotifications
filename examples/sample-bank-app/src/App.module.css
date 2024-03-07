@@ -15,6 +15,8 @@ header {
   background-color:#d2e6eb;
   font-family: Georgia;
   filter: brightness(90%);
+  padding:0px;
+  margin:0px;
 }
 
 .nav {
@@ -46,4 +48,25 @@ header {
   .account-overview {
     flex-direction: column;
   }
+}
+
+.homePageOuter {
+  position: relative;
+  z-index: 1;
+  margin:80px 0 0 135px;
+  padding:80px 0 0 50px;
+  width:1000px;
+}
+
+.homePageOuter::before {
+  content: "";
+  background-image: url('MomAndKidBicycle.webp');
+  background-size: cover; /* Cover the entire div */
+  opacity: 0.6; /* 60% opacity */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1; /* Ensure the background is behind the content */
 }

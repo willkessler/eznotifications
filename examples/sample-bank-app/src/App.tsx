@@ -25,11 +25,15 @@ export function App() {
           hiddenFrom="sm"
           size="sm"
         />
-          <Group justify="flex-start">
+       <Group gap="xs">
+          <Image
+            pe="xs"
+            h={220}
+            src="UnifiedFinancialLogo.png" />
           <Image 
-            h={150}
-            src="UncleAlsLogo.webp" />
-          <Title className={classes.title}>Uncle Al's<span style={{fontSize:'20px'}}> Neighborhood Credit Union</span></Title>
+            me="xs"
+            h={300}
+            src="UnifiedTextLogo2.png" />
          </Group>
      </AppShell.Header>
 
@@ -44,12 +48,12 @@ export function App() {
           </Stack>
       </AppShell.Navbar>
  
-       <AppShell.Main className={classes.main}>
+       <AppShell.Main className={classes.homePageOuter}>
          <HomePage />
        </AppShell.Main>
 
        <AppShell.Footer className={classes.footer}>
-          <Text>Copyright (c) 2024 Uncle Al's Neighborhood Credit Union, LLC</Text>
+          <Text>Copyright (c) 2024 Unified Financial Federal Credit Union, LLC</Text>
        </AppShell.Footer>
 
     </AppShell>
