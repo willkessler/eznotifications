@@ -1,0 +1,44 @@
+/* Custom styles */
+.header {
+  width: 80vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: rgb(34, 139, 230);
+    color: #ffffff;
+}
+
+
+.navbar {
+    background-color: #f0f0f0;
+}
+
+.mainContent {
+  width: 50vw;
+  padding: 20px;
+}
+
+.account-overview {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.account {
+    text-align: center;
+}
+
+.quick-actions button {
+    margin: 10px;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.controls {
+  margin-top: 100px;
+}
