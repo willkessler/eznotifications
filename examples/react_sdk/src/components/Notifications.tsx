@@ -1,27 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { TinadSDK, SDKNotification } from '@thisisnotadrill/react-core';
 import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison
 import _ from 'lodash';
 
 
 interface NotificationsComponentProps {
-  displayMode: 'sequential' | 'single';
-  autoDismissTime?: number; // milliseconds
   pageId?: string;
 }
 
 const NotificationsComponent: React.FC<NotificationsComponentProps> = ({
-    displayMode,
-    autoDismissTime = 0,
     pageId,
 }) => {
     const { data: sdkNotifications, isLoading, isError, error } = TinadSDK.useSDKData(pageId);
 
-    const [ currentNotification, setCurrentNotification ] = useState<SDKNotification | null>(null);
-    const [ isAutoDismissing, setIsAutoDismissing ] = useState(false); // New state to track auto-dismiss state
+    const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[] | null>(null);
+    const [ displayedIndex, setDisplayedIndex ] = useState<number>(0);
 
     const dismissNotification = () => {
-        setCurrentNotification(null);
+        if (currentNotifications) {
+            console.log(`dismissNotification: currentNotifications= ${JSON.stringify(currentNotifications, null, 2)}`);
+            if (displayedIndex + 1 == currentNotifications.length) {
+                setCurrentNotifications(null);
+                setDisplayedIndex(-1);
+            } else {
+                setDisplayedIndex(displayedIndex + 1);
+            }
+        }
     };
 
     // Handle empty or error states
@@ -32,16 +36,15 @@ const NotificationsComponent: React.FC<NotificationsComponentProps> = ({
     }
 
     if (sdkNotifications && sdkNotifications.length > 0) {
-        console.log(`Checking sdkNotifications[0]: ${JSON.stringify(sdkNotifications[0], null, 2)}`);
-        if (!isEqual(currentNotification, sdkNotifications[0])) {
-            console.log('Setting current notif to 0 item');
-            setCurrentNotification(_.cloneDeep(sdkNotifications[0]))
+        if (!isEqual(currentNotifications, sdkNotifications)) {
+            //console.log(`New data received: ${JSON.stringify(sdkNotifications, null, 2)}`);
+            console.log('Copying all notifications into currentNotifications.');
+            setCurrentNotifications(_.cloneDeep(sdkNotifications));
+            setDisplayedIndex(0);
         }
-    } else {
-        console.log(`currentNotification: ${JSON.stringify(currentNotification,null,2)}`);
     }
 
-    if (currentNotification === null) {
+    if (displayedIndex < 0 || currentNotifications === null) {
         return (
             <div>
                 <div>
@@ -54,8 +57,8 @@ const NotificationsComponent: React.FC<NotificationsComponentProps> = ({
     return (
         <div>
                 <div>
-                    <p>Message: {currentNotification.content}</p>
-                    <p>Type:    {currentNotification.notificationType}</p>
+                    <p>Message: {currentNotifications[displayedIndex]?.content}</p>
+                    <p>Type:    {currentNotifications[displayedIndex]?.notificationType}</p>
                     <button onClick={dismissNotification}>Dismiss</button>
                 </div>
         </div>

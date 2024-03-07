@@ -14,7 +14,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Notifications</h1>
-        <NotificationsComponent displayMode="single" pageId="home" />
+        <NotificationsComponent pageId="home" />
       </header>
     </div>
   );
