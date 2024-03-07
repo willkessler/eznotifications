@@ -1,13 +1,14 @@
 import React from 'react';
 import { Card, Image, Text, Title, Button, Group } from '@mantine/core';
 import '@mantine/core/styles.css';
+import DemoControls from './DemoControls';
 import classes from './HomePage.module.css'; // Adjust the path as necessary
 
 export function HomePage() {
   return (
-    <div className={classes.homePageOuter}>
+    <div>
         <div className={classes.header}>
-          <Title order={2} className={classes.welcomeMsg}>Welcome back, Alfonze!</Title>
+          <Title order={2} className={classes.welcomeMsg}>Welcome back, Robert!</Title>
         </div>
         <Group position="left" className={classes.mainContent} >
           <Card shadow="sm" p="lg" radius="md"  className={classes.card}>
@@ -38,10 +39,7 @@ export function HomePage() {
             <Text size="lg" mt="xs">$8,910.11</Text>
           </Card>
         </Group>
-      <div className={classes.controls}>
-      <Group position="center" mt="md" >
-      </Group>
-      </div>
-      </div>
+        <DemoControls />
+    </div>
   );
 }

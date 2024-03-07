@@ -1,14 +1,18 @@
-import { MantineProvider, Anchor, AppShell, Burger, Button, Container, Group, Image,  Stack, Skeleton, Text,Title } from '@mantine/core';
+import React, { useState } from 'react';
+import { Anchor, AppShell, Burger, Button, Container, Group, Image,  
+         Stack, Skeleton, Text,Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import '@mantine/core/styles.css';
 import { HomePage } from './components/HomePage';
+import Footer from './components/Footer';
 import classes from './App.module.css';
 
-export function App() {
-  const [opened, { toggle }] = useDisclosure();
 
-  return (
-    <Container fluid className={classes.outerContainer}>
+export function App() {
+    const [opened, { toggle }] = useDisclosure();
+
+    return (
+        <>
     <AppShell
       header={{ height: 170 }}
       navbar={{
@@ -26,38 +30,42 @@ export function App() {
           size="sm"
         />
        <Group gap="xs">
+            <a href="/">
           <Image
             pe="xs"
             h={220}
             src="UnifiedFinancialLogo.png" />
+            </a>
+            <a href="/">
           <Image 
             me="xs"
             h={300}
             src="UnifiedTextLogo2.png" />
+            </a>
          </Group>
      </AppShell.Header>
 
       <AppShell.Navbar className={classes.nav} p="md">
           <Stack justify="flex-start" align="flex-start">
-            <Anchor fw={500} fz="lg" component="button">Transfer Money</Anchor>
-            <Anchor fw={500} fz="lg" component="button">Pay Bills</Anchor>
-            <Anchor fw={500} fz="lg" component="button">Deposit Checks</Anchor>
-            <Anchor fw={500} fz="lg" component="button">View Statements</Anchor>
+            <Anchor fw={500} fz="lg">Transfer Money</Anchor>
+            <Anchor fw={500} fz="lg">Pay Bills</Anchor>
+            <Anchor fw={500} fz="lg">Deposit Checks</Anchor>
+            <Anchor fw={500} fz="lg">View Statements</Anchor>
             <br />
-            <Anchor fw={500} fz="lg" component="button">Logout</Anchor>
+            <Anchor fw={500} fz="lg">Logout</Anchor>
           </Stack>
       </AppShell.Navbar>
  
-       <AppShell.Main className={classes.homePageOuter}>
-         <HomePage />
+       <AppShell.Main>
+            <HomePage />
        </AppShell.Main>
 
        <AppShell.Footer className={classes.footer}>
-          <Text>Copyright (c) 2024 Unified Financial Federal Credit Union, LLC</Text>
+            <Footer />
        </AppShell.Footer>
 
     </AppShell>
-      </Container>
+</>
   );
 }
 
