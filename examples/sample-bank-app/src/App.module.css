@@ -1,22 +1,46 @@
+.outerContainer {
+  width:'100%';
+  max-width:850px;
+}
+
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  background-color: rgb(34, 139, 230);
   color: #ffffff;
 }
 
+.header {
+  background-color:#d2e6eb;
+  font-family: Georgia;
+  filter: brightness(90%);
+}
 
-footer {
-  background-color: #f0f0f0;
+.nav {
+  background-color:#d2e6eb;
+  filter: brightness(90%);
+}
+
+.footer {
+  background-color:#d2e6eb;
   text-align: center;
   padding: 20px;
+  border-top: 1px dotted #555;
+  color: #777;
 }
 
 .title {
-  color:rgb(14, 119, 230);
+  color: #228be6;
+  font-size:40px;
+  font-family: Georgia;
+  font-style: italic;
 }
+
+.main {
+  padding:0;
+}
+
 
 @media (max-width: 768px) {
   .account-overview {
