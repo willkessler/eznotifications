@@ -5,7 +5,7 @@ import type { SDKConfig, SDKNotification, SDKDataReturn } from './types';
 export { SDKConfig, SDKNotification, SDKDataReturn } from './types';
 import { getSDKConfig, setSDKConfig } from './config';
 
-console.log('the core index file');
+//console.log('the core index file');
 // Main TINAD core initialization function.
 const init = (config: Partial<SDKConfig>) : void => {
     setSDKConfig(config);
@@ -47,21 +47,21 @@ const useSDKData = (pageId?: string) => {
     };
 
     const fetcher = async (apiUrl: string): Promise<SDKNotification[]> => {
-        console.log('Fetcher running on url:', apiUrl);
+        //console.log('Fetcher running on url:', apiUrl);
         const apiKey = getSDKConfig().apiKey;
         const response = await fetch(apiUrl, {
             headers: {
                 "Authorization": "Bearer " + apiKey,
             }
         });
-        console.log('Fetcher ran fetch');
+        //console.log('Fetcher ran fetch');
         if (!response.ok) {
             console.log('network error');
             throw new Error('Network response was not ok');
         }
-        console.log('Fetcher fetching json');
+        //console.log('Fetcher fetching json');
         const data = await response.json();
-        console.log('Fetcher mapping');
+        //console.log('Fetcher mapping');
         return data.map((notification: any) => ({
             ...notification,
             createdAt: new Date(notification.createdAt),
