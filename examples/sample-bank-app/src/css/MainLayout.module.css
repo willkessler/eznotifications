@@ -1,22 +1,20 @@
-header {
+.header {
   display: flex;
   justify-content: space-between;
+  background-color: #d2e6eb;
   align-items: center;
-  padding: 20px;
-  color: #ffffff;
+  filter: brightness(90%);
+  border-bottom:1px solid #a2c6c9;
 }
 
-.header {
-  background-color:#d2e6eb;
-  font-family: Georgia;
-  filter: brightness(90%);
-  padding:0px;
-  margin:0px;
+.mainContent {
+  max-width:1200px;
 }
 
 .nav {
   background-color:#d2e6eb;
   filter: brightness(90%);
+  border-right:1px solid #a2c6c9;
 }
 
 .footer {
@@ -67,7 +65,42 @@ header {
 }
 
 .demoControls {
-  margin-left:20px;
+  margin-left:0px;
   margin-right:20px;
   background-color:#aaa;
+  max-width:875px;
+}
+
+.homePageHeader {
+  width: 80vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0 0 20px;
+  background-color: #d2e6eb;
+  color: light-grey;
+}
+
+
+.card {
+  background-color: #fff;
+  color:#555;
+  width:280px;
+  height:290px;
+  cursor:pointer;
+}
+
+.cardText {
+  font-weight:800;
+  font-size:18px;
+  margin:12px 0 6px 0;
+}
+
+.welcomeMsg {
+  color: #3287d0;
+  font-size:20px;
+  font-weight:500;
+  font-style:italic;
+  padding:0;
+  margin:10px 0 20px 0;
 }
