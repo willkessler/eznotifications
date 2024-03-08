@@ -18,7 +18,7 @@
 }
 
 .navbarLinks {
-  padding-bottom:10px;
+  padding-bottom:5px;
 }
 
 .footer {
@@ -110,5 +110,6 @@
 }
 
 .aboutCard {
+  max-width:550px;
 }
 
