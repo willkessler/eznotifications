@@ -5,9 +5,6 @@ import classes from '../css/MainLayout.module.css'; // Adjust the path as necess
 const HomePage = () => {
   return (
     <div>
-        <div className={classes.homePageHeader}>
-          <Title order={2} className={classes.welcomeMsg}>Welcome back, valued bank customer!</Title>
-        </div>
         <Group>
           <Card shadow="sm" p="lg" radius="md"  className={classes.card}>
             <Image 

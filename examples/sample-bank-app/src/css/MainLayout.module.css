@@ -17,6 +17,10 @@
   border-right:1px solid #a2c6c9;
 }
 
+.navbarLinks {
+  padding-bottom:10px;
+}
+
 .footer {
   background-color:#d2e6eb;
   text-align: center;
@@ -67,7 +71,7 @@
 .demoControls {
   margin-left:0px;
   margin-right:20px;
-  background-color:#aaa;
+  background-color: #02aedd;
   max-width:875px;
 }
 
@@ -104,3 +108,7 @@
   padding:0;
   margin:10px 0 20px 0;
 }
+
+.aboutCard {
+}
+
