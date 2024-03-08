@@ -1,9 +1,11 @@
 {
   "name": "@thisisnotadrill/react-ui",
   "private": false,
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "React UI components for deploying the This Is Not A Drill! service in client apps.",
-  "main": "index.js",
+  "main": "dist/bundle.cjs.js",
+  "module": "dist/bundle.esm.js",
+  "types": "dist/index.d.ts",
   "homepage": "https://github.com/willkessler/eznotifications",
   "repository": {
     "url": "https://github.com/willkessler/eznotifications",
