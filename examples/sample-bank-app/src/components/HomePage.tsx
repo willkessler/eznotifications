@@ -1,4 +1,4 @@
-import { Card, Image, Text, Title, Group } from '@mantine/core';
+import { Card, Image, Text, Group } from '@mantine/core';
 import '@mantine/core/styles.css';
 import classes from '../css/MainLayout.module.css'; // Adjust the path as necessary
 

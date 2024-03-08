@@ -3,7 +3,7 @@ import { Card, Code, Image, Text, Button, Group } from '@mantine/core';
 import classes from '../css/MainLayout.module.css';
 
 const goHome = () => {
-  window.location = '/';
+  window.location.assign('/');
 }
 
 export const About = () => {
