@@ -1,12 +1,13 @@
 import { Card, Image, Text, Group } from '@mantine/core';
 import '@mantine/core/styles.css';
 import classes from '../css/MainLayout.module.css'; // Adjust the path as necessary
-
+import { TinadComponent } from '@thisisnotadrill/react-ui';
+  
 const HomePage = () => {
   return (
     <div>
       <Card shadow="sm" p="md" radius="md" m="sm">
-        this is a notification
+         <TinadComponent pageId="home" />
       </Card>
 
         <Group>

@@ -6,7 +6,8 @@
     "packages/api",
     "packages/sdk/react-core",
     "packages/sdk/react-ui",
-    "examples/react_sdk"
+    "examples/react_sdk",
+    "examples/sample-bank-app"
   ],
   "dependencies": {},
   "devDependencies": {

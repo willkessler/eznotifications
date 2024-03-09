@@ -2,19 +2,15 @@
 import type { SDKConfig, SDKNotification, SDKDataReturn } from './types';
 
 // Initial configuration with default values
-let sdkConfig: SDKConfig = {
+let sdkGlobalConfig: SDKConfig = {
     apiKey: '',
-    apiBaseUrl: 'http://localhost:8080',
     userId: '',
-    pageId: '',
-    environments: [],
+    environment: 'development',
 };
 
-export const getSDKConfig = (): SDKConfig => {
-  return sdkConfig;
+export const initSDK = (config: { apiKey: string, userId: string }) => {
+  sdkGlobalConfig = { ...config };
 };
 
-export const setSDKConfig = (config: Partial<SDKConfig>) => {
-  sdkConfig = { ...sdkConfig, ...config };
-};
-
+// A method to access the global config anywhere within your SDK
+export const getSDKGlobalConfig = () => sdkGlobalConfig;

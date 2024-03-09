@@ -15,7 +15,7 @@ const onwarn = (warning, warn) => {
 };
 
 export default {
-  input: 'src/index.ts', // Your main TypeScript file
+  input: 'src/index.tsx', // Your main TypeScript file
   external: ['react', 'react-dom', 'swr'],
   output: [
     {

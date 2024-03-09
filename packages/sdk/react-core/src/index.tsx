@@ -1,21 +1,22 @@
 import useSWR from 'swr';
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+
 import type { SDKConfig, SDKNotification, SDKDataReturn } from './types';
-export { SDKConfig, SDKNotification, SDKDataReturn } from './types';
-import { getSDKConfig, setSDKConfig } from './config';
+import { sdkGlobalConfig, initSDK } from './config';
+//import { TinadSDKContext, TinadSDKProvider } from './context';
 
-//console.log('the core index file');
-// Main TINAD core initialization function.
-const init = (config: Partial<SDKConfig>) : void => {
-    setSDKConfig(config);
-}
+export { SDKNotification, SDKDataReturn } from './types';
 
-const useSDKData = (pageId?: string) => {
+
+export const useSDKData = (pageId?: string) => {
     console.log('TINAD: useSDKData');
-    let sdkConfig = getSDKConfig();
-    
-    const apiUrl = new URL(sdkConfig.apiBaseUrl + '/notifications');
+    if (!sdkGlobalConfig) {
+        throw new Error("Be sure to initialized TinadSDK with an API key before use.");
+    }
+
+    console.log('useSDKData: here is the sdkGlobalConfig:', sdkGlobalConfig);
+    const apiUrl = new URL(sdkGlobalConfig.apiBaseUrl + '/notifications');
 
     // Function to get a cookie by name
     const getCookie = (name: string): string | null => {
@@ -46,22 +47,18 @@ const useSDKData = (pageId?: string) => {
         return 'tinad_user_' + uuidv4(); // This will generate a random UUID
     };
 
-    const fetcher = async (apiUrl: string): Promise<SDKNotification[]> => {
-        //console.log('Fetcher running on url:', apiUrl);
-        const apiKey = getSDKConfig().apiKey;
+    // Create the fetcher function that can  accept an apiKey
+    const createFetcher = (apiKey: string) => async (apiUrl: string): Promise<SDKNotification[]> => {
         const response = await fetch(apiUrl, {
             headers: {
                 "Authorization": "Bearer " + apiKey,
             }
         });
-        //console.log('Fetcher ran fetch');
         if (!response.ok) {
-            console.log('network error');
             throw new Error('Network response was not ok');
         }
-        //console.log('Fetcher fetching json');
         const data = await response.json();
-        //console.log('Fetcher mapping');
+        // Process data as before
         return data.map((notification: any) => ({
             ...notification,
             createdAt: new Date(notification.createdAt),
@@ -116,10 +113,10 @@ const useSDKData = (pageId?: string) => {
     };
 
     //
-    // Main code for SDK starts here
+    // Main code for SDK starts here.
     //
 
-    let userId = sdkConfig.userId || getCookie('sdkUserId');
+    let userId = sdkGlobalConfig.userId || getCookie('sdkUserId');
     let userIdWasProvided = true;
     if (!userId) {
         userId = generateUniqueId();
@@ -127,11 +124,13 @@ const useSDKData = (pageId?: string) => {
         userIdWasProvided = false;
     }
     apiUrl.searchParams.append('userId', userId);
-    apiUrl.searchParams.append('pageId', sdkConfig.pageId as string);
+    apiUrl.searchParams.append('pageId', sdkGlobalConfig.pageId as string);
     (sdkConfig.environments as string[]).forEach(value => apiUrl.searchParams.append('environments', value));
 
     const apiUrlString = apiUrl.toString();
     console.log('Fetching data from : ' + apiUrlString);
+
+    const fetcher = createFetcher(sdkConfig.apiKey);
     const { data, error, isLoading } = useSWR<SDKNotification[]>(apiUrlString, fetcher, { 
         refreshInterval: 5000,
     });
@@ -153,10 +152,3 @@ const useSDKData = (pageId?: string) => {
     //console.log(`Returning this object: ${JSON.stringify(returnObj,null,2)}`);
     return returnObj;
 };
-
-export const TinadSDK = {
-    init,
-    useSDKData,
-};
-
-    

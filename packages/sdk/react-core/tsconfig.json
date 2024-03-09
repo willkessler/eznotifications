@@ -10,6 +10,7 @@
     "declarationMap": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "jsx": "react-jsx",
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

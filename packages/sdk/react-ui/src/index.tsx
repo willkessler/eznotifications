@@ -1,5 +1,5 @@
 import React, { ReactElement, useState, ReactNode } from 'react';
-import { TinadSDK, SDKNotification } from '@thisisnotadrill/react-core';
+import { SDKNotification, useSDKData } from '@thisisnotadrill/react-core';
 import type { TinadTemplateProps, TinadNotificationsComponentProps } from './types';
 import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison
 import _ from 'lodash';
@@ -20,7 +20,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     pageId,
     dismiss
 }) => {
-    const { data: sdkNotifications, isLoading, isError, error } = TinadSDK.useSDKData(pageId);
+    const { data: sdkNotifications, isLoading, isError, error } = useSDKData(pageId);
 
     const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[] | null>(null);
     const [ displayedIndex, setDisplayedIndex ] = useState<number>(0);
