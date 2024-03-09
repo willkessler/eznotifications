@@ -4,9 +4,11 @@ import * as cors from 'cors';
 @Injectable()
 export class CorsOverrideMiddleware implements NestMiddleware {
     use(req: any, res: any, next: () => void) {
-        const globalAccessEndpoints = [
+        const pathStartsWith = (path, prefix) => path.startsWith(prefix);
+        const globalAccessPrefixes = [
             '/status',
             '/notifications',
+            '/notifications/dismiss',
         ];
 
         // Define a default CORS policy for the dashboard
@@ -22,7 +24,8 @@ export class CorsOverrideMiddleware implements NestMiddleware {
         };
 
         // Apply the appropriate CORS policy based on the request path
-        if (globalAccessEndpoints.includes(req.path)) {
+        const hasGlobalAccess = globalAccessPrefixes.some(prefix => pathStartsWith(req.baseUrl, prefix));
+        if (hasGlobalAccess) {
             cors(globalCorsOptions)(req, res, next);
         } else {
             cors(dashboardCorsOptions)(req, res, next);
