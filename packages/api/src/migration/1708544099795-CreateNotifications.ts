@@ -11,6 +11,7 @@ export class CreateNotifications1708544099795 implements MigrationInterface {
             "deleted" bool NOT NULL DEFAULT false,
             "deleted_at" timestamptz,
             "live" bool NOT NULL DEFAULT false,
+            "must_be_dismissed" bool NOT NULL default true,
             "content" text NOT NULL,
             "page_id" text NOT NULL,
             "start_date" timestamptz,

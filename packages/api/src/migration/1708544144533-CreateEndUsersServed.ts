@@ -8,8 +8,11 @@ export class CreateEndUsersServed1708544144533 implements MigrationInterface {
             "uuid" uuid NOT NULL DEFAULT uuid_generate_v4(),
             "created_at" timestamptz NOT NULL DEFAULT now(),
             "updated_at" timestamptz NULL,
-            "access_time" timestamptz NOT NULL,
+            "first_access_time" timestamptz NOT NULL,
+            "latest_access_time" timestamptz NOT NULL,
+            "view_count" integer DEFAULT 1,
             "ignored" bool NOT NULL DEFAULT false,
+            "dismissed" bool NOT NULL DEFAULT false,
             "notification_uuid" uuid NOT NULL,
             "end_user_uuid" uuid NOT NULL,
             CONSTRAINT "PK_end_users_served" PRIMARY KEY ("uuid")

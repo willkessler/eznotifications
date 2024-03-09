@@ -25,6 +25,9 @@ export class EZNotification {
   @Column({ default: false })
   live: boolean;
 
+  @Column({ default: true })
+  mustBeDismissed: boolean;
+
   @Column()
   content: string;
 

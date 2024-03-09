@@ -211,7 +211,8 @@ export class EZNotificationService {
                         endUsersServed.notification = notification;
                         endUsersServed.endUser = await transactionalEntityManager.findOne(EndUser,
                                                                                           { where: { uuid: endUser.uuid } });
-                        endUsersServed.accessTime = new Date();
+                        const rightNow = new Date();
+                        endUsersServed.firstAccessTime = rightNow;
                         await transactionalEntityManager.save(endUsersServed);
                     }
                 }

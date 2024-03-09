@@ -13,11 +13,17 @@ export class EndUsersServed {
   @Column({ name:'updated_at', type: 'timestamp with time zone' })
   updatedAt: Date;
 
-  @Column({ name: 'access_time', type: 'timestamp with time zone', nullable: false })
-  accessTime: Date;
+  @Column({ name: 'first_access_time', type: 'timestamp with time zone', nullable: false })
+  firstAccessTime: Date;
+
+  @Column({ name: 'latest_access_time', type: 'timestamp with time zone', nullable: false })
+  latestAccessTime: Date;
 
   @Column({ type: 'boolean', default: false })
   ignored: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  dismissed: boolean;
 
   @ManyToOne(() => EZNotification, notification => notification.endUsersServed)
   @JoinColumn({ name: 'notification_uuid' })
