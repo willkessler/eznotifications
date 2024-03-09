@@ -3,20 +3,22 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { SDKConfig, SDKNotification, SDKDataReturn } from './types';
-import { sdkGlobalConfig, initSDK } from './config';
-//import { TinadSDKContext, TinadSDKProvider } from './context';
-
 export { SDKNotification, SDKDataReturn } from './types';
 
+import { initTinadSDK, getTinadSDKConfig } from './config';
+export { initTinadSDK, getTinadSDKConfig };
 
 export const useSDKData = (pageId?: string) => {
     console.log('TINAD: useSDKData');
-    if (!sdkGlobalConfig) {
+    const sdkConfig = getTinadSDKConfig();
+    if (!sdkConfig) {
         throw new Error("Be sure to initialized TinadSDK with an API key before use.");
     }
+    const apiKey = sdkConfig.apiKey;
 
-    console.log('useSDKData: here is the sdkGlobalConfig:', sdkGlobalConfig);
-    const apiUrl = new URL(sdkGlobalConfig.apiBaseUrl + '/notifications');
+    console.log('useSDKData: here is the sdkConfig:', sdkConfig);
+    const apiBaseUrl = 'http://localhost:8080'; // this needs to come from environment
+    const apiUrl = new URL(apiBaseUrl + '/notifications');
 
     // Function to get a cookie by name
     const getCookie = (name: string): string | null => {
@@ -47,8 +49,7 @@ export const useSDKData = (pageId?: string) => {
         return 'tinad_user_' + uuidv4(); // This will generate a random UUID
     };
 
-    // Create the fetcher function that can  accept an apiKey
-    const createFetcher = (apiKey: string) => async (apiUrl: string): Promise<SDKNotification[]> => {
+    const fetcher = async (url: string) => {
         const response = await fetch(apiUrl, {
             headers: {
                 "Authorization": "Bearer " + apiKey,
@@ -116,7 +117,7 @@ export const useSDKData = (pageId?: string) => {
     // Main code for SDK starts here.
     //
 
-    let userId = sdkGlobalConfig.userId || getCookie('sdkUserId');
+    let userId = sdkConfig.userId || getCookie('sdkUserId');
     let userIdWasProvided = true;
     if (!userId) {
         userId = generateUniqueId();
@@ -124,13 +125,16 @@ export const useSDKData = (pageId?: string) => {
         userIdWasProvided = false;
     }
     apiUrl.searchParams.append('userId', userId);
-    apiUrl.searchParams.append('pageId', sdkGlobalConfig.pageId as string);
-    (sdkConfig.environments as string[]).forEach(value => apiUrl.searchParams.append('environments', value));
+    if (pageId) {
+        apiUrl.searchParams.append('pageId', pageId as string);
+    }
+    if (sdkConfig.environment) {
+        apiUrl.searchParams.append('environment', sdkConfig.environment as string);
+    }
 
     const apiUrlString = apiUrl.toString();
     console.log('Fetching data from : ' + apiUrlString);
 
-    const fetcher = createFetcher(sdkConfig.apiKey);
     const { data, error, isLoading } = useSWR<SDKNotification[]>(apiUrlString, fetcher, { 
         refreshInterval: 5000,
     });

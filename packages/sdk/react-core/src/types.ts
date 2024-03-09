@@ -1,7 +1,6 @@
 export interface SDKConfig {
     apiKey: string;
     userId?: string;
-    pageId?: string;
     environment?: string;
 }
 

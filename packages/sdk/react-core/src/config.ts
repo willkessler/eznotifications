@@ -2,15 +2,20 @@
 import type { SDKConfig, SDKNotification, SDKDataReturn } from './types';
 
 // Initial configuration with default values
-let sdkGlobalConfig: SDKConfig = {
-    apiKey: '',
-    userId: '',
-    environment: 'development',
-};
 
-export const initSDK = (config: { apiKey: string, userId: string }) => {
-  sdkGlobalConfig = { ...config };
+export const initTinadSDK = (config: SDKConfig ) => {
+    console.log('Setting sdkGlobalConfig to :', config);
+    const b64Config = btoa(JSON.stringify(config));
+    localStorage.setItem('tinad', b64Config);
 };
 
 // A method to access the global config anywhere within your SDK
-export const getSDKGlobalConfig = () => sdkGlobalConfig;
+export const getTinadSDKConfig = () => {
+    const configString = localStorage.getItem('tinad');
+    if (!configString) {
+        // Handle case where config is not set yet or provide defaults
+        return null;
+    }
+    const unpackedConfig = JSON.parse(atob(configString));
+    return unpackedConfig;
+};
