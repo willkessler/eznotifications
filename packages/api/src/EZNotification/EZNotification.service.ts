@@ -29,7 +29,6 @@ interface OrganizationDataProps {
     clerkCreatorId: string,
     clerkOrganizationId: string,
     permittedDomains: string,
-    refreshFrequency: number,
 }
 
 @Injectable()
@@ -251,7 +250,6 @@ export class EZNotificationService {
             .where('user.clerkId = :clerkId', { clerkId })
             .addSelect('organization.uuid')
             .addSelect('organization.name')
-            .addSelect('organization.refresh_frequency')
             .addSelect('user.uuid')
             .getMany();
     }
@@ -374,7 +372,6 @@ export class EZNotificationService {
                     name: organizationData.organizationName,
                     clerkCreatorId: organizationData.clerkCreatorId,
                     clerkOrganizationId: organizationData.clerkOrganizationId,
-                    refreshFrequency: organizationData.refreshFrequency,
                     pricingModel: basePricingModel,
                 });
                 console.log(`Created a new organization with id: ${newOrganization.uuid}`);
@@ -544,7 +541,6 @@ export class EZNotificationService {
             clerkCreatorId:      organization.clerkCreatorId,
             clerkOrganizationId: organization.clerkOrganizationId,
             permittedDomains:    permittedDomainsString,
-            refreshFrequency:    organization.refreshFrequency
         };
         console.log('orgConfig:', JSON.stringify(orgConfig,null,2));
         return orgConfig;
@@ -561,7 +557,6 @@ export class EZNotificationService {
         const organization = userOrganization[0].organization;
         const userUuid = userOrganization[0].user.uuid;
         organization.name = orgConfiguration.organizationName;
-        organization.refreshFrequency = orgConfiguration.refreshFrequency;
 
         console.log(`Saving organization config for organization: ` +
             `${JSON.stringify(organization,null,2)}, ` +

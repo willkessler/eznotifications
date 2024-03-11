@@ -16,9 +16,7 @@ const GlobalSettingsPanel = () => {
   const { getSettings,
           saveSettings,
           permittedDomains,
-          refreshFrequency,
           setPermittedDomains,
-          setRefreshFrequency,
         } = useSettings();
   const { user } = useUser();
 
@@ -27,15 +25,6 @@ const GlobalSettingsPanel = () => {
   const handlePermittedDomainsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setPermittedDomains(e.target.value);
       setIsChanged(true);
-  };
-
-  const handleRefreshFrequencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      // Use a regular expression to allow only numbers
-      if (/^[0-9]*$/.test(newValue)) {
-          setRefreshFrequency(parseInt(newValue));
-          setIsChanged(true);
-      }
   };
   
   const revertValues = () => {
@@ -75,15 +64,6 @@ example2.com
           onChange={(e) => { handlePermittedDomainsChange(e) }}
         />
 
-        <Text size="sm" style={{marginTop:'10px'}}>SDK Refresh Frequency (seconds)</Text>
-        <TextInput
-          description="Enter how frequently you want the client SDK to check for new notifications for an active user."
-          style={{maxWidth:'620px',marginTop:'5px'}}
-          size="sm"
-          value={refreshFrequency || 300}
-          onChange={(e) => { handleRefreshFrequencyChange(e) }}
-          required
-        />
         <div style={{ display: 'flex', flexDirection:'row', alignItems: 'center', marginTop:'10px' }}>
           <Button disabled={!isChanged}  onClick={handleSaveSettings} size="xs">Save Changes</Button>
           <Anchor size="xs" component="button" type="button" onClick={revertValues} style={{marginLeft:'10px', marginBottom:0, color:'#999'}} >

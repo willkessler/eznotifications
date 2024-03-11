@@ -12,7 +12,6 @@ export class CreateOrganizations1708543936412 implements MigrationInterface {
             "clerk_organization_id" varchar(255),
             "name" varchar(1000),
             "pricing_model_uuid" uuid,
-            "refresh_frequency" int NOT NULL DEFAULT 300,
             CONSTRAINT "PK_organizations" PRIMARY KEY ("uuid")
         );
         `);

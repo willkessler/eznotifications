@@ -67,7 +67,6 @@ export class EZNotificationController {
         @Body('clerkOrganizationId') clerkOrganizationId: string,
         @Body('clerkEmail') clerkEmail: string,
         @Body('permittedDomains') permittedDomains: string,
-        @Body('refreshFrequency') refreshFrequency: number,
     ): Promise<Organization> {
         const organizationData = {
             organizationName,
@@ -75,7 +74,6 @@ export class EZNotificationController {
             clerkOrganizationId,
             clerkEmail,
             permittedDomains,
-            refreshFrequency
         };
         console.log('controller: create team.')
         const newOrganization = await this.EZNotificationService.createLocalOrganization(organizationData);
@@ -104,7 +102,6 @@ export class EZNotificationController {
         @Body('clerkCreatorId') clerkCreatorId: string,
         @Body('clerkOrganizationId') clerkOrganizationId: string,
         @Body('permittedDomains') permittedDomains: string,
-        @Body('refreshFrequency') refreshFrequency: number,
     ): Promise<Organization> {
         console.log('Configure saving settings.');
         return this.EZNotificationService.saveOrgConfiguration({
@@ -112,7 +109,6 @@ export class EZNotificationController {
             clerkCreatorId,
             clerkOrganizationId, 
             permittedDomains, 
-            refreshFrequency
         });
     }
 

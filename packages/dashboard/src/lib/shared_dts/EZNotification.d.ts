@@ -28,7 +28,6 @@ export default interface EZNotification {
         updatedAt:         Date;
         clerkOrganizationId: string;
         clerkCreatorId:      string;
-        refreshFrequency:    number;
         // pricingModel, apiKeys, users, permittedDomains, endUsers to be added to org model
     } | null;
 

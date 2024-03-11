@@ -33,9 +33,6 @@ export class Organization {
     @Column({ name: 'clerk_creator_id', type: 'varchar', length: '256', nullable: true })
     clerkCreatorId: string;
 
-    @Column({ name: 'refresh_frequency', type: 'int' })
-    refreshFrequency: number;
-
     @ManyToMany(() => User)
     users: User[];
 

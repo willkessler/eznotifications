@@ -7,12 +7,10 @@ const SettingsContext = createContext<SettingsContextType>({
     isSetupComplete: false,
     setIsSetupComplete: (setupComplete: boolean) => {},
     organizationName: 'My Team',
-    refreshFrequency: 300, // 5 minutes, in seconds
     permittedDomains: 'stackblitz.io\ncodesandbox.io\n',
     getSettings: async () => Promise.resolve(null),
     saveSettings: async (clerkOrganizationId: string) => Promise.resolve(true),
     setPermittedDomains: (domains:string) => {},
-    setRefreshFrequency: (frequency:number) => {},
     createLocalUser: async (clerkUserId: string) => Promise.resolve(true),
     createLocalOrganization: async (organizationData: OrganizationDataProps) => Promise.resolve(true),
     addUserToOurOrg: async (clerkOrganizationId: string) => Promise.resolve(true),
@@ -32,7 +30,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
     const { createOrganization, setActive } = useOrganizationList();
     const [ organizationName, setOrganizationName ] = useState('My Team');
     const [ permittedDomains, setPermittedDomains ] = useState('stackblitz.io\ncodesandbox.io\n');
-    const [ refreshFrequency, setRefreshFrequency ] = useState(300); // seconds
     const [ isSetupComplete, setIsSetupComplete ] = useState(false);
     const [ createdLocalUser, setCreatedLocalUser ] = useState(false);
     const [ createdLocalOrg, setCreatedLocalOrg ] = useState(false);
@@ -62,7 +59,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                     console.log('Fetched stored settings, now storing in context.');
                     const orgProps = data as OrganizationDataProps;
                     setPermittedDomains(orgProps.permittedDomains);
-                    setRefreshFrequency(orgProps.refreshFrequency);
                     return orgProps;
                 }
             } catch (error) {
@@ -87,7 +83,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                         clerkCreatorId: clerkCreatorId,
                         clerkOrganizationId: clerkOrganizationId,
                         permittedDomains: permittedDomains,
-                        refreshFrequency: refreshFrequency,
                     })
                 });
                 if (!response.ok) {
@@ -150,8 +145,8 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                     clerkCreatorId:      organizationData.clerkCreatorId,
                     clerkOrganizationId: organizationData.clerkOrganizationId,
                     clerkEmail:          organizationData.clerkEmail,
-                    permittedDomains:    organizationData.permittedDomains, 
-                    refreshFrequency:    organizationData.refreshFrequency }),
+                    permittedDomains:    organizationData.permittedDomains
+                }),
             });
             if (!response.ok) {
                 response.json().then(body => {
@@ -171,7 +166,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
             } else {
                 setOrganizationName(organizationData.organizationName);
                 setPermittedDomains(organizationData.permittedDomains);
-                setRefreshFrequency(organizationData.refreshFrequency);
                 // Tell the Notifications.tsx file that this is the first time an account admin has signed in
                 // so we should give them the option of seeing the tutorial.
                 setCreatedLocalOrg(true);
@@ -234,7 +228,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                         clerkCreatorId: user.id, // clerkId of the owner of the new org.
                         clerkOrganizationId: clerkOrgId,
                         permittedDomains: permittedDomains,
-                        refreshFrequency: 300,
                     });
                     return true;
                 } catch (error) {
@@ -362,8 +355,6 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
             setOrganizationName,
             permittedDomains,
             setPermittedDomains,
-            refreshFrequency,
-            setRefreshFrequency,
         }}>
             {children}
         </SettingsContext.Provider>

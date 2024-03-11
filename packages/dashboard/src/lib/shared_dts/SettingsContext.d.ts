@@ -4,7 +4,6 @@ export interface OrganizationDataProps {
     clerkCreatorId: string,
     clerkOrganizationId: string,
     permittedDomains: string,
-    refreshFrequency: number,
 }
 
 export interface CallbackOutcomes {
@@ -18,12 +17,10 @@ export interface SettingsContextType {
     isSetupComplete: boolean;
     setIsSetupComplete: (setupComplete: boolean) => void;
     organizationName: string;
-    refreshFrequency: number;
     permittedDomains: string;
     getSettings: () => Promise<OrganizationDataProps | null>;
     saveSettings: (clerkOrganizationId: string) => Promise<boolean>;
     setPermittedDomains: (domains: string) => void;
-    setRefreshFrequency: (frequency: number) => void;
     createLocalUser:  (clerkUserId: string) => Promise<any>;
     createLocalOrganization: (organization: OrganizationDataProps) => Promise<boolean>;
     addUserToOurOrg:  (clerkOrganizationId: string) => Promise<boolean>;
