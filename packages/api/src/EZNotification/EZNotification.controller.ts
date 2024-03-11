@@ -185,7 +185,9 @@ export class EZNotificationController {
     @ApiResponse({ status: 200, description: 'Returns the notification\'s updated data.' })
     @UseGuards(JwtAuthGuard)
     updateNotification(@Param('id') id: string, @Body() ezNotificationDto: EZNotificationDto): Promise<EZNotification> {
-        return this.EZNotificationService.updateNotification(id, ezNotificationDto.EZNotificationData, ezNotificationDto.clerkCreatorId);
+        return this.EZNotificationService.updateNotification(id,
+                                                             ezNotificationDto.EZNotificationData, 
+                                                             ezNotificationDto.clerkCreatorId);
     }
 
     // This should use the dto so we know who deleted the notification

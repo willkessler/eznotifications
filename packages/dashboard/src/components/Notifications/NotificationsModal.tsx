@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Anchor, Button, Group, Modal, MultiSelect, Paper, Textarea, Text, TextInput, Title } from '@mantine/core';
+import { Anchor, Button, Checkbox, Group, Modal, MultiSelect, Paper, Textarea, Text, TextInput, Title } from '@mantine/core';
 import { DateTimePicker, DatePickerInput, TimeInput, DateValue } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
@@ -44,6 +44,7 @@ const NotificationsModal = () => {
     const [submissionDisabled, setSubmissionDisabled] = useState(true); 
 
     const [notificationData, setNotificationData] = useState<EZNotification>();
+    const [mustBeDismissed, setMustBeDismissed] = useState<boolean>(false);
 
     const handleNotificationTypeChange = (type: string) => {
         //console.log('handleNotificationTypeChange:', type);
@@ -115,6 +116,14 @@ const NotificationsModal = () => {
                 setNotificationData({ ...notificationData as EZNotification, [name]: value });
             }
         }
+    };
+
+    const handleMustBeDismissed = (event:React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = event.target.checked;
+        // Save to localStorage
+        localStorage.setItem('mustBeDismissed', isChecked.toString());
+        setMustBeDismissed(isChecked);
+        setNotificationData({ ...notificationData as EZNotification, 'mustBeDismissed': isChecked });
     };
 
     const handleSubmit = (e:React.FormEvent<HTMLFormElement>) => {
@@ -323,6 +332,11 @@ const NotificationsModal = () => {
             comboboxProps={{ shadow: 'md' }}
             onChange={(value) => handleEnvironmentsChange(value)}
                 />
+            <Checkbox 
+            checked={notificationData?.mustBeDismissed ? notificationData.mustBeDismissed : mustBeDismissed}
+              onChange={handleMustBeDismissed} 
+              label="Notification must be dismissed by end users"
+            />
                 </Group>
                 </Paper>
                 </Expando>

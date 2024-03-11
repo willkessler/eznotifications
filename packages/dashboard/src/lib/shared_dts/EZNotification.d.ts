@@ -7,6 +7,7 @@ export default interface EZNotification {
     endDate:               Date | null,
     deleted:               boolean;
     live:                  boolean;
+    mustBeDismissed:       boolean;
     content:               string;
     pageId:                string | null;
     notificationType:      string;

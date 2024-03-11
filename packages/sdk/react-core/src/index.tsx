@@ -58,14 +58,21 @@ export const useSDKData = (pageId?: string) => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        const data = await response.json();
+        try {
+            const data = await response.json();
+        } catch(error) {
+            console.log(`Couldn't get json response, error: ${error}`);
+        }
         // Process data as before
-        return data.map((notification: any) => ({
-            ...notification,
-            createdAt: new Date(notification.createdAt),
-            startDate: notification.startDate ? new Date(notification.startDate) : undefined,
-            endDate: notification.endDate ? new Date(notification.endDate) : undefined,
-        }));
+        if (data) {
+            return data.map((notification: any) => ({
+                ...notification,
+                createdAt: new Date(notification.createdAt),
+                startDate: notification.startDate ? new Date(notification.startDate) : undefined,
+                endDate: notification.endDate ? new Date(notification.endDate) : undefined,
+            }));
+        }
+        return [];
     };
 
     // Function to determine the latest date between startDate and endDate

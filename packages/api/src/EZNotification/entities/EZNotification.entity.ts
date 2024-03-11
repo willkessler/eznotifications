@@ -25,7 +25,7 @@ export class EZNotification {
   @Column({ default: false })
   live: boolean;
 
-    @Column({ name: 'must_be_dismissed',  default: true })
+  @Column({ name: 'must_be_dismissed',  default: true })
   mustBeDismissed: boolean;
 
   @Column()

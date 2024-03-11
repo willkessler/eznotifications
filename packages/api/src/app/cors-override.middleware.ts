@@ -4,29 +4,26 @@ import * as cors from 'cors';
 @Injectable()
 export class CorsOverrideMiddleware implements NestMiddleware {
     use(req: any, res: any, next: () => void) {
-        // Define a default CORS policy for the dashboard
         /*
         if (req.baseUrl == '/notifications') {
             console.log(`DASHBOARD_HOST=${process.env.DASHBOARD_HOST}`);
             console.log(`method: ${req.method}, headers: ${JSON.stringify(req.headers,null,2)}`);
         }
         */
-        const dashboardCorsOptions = {
-            origin: process.env.DASHBOARD_HOST, // Allow only the dashboard domain
+
+        // General CORS policy for OPTIONS requests
+        const preflightCorsOptions = {
+            origin: true, // Reflect the request's origin back to the browser
             methods: 'OPTIONS,GET,HEAD,PUT,PATCH,POST,DELETE',
+            allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'X-Tinad-Source'],
             credentials: true,
-            allowedHeaders: [ 'Content-Type', 'Accept', 'Authorization', 'X-Tinad-Source'],
-        };
-        const globalCorsOptions = {
-            origin: '*', // Allow all origins
-            methods: 'OPTIONS,GET,HEAD,PUT,PATCH,POST,DELETE',
-            allowedHeaders: [ 'Content-Type', 'Accept', 'Authorization', 'X-Tinad-Source'],
         };
 
+        console.log(`method: ${req.method}`);
         if (req.method === 'OPTIONS') {
             // Apply a broad CORS policy to satisfy preflight requests
             console.log(`********* IMPLEMENTING preflight CORS for req: ${req.baseUrl}, method: ${req.method}`);
-            cors(dashboardCorsOptions)(req, res, next);
+            cors(preflightCorsOptions)(req, res, next);
         } else {
             const specialTinadHeader = req.headers['x-tinad-source'];
             //console.log('specialTinadHeader:', specialTinadHeader);
@@ -41,13 +38,25 @@ export class CorsOverrideMiddleware implements NestMiddleware {
             ];
             // Apply the appropriate CORS policy based on the request path
             const validApiAccess = globalAccessPrefixes.some(prefix => pathStartsWith(req.baseUrl, prefix));
+            console.log(`validApiAccess: ${validApiAccess}`);
+            let allowedOrigins = '*';
             if (sourceIsDashboard) {
-                console.log("********* IMPLEMENTING DASHBOARD CORS");
-                cors(dashboardCorsOptions)(req, res, next);
-            } else if (validApiAccess) {
-                console.log(`********* IMPLEMENTING API CORS for req: ${req.baseUrl}, method: ${req.method}`);
-                cors(globalCorsOptions)(req, res, next);
+                allowedOrigins = process.env.DASHBOARD_HOST;
+            }
+            const specificCorsOptions = {
+                origin:  allowedOrigins,
+                methods: 'OPTIONS,GET,HEAD,PUT,PATCH,POST,DELETE',
+                credentials: true,
+                allowedHeaders: [ 'Content-Type', 'Accept', 'Authorization', 'X-Tinad-Source'],
+            };
+            if (sourceIsDashboard || validApiAccess) {
+                console.log(sourceIsDashboard ?
+                    "********* CORS: VALID DASHBOARD ACCESS" :
+                    "********* CORS: VALID API ACCESS"
+                           );
+                cors(specificCorsOptions)(req, res, next);
             } else {
+                console.log(`********* DENYING ACCESS for req: ${req.baseUrl}, method: ${req.method}`);
                 res.status(403).send('CORS : access denied');
             }
         }

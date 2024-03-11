@@ -138,6 +138,7 @@ export class EZNotificationService {
                         'notification.deleted',
                         'notification.deletedAt',
                         'notification.live',
+                        'notification.mustBeDismissed',
                         'notification.pageId',
                         'notification.startDate',
                         'notification.endDate',
@@ -199,9 +200,10 @@ export class EZNotificationService {
                                    { environments });
                 }
 
-                //console.log('Final query:', query.getSql());
+                //console.log('>>>>>>>>>> Final query:', query.getSql());
                 const notifications = await query.getMany();
 
+                console.log(`We got this many notifications back from getMany: ${notifications.length}`);
                 // Persist the served notifications as EndUsersServed
                 if (notifications.length > 0) {
                     console.log('Persisting endUserServed records.');

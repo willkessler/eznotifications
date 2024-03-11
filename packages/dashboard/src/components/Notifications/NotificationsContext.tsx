@@ -591,6 +591,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
                     endDate: notificationData.endDate ? formatDateForAPISubmission(notificationData.endDate) : null,
                     environments: [...notificationData.environments],
                     live: notificationData.live,
+                    mustBeDismissed: notificationData.mustBeDismissed,
                     notificationType: (notificationData.notificationType ? notificationData.notificationType : 'info'),
                     notificationTypeOther: notificationData.notificationTypeOther,
                     pageId: notificationData.pageId || '',

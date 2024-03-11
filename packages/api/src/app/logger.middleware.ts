@@ -21,7 +21,6 @@ export class LoggerMiddleware implements NestMiddleware {
         */
         // Spit out the body for POST
         // console.log('Body:',    req.body);
-
         next();
     }
 }
