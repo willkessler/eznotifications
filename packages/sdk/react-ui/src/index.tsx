@@ -51,7 +51,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     if (sdkNotifications && sdkNotifications.length > 0) {
         if (!isEqual(currentNotifications, sdkNotifications)) {
             //console.log(`New data received: ${JSON.stringify(sdkNotifications, null, 2)}`);
-            console.log('Copying all notifications into currentNotifications.');
+            //console.log('Copying all notifications into currentNotifications.');
             setCurrentNotifications(_.cloneDeep(sdkNotifications));
             setDisplayedIndex(0);
         }

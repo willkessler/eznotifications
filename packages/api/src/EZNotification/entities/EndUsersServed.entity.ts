@@ -19,6 +19,9 @@ export class EndUsersServed {
   @Column({ name: 'latest_access_time', type: 'timestamp with time zone', nullable: false })
   latestAccessTime: Date;
 
+  @Column({ name: 'view_count', type: 'int', default: 1, nullable: false })
+  viewCount: number;
+
   @Column({ type: 'boolean', default: false })
   ignored: boolean;
 

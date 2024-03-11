@@ -184,11 +184,12 @@ export class EZNotificationService {
                 const query = this.ezNotificationRepository.createQueryBuilder('notifications')
                     .leftJoin('notifications.endUsersServed', 'endUsersServed')
                     .leftJoin('endUsersServed.endUser', 'endUser',`"endUser"."end_user_id" = :userId`, { userId })
-                    .where('endUsersServed.uuid IS NULL') // exclude notifications already sent to the endUser
+                    .where('(endUsersServed.uuid IS NULL OR notifications.mustBeDismissed IS TRUE)')
                     .andWhere(`(notifications.deleted IS FALSE)`)
                     .andWhere(`((notifications.startDate IS NULL OR notifications.endDate IS NULL) OR
                                 (notifications.startDate <= :endOfDay AND notifications.endDate >= :startOfDay) OR
-                                ((notifications.startDate BETWEEN :startOfDay AND :endOfDay) OR (notifications.endDate BETWEEN :startOfDay AND :endOfDay))
+                                ((notifications.startDate BETWEEN :startOfDay AND :endOfDay) OR 
+                                 (notifications.endDate BETWEEN :startOfDay AND :endOfDay))
                               )`, { startOfDay, endOfDay })
 
                 if (pageId) {
@@ -203,18 +204,48 @@ export class EZNotificationService {
                 //console.log('>>>>>>>>>> Final query:', query.getSql());
                 const notifications = await query.getMany();
 
-                console.log(`We got this many notifications back from getMany: ${notifications.length}`);
                 // Persist the served notifications as EndUsersServed
                 if (notifications.length > 0) {
                     console.log('Persisting endUserServed records.');
+                    const rightNow = new Date();
                     for (const notification of notifications) {
-                        const endUsersServed = new EndUsersServed();
-                        endUsersServed.notification = notification;
-                        endUsersServed.endUser = await transactionalEntityManager.findOne(EndUser,
-                                                                                          { where: { uuid: endUser.uuid } });
-                        const rightNow = new Date();
-                        endUsersServed.firstAccessTime = rightNow;
-                        await transactionalEntityManager.save(endUsersServed);
+                        if (notification.mustBeDismissed) {
+                            // Check if there's an existing record for this notification and end user
+                            let endUsersServedRecord = await transactionalEntityManager.findOne(EndUsersServed, {
+                                where: {
+                                    notification: { uuid: notification.uuid },
+                                    endUser: { uuid: endUser.uuid },
+                                },
+                            });
+
+                            if (endUsersServedRecord) {
+                                // Update existing record
+                                endUsersServedRecord.latestAccessTime = rightNow;
+                                endUsersServedRecord.viewCount += 1;
+                                await transactionalEntityManager.save(endUsersServedRecord);
+                            } else {
+                                // Create a new EndUsersServed record as it doesn't exist
+                                const newEndUsersServedRecord = transactionalEntityManager.create(EndUsersServed, {
+                                    notification: notification,
+                                    endUser: endUser,
+                                    firstAccessTime: rightNow,
+                                    latestAccessTime: rightNow,
+                                    viewCount: 1,
+                                });
+                                await transactionalEntityManager.save(newEndUsersServedRecord);
+                            }
+                        } else {
+                            // For notifications that do not require dismissal, just create one-time
+                            // endUsersServed records.
+                            const endUsersServed = transactionalEntityManager.create(EndUsersServed, {
+                                notification: notification,
+                                endUser: endUser,
+                                firstAccessTime: rightNow,
+                                latestAccessTime: rightNow,
+                                viewCount: 1,
+                            });
+                            await transactionalEntityManager.save(endUsersServed);
+                        }
                     }
                 }
                 return notifications;
