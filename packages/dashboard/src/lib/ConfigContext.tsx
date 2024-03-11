@@ -35,11 +35,14 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const config: Config = {
     apiBaseUrl: import.meta.env.VITE_API_TARGET || 'http://localhost:8080',
+    // This function adds our Authorization: Bearer header, AND a special Tinad-only header so the API can
+    // recognize dashboard requests and apply the right CORS policy.
     getBearerHeader: async (otherHeaders: Headers | null = {}) => {
         const clerkUserToken = await getClerkUserToken();
         return {
             ...otherHeaders,
-            'Authorization': `Bearer ${clerkUserToken}`
+          'Authorization': `Bearer ${clerkUserToken}`,
+          'X-Tinad-Source' : 'Dashboard',
         };
     }
   };

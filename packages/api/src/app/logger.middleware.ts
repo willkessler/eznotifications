@@ -7,9 +7,9 @@ export class LoggerMiddleware implements NestMiddleware {
         // Spit out GET, POST etc:
         // console.log('Method:',  req.method);
         // More targeted output
-        console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl} - Origin: ${req.headers.origin}`);
+        console.log(`Logger: ${new Date().toISOString()} - ${req.method} ${req.originalUrl} - Origin: ${req.headers.origin}`);
         // Spit out all inbound headers:
-        console.log('Headers:', req.headers);
+        //console.log('Headers:', req.headers);
 
         // Spit out cookies if needed:
         /*
