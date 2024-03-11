@@ -85,11 +85,43 @@ export class EZNotificationService {
                              Promise<EZNotification> {
         const ezNotification = await this.ezNotificationRepository.findOneBy({ uuid: uuid });
         if (ezNotification) {
-            console.log(updateData);
-            Object.assign(ezNotification, updateData);
+            const rightNow = new Date();
+            const updateDataWithDate = { ...updateData, updatedAt: rightNow };
+            console.log(updateDataWithDate);
+            Object.assign(ezNotification, updateDataWithDate);
             return this.ezNotificationRepository.save(ezNotification);
         } else {
             throw new NotFoundException(`EZNotification with uuid: ${uuid} not found.`);
+        }
+        return null;
+    }
+
+    async dismissNotification(notificationUuid: string, endUserId: string): Promise<EZNotification> {
+        const ezNotification = await this.ezNotificationRepository.findOneBy({ uuid: notificationUuid });
+        // We must also try to find the end_user with the passed in userId to identify end_users_served records.
+        const endUser = await this.endUserRepository.findOneBy({ endUserId: endUserId });
+        if (ezNotification && endUser) {
+            console.log(`Dismissing notification uuid: ${notificationUuid} for end user: ${endUserId}.`);
+            try {
+                const rightNow = new Date();
+                const endUserUuid = endUser.uuid;
+                const results =
+                    await this.endUsersServedRepository
+                        .createQueryBuilder()
+                        .update(EndUsersServed)
+                        .set({ dismissed: true, updatedAt: rightNow })
+                        .where("notification_uuid = :notificationUuid", { notificationUuid })
+                        .andWhere("end_user_uuid = :endUserUuid", { endUserUuid })
+                        .andWhere("dismissed = FALSE")
+                        .execute();
+                console.log(`Set dismissed flag on: ${results.affected} end_users_served rows.`);
+                return ezNotification;
+            } catch(error) {
+                throw new NotFoundException(`Cannot dismiss end_users_served row for Notification uuid ${notificationUuid}.`);
+            }
+        } else {
+            throw new NotFoundException(`Notification w/uuid ${notificationUuid} not found, ` +
+                ` or endUser w/id ${endUserId} not found.`);
         }
         return null;
     }
@@ -99,15 +131,16 @@ export class EZNotificationService {
         if (ezNotification) {
             console.log(`Resetting views for notification uuid: ${notificationUuid}.`);
             try {
+                const rightNow = new Date();
                 const results =
                     await this.endUsersServedRepository
                         .createQueryBuilder()
                         .update(EndUsersServed)
-                        .set({ ignored: true })
+                        .set({ ignored: true, updatedAt: rightNow })
                         .where("notification_uuid = :notificationUuid", { notificationUuid })
                         .andWhere("ignored = :ignored", { ignored: false })
                         .execute();
-                console.log(`Set ignored flag on ${results.affected} end_users_served rows.`);
+                console.log(`Set ignored flag on: ${results.affected} end_users_served rows.`);
                 return ezNotification;
             } catch (error) {
                 throw new NotFoundException(`Cannot update end_users_served rows for notification uuid: ${notificationUuid}.`);
@@ -184,7 +217,9 @@ export class EZNotificationService {
                 const query = this.ezNotificationRepository.createQueryBuilder('notifications')
                     .leftJoin('notifications.endUsersServed', 'endUsersServed')
                     .leftJoin('endUsersServed.endUser', 'endUser',`"endUser"."end_user_id" = :userId`, { userId })
-                    .where('(endUsersServed.uuid IS NULL OR notifications.mustBeDismissed IS TRUE)')
+                    // the next clause prevents returning already dismissed notifs 
+                    .where('(endUsersServed.uuid IS NULL OR ' +
+                        '(notifications.mustBeDismissed IS TRUE AND endUsersServed.dismissed IS FALSE))')
                     .andWhere(`(notifications.deleted IS FALSE)`)
                     .andWhere(`((notifications.startDate IS NULL OR notifications.endDate IS NULL) OR
                                 (notifications.startDate <= :endOfDay AND notifications.endDate >= :startOfDay) OR
@@ -258,9 +293,11 @@ export class EZNotificationService {
     }
 
     async deleteNotification(id: string): Promise<void> {
+        const rightNow = new Date();       
         await this.ezNotificationRepository.update(id, {
             deleted: true,
-            deletedAt: new Date(),
+            deletedAt: rightNow,
+            updatedAt: rightNow,
         });
         return null;
     }

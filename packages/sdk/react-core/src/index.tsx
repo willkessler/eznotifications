@@ -12,7 +12,7 @@ export const useSDKData = (pageId?: string) => {
     console.log('TINAD: useSDKData');
     const sdkConfig = getTinadSDKConfig();
     if (!sdkConfig) {
-        throw new Error("Be sure to initialized TinadSDK with an API key before use.");
+        throw new Error("Be sure to initialize TinadSDK with a valid API key before using.");
     }
     const apiKey = sdkConfig.apiKey;
 
@@ -53,6 +53,7 @@ export const useSDKData = (pageId?: string) => {
         const response = await fetch(apiUrl, {
             headers: {
                 "Authorization": "Bearer " + apiKey,
+                "X-Tinad-Source": "SDK",
             }
         });
         if (!response.ok) {
@@ -64,7 +65,6 @@ export const useSDKData = (pageId?: string) => {
         } catch(error) {
             console.log(`Couldn't get json response, error: ${error}`);
         }
-        // Process data as before
         if (data) {
             mappedData = data.map((notification: any) => ({
                 ...notification,
@@ -89,7 +89,7 @@ export const useSDKData = (pageId?: string) => {
         const noDateNotifications: SDKNotification[] = [];
         const withDateNotifications: SDKNotification[] = [];
 
-        //console.log(`sortAndGroupNotifications got data: ${JSON.stringify(data)}`);
+        console.log(`sortAndGroupNotifications got data: ${JSON.stringify(data)}`);
         data.forEach((notification: any) => { // 
             // Convert date strings to Date objects
             const sdkNotification: SDKNotification = {
@@ -164,3 +164,34 @@ export const useSDKData = (pageId?: string) => {
     //console.log(`Returning this object: ${JSON.stringify(returnObj,null,2)}`);
     return returnObj;
 };
+
+export const dismissNotificationCore = async (notificationUuid: string): Promise<boolean> => {
+    const sdkConfig = getTinadSDKConfig();
+    if (!sdkConfig) {
+        throw new Error("Be sure to initialize TinadSDK with a valid API key before using.");
+    }
+    const apiKey = sdkConfig.apiKey;
+    const apiBaseUrl = 'http://localhost:8080'; // this needs to come from environment
+    const apiUrl = new URL(apiBaseUrl + '/notifications/dismiss');
+    const userId = sdkConfig.userId;
+    const postData = {
+        notificationUuid,
+        userId, // note that in the backend this is called endUserId
+    };
+    console.log(`react-core posting : ${JSON.stringify(postData,null,2)}`);
+        
+    const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + apiKey,
+            "X-Tinad-Source": "SDK",
+        },
+        body: JSON.stringify(postData),
+    });
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return Promise.resolve(true);
+};
+

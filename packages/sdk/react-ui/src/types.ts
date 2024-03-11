@@ -9,5 +9,5 @@ export interface TinadTemplateProps {
 export interface TinadNotificationsComponentProps {
     pageId?: string;
     template?: React.ComponentType<TinadTemplateProps>;
-    dismiss?: () => void;
+    clientDismissFunction?: () => void;
 }

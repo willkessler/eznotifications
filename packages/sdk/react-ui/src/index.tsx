@@ -1,5 +1,5 @@
 import React, { ReactElement, useState, ReactNode } from 'react';
-import { SDKNotification, useSDKData } from '@thisisnotadrill/react-core';
+import { SDKNotification, useSDKData, dismissNotificationCore } from '@thisisnotadrill/react-core';
 import type { TinadTemplateProps, TinadNotificationsComponentProps } from './types';
 import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison
 import _ from 'lodash';
@@ -18,26 +18,32 @@ const DefaultTemplate: React.FC<TinadTemplateProps> = ({ tinadContent, tinadType
 export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({ 
     template: CustomTemplate = DefaultTemplate,
     pageId,
-    dismiss
+    clientDismissFunction,
 }) => {
     const { data: sdkNotifications, isLoading, isError, error } = useSDKData(pageId);
 
-    const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[] | null>(null);
-    const [ displayedIndex, setDisplayedIndex ] = useState<number>(0);
+    const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[]>([]);
+    const [ displayedIndex, setDisplayedIndex ] = useState<number>(-1);
 
-    const dismissNotification = () => {
+    const dismissNotification = async () => {
+        console.log('react-ui: dismissNotification');
         if (currentNotifications) {
-            console.log(`dismissNotification: currentNotifications= ${JSON.stringify(currentNotifications, null, 2)}`);
+            const dismissedNotificationUuid = currentNotifications[displayedIndex].uuid;
+            console.log(`Dismissing notification with uuid ${dismissedNotificationUuid}`);
+            // Call core SDK to actually execute the dismissal API call.
+            await dismissNotificationCore(dismissedNotificationUuid);
+            
             if (displayedIndex + 1 == currentNotifications.length) {
-                setCurrentNotifications(null);
+                console.log('Clearing currentNotifications');
+                setCurrentNotifications([]);
                 setDisplayedIndex(-1);
             } else {
                 setDisplayedIndex(displayedIndex + 1);
             }
-        }
-        // Call client-provided dismiss function as a side effect, if one was passed to us.
-        if (dismiss) {
-            dismiss();
+            // Call client-provided dismiss function as a side effect (if one was passed in).
+            if (clientDismissFunction) {
+                clientDismissFunction();
+            }
         }
     };
 
@@ -50,17 +56,21 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
 
     if (sdkNotifications && sdkNotifications.length > 0) {
         if (!isEqual(currentNotifications, sdkNotifications)) {
-            //console.log(`New data received: ${JSON.stringify(sdkNotifications, null, 2)}`);
-            //console.log('Copying all notifications into currentNotifications.');
+            console.log(`New data received: ${JSON.stringify(sdkNotifications, null, 2)}`);
+            console.log('Copying all notifications into currentNotifications.');
             setCurrentNotifications(_.cloneDeep(sdkNotifications));
             setDisplayedIndex(0);
         }
     }
 
     const TemplateToRender = CustomTemplate || DefaultTemplate;
-    if (displayedIndex < 0 || currentNotifications === null) {
+    if (displayedIndex < 0) {
+        console.log(`displayedIndex: ${displayedIndex} currentNotifications ${currentNotifications?.length}`);
         return <TemplateToRender tinadContent="None found" tinadType="none" />;
     }
+
+    console.log('Returning datafull template where:');
+    console.log(`displayedIndex: ${displayedIndex} currentNotifications ${currentNotifications?.length}`);
 
     // We do have a notification, so return its data merged into the template.
     return (

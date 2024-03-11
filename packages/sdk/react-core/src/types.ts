@@ -5,7 +5,7 @@ export interface SDKConfig {
 }
 
 export interface SDKNotification {
-    id: string,
+    uuid: string,
     createdAt: Date,
     content: string;
     pageId?: string;
@@ -14,6 +14,7 @@ export interface SDKNotification {
     startDate?: Date;
     endDate?: Date;
     live: boolean;
+    dismissed: boolean;
 }
 
 export interface SDKDataReturn {

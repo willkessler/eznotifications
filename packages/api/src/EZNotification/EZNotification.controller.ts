@@ -140,7 +140,7 @@ export class EZNotificationController {
         @Body('clerkId') clerkId: string,
         @Body('APIKeyId') APIKeyId: string,
     ): Promise<ApiKey> {
-        console.log('controller: api-keys toggle, clerkId:', clerkId, 'APIKeyId:', APIKeyId);
+        console.log('Controller: api-keys toggle, clerkId:', clerkId, 'APIKeyId:', APIKeyId);
         return this.EZNotificationService.toggleApiKeyActive(clerkId, APIKeyId);
     }
 
@@ -188,6 +188,18 @@ export class EZNotificationController {
         return this.EZNotificationService.updateNotification(id,
                                                              ezNotificationDto.EZNotificationData, 
                                                              ezNotificationDto.clerkCreatorId);
+    }
+
+    @Post('/notifications/dismiss')
+    @ApiOperation({summary: 'Dismiss a notification, so it is never served again to a specific user (API only).'})
+    @ApiResponse({ status: 200, description: 'Returns success.' })
+    @UseGuards(ApiKeyAuthGuard)
+    async dismissNotification(
+        @Body('notificationUuid') notificationUuid: string,
+        @Body('userId') endUserId: string,
+    ): Promise<EZNotification> {
+        console.log(`>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Controller: dismissing notificationUuid ${notificationUuid} for user ${endUserId}.`);
+        return this.EZNotificationService.dismissNotification(notificationUuid, endUserId);
     }
 
     // This should use the dto so we know who deleted the notification
