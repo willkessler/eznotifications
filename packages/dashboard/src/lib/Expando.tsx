@@ -48,7 +48,7 @@ const Expando: React.FC<ExpandoProps> = ({
         className={classes.noUnderlineHover}
         onClick={() => setOpened((o) => !o)}>
             <span style={triangleStyle}></span>
-            <Text span>{opened ? openTitle : closedTitle}</Text>
+            <Text className={classes.openClosedTitle} span>{opened ? openTitle : closedTitle}</Text>
             </Anchor>
             <Collapse in={opened}>
             <div>{children}</div>

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Anchor, Button, Checkbox, Group, Modal, MultiSelect, Paper, Textarea, Text, TextInput, Title } from '@mantine/core';
+import { Anchor, Button, Checkbox, Group, Modal, MultiSelect, Paper, Select, Textarea, Text, TextInput, Title } from '@mantine/core';
+import { DateTime } from 'luxon';
 import { DateTimePicker, DatePickerInput, TimeInput, DateValue } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
@@ -85,10 +86,73 @@ const NotificationsModal = () => {
     };
 
     const handleDateTimeClick = (value: DateValue, name:string) => {
-        setNotificationData(prevData => ({
-            ...prevData as EZNotification,
-            startDate: new Date(),
-        }));
+        if (name === 'startDate') {
+            const currentValue = notificationData.startDate;
+            if (currentValue === null) {
+                setNotificationData(prevData => ({
+                    ...prevData as EZNotification,
+                    startDate: new Date(),
+                }));
+            }
+        } else {
+            const currentValue = notificationData.endDate;
+            if (currentValue === null) {
+                const now = DateTime.now();
+                const oneHourFromNowJs = now.plus({ hours: 1}).toJSDate();
+                setNotificationData(prevData => ({
+                    ...prevData as EZNotification,
+                    endDate: oneHourFromNowJs,
+                }));
+            }
+        }            
+    };
+
+    const handleTimeframeShortcut = (shortcutName:string) => {
+        let now = null, later;
+        const currentTime = DateTime.now();
+        switch (shortcutName) {
+            case 'next_hour':
+                now = DateTime.now();
+                later = now.plus({ minutes: 59, seconds:59});
+                break;
+            case 'next_24_hours':
+                now = DateTime.now();
+                later = now.plus({ hours: 23, minutes:59, seconds:59});
+                break;
+            case 'tonight_at_11pm':
+                if (currentTime.hour < 23) {
+                    now = currentTime.set({ hour: 23, minute:0, second:0, millisecond: 0});
+                } else {
+                    now = currentTime.plus({days:1}).set({ hour: 23, minute:0, second:0, millisecond: 0});
+                }
+                later = now.plus({ minutes: 59, second: 59 });
+                break;
+            case 'tomorrow':
+                now = currentTime.plus({ days: 1 }).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+                later = currentTime.plus({ days: 1 }).set({ hour: 23, minute: 59, second: 0, millisecond: 0 });
+                break;
+            case 'sunday_evening':
+                const daysUntilSunday = (7 - currentTime.weekday + 7) % 7; // Ensures it works when today is Sunday
+                now = currentTime.plus({ days: daysUntilSunday }).set({ hour: 23, minute: 0, second: 0, millisecond: 0 });
+                // If today is Sunday and before 2300 hours, set to today
+                if (currentTime.weekday === 7 && currentTime.hour < 23) {
+                    now = currentTime.set({ hour: 23, minute: 0, second: 0, millisecond: 0 });
+                }
+                later = now.plus({ minutes: 59, seconds:59});
+                break;
+            default:
+                break;
+        }
+        if (now) {
+            setNotificationData(prevData => ({
+                ...prevData as EZNotification,
+                startDate: now.toJSDate(),
+            }));
+            setNotificationData(prevData => ({
+                ...prevData as EZNotification,
+                endDate: later.toJSDate(),
+            }));                
+        }
     };
 
     const handleDateTimeChange = (value: DateValue, name:string) => {
@@ -292,8 +356,32 @@ const NotificationsModal = () => {
             value={notificationData?.endDate}
             onChange={(value) => handleDateTimeChange(value, 'endDate')}
             onFocus={handleFocus}
+            onClick={(value) => handleDateTimeClick(value, 'endDate')}
             style={{marginTop:'10px', minWidth:'90%', maxWidth:'200px'}}
                 />
+                <Group justify="flex-start" gap="xs">
+                <Text size="sm">Timeframe shortcuts:</Text>
+                <Anchor size="sm" component="button" type="button" onClick={() => handleTimeframeShortcut('next_hour')} 
+                   style={{marginLeft:'10px', color:'#999'}} >
+                  Next hour
+                </Anchor>
+                <Anchor size="sm" component="button" type="button" onClick={() => handleTimeframeShortcut('next_24_hours')} 
+                   style={{marginLeft:'10px', color:'#999'}} >
+                  Next 24 hours
+                </Anchor>
+                <Anchor size="sm" component="button" type="button" onClick={() => handleTimeframeShortcut('tonight_at_11pm')} 
+                   style={{marginLeft:'10px', color:'#999'}} >
+                Tonight at 11pm
+                </Anchor>
+                <Anchor size="sm" component="button" type="button" onClick={() => handleTimeframeShortcut('tomorrow')} 
+                   style={{marginLeft:'10px', color:'#999'}} >
+                Tomorrow
+                </Anchor>
+                <Anchor size="sm" component="button" type="button" onClick={() => handleTimeframeShortcut('sunday_evening')} 
+                   style={{marginLeft:'10px', color:'#999'}} >
+                Late Sunday evening
+                </Anchor>
+                </Group>
                 <Expando
             closedTitle={`Your timezone: ${userTimezone}`}
             openTitle={`Your timezone: ${userTimezone}`}
@@ -350,8 +438,8 @@ const NotificationsModal = () => {
                 </Expando>
                 </Paper>
                 <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px', marginBottom: '20px' }}>
-                <Button variant="filled" disabled={submissionDisabled} type="submit">{editing ? 'Update Notification' : 'Create Notification'}</Button>
-                <Anchor component="button" type="button" onClick={handleModalClose} style={{marginLeft:'10px', color:'#999'}} >
+                <Button variant="filled" disabled={submissionDisabled} type="submit">{editing ? 'Update Notification' : 'Create Notification'}</Button> 
+               <Anchor component="button" type="button" onClick={handleModalClose} style={{marginLeft:'10px', color:'#999'}} >
                 Cancel
             </Anchor>
                 </div>
