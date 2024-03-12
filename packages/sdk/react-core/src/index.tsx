@@ -1,5 +1,6 @@
 import useSWR from 'swr';
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { useSWRConfig } from 'swr';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { SDKConfig, SDKNotification, SDKDataReturn } from './types';
@@ -8,9 +9,15 @@ export { SDKNotification, SDKDataReturn } from './types';
 import { initTinadSDK, getTinadSDKConfig } from './config';
 export { initTinadSDK, getTinadSDKConfig };
 
+let globalMutate:any;
+let globalApiUrlString: string;
+
 export const useSDKData = (pageId?: string) => {
     console.log('TINAD: useSDKData');
     const sdkConfig = getTinadSDKConfig();
+    const { mutate } = useSWRConfig();
+    globalMutate = mutate;
+
     if (!sdkConfig) {
         throw new Error("Be sure to initialize TinadSDK with a valid API key before using.");
     }
@@ -141,6 +148,7 @@ export const useSDKData = (pageId?: string) => {
     }
 
     const apiUrlString = apiUrl.toString();
+    globalApiUrlString = apiUrlString;
     console.log('Fetching data from : ' + apiUrlString);
 
     const { data, error, isLoading } = useSWR<SDKNotification[]>(apiUrlString, fetcher, { 
@@ -153,6 +161,7 @@ export const useSDKData = (pageId?: string) => {
     }
 
     // Only process data if it's not undefined
+    console.log('typeof data:', typeof(data));
     const sortedAndGroupedNotifications = data ? (data.length > 0 ? sortAndGroupNotifications(data) : []) : null;
 
     const returnObj: SDKDataReturn = {
@@ -192,6 +201,11 @@ export const dismissNotificationCore = async (notificationUuid: string): Promise
     if (!response.ok) {
         throw new Error('Network response was not ok');
     }
+
+    // We need to call mutate to force SWR cache revalidation so it goes back to the API on the fetch URL
+    // and gets updated data.
+    globalMutate(globalApiUrlString,null);
+
     return Promise.resolve(true);
 };
 
