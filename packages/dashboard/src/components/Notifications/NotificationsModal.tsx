@@ -84,6 +84,13 @@ const NotificationsModal = () => {
         setSubmissionDisabled(currentTextTrimmed.length == 0);
     };
 
+    const handleDateTimeClick = (value: DateValue, name:string) => {
+        setNotificationData(prevData => ({
+            ...prevData as EZNotification,
+            startDate: new Date(),
+        }));
+    };
+
     const handleDateTimeChange = (value: DateValue, name:string) => {
         if (notificationData === undefined) {
             console.error('Cannot handleDateTimeChange because notificationData is not set.');
@@ -238,7 +245,7 @@ const NotificationsModal = () => {
     } else {
         //console.log('notificationData at render time:', notificationData);
         const dtLabel = (<CustomLabelWithHint text="Start date/time (optional):" 
-                         hintText="You can either set both dates, or only one date.  (All dates and times are stored internally in UTC.)   If you set just the Start date-time, this notification will be served forever, beginning at the Start date-time. If you set just an End date-time, the notification will stop being served after the End date-time." />);
+                         hintText="You can either set both dates, or only one date.  (All dates and times are stored internally in UTC.)   If you set just the Start date-time, this notification will be served forever, beginning at the Start date-time. If you set just an End date-time, the notification will stop being served after the End date-time. (All times shown are in your local timezone.)" />);
         const pgLabel = (<CustomLabelWithHint text="Page ID (optional)"
                          hintText="You can use any value you like here. When you pass a page ID value (or substring) in your SDK or API calls we will match against this value." />);
         const envLabel = (<CustomLabelWithHint text="Environments"
@@ -274,6 +281,7 @@ const NotificationsModal = () => {
             label={dtLabel}
             value={notificationData?.startDate}
             onChange={(value) => handleDateTimeChange(value, 'startDate')}
+            onClick={(value) => handleDateTimeClick(value, 'startDate')}
             onFocus={handleFocus}
             style={{marginTop:'10px',  minWidth:'90%', maxWidth:'200px'}}
                 />
