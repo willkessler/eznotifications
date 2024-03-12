@@ -2,6 +2,8 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import pkg from  'rollup-plugin-analyzer';
+import postcss from 'rollup-plugin-postcss';
+
 
 const { plugin: analyze } = pkg;
 
@@ -17,6 +19,7 @@ const onwarn = (warning, warn) => {
 export default {
   input: 'src/index.tsx', // Your main TypeScript file
   external: ['react', 'react-dom', 'swr'],
+  preserveModules: true,
   output: [
     {
       file: 'dist/bundle.esm.js',
@@ -32,6 +35,10 @@ export default {
     commonjs(), // Converts CommonJS modules to ES6, so they can be included in a Rollup bundle
     typescript({ tsconfig: './tsconfig.json' }), // Compile TypeScript files
     analyze({summaryOnly: true}),
+    postcss({
+      modules:true,
+      extract: false,
+    })
   ],
   onwarn, 
 };

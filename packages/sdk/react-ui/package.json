@@ -19,6 +19,7 @@
     "@rollup/plugin-typescript": "^11.1.6",
     "dompurify": "^3.0.9",
     "marked": "^12.0.0",
+    "micromodal": "^0.4.10",
     "react": "^18.2.0",
     "react-hot-toast": "^2.4.1",
     "rollup": "^4.12.0",
@@ -28,6 +29,8 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup-plugin-postcss": "^4.0.2",
     "typescript": "^5.3.3"
   },
   "scripts": {

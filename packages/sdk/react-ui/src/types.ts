@@ -1,7 +1,7 @@
 // Exported to clients so they can remain aligned with
 // future additions to the template parameters.
 export interface TinadTemplateProps {
-    tinadContent: string;
+    tinadContent: React.ReactNode;
     tinadType: string;
     dismiss?: () => void;
 }
@@ -9,5 +9,6 @@ export interface TinadTemplateProps {
 export interface TinadNotificationsComponentProps {
     pageId?: string;
     template?: React.ComponentType<TinadTemplateProps>;
+    mode?: string;
     clientDismissFunction?: () => void;
 }

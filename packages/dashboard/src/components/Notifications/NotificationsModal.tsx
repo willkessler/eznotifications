@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Anchor, Button, Checkbox, Group, Modal, MultiSelect, Paper, Select, Textarea, Text, TextInput, Title } from '@mantine/core';
 import { DateTime } from 'luxon';
-import { DateTimePicker, DatePickerInput, TimeInput, DateValue } from '@mantine/dates';
+import { DateTimePicker, DateValue } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
 import { useUser } from "@clerk/clerk-react";
@@ -39,7 +39,6 @@ const NotificationsModal = () => {
 
     //console.log('modalInitialData:', modalInitialData, ' editing:', editing);
 
-    const [timeInputsDisabled, setTimeInputsDisabled] = useState(true);
     const [notificationType, setNotificationType] = useState('info'); // default is the "info" choice
     const [dateValue, setDateValue] = useState<Date | null>(null);
     const [submissionDisabled, setSubmissionDisabled] = useState(true); 

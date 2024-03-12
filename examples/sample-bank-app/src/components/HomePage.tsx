@@ -10,7 +10,7 @@ const HomePage = () => {
     return (
       <div style={{ padding: '20px', margin: '10px', boxShadow: '0 0 10px rgba(0,0,0,0.1)' }}>
         <h4>Notification Type: {tinadType}</h4>
-        <p>Message: {tinadContent}</p>
+        <div>Message: {tinadContent}</div>
         {dismiss && <button onClick={dismiss}>Dismiss</button>}
       </div>
     );
@@ -18,37 +18,37 @@ const HomePage = () => {
 
   return (
     <div>
-      <TinadComponent pageId="home" template={CustomTemplate} />
+      <TinadComponent pageId="home" template={CustomTemplate} mode="modal" />
 
-        <Group>
-          <Card shadow="sm" p="lg" radius="md"  className={classes.card}>
-            <Image 
-              radius="md"
-              h={120}
-              fit="contain"
-              src="CheckingAccountIcon.webp" />
-              <Text className={classes.cardText}>Checking Account</Text>
-              <Text size="lg" mt="xs">$1,234.56</Text>
-          </Card>
-          <Card shadow="sm" p="lg" radius="md" className={classes.card}>
-            <Image 
+      <Group>
+        <Card shadow="sm" p="lg" radius="md"  className={classes.card}>
+          <Image 
+            radius="md"
+            h={120}
+            fit="contain"
+            src="CheckingAccountIcon.webp" />
+          <Text className={classes.cardText}>Checking Account</Text>
+          <Text size="lg" mt="xs">$1,234.56</Text>
+        </Card>
+        <Card shadow="sm" p="lg" radius="md" className={classes.card}>
+          <Image 
             radius="md"
             h={120}
             fit="contain"
             src="SavingsAccountIcon.webp" />
-            <Text className={classes.cardText}>Savings Account</Text>
-            <Text size="lg" mt="xs">$4,567.89</Text>
-          </Card>
-          <Card shadow="sm" p="lg" radius="md" className={classes.card}>
+          <Text className={classes.cardText}>Savings Account</Text>
+          <Text size="lg" mt="xs">$4,567.89</Text>
+        </Card>
+        <Card shadow="sm" p="lg" radius="md" className={classes.card}>
           <Image 
             radius="md"
             h={120}
             fit="contain"
             src="PortfolioIcon.webp" />
-            <Text className={classes.cardText}>Investment Portfolio</Text>
-            <Text size="lg" mt="xs">$8,910.11</Text>
-          </Card>
-        </Group>
+          <Text className={classes.cardText}>Investment Portfolio</Text>
+          <Text size="lg" mt="xs">$8,910.11</Text>
+        </Card>
+      </Group>
     </div>
   );
 }
