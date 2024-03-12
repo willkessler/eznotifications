@@ -18,12 +18,13 @@ const PreviewModal = () => {
         size="60%"
         opened={isPreviewModalOpen} 
         onClose={closePreviewModal}
-        radius="md"
+        radius="lg"
+        padding="xl"
         centered>
             <div>{formatNotificationType('', previewNotificationType as NotificationType, 58)}</div>          
             <div dangerouslySetInnerHTML={renderMarkdown(previewModalContent)}></div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
-            <Button onClick={() => { closePreviewModal() }}>OK</Button>
+            <Button size="lg" onClick={() => { closePreviewModal() }}>OK</Button>
             </div>
             </Modal>
     );

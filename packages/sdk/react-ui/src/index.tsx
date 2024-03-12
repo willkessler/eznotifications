@@ -1,8 +1,11 @@
 import React, { ReactElement, useState, ReactNode } from 'react';
 import { SDKNotification, useSDKData, dismissNotificationCore } from '@thisisnotadrill/react-core';
 import type { TinadTemplateProps, TinadNotificationsComponentProps } from './types';
+export { TinadTemplateProps } from './types';
 import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison
 import _ from 'lodash';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 // Internal template used only by the SDK.
 const DefaultTemplate: React.FC<TinadTemplateProps> = ({ tinadContent, tinadType, dismiss }) => {
@@ -47,6 +50,12 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
         }
     };
 
+    const renderMarkdown = (markdownText:string): { __html: string  } => {
+        const rawMarkup = marked(markdownText) + '';
+        const sanitizedMarkup = DOMPurify.sanitize(rawMarkup);
+        return { __html:  sanitizedMarkup };
+    };
+
     // Handle empty or error states
     if (isLoading) return <div>Loading...</div>;
 
@@ -65,17 +74,17 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
 
     const TemplateToRender = CustomTemplate || DefaultTemplate;
     if (displayedIndex < 0) {
-        console.log(`displayedIndex: ${displayedIndex} currentNotifications ${currentNotifications?.length}`);
-        return <TemplateToRender tinadContent="None found" tinadType="none" />;
+        console.log('No notifications to display');
+        return null;
     }
 
     console.log('Returning datafull template where:');
     console.log(`displayedIndex: ${displayedIndex} currentNotifications ${currentNotifications?.length}`);
-
     // We do have a notification, so return its data merged into the template.
+    const markedContent = renderMarkdown(currentNotifications[displayedIndex]?.content);
     return (
         <TemplateToRender 
-        tinadContent={currentNotifications[displayedIndex]?.content}
+        tinadContent={<div dangerouslySetInnerHTML={markedContent}></div>}
         tinadType={currentNotifications[displayedIndex]?.notificationType}
         dismiss={dismissNotification}
         />);
