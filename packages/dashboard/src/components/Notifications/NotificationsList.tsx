@@ -281,23 +281,3 @@ const NotificationsList = () => {
 }
 
 export default NotificationsList;
-
-
-              {/*
-          <div>
-          
-          <Table.ScrollContainer minWidth={800}>
-          <Table verticalSpacing="md" highlightOnHover >
-            <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
-              <Table.Tr>
-                <Table.Th><span style={{color:'#5c5'}}>Active?</span></Table.Th>
-                <Table.Th><span style={{color:'#5c5'}}>What</span> <span style={{color:'#888'}}>Will It Tell Your User?</span></Table.Th>
-                <Table.Th><span style={{color:'#5c5'}}>When</span> <span style={{color:'#888'}}>Will It Display?</span></Table.Th>
-                <Table.Th><span style={{color:'#5c5'}}>Where</span> <span style={{color:'#888'}}>Will It Display?</span></Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>{rows}</Table.Tbody>
-          </Table>
-      </Table.ScrollContainer>
-    </Skeleton>
-           */}

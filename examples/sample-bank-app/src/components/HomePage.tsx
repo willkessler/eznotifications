@@ -5,20 +5,22 @@ import { TinadComponent, TinadTemplateProps } from '@thisisnotadrill/react-ui';
   
 const HomePage = () => {
 
-  // Example of a Custom Template that clients could create
+  // Example of a Custom Template that a client can pass in.
   const CustomTemplate: React.FC<TinadTemplateProps> = ({ tinadContent, tinadType, dismiss }) => {
     return (
-      <div style={{ padding: '20px', margin: '10px', boxShadow: '0 0 10px rgba(0,0,0,0.1)' }}>
-        <h4>Notification Type: {tinadType}</h4>
-        <div>Message: {tinadContent}</div>
-        {dismiss && <button onClick={dismiss}>Dismiss</button>}
+      <div style={{ padding: '20px', margin: '10px', backgroundColor: 'white', boxShadow: '0 0 10px rgba(0,0,0,0.1)', width: '100%', borderRadius:'20px' }}>
+        <div style={{ marginBottom: '10px' }}>{tinadContent}</div>
+        <h4 style={{ marginBottom: '10px' }}>{tinadType}</h4>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          {dismiss && <button onClick={dismiss} style={{ marginLeft: 'auto' }}>Dismiss</button>}
+        </div>
       </div>
     );
   };
 
   return (
     <div>
-      <TinadComponent pageId="home" template={CustomTemplate} mode="modal" />
+      <TinadComponent pageId="home" mode="inline" template={CustomTemplate} />
 
       <Group>
         <Card shadow="sm" p="lg" radius="md"  className={classes.card}>

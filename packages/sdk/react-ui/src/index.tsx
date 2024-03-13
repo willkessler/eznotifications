@@ -8,15 +8,19 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import Modal from 'react-modal';
 import modalClasses from './react-modal.module.css';
+import toastClasses from './react-hot-toast.module.css';
+import toast, { Toaster } from 'react-hot-toast';
 
-// Internal template used only by the SDK.
+// Internal template used only by the SDK for inlined notifications only
 const DefaultTemplate: React.FC<TinadTemplateProps> = ({ tinadContent, tinadType, dismiss }) => {
     return (
-        <div>
-            <div>Message: {tinadContent}</div>
-            <div>Type:    {tinadType}</div>
-            <div>{dismiss && <button onClick={dismiss}>Dismiss</button>}</div>
+      <div style={{ padding: '20px', margin: '10px', backgroundColor: 'white', boxShadow: '0 0 10px rgba(0,0,0,0.1)', width: '100%', borderRadius:'20px' }}>
+        <div style={{ marginBottom: '10px' }}>{tinadContent}</div>
+        <div style={{ marginBottom: '10px' }}>{tinadType}</div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        {dismiss && <button onClick={dismiss} className={modalClasses.dismiss}>Dismiss</button>}
         </div>
+      </div>
     );
 };
 
@@ -48,6 +52,42 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     const afterOpenModal = () => {
     };
 
+    const toastNotify = (notification: SDKNotification) => { 
+        console.log('toastNotify');
+        const toastDuration = 5000;
+        const content = (notification.content?.length == 0 ? '' : notification.content);
+        const markedContent = renderMarkdown(content);
+        const notificationType = (notification.notificationType? notification.notificationType : 'success');
+        const showToast = () => {
+            const theToast = toast.custom((t) => (
+                <div className={`${toastClasses.customToast} ${t.visible ? toastClasses.customToastVisible : ''} ${t.visible ? toastClasses.customToastAnimateEnter : ''}`} >
+                    <div className="text-sm" dangerouslySetInnerHTML={markedContent}></div>
+                    <button onClick={() => toast.dismiss(t.id)}  className={toastClasses.customToastCloseButton}  aria-label="Close" >×</button>
+                </div>
+            ), {
+                duration: toastDuration,
+                position: 'top-center',
+
+                // Styling
+                style: {
+                    minWidth:'50%',
+                    transition: "all 0.25s ease-out"
+                },
+                className: '',
+
+                // Aria
+                ariaProps: {
+                    role: 'status',
+                    'aria-live': 'polite',
+                },
+            });
+            setTimeout( () => {
+                dismissNotification();
+            }, toastDuration);
+        };
+        showToast();
+    };
+
     useEffect(() => {
         Modal.setAppElement('#root');
     }, []);
@@ -55,10 +95,16 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     useEffect(() => {
         // Check if there are any notifications and update the modal's open state accordingly
         if (sdkNotifications && sdkNotifications.length > 0) {
-            setIsModalOpen(true);
+            if (mode === 'modal') {
+                setIsModalOpen(true);
+            } else if (mode === 'toast') {
+                toastNotify(currentNotifications[displayedIndex]);
+            }
         } else {
             // Optionally, close the modal if there are no notifications
-            setIsModalOpen(false);
+            if (mode === 'modal') {
+                setIsModalOpen(false);
+            }
         }
     }, [sdkNotifications]); // Depend on sdkNotifications to re-run the effect if it changes
 
@@ -135,9 +181,10 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
                  </Modal>
                 </>
             );
-            break;
         case 'toast':
-            break;
+            return (
+                <><Toaster /></>
+            );
         case 'inline':
         default:
             return (

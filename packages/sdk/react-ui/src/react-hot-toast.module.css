@@ -1,0 +1,61 @@
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-enter {
+  animation: slideDown 0.5s ease-out forwards;
+}
+
+/* Assuming you're using CSS modules, add these styles to your CSS file */
+.customToast {
+  position: relative; /* Add this line */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  margin: 8px auto; /* Center toast horizontally */
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  visibility: hidden; /* Default to hidden, will be overridden by animation */
+  min-width:80%;
+}
+
+.customToastCloseButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333; /* Adjust color to match your design */
+}
+
+.customToastVisible {
+  visibility: visible;
+}
+
+.customToastAnimateEnter {
+  animation: slideDown 0.5s ease-out forwards;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
