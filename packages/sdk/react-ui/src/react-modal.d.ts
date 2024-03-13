@@ -1,4 +1,4 @@
-declare module 'micromodal' {
+declare module 'react-modal' {
     interface Modal {
         id: string;
     }
@@ -8,7 +8,7 @@ declare module 'micromodal' {
         onClose?: (modal: Modal) => void;
     }
     
-    const MicroModal: {
+    const Modal: {
         init: (options: InitOptions) => void;
         show: (id: string) => void;
         close: (id: string) => void;

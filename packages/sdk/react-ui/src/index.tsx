@@ -6,8 +6,8 @@ import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison
 import _ from 'lodash';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import MicroModal from 'micromodal';
-import microModalClasses from './micromodal.module.css';
+import Modal from 'react-modal';
+import modalClasses from './react-modal.module.css';
 
 // Internal template used only by the SDK.
 const DefaultTemplate: React.FC<TinadTemplateProps> = ({ tinadContent, tinadType, dismiss }) => {
@@ -33,25 +33,24 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[]>([]);
     const [ displayedIndex, setDisplayedIndex ] = useState<number>(-1);
     const [ isModalOpen, setIsModalOpen ] = useState(false);
+    let subtitle:any;
     const [ modalContent, setModalContent ] = useState(null);
 
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        dismissNotification();
+        setIsModalOpen(false);
+    };
+
+    const afterOpenModal = () => {
+    };
+
     useEffect(() => {
-        if (mode === 'modal') {
-            MicroModal.init({
-                onShow: (modal) => console.log(`${modal.id} is shown`),
-                onClose: (modal) => console.log(`${modal.id} is hidden`),
-            });
-        }
-    }, [mode]);
-             
-    useEffect(() => {
-        if (mode === 'modal' && isModalOpen) {
-            setTimeout(() => {
-                console.log('Showing micromodal');
-                MicroModal.show('modal-1')
-            }, 10000);
-        }
-    }, [mode, isModalOpen]);
+        Modal.setAppElement('#root');
+    }, []);
 
     useEffect(() => {
         // Check if there are any notifications and update the modal's open state accordingly
@@ -120,29 +119,22 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     const markedContent = renderMarkdown(currentNotifications[displayedIndex]?.content);
     switch (mode) {
         case 'modal':
-            if (!isModalOpen) {
-                return null;
-            } else {
             return (
-                <div id="modal-1" aria-hidden="true" className={microModalClasses.modal}>
-                    <div tabIndex={-1} data-micromodal-close>
-                        <div role="dialog" aria-modal="true" aria-labelledby="modal-1-title" >
-                          <header>
-                            <h2>TItle</h2>
-                            <button aria-label="Close modal" 
-                                data-micromodal-close 
-                                className="modal__close" 
-                                onClick={() => setIsModalOpen(false)}>Close</button>
-                          </header>
-                      <div id="modal-1-content" className="modal__content">
-                        <div dangerouslySetInnerHTML={markedContent}></div>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-            )
-            }
+                <>
+                    <Modal 
+                className={modalClasses.Modal}
+                overlayClassName={modalClasses.Overlay}
+                shouldCloseOnOverlayClick={false}
+                  isOpen={isModalOpen}
+                  onAfterOpen={afterOpenModal}
+                  onRequestClose={closeModal}
+                  contentLabel="Example Modal"
+                >
+                    {<div dangerouslySetInnerHTML={markedContent}></div>}
+                    <button onClick={closeModal}>OK</button>
+                 </Modal>
+                </>
+            );
             break;
         case 'toast':
             break;
