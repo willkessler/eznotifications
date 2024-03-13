@@ -20,7 +20,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <TinadComponent pageId="home" mode="inline" template={CustomTemplate} />
+      <TinadComponent pageId="home" mode="toast" template={CustomTemplate} />
 
       <Group>
         <Card shadow="sm" p="lg" radius="md"  className={classes.card}>

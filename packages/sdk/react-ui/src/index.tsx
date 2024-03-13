@@ -10,6 +10,7 @@ import Modal from 'react-modal';
 import modalClasses from './react-modal.module.css';
 import toastClasses from './react-hot-toast.module.css';
 import toast, { Toaster } from 'react-hot-toast';
+import IconSvgs from './iconSvgs.module';
 
 // Internal template used only by the SDK for inlined notifications only
 const DefaultTemplate: React.FC<TinadTemplateProps> = ({ tinadContent, tinadType, dismiss }) => {
@@ -57,17 +58,23 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
         const toastDuration = 5000;
         const content = (notification.content?.length == 0 ? '' : notification.content);
         const markedContent = renderMarkdown(content);
-        const notificationType = (notification.notificationType? notification.notificationType : 'success');
+        const notificationType = (notification.notificationType? notification.notificationType : 'checkmark');
+        const iconSvgString = IconSvgs[notificationType].svg ?? IconSvgs['default'].svg; // Fallback to a default icon if needed
+        console.log(`iconSvgString: ${iconSvgString}`);
+        const iconSvgColor = IconSvgs[notificationType].color ?? IconSvgs['default'].color; // Fallback to a default icon if needed
         const showToast = () => {
             const theToast = toast.custom((t) => (
                 <div className={`${toastClasses.customToast} ${t.visible ? toastClasses.customToastVisible : ''} ${t.visible ? toastClasses.customToastAnimateEnter : ''}`} >
-                    <div className="text-sm" dangerouslySetInnerHTML={markedContent}></div>
+                    <div className={toastClasses.customToastContentWrapper}> {/* New wrapper div */}
+                      <div style={{ color: iconSvgColor }} className={toastClasses.customToastIcon} dangerouslySetInnerHTML={{ __html: iconSvgString }} />
+                      <div className={toastClasses.customToastContent} dangerouslySetInnerHTML={markedContent}></div>
+                    </div>
                     <button onClick={() => toast.dismiss(t.id)}  className={toastClasses.customToastCloseButton}  aria-label="Close" >×</button>
                 </div>
             ), {
                 duration: toastDuration,
                 position: 'top-center',
-
+                
                 // Styling
                 style: {
                     minWidth:'50%',
@@ -132,6 +139,11 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     };
 
     const renderMarkdown = (markdownText:string): { __html: string  } => {
+        if (!markdownText) {
+            console.error('Missing markdown content');
+            return { __html: '' };
+        }
+
         const rawMarkup = marked(markdownText) + '';
         const sanitizedMarkup = DOMPurify.sanitize(rawMarkup);
         return { __html:  sanitizedMarkup };

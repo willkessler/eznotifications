@@ -18,7 +18,7 @@
   position: relative; /* Add this line */
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: start;
   padding: 16px;
   margin: 8px auto; /* Center toast horizontally */
   border-radius: 8px;
@@ -28,17 +28,33 @@
   min-width:80%;
 }
 
+.customToastContent {
+  margin-left:25px;
+}
+
+.customToastContentWrapper {
+  display: flex;
+  align-items: center; /* Ensure vertical alignment if needed */
+  /* Add any additional styling here */
+  flex-grow: 1; /* Ensures it takes up available space, pushing the close button to the right */
+}
+
 .customToastCloseButton {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  font-size: 16px;
+  top: 12px;
+  right: 12px;
+  font-size: 18px;
   line-height: 1;
   padding: 0;
   background: none;
   border: none;
   cursor: pointer;
   color: #333; /* Adjust color to match your design */
+}
+
+.customToastIcon svg {
+  width: 40px;
+  height:40px;
 }
 
 .customToastVisible {
