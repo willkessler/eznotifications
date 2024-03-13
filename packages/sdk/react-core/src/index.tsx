@@ -1,6 +1,5 @@
 import useSWR from 'swr';
 import { useSWRConfig } from 'swr';
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { SDKConfig, SDKNotification, SDKDataReturn } from './types';

@@ -9,8 +9,31 @@
   }
 }
 
+@keyframes slideUp {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
 .animate-enter {
   animation: slideDown 0.5s ease-out forwards;
+}
+
+.animate-exit {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.customToastAnimateEnter {
+  animation: slideDown 0.5s ease-out forwards;
+}
+
+.customToastAnimateExit {
+  animation: slideUp 0.5s ease-out forwards;
 }
 
 /* Assuming you're using CSS modules, add these styles to your CSS file */
@@ -61,17 +84,8 @@
   visibility: visible;
 }
 
-.customToastAnimateEnter {
-  animation: slideDown 0.5s ease-out forwards;
+.customToastHidden {
+  visibility: none;
 }
 
-@keyframes slideDown {
-  from {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
+

@@ -468,15 +468,15 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     };
 
     const closeResetViewsModal = () => {
-        setResetViewsNotificationContents('');
         setResetViewsNotificationId(null);
+        setResetViewsNotificationContents('');
         setIsResetViewsModalOpen(false);
     };
 
     const actuallyResetViews = useCallback(async (): Promise<boolean> => {
         try {
             const method = 'PUT';
-            const apiUrl = `${apiBaseUrl}/notifications/${resetViewsNotificationId}/reset-views`;
+            const apiUrl = `${apiBaseUrl}/notifications/reset-views/${resetViewsNotificationId}`;
             //console.log('in actuallyDeleteNotification, deletedNotificationId:', deletedNotificationId);
             const response = await fetch(apiUrl, {
                 method: method,
@@ -490,7 +490,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             return false;
         }
         return true;
-    }, []);
+    }, [resetViewsNotificationId]);
     
     const resetViewsForNotification = async () => {
         //console.log('Actually resetting views for notification with id:', resetViewsNotificationId);

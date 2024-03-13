@@ -35,10 +35,11 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
 }) => {
     const { data: sdkNotifications, isLoading, isError, error } = useSDKData(pageId);
 
+    let subtitle:any;
+    let toastVisible = false;
     const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[]>([]);
     const [ displayedIndex, setDisplayedIndex ] = useState<number>(-1);
     const [ isModalOpen, setIsModalOpen ] = useState(false);
-    let subtitle:any;
     const [ modalContent, setModalContent ] = useState(null);
 
     const openModal = () => {
@@ -53,7 +54,11 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     const afterOpenModal = () => {
     };
 
-    const toastNotify = (notification: SDKNotification) => { 
+    const toastNotify = (notification: SDKNotification):void => { 
+        if (toastVisible) {
+            console.log('toast is visible, not putting up another one yet');
+            return; // do not put up another toast while one is currently visible
+        }
         console.log('toastNotify');
         const toastDuration = 5000;
         const content = (notification.content?.length == 0 ? '' : notification.content);
@@ -64,7 +69,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
         const iconSvgColor = IconSvgs[notificationType].color ?? IconSvgs['default'].color; // Fallback to a default icon if needed
         const showToast = () => {
             const theToast = toast.custom((t) => (
-                <div className={`${toastClasses.customToast} ${t.visible ? toastClasses.customToastVisible : ''} ${t.visible ? toastClasses.customToastAnimateEnter : ''}`} >
+                <div className={`${toastClasses.customToast} ${t.visible ? toastClasses.customToastVisible : toastClasses.customToastHidden} ${t.visible ? toastClasses.customToastAnimateEnter : toastClasses.customToastAnimateExit}`} >
                     <div className={toastClasses.customToastContentWrapper}> {/* New wrapper div */}
                       <div style={{ color: iconSvgColor }} className={toastClasses.customToastIcon} dangerouslySetInnerHTML={{ __html: iconSvgString }} />
                       <div className={toastClasses.customToastContent} dangerouslySetInnerHTML={markedContent}></div>
@@ -89,10 +94,12 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
                 },
             });
             setTimeout( () => {
+                toastVisible = false;
                 dismissNotification();
-            }, toastDuration);
+            }, toastDuration + 200);
         };
         showToast();
+        toastVisible = true;
     };
 
     useEffect(() => {

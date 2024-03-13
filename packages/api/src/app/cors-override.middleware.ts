@@ -35,6 +35,7 @@ export class CorsOverrideMiddleware implements NestMiddleware {
                 '/status',
                 '/notifications',
                 '/notifications/dismiss',
+                '/notifications/reset-views', // note : this call can only be executed via development api keys or the dashboard
             ];
             // Apply the appropriate CORS policy based on the request path
             const validApiAccess = globalAccessPrefixes.some(prefix => pathStartsWith(req.baseUrl, prefix));

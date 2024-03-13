@@ -3,6 +3,7 @@ import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiKeyAuthGuard } from '../auth/api-key-auth.guard';
 import { EitherAuthGuard } from '../auth/either-auth.guard';
+import { EitherJWTorDevApiKeyAuthGuard } from '../auth/either-jwt-or-dev-api-key-auth.guard';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -211,10 +212,11 @@ export class EZNotificationController {
         return this.EZNotificationService.deleteNotification(id);
     }
 
-    @Put('/notifications/:id/reset-views')
+    // This function can only be called by the dashboard OR a development API key
+    @Put('/notifications/reset-views/:id')
     @ApiOperation({summary: 'Reset views on a single notification. (Not for direct client use)'})
     @ApiResponse({ status: 200, description: 'Returns success.' })
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(EitherJWTorDevApiKeyAuthGuard)
     resetNotificationViews(@Param('id') id: string): Promise<EZNotification> {
         return this.EZNotificationService.resetNotificationViews(id);
     }

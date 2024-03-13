@@ -88,12 +88,28 @@ export class ApiKeyAuthGuard implements CanActivate {
     }
 
     private async validateBackendApiKey(apiKey: string): Promise<boolean> {
-        // Here, you would query your database to find the API key and check if it's active
         const apiKeyEntity = await this.apiKeyRepository.findOne({ where: { apiKey, isActive: true } });
         if (!apiKeyEntity) {
             throw new UnauthorizedException('Unknown API key');
         }
         console.log(`Found valid api key:${apiKeyEntity.apiKey}`);
         return true;
+    }
+
+    public async isApiKeyDevelopment(context: ExecutionContext): Promise<boolean> {
+        const request = context.switchToHttp().getRequest<CustomRequest>();
+        const apiKey = this.extractApiKey(request);
+
+        if (!apiKey) {
+            throw new UnauthorizedException('API key is missing');
+        }
+
+        const apiKeyEntity = await this.apiKeyRepository.findOne({ where: { apiKey, isActive: true } });
+        if (!apiKeyEntity) {
+            throw new UnauthorizedException('Unknown API key');
+        }
+
+        return (apiKeyEntity.apiKeyType === 'development');
+
     }
 }
