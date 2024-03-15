@@ -1,5 +1,5 @@
 {
-  "name": "@thisisnotadrill/react-core",
+  "name": "@this-is-not-a-drill/react-core",
   "private": false,
   "version": "1.0.0",
   "description": "Core SDK for deploying the This is Not A Drill! service in client React apps.",

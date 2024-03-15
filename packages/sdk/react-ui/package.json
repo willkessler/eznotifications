@@ -1,5 +1,5 @@
 {
-  "name": "@thisisnotadrill/react-ui",
+  "name": "@this-is-not-a-drill/react-ui",
   "private": false,
   "version": "1.0.0",
   "description": "React UI components for deploying the This Is Not A Drill! service in client apps.",
