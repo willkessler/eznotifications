@@ -10,7 +10,7 @@
     "url": "https://github.com/willkessler/eznotifications",
     "type": "git"
   },
-  "author": "Will Kessler",
+  "author": "Will Kessler <willkessler@this-is-not-a-drill.com> (https://this-is-not-a-drill.com)",
   "license": "MIT",
   "dependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
