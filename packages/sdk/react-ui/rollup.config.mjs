@@ -19,7 +19,6 @@ const onwarn = (warning, warn) => {
 export default {
   input: 'src/index.tsx', // Your main TypeScript file
   external: ['react', 'react-dom', 'swr'],
-  preserveModules: true,
   output: [
     {
       file: 'dist/bundle.esm.js',
