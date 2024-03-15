@@ -36,7 +36,9 @@ export default {
     typescript({ tsconfig: './tsconfig.json' }), // Compile TypeScript files
     analyze({summaryOnly: true}),
     postcss({
-      modules:true,
+      modules:{
+           auto: (resourcePath) => !resourcePath.includes('node_modules'),
+        },      
       extract: false,
     })
   ],

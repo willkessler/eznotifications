@@ -57,7 +57,7 @@
 
 .homePageOuter::before {
   content: "";
-  background-image: url('MomAndKidBicycle.webp');
+  background-image: url('/MomAndKidBicycle.webp');
   background-size: cover; /* Cover the entire div */
   opacity: 0.6; /* 60% opacity */
   position: absolute;

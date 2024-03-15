@@ -22,8 +22,8 @@ export const useSDKData = (pageId?: string) => {
     }
     const apiKey = sdkConfig.apiKey;
 
-    console.log('useSDKData: here is the sdkConfig:', sdkConfig);
-    const apiBaseUrl = 'http://localhost:8080'; // this needs to come from environment
+    //console.log('useSDKData: here is the sdkConfig:', sdkConfig);
+    const apiBaseUrl = sdkConfig.apiBaseUrl;
     const apiUrl = new URL(apiBaseUrl + '/notifications');
 
     // Function to get a cookie by name
@@ -46,7 +46,7 @@ export const useSDKData = (pageId?: string) => {
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         const expires = `; expires=${date.toUTCString()}`;
         const cookieValue = `${name}=${value}${expires}; path=/`;
-        console.log(`Setting cookie to : ${cookieValue}`);
+        //console.log(`Setting cookie to : ${cookieValue}`);
         document.cookie = cookieValue;
     };
 
@@ -58,8 +58,8 @@ export const useSDKData = (pageId?: string) => {
     const fetcher = async (url: string) => {
         const response = await fetch(apiUrl, {
             headers: {
-                "Authorization": "Bearer " + apiKey,
-                "X-Tinad-Source": "SDK",
+                'Authorization': "Bearer " + apiKey,
+                'X-Tinad-Source': "SDK",
             }
         });
         if (!response.ok) {
@@ -95,7 +95,7 @@ export const useSDKData = (pageId?: string) => {
         const noDateNotifications: SDKNotification[] = [];
         const withDateNotifications: SDKNotification[] = [];
 
-        console.log(`sortAndGroupNotifications got data: ${JSON.stringify(data)}`);
+        //console.log(`sortAndGroupNotifications got data: ${JSON.stringify(data)}`);
         data.forEach((notification: any) => { // 
             // Convert date strings to Date objects
             const sdkNotification: SDKNotification = {
@@ -148,7 +148,7 @@ export const useSDKData = (pageId?: string) => {
 
     const apiUrlString = apiUrl.toString();
     globalApiUrlString = apiUrlString;
-    console.log('Fetching data from : ' + apiUrlString);
+    //console.log('Fetching data from : ' + apiUrlString);
 
     const { data, error, isLoading } = useSWR<SDKNotification[]>(apiUrlString, fetcher, { 
         refreshInterval: 5000,
@@ -160,7 +160,7 @@ export const useSDKData = (pageId?: string) => {
     }
 
     // Only process data if it's not undefined
-    console.log('typeof data:', typeof(data));
+    //console.log('typeof data:', typeof(data));
     const sortedAndGroupedNotifications = data ? (data.length > 0 ? sortAndGroupNotifications(data) : []) : null;
 
     const returnObj: SDKDataReturn = {
@@ -179,7 +179,7 @@ export const dismissNotificationCore = async (notificationUuid: string): Promise
         throw new Error("Be sure to initialize TinadSDK with a valid API key before using.");
     }
     const apiKey = sdkConfig.apiKey;
-    const apiBaseUrl = 'http://localhost:8080'; // this needs to come from environment
+    const apiBaseUrl = sdkConfig.apiBaseUrl;
     const apiUrl = new URL(apiBaseUrl + '/notifications/dismiss');
     const userId = sdkConfig.userId;
     const postData = {
@@ -192,8 +192,8 @@ export const dismissNotificationCore = async (notificationUuid: string): Promise
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer " + apiKey,
-            "X-Tinad-Source": "SDK",
+            'Authorization': "Bearer " + apiKey,
+            'X-Tinad-Source': "SDK",
         },
         body: JSON.stringify(postData),
     });
@@ -208,3 +208,27 @@ export const dismissNotificationCore = async (notificationUuid: string): Promise
     return Promise.resolve(true);
 };
 
+export const resetAllViews = async (): Promise<boolean> => {
+    const sdkConfig = getTinadSDKConfig();
+    if (!sdkConfig) {
+        throw new Error("Be sure to initialize TinadSDK with a valid API key before using.");
+    }
+    const apiKey = sdkConfig.apiKey;
+    const apiBaseUrl = sdkConfig.apiBaseUrl;
+    const apiUrl = new URL(apiBaseUrl + '/notifications/reset-views/all');
+    const postData = { apiKey };
+    const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': "Bearer " + apiKey,
+            'X-Tinad-Source': "SDK",
+        },
+        body: JSON.stringify(postData),
+    });
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+
+    return Promise.resolve(true);
+};

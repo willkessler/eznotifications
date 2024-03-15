@@ -1,11 +1,15 @@
 import '@mantine/core/styles.css';
 import { Card, Text, Image, Title } from '@mantine/core';
 import classes from '../css/MainLayout.module.css'; // Adjust the path as necessary
+import { TinadComponent, TinadTemplateProps } from '@thisisnotadrill/react-ui';
 
 export const PayBills = () => {
     return (
         <>
           <Title>Pay Bills</Title>
+
+          <TinadComponent pageId="pay" mode="inline" />
+
           <Card shadow="sm" p="lg" radius="md"  className={classes.card}>
             <Image 
               radius="md"

@@ -1,0 +1,11 @@
+/* styles.css */
+.tinadCustomToast {
+  min-width: 80% !important; /* Default to 80% width */
+}
+
+/* Adjust the width for larger screens */
+@media (min-width: 768px) {
+  .tinadCustomToast {
+    max-width: 50% !important; /* Less width on larger screens */
+  }
+}

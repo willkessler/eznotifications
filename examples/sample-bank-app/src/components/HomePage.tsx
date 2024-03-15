@@ -1,11 +1,11 @@
-import { Card, Image, Stack, Title, Text, Group } from '@mantine/core';
+import { Card, Image, Text, Group } from '@mantine/core';
 import '@mantine/core/styles.css';
 import classes from '../css/MainLayout.module.css'; // Adjust the path as necessary
 import { TinadComponent, TinadTemplateProps } from '@thisisnotadrill/react-ui';
   
 const HomePage = () => {
 
-  // Example of a Custom Template that a client can pass in.
+  // Example of a Custom Template that a client can pass in for inline notifications.
   const CustomTemplate: React.FC<TinadTemplateProps> = ({ tinadContent, tinadType, dismiss }) => {
     return (
       <div style={{ padding: '20px', margin: '10px', backgroundColor: 'white', boxShadow: '0 0 10px rgba(0,0,0,0.1)', width: '100%', borderRadius:'20px' }}>

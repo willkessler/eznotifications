@@ -213,6 +213,17 @@ export class EZNotificationController {
     }
 
     // This function can only be called by the dashboard OR a development API key
+    @Post('/notifications/reset-views/all')
+    @ApiOperation({summary: 'Reset views on all (non-production) notifications.'})
+    @ApiResponse({ status: 200, description: 'Returns success.' })
+    @UseGuards(EitherJWTorDevApiKeyAuthGuard)
+    async resetAllDevelopmentNotificationViews(
+        @Body('apiKey') apiKeyString: string,
+    ): Promise<boolean> {
+        return this.EZNotificationService.resetViewsForNonProductionNotifications(apiKeyString);
+    }
+
+    // This function can only be called by the dashboard OR a development API key
     @Put('/notifications/reset-views/:id')
     @ApiOperation({summary: 'Reset views on a single notification. (Not for direct client use)'})
     @ApiResponse({ status: 200, description: 'Returns success.' })

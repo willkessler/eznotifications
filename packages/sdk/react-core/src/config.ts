@@ -4,7 +4,10 @@ import type { SDKConfig, SDKNotification, SDKDataReturn } from './types';
 // Initial configuration with default values
 
 export const initTinadSDK = (config: SDKConfig ) => {
-    console.log('Setting sdkGlobalConfig to :', config);
+    if (config.apiBaseUrl === undefined) {
+        config.apiBaseUrl = 'https://api.this-is-not-a-drill.com';
+    }
+    //console.log('Setting sdkGlobalConfig to :', config);
     const b64Config = btoa(JSON.stringify(config));
     localStorage.setItem('tinad', b64Config);
 };

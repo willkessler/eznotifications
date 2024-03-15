@@ -1,15 +1,15 @@
 import React, { ReactElement, useState, useEffect, ReactNode } from 'react';
-import { SDKNotification, useSDKData, dismissNotificationCore } from '@thisisnotadrill/react-core';
+import { getTinadSDKConfig, SDKNotification, useSDKData, dismissNotificationCore } from '@thisisnotadrill/react-core';
 import type { TinadTemplateProps, TinadNotificationsComponentProps } from './types';
 export { TinadTemplateProps } from './types';
 import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison
 import _ from 'lodash';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
+import ReactMarkdown from 'react-markdown';
 import Modal from 'react-modal';
 import modalClasses from './react-modal.module.css';
-import toastClasses from './react-hot-toast.module.css';
-import toast, { Toaster } from 'react-hot-toast';
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import toastify css
+import tinadToastClasses from './react-toastify.module.css';
 import IconSvgs from './iconSvgs.module';
 
 // Internal template used only by the SDK for inlined notifications only
@@ -35,12 +35,13 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
 }) => {
     const { data: sdkNotifications, isLoading, isError, error } = useSDKData(pageId);
 
-    let subtitle:any;
-    let toastVisible = false;
     const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[]>([]);
-    const [ displayedIndex, setDisplayedIndex ] = useState<number>(-1);
     const [ isModalOpen, setIsModalOpen ] = useState(false);
     const [ modalContent, setModalContent ] = useState(null);
+
+    const customToastIcon = ( svgString:string ) => (
+        <div dangerouslySetInnerHTML={{ __html: svgString }} />
+    );
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -54,90 +55,22 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     const afterOpenModal = () => {
     };
 
-    const toastNotify = (notification: SDKNotification):void => { 
-        if (toastVisible) {
-            console.log('toast is visible, not putting up another one yet');
-            return; // do not put up another toast while one is currently visible
+    const addNewNotifications = (notifications: SDKNotification[]) => {
+        console.log(`addNewNotifications, adding ${notifications.length} notifications`);
+        const newNotifications = notifications.filter(
+            notif => !currentNotifications.some(cn => notif.uuid === cn.uuid)).map(notif => _.cloneDeep(notif));
+        if (newNotifications.length > 0) {
+            console.log(`Going to actually add ${newNotifications.length} notifs`);
+            setCurrentNotifications(prev => [...prev, ...newNotifications]);
         }
-        console.log('toastNotify');
-        const toastDuration = 5000;
-        const content = (notification.content?.length == 0 ? '' : notification.content);
-        const markedContent = renderMarkdown(content);
-        const notificationType = (notification.notificationType? notification.notificationType : 'checkmark');
-        const iconSvgString = IconSvgs[notificationType].svg ?? IconSvgs['default'].svg; // Fallback to a default icon if needed
-        console.log(`iconSvgString: ${iconSvgString}`);
-        const iconSvgColor = IconSvgs[notificationType].color ?? IconSvgs['default'].color; // Fallback to a default icon if needed
-        const showToast = () => {
-            const theToast = toast.custom((t) => (
-                <div className={`${toastClasses.customToast} ${t.visible ? toastClasses.customToastVisible : toastClasses.customToastHidden} ${t.visible ? toastClasses.customToastAnimateEnter : toastClasses.customToastAnimateExit}`} >
-                    <div className={toastClasses.customToastContentWrapper}> {/* New wrapper div */}
-                      <div style={{ color: iconSvgColor }} className={toastClasses.customToastIcon} dangerouslySetInnerHTML={{ __html: iconSvgString }} />
-                      <div className={toastClasses.customToastContent} dangerouslySetInnerHTML={markedContent}></div>
-                    </div>
-                    <button onClick={() => toast.dismiss(t.id)}  className={toastClasses.customToastCloseButton}  aria-label="Close" >×</button>
-                </div>
-            ), {
-                duration: toastDuration,
-                position: 'top-center',
-                
-                // Styling
-                style: {
-                    minWidth:'50%',
-                    transition: "all 0.25s ease-out"
-                },
-                className: '',
-
-                // Aria
-                ariaProps: {
-                    role: 'status',
-                    'aria-live': 'polite',
-                },
-            });
-            setTimeout( () => {
-                toastVisible = false;
-                dismissNotification();
-            }, toastDuration + 200);
-        };
-        showToast();
-        toastVisible = true;
     };
 
-    useEffect(() => {
-        Modal.setAppElement('#root');
-    }, []);
-
-    useEffect(() => {
-        // Check if there are any notifications and update the modal's open state accordingly
-        if (sdkNotifications && sdkNotifications.length > 0) {
-            if (mode === 'modal') {
-                setIsModalOpen(true);
-            } else if (mode === 'toast') {
-                toastNotify(currentNotifications[displayedIndex]);
-            }
-        } else {
-            // Optionally, close the modal if there are no notifications
-            if (mode === 'modal') {
-                setIsModalOpen(false);
-            }
-        }
-    }, [sdkNotifications]); // Depend on sdkNotifications to re-run the effect if it changes
-
-    
     const dismissNotification = async () => {
         console.log('react-ui: dismissNotification');
-        if (currentNotifications) {
-            const dismissedNotificationUuid = currentNotifications[displayedIndex].uuid;
-            console.log(`Dismissing notification with uuid ${dismissedNotificationUuid}`);
-            // Call core SDK to actually execute the dismissal API call.
-            await dismissNotificationCore(dismissedNotificationUuid);
-
-            if (displayedIndex + 1 == currentNotifications.length) {
-                console.log('Clearing currentNotifications');
-                setCurrentNotifications([]);
-                setDisplayedIndex(-1);
-            } else {
-                setDisplayedIndex(displayedIndex + 1);
-            }
+        if (currentNotifications.length > 0) {
+            console.log(`Dismissing notification with id ${currentNotifications[0].uuid}`);
+            await dismissNotificationCore(currentNotifications[0].uuid);
+            setCurrentNotifications(currentNotifications.slice(1));
             // Call client-provided dismiss function as a side effect (if one was passed in).
             if (clientDismissFunction) {
                 clientDismissFunction();
@@ -145,43 +78,64 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
         }
     };
 
-    const renderMarkdown = (markdownText:string): { __html: string  } => {
-        if (!markdownText) {
-            console.error('Missing markdown content');
-            return { __html: '' };
+    useEffect(() => {
+        Modal.setAppElement('#root');
+    }, []);
+
+    useEffect(() => {
+        if (sdkNotifications && sdkNotifications.length > 0) {
+            addNewNotifications(sdkNotifications);
         }
+    }, [sdkNotifications]);
 
-        const rawMarkup = marked(markdownText) + '';
-        const sanitizedMarkup = DOMPurify.sanitize(rawMarkup);
-        return { __html:  sanitizedMarkup };
-    };
-
-    // Handle empty or error states
-    if (isLoading) return <div>Loading...</div>;
-
-    if (isError) {
-        return <div>Error: {error?.message || "No notifications"}</div>;
+    useEffect(() => {
+        // Check if there are any current notifications and update the modal's open state accordingly
+        if (mode === 'toast' && currentNotifications.length > 0) {
+            const notification = currentNotifications[0];
+            console.log(`About to show toast on notification:${JSON.stringify(notification,null,2)}`);
+            console.log(`Toast active: ${toast.isActive(notification.uuid)}`);
+            if (notification && !toast.isActive(notification.uuid)) {
+                setTimeout(() => {
+                    toast.info(<ReactMarkdown>{notification.content}</ReactMarkdown> || '', {
+                        toastId: notification.uuid,
+                        icon: customToastIcon(IconSvgs[notification.notificationType].svg),
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                        onClose: () => { dismissNotification() },
+                    }) }, 50);
+            }
+        } else if (mode == 'modal') {
+            setIsModalOpen(true);
+        } else {
+            setIsModalOpen(false);
+        }
+    }, [currentNotifications]); // Rerun effect when currentNotifications or mode changes
+    
+    // Handle empty state
+    if (isLoading || (currentNotifications?.length == 0)) {
+        return <div></div>;
     }
 
-    if (sdkNotifications && sdkNotifications.length > 0) {
-        if (!isEqual(currentNotifications, sdkNotifications)) {
-            console.log(`New data received: ${JSON.stringify(sdkNotifications, null, 2)}`);
-            console.log('Copying all notifications into currentNotifications.');
-            setCurrentNotifications(_.cloneDeep(sdkNotifications));
-            setDisplayedIndex(0);
-        }
+    // Handle error state
+    if (isError) {
+        console.log('*** TINAD error: Failed to fetch' || "No notifications");
+        return <div></div>;
     }
 
     const TemplateToRender = CustomTemplate || DefaultTemplate;
-    if (displayedIndex < 0) {
-        console.log('No notifications to display');
-        return null;
-    }
-
-    console.log('Returning datafull template where:');
-    console.log(`displayedIndex: ${displayedIndex} currentNotifications ${currentNotifications?.length}`);
+    
+    //console.log(`currentNotifications: ${JSON.stringify(currentNotifications,null,2)}`);
+    console.log(`currentNotifications length: ${currentNotifications.length}`);
     // We do have a notification, so return its data merged into the template.
-    const markedContent = renderMarkdown(currentNotifications[displayedIndex]?.content);
+    const content = (currentNotifications[0] ? currentNotifications[0].content : '');
+    //    const markedContent = renderMarkdown(currentNotifications[0]?.content);
     switch (mode) {
         case 'modal':
             return (
@@ -193,23 +147,36 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
                   isOpen={isModalOpen}
                   onAfterOpen={afterOpenModal}
                   onRequestClose={closeModal}
-                  contentLabel="Example Modal"
+                  contentLabel="Tinad modal"
                 >
-                    {<div dangerouslySetInnerHTML={markedContent}></div>}
+                    {<ReactMarkdown>content</ReactMarkdown>}
                     <button onClick={closeModal}>OK</button>
                  </Modal>
                 </>
             );
         case 'toast':
-            return (
-                <><Toaster /></>
+            return ( 
+                <ToastContainer
+                  position="top-center"
+                  className={tinadToastClasses.tinadCustomToast}
+                  autoClose={5000}
+                  hideProgressBar
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="light"
+                  transition={Bounce}
+                />
             );
         case 'inline':
         default:
             return (
                 <TemplateToRender
-                tinadContent={<div dangerouslySetInnerHTML={markedContent}></div>}
-                tinadType={currentNotifications[displayedIndex]?.notificationType}
+                tinadContent={<ReactMarkdown>{content}</ReactMarkdown>}
+                tinadType={currentNotifications[0]?.notificationType}
                 dismiss={dismissNotification}
                     />);
     }
