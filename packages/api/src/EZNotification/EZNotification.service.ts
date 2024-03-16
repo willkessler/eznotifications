@@ -266,13 +266,6 @@ export class EZNotificationService {
                 const query = this.ezNotificationRepository.createQueryBuilder('notifications')
                     .leftJoinAndSelect('notifications.endUsersServed', 'endUsersServed')
                     .leftJoinAndSelect('endUsersServed.endUser', 'endUser',`"endUser"."end_user_id" = :userId`, { userId })
-                    // the next clause prevents returning already dismissed notifs 
-/*
-                    .where('(endUsersServed.uuid IS NULL OR ' +
-                        '(endUsersServed.ignored IS FALSE AND endUsersServed.dismissed IS FALSE) OR ' +
-                        '(endUsersServed.ignored IS TRUE AND notifications.mustBeDismissed IS FALSE AND ' +
-                        'endUsersServed.dismissed IS FALSE ) )')
-*/
                     .andWhere(`(notifications.deleted IS FALSE)`)
                     .andWhere(`((notifications.startDate IS NULL OR notifications.endDate IS NULL) OR
                                 (notifications.startDate <= :endOfDay AND notifications.endDate >= :startOfDay) OR
@@ -309,23 +302,6 @@ export class EZNotificationService {
                                 if (!endUserServed.ignored) {
                                     console.log('Found not ignored record');
                                     existingRecord = endUserServed;
-/*
-                                    if (notification.mustBeDismissed) 
-                                        // manual-dismissal
-                                        console.log('checking dismissed');                                    
-                                        if (!endUserServed.dismissed) {
-                                            console.log(`Found existing endUserServed record ` +
-                                                `(manual dismissal): ${endUserServed.uuid}.`);
-                                            existingRecord = endUserServed;
-                                            break;
-                                        }
-                                    } else { // auto-dismissal
-                                        console.log(`Found existing endUserServed record ` +
-                                            `(auto-dismissal): ${endUserServed.uuid}.`);
-                                        existingRecord = endUserServed;
-                                        break;
-                                    }
-*/
                                 }
                             }
                         }
