@@ -15,9 +15,8 @@ import IconSvgs from './iconSvgs.module';
 // Internal template used only by the SDK for inlined notifications only
 const DefaultTemplate: React.FC<TinadTemplateProps> = ({ tinadContent, tinadType, dismiss }) => {
     return (
-      <div style={{ padding: '20px', margin: '10px', backgroundColor: 'white', boxShadow: '0 0 10px rgba(0,0,0,0.1)', width: '100%', borderRadius:'20px' }}>
+      <div style={{ padding: '20px', backgroundColor: 'white', boxShadow: '0 0 10px rgba(0,0,0,0.1)', width: '100%', borderRadius:'10px' }}>
         <div style={{ marginBottom: '10px' }}>{tinadContent}</div>
-        <div style={{ marginBottom: '10px' }}>{tinadType}</div>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         {dismiss && <button onClick={dismiss} className={modalClasses.dismiss}>Dismiss</button>}
         </div>
