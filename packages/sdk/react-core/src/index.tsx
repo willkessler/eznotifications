@@ -40,6 +40,15 @@ export const useSDKData = (pageId?: string) => {
         return null;
     };
 
+    const getLocalStorage = (key:string) => {
+        const localStorageValue = localStorage.getItem(key);
+        return localStorageValue;
+    };        
+
+    const setLocalStorage = (key:string, value:string) => {
+        localStorage.setItem(key,value);
+    };        
+
     // Function to set a cookie
     const setCookie = (name: string, value: string, days: number) => {
         const date = new Date();
@@ -131,7 +140,7 @@ export const useSDKData = (pageId?: string) => {
     // Main code for SDK starts here.
     //
 
-    let userId = sdkConfig.userId || getCookie('sdkUserId');
+    let userId = sdkConfig.userId || getLocalStorage('sdkUserId');
     let userIdWasProvided = true;
     if (!userId) {
         userId = generateUniqueId();
@@ -155,8 +164,8 @@ export const useSDKData = (pageId?: string) => {
     });
 
     // Side effect to set the cookie
-    if (!userIdWasProvided && !getCookie('sdkUserId')) {
-        setCookie('sdkUserId', userId, 365); // Set for 365 days, for example
+    if (!userIdWasProvided && !getLocalStorage('sdkUserId')) {
+        setLocalStorage('sdkUserId', userId);
     }
 
     // Only process data if it's not undefined
