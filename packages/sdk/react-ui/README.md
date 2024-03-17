@@ -53,7 +53,7 @@ import { initTinadSDK } from '@thisisnotadrill/react-core';
 ```
 
 If you want to use TINAD's UI components, you should also install 
-`    "@thisisnotadrill/react-ui": "1.0.0",`
+`    "@thisisnotadrill/react-ui": "latest",`
 
 and then you can include the UI component and its properties with:
 

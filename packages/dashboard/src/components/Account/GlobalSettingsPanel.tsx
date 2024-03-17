@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useUser } from "@clerk/clerk-react";
-import { Anchor, Button, Menu, rem, Select, Title, Text, TextInput, Textarea } from '@mantine/core';
+import { Anchor, Button, Menu, rem, Select, Title, Text, Textarea } from '@mantine/core';
 import classes from './css/Settings.module.css';
 import { useSettings } from './SettingsContext';
 import {

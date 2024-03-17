@@ -20,6 +20,7 @@ const PlaygroundComponent = () => {
   const { isSignedIn,user } = useUser();
   const { createAPIKey, fetchAPIKeys, playgroundAPIKeys } = useAPIKeys();
   const { pastTense, formatDisplayDate, formatDisplayTime } = useDateFormatters();
+  const { tempKeyPresent, setTempKeyPresent } = useState(false);
 
   if (!isSignedIn) {
     return <Navigate to="/login" replace />;
@@ -44,6 +45,29 @@ const PlaygroundComponent = () => {
     });
   }
 
+  const gotoPlayground = async () => {
+    // Check if a valid API key exists
+    if (!temporaryAPIKeyValue || pastTense(playgroundAPIKeys[0]?.expiresAt.toISOString())) {
+      // If no valid key, generate a new one
+      await createTemporaryKey();
+    }
+
+    // Now, we assume `temporaryAPIKeyValue` holds a valid API key (either existing or newly generated)
+    try {
+      // Copy the API key to the clipboard
+      await navigator.clipboard.writeText(temporaryAPIKeyValue);
+      console.log('API Key copied to clipboard');
+    } catch (err) {
+      console.error('Failed to copy API key to clipboard', err);
+    }
+
+    // Open the playground
+    //https://codesandbox.io/p/devbox/github/willkessler/this-is-not-a-drill-examples?file=%2FREADME.md
+    const codeSandboxUrl = 
+          'https://codesandbox.io/p/sandbox/github/willkessler/this-is-not-a-drill-examples/main?file=README.md';
+    window.open(codeSandboxUrl, '_blank');
+  };
+  
 
   useEffect(() => {
     if (user && user.id) {
@@ -66,20 +90,15 @@ const PlaygroundComponent = () => {
     }
   }, [playgroundAPIKeys]);
   
-  const gotoPlayground = () => {
-    const codeSandboxUrl = 'https://codesandbox.io/p/github/codesandbox/codesandbox-template-vite-react/main';
-    window.open(codeSandboxUrl, '_blank');
-  };
-  
   return (
     <Paper style={{paddingTop:'10px',marginTop:'10px'}} radius="md" p="sm">
       <Title order={2}>
         Playground Testing
       </Title>
-      <Text size="md" mt="md">You can try out the service immediately in a playground over at <Anchor href="https://codesandbox.io">CodeSandbox</Anchor>.</Text>
+      <Text size="md" mt="md">You can try out the service instantly in <Anchor href="https://codesandbox.io">CodeSandbox</Anchor> playground.</Text>
       <Text size="md" mt="sm">
-        Click "Generate" to get a key that is valid for the next hour. 
-        Then, click the green button to experiment with the service with your temporary key.
+        <Text>Click the green button below. This gives you a one-hour long temporary key. </Text>
+        <Text>Paste the generated key into the sample application at CodeSandbox.</Text>
       </Text>
       <div style={{marginTop:'20px'}} className={apiKeyClasses.apiKeyRow}>
         <Text size="md"  className={apiKeyClasses.apiTemporaryKeyDisplay}>
@@ -99,23 +118,19 @@ const PlaygroundComponent = () => {
             </Tooltip>
           )}
         </CopyButton>
-        <Button onClick={gotoPlayground}
-                size="sm" variant="filled" color="green" style={{ marginLeft:'30px' }}>Open the playground!
+
+        <Button onClick={gotoPlayground} style={{marginLeft:'10px'}}
+                size="sm" variant="filled" color="green">
+          {temporaryAPIKeyValue === '' ? <>Generate + Copy A Key</> : <>Copy the Key</>}, and Open the Playground!
         </Button>
       </div>
       <div>
-        <Button onClick={createTemporaryKey} size="xs" variant="white" color="gray" style={{ marginTop: '10px' }}>
-          Generate temporary API key
-        </Button>
         { temporaryAPIKeyValue && (
             <Text fs="italic" style={{paddingTop:'15px'}}>
-            The playground key <span style={{padding:'2px', border:'1px dotted #666', fontStyle:'normal', color:'green'}}>{temporaryAPIKeyValue}</span>
-              &nbsp;is temporary and will {temporaryAPIKeyExpiration ? temporaryAPIKeyExpiration : ''}</Text>
+              Note: temporary key <span style={{padding:'2px', border:'1px dotted #666', fontStyle:'normal', color:'green'}}>{temporaryAPIKeyValue}</span> will {temporaryAPIKeyExpiration ? temporaryAPIKeyExpiration : ''}</Text>
           ) }
       </div>
       <div>
-        <Title p="xl" order={5}>Stackblitz demo</Title>
-        <Button onClick={openStackblitz} size="md">Open playground</Button>
       </div>
     </Paper>
   );
