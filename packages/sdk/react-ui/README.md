@@ -1,5 +1,7 @@
 # This is Not A Drill! Client SDKs -- UI Component
 
+<img src="./packages/dashboard/public/ThisIsNotADrill_cutout.png" width="250" height="250">
+
 ## Purpose
 
 The React-UI SDK provides a drop-in React component for adding This Is

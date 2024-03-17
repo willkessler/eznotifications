@@ -1,7 +1,7 @@
 {
   "name": "@this-is-not-a-drill/react-ui",
   "private": false,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "React UI components for deploying the This Is Not A Drill! service in client apps.",
   "main": "dist/bundle.cjs.js",
   "module": "dist/bundle.esm.js",

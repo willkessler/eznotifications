@@ -1,5 +1,7 @@
 # This is Not A Drill! Client SDKs -- Core
 
+<img src="./packages/dashboard/public/ThisIsNotADrill_cutout.png" width="250" height="250">
+
 ## Purpose
 
 This is the core SDK for This Is Not A Drill! (TINAD). It uses SWR to
