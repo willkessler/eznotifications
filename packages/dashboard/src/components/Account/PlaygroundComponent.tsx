@@ -7,6 +7,7 @@ import { ActionIcon, Anchor, Code, CopyButton, Group, Skeleton,
 import { useDisclosure } from '@mantine/hooks';
 import { useAPIKeys } from './APIKeysContext';
 import { useDateFormatters } from '../../lib/DateFormattersProvider';
+import { useConfig } from '../../lib/ConfigContext';
 import sdk from '@stackblitz/sdk';
 
 import LogoComponent from '../Layout/LogoComponent';
@@ -21,6 +22,8 @@ const PlaygroundComponent = () => {
   const { createAPIKey, fetchAPIKeys, playgroundAPIKeys } = useAPIKeys();
   const { pastTense, formatDisplayDate, formatDisplayTime } = useDateFormatters();
   const { tempKeyPresent, setTempKeyPresent } = useState(false);
+  const { apiBaseUrl, getBearerHeader } = useConfig();
+  const [ repoFiles, setRepoFiles ] = useState<Object | null>(null);
 
   if (!isSignedIn) {
     return <Navigate to="/login" replace />;
@@ -38,10 +41,60 @@ const PlaygroundComponent = () => {
     await fetchAPIKeys(user.id);
   }
 
+  const fetchExampleRepo = async () => {
+    let filesObj = {};
+    if (user) {
+      const repoUrl = 'https://github.com/willkessler/this-is-not-a-drill-examples';
+      try {
+        const clerkId = user.id;
+        const APIUrl = `${apiBaseUrl}/playground/fetch-example-app`;
+        const response = await fetch(APIUrl, {
+          method: 'POST',
+          credentials: 'include',
+          headers: await getBearerHeader({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({
+            clerkId, 
+            repoUrl
+          })
+        });
+        if (!response.ok) {
+          throw new Error (`HTTP error! status: ${response.status}`);
+        } else {
+          console.log('Fetched repo contents from Tinad API.');                  
+        }
+        
+        console.log('inside fetchExampleRepo');
+        filesObj = await response.json();
+
+      } catch (error) {
+        console.error(`Error fetching repo, url: ( ${repoUrl} ).`, error);
+        return null;
+      }
+    }
+
+    // Inject a .env file using the current api key and other props into the file structure
+    const envFileContents = 
+      "VITE_API_BASE_URL=http://localhost:8080\n" +
+      "VITE_TINAD_ENDUSER_ID=user12345\n" +
+      "VITE_TINAD_IMAGE_LOCATION=https://raw.githubusercontent.com/willkessler/this-is-not-a-drill-examples/main/public/\n" +
+      "VITE_TINAD_API_KEY=OQONv9CK\n";
+
+    filesObj.files['.env'] = envFileContents;
+    filesObj.files['public/index.html'] = filesObj.files['index.html'];
+    filesObj.files['src/index.tsx'] = filesObj.files['src/main.tsx'];
+    // make module resolution to be a known value for stackblitz
+    filesObj.files['tsconfig.json'] = filesObj.files['tsconfig.json'].replace('bundler','nodenext');
+
+    setRepoFiles(filesObj.files);
+  }
+
   const openStackblitz = async () => {
     await sdk.openGithubProject('willkessler/eznotifications', {
       openFile:'examples/react_sdk/src/App.tsx',
       newWindow: true,
+      height:'90vh',
+      showSidebar: true,
+      view: 'both'
     });
   }
 
@@ -63,11 +116,64 @@ const PlaygroundComponent = () => {
 
     // Open the playground
     //https://codesandbox.io/p/devbox/github/willkessler/this-is-not-a-drill-examples?file=%2FREADME.md
-    const codeSandboxUrl = 
-          'https://codesandbox.io/p/sandbox/github/willkessler/this-is-not-a-drill-examples/main?file=README.md';
-    window.open(codeSandboxUrl, '_blank');
-  };
-  
+//    const codeSandboxUrl = 
+//          'https://codesandbox.io/p/sandbox/github/willkessler/this-is-not-a-drill-examples/main?file=README.md';
+    //const stackblitzUrl = 
+    // 'https://stackblitz.com/~/github.com/willkessler/this-is-not-a-drill-examples?apiKey=abc123';
+    
+    //window.open(stackblitzUrl, '_blank');
+    //sdk.embedGithubProject('stackblitz', 'willkessler/this-is-not-a-drill-examples', {
+
+    // this works
+
+    /* sdk.openGithubProject('willkessler/this-is-not-a-drill-examples', {
+     *   newWindow: true,
+     *   openFile: 'src/components/App.tsx',
+     *   view: 'editor',
+     *   height: 800,
+     *   showSidebar: true,
+     *   view: 'both'
+     * }); */
+
+    //console.log(`Files contains: ${JSON.stringify(repoFiles,null,2)}`);    
+    console.log(`tsconfig.json: ${repoFiles['tsconfig.json']}`);
+
+    sdk.openProject({
+      files: repoFiles,
+      newWindow: true,
+      openFile: 'src/components/App.tsx',
+      template: 'create-react-app',
+      view: 'both',
+      showSidebar: true,
+      theme: 'dark',
+      dependencies: {
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.22.3",
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+        "@mantine/core": "^7.6.1",
+        "@mantine/hooks": "^7.6.1",
+        "@tabler/icons-react": "^3.1.0",
+        "@testing-library/jest-dom": "^5.17.0",
+        "@testing-library/react": "^13.4.0",
+        "@testing-library/user-event": "^13.5.0",
+        "@this-is-not-a-drill/react-core": "latest",
+        "@this-is-not-a-drill/react-ui": "latest",
+        "@types/jest": "^27.5.2",
+        "@types/node": "^16.18.83",
+        "@types/react": "^18.2.58",
+        "@types/react-dom": "^18.2.19",
+        "dompurify": "^3.0.9",
+        "lodash": "^4.17.21",
+        "marked": "^12.0.1",
+      }
+    });
+    
+  }  
+
+  useEffect(() => {
+    fetchExampleRepo();
+  }, []);
 
   useEffect(() => {
     if (user && user.id) {
@@ -96,10 +202,6 @@ const PlaygroundComponent = () => {
         Playground Testing
       </Title>
       <Text size="md" mt="md">You can try out the service instantly in <Anchor href="https://codesandbox.io">CodeSandbox</Anchor> playground.</Text>
-      <Text size="md" mt="sm">
-        <Text>Click the green button below. This gives you a one-hour long temporary key. </Text>
-        <Text>Paste the generated key into the sample application at CodeSandbox.</Text>
-      </Text>
       <div style={{marginTop:'20px'}} className={apiKeyClasses.apiKeyRow}>
         <Text size="md"  className={apiKeyClasses.apiTemporaryKeyDisplay}>
           {temporaryAPIKeyValue}
@@ -120,7 +222,7 @@ const PlaygroundComponent = () => {
         </CopyButton>
 
         <Button onClick={gotoPlayground} style={{marginLeft:'10px'}}
-                size="sm" variant="filled" color="green">
+          size="sm" variant="filled" color="green" disabled={repoFiles === null}>
           {temporaryAPIKeyValue === '' ? <>Generate + Copy A Key</> : <>Copy the Key</>}, and Open the Playground!
         </Button>
       </div>
@@ -128,9 +230,9 @@ const PlaygroundComponent = () => {
         { temporaryAPIKeyValue && (
             <Text fs="italic" style={{paddingTop:'15px'}}>
               Note: temporary key <span style={{padding:'2px', border:'1px dotted #666', fontStyle:'normal', color:'green'}}>{temporaryAPIKeyValue}</span> will {temporaryAPIKeyExpiration ? temporaryAPIKeyExpiration : ''}</Text>
-          ) }
+        ) }
       </div>
-      <div>
+      <div id="stackblitz">
       </div>
     </Paper>
   );

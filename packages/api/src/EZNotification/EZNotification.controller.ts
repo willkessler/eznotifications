@@ -145,6 +145,17 @@ export class EZNotificationController {
         return this.EZNotificationService.toggleApiKeyActive(clerkId, APIKeyId);
     }
 
+    @Post('/playground/fetch-example-app')
+    @ApiOperation({summary: 'Fetch a sample app from github and serve it up to the playground. (Not for direct client use)'})
+    @UseGuards(EitherAuthGuard)
+    async fetchExampleApp(
+        @Body('clerkId') clerkId: string,
+        @Body('repoUrl') repoUrl: string,
+    ): Promise<Object> {
+        console.log('Controller: playground fetch example app, clerkId:', clerkId, 'Repo url:', repoUrl);
+        return this.EZNotificationService.fetchGithubCodeAsString(clerkId, repoUrl);
+    }
+
     @Get('/notifications')
     @ApiOperation({summary: 'Fetch all current notifications, with filters applied. Filters required for SDK use.'})
     @ApiResponse({ status: 200, description: 'Return all current notifications for given filters.' })

@@ -1,5 +1,7 @@
 // src/ezNotification/ezNotification.service.ts
 
+import * as JSZip from 'jszip';
+
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Connection, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -720,6 +722,48 @@ export class EZNotificationService {
 
         // Return the updated organization entity (optionally refresh it from the database if needed)
         return organization;
+    }
+    
+    async fetchGithubCodeAsString(clerkUserId: string, githubUrl: string): Promise<Object> {
+        console.log('fetchGithubCodeAsString');
+        const userOrganization = await this.findUserOrganizationByClerkId(clerkUserId);
+        if (userOrganization?.length == 0) {
+            const errorMsg = `fetchGithubCodeAsString : org not found for clerkUserId: ${clerkUserId}.`;
+            throw new NotFoundException(errorMsg);
+        }
+
+        try {
+            const zipUrl = githubUrl + '/archive/refs/heads/main.zip';
+            const response = await fetch(zipUrl);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch: ${response.statusText}`);
+            }
+            const arrayBuffer = await response.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            const zip = await JSZip.loadAsync(buffer);
+            const files = {};
+
+          await Promise.all(
+            Object.keys(zip.files).map(async (filename) => {
+              // Ignore directories
+              if (zip.files[filename].dir) return;
+
+              const fileContent = await zip.files[filename].async('string');
+              // Prepare the file path to match Stackblitz's expectations
+              const stackblitzFilePath = `${filename.replace('this-is-not-a-drill-examples-main/', '')}`;
+              // skip  image files
+              if (!(stackblitzFilePath.endsWith('.webp') || stackblitzFilePath.endsWith('.jpg') || stackblitzFilePath.endsWith('.png'))) {
+                files[stackblitzFilePath] = fileContent;
+              }
+            })
+          );
+
+            return ({ files });
+        } catch (error) {
+            const errorMsg = `Error fetching or processing ZIP at ${githubUrl}: ${error}`;
+            console.error(errorMsg);
+            throw new NotFoundException(errorMsg);
+        }
     }
 
 }
