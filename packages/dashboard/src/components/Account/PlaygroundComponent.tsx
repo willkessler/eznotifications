@@ -76,7 +76,7 @@ const PlaygroundComponent = () => {
     // Since we cannot use import.meta.env (e.g. in stackBlitz), this file
     // is used to create "environment variables" on the fly.
     const envFileContents = `
-export const VITE_API_BASE_URL = 'http://localhost:8080';
+export const VITE_TINAD_API_BASE_URL = 'http://localhost:8080';
 export const VITE_TINAD_ENDUSER_ID = 'user12345';
 export const VITE_TINAD_IMAGE_LOCATION = 'https://raw.githubusercontent.com/willkessler/this-is-not-a-drill-examples/main/public/';
 export const VITE_TINAD_API_KEY = 'OQONv9CK';
