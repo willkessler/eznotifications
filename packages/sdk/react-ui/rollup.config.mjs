@@ -18,7 +18,7 @@ const onwarn = (warning, warn) => {
 
 export default {
   input: 'src/index.tsx', // Your main TypeScript file
-  external: ['react', 'react-dom', 'swr'],
+  external: ['@this-is-not-a-drill/react-core', 'react', 'react-dom', 'swr'],
   output: [
     {
       file: 'dist/bundle.esm.js',

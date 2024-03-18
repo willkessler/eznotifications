@@ -76,13 +76,15 @@ const PlaygroundComponent = () => {
     // Since we cannot use import.meta.env (e.g. in stackBlitz), this file
     // is used to create "environment variables" on the fly.
     const envFileContents = `
-export const VITE_TINAD_API_BASE_URL = 'http://localhost:8080';
-export const VITE_TINAD_ENDUSER_ID = 'user12345';
-export const VITE_TINAD_IMAGE_LOCATION = 'https://raw.githubusercontent.com/willkessler/this-is-not-a-drill-examples/main/public/';
-export const VITE_TINAD_API_KEY = 'OQONv9CK';
+export const envConfig = {
+  TINAD_API_BASE_URL = 'http://localhost:8080',
+  TINAD_ENDUSER_ID = 'user12345',
+  TINAD_IMAGE_LOCATION = 'https://raw.githubusercontent.com/willkessler/this-is-not-a-drill-examples/main/public/',
+  TINAD_API_KEY = 'OQONv9CK',
+};
 `;
 
-    filesObj.files['src/env.ts'] = envFileContents;
+    filesObj.files['src/envConfig.ts'] = envFileContents;
     filesObj.files['public/index.html'] = filesObj.files['index.html'];
     filesObj.files['src/index.tsx'] = filesObj.files['src/main.tsx'];
     // make module resolution to be a known value for stackblitz
@@ -153,6 +155,7 @@ export const VITE_TINAD_API_KEY = 'OQONv9CK';
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-router-dom": "^6.22.3",
+        "swr" : "^2.2.5",
         "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "@mantine/core": "^7.6.1",
         "@mantine/hooks": "^7.6.1",
