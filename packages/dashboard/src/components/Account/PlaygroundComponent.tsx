@@ -141,8 +141,222 @@ export const envConfig = {
      * }); */
 
     //console.log(`Files contains: ${JSON.stringify(repoFiles,null,2)}`);    
-    console.log(`tsconfig.json: ${repoFiles['tsconfig.json']}`);
+    //console.log(`tsconfig.json: ${repoFiles['tsconfig.json']}`);
 
+    const basicFiles = {
+      'index.ts' : `
+import './index.tsx';
+`,
+      'index.tsx' : `
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+
+const queryClient = new QueryClient()
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Example />
+    </QueryClientProvider>
+  )
+}
+
+function Example() {
+  const { isPending, error, data, isFetching } = useQuery({
+    queryKey: ['repoData'],
+    queryFn: () =>
+      fetch('https://api.github.com/repos/tannerlinsley/react-query')
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return res.json(); // Parse the response body as JSON
+        }),
+  });
+
+  if (isPending) return 'Loading...'
+
+  if (error) return 'An error has occurred: ' + error.message
+
+  return (
+    <div>
+      <h1>{data.name}</h1>
+      <p>{data.description}</p>
+      <strong> {data.subscribers_count}</strong>{' '}
+      <strong> {data.stargazers_count}</strong>{' '}
+      <strong> {data.forks_count}</strong>
+      <div>{isFetching ? 'Updating...' : ''}</div>
+      <ReactQueryDevtools initialIsOpen />
+    </div>
+  )
+}
+
+const rootElement = document.getElementById('root')
+ReactDOM.createRoot(rootElement).render(<App />)
+
+`,
+          'index.html' : `
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/emblem-light.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+
+    <title>TanStack Query React Simple Example App</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/index.jsx"></script>
+  </body>
+</html>
+    `,
+          'package.json' : `
+{
+  "name": "@tanstack/query-example-react-simple",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.28.4",
+    "@tanstack/react-query-devtools": "^5.28.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.1.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
+`
+  };
+          
+
+    sdk.openProject({
+      files: basicFiles,
+      newWindow: true,
+      openFile: 'src/index.tsx',
+      template: 'create-react-app',
+      view: 'both',
+      showSidebar: true,
+      theme: 'dark',
+      dependencies: {
+        "@tanstack/react-query": "^5.28.4",
+        "@tanstack/react-query-devtools": "^5.28.4",
+        "axios": "^1.6.7",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "http" : "latest",
+        "https" : "latest",
+        "zlib" : "^1.0.5",
+        "events" : "^3.3.0",
+        "debug" : "^4.3.4",
+      }
+    });
+
+
+/*
+    const basicFiles = {
+      'package.json' : `
+{
+  "name": "example-basic",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "^18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "18.2.0",
+    "swr" : "^2.2.5",
+    "@this-is-not-a-drill/react-core" : "latest"
+  }
+}
+`,
+      'index.html' : `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWR Example</title>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="index.js"></script>
+</body>
+</html>
+`,
+      'index.js' : `
+import useSWR from "swr";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+
+const fetcher = (url) => fetch(url).then((r) => r.json());
+
+export default function Example() {
+  const { data, error } = useSWR('https://swapi.dev/api/people/1/', fetcher);
+
+  if (error) return <div>failed to load</div>;
+  if (!data) return <div>loading...</div>;
+
+  console.log('data is ' +  JSON.stringify(data,null,2) );
+}
+
+const root= ReactDOM.createRoot(document.getElementById('root'));
+root.render(<Example />);
+`,
+    };
+    
+
+    sdk.openProject({
+      files: basicFiles,
+      newWindow: true,
+      openFile: 'pages/index.js',
+      template: 'create-react-app',
+      view: 'both',
+      showSidebar: true,
+      theme: 'dark',
+      dependencies: {
+        "next": "12.1.4",
+        "react": "18.0.0",
+        "react-dom": "18.0.0",
+        "@this-is-not-a-drill/react-core": "latest",
+        "swr" : "^2.2.5",
+      }
+    });
+*/
+
+
+/*
     sdk.openProject({
       files: repoFiles,
       newWindow: true,
@@ -174,6 +388,9 @@ export const envConfig = {
         "marked": "^12.0.1",
       }
     });
+*/
+
+
     
   }  
 
@@ -228,7 +445,7 @@ export const envConfig = {
         </CopyButton>
 
         <Button onClick={gotoPlayground} style={{marginLeft:'10px'}}
-          size="sm" variant="filled" color="green" disabled={repoFiles === null}>
+          size="sm" variant="filled" color="green" >
           {temporaryAPIKeyValue === '' ? <>Generate + Copy A Key</> : <>Copy the Key</>}, and Open the Playground!
         </Button>
       </div>
@@ -246,3 +463,5 @@ export const envConfig = {
 
 
 export default PlaygroundComponent;
+
+//           size="sm" variant="filled" color="green" disabled={false || repoFiles === null} >
