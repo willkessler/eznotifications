@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import '@mantine/core/styles.css';
 import { Card, Text, Image, Title } from '@mantine/core';
 import classes from '../css/MainLayout.module.css'; // Adjust the path as necessary
-import { TinadComponent, TinadTemplateProps } from '@this-is-not-a-drill/react-ui';
+import { TinadComponent } from '@this-is-not-a-drill/react-ui';
 import { usePageId } from './PageIdContext';
 
 export const PayBills = () => {

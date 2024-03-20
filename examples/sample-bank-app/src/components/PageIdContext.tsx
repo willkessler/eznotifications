@@ -19,7 +19,7 @@ export const usePageId = (): PageIdContextType => {
 };
 
 // Provider component
-export const PageIdProvider: React.FC = ({ children }) => {
+export const PageIdProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
   const [pageId, setPageId] = useState('');
 
   return (
