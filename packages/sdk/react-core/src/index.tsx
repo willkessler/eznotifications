@@ -137,7 +137,7 @@ export const useSDKData = (pageId?: string) => {
 
     // Concatenate the two arrays, with noDateNotifications first
     const sortedNotifications = noDateNotifications.concat(withDateNotifications);
-    console.log(`******* sortAndGroupNotifications returning: ${JSON.stringify(sortedNotifications,null,2)}`);
+    //console.log(`******* sortAndGroupNotifications returning: ${JSON.stringify(sortedNotifications,null,2)}`);
     return sortedNotifications;
   };
 
@@ -240,7 +240,7 @@ export const useSDKData = (pageId?: string) => {
   }
 
   const apiUrlString = apiUrl.toString();
-  console.log('React-query fetching data from : ' + apiUrlString);
+  //console.log('React-query fetching data from : ' + apiUrlString);
 
   // save the current pageId so that reset views will reset for the correct page
   //setCurrentPageId(pageId);
