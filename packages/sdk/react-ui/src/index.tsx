@@ -1,5 +1,5 @@
 import React, { ReactElement, useState, useEffect, ReactNode } from 'react';
-import { getTinadSDKConfig, SDKNotification, useSDKData, dismissNotificationCore } from '@this-is-not-a-drill/react-core';
+import { getTinadSDKConfig, SDKNotification, useSDKData } from '@this-is-not-a-drill/react-core';
 import type { TinadTemplateProps, TinadNotificationsComponentProps } from './types';
 export { TinadTemplateProps } from './types';
 import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison
@@ -32,7 +32,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     mode = 'inline',
     clientDismissFunction,
 }) => {
-    const { data: sdkNotifications, isLoading, isError, error } = useSDKData(pageId);
+    const { data: sdkNotifications, isPending, isError, error, dismiss: dismissCore } = useSDKData(pageId);
 
     const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[]>([]);
     const [ isModalOpen, setIsModalOpen ] = useState(false);
@@ -68,7 +68,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
         console.log('react-ui: dismissNotification');
         if (currentNotifications.length > 0) {
             console.log(`Dismissing notification with id ${currentNotifications[0].uuid}`);
-            await dismissNotificationCore(currentNotifications[0].uuid);
+            await dismissCore(currentNotifications[0].uuid);
             setCurrentNotifications(currentNotifications.slice(1));
             // Call client-provided dismiss function as a side effect (if one was passed in).
             if (clientDismissFunction) {
@@ -110,15 +110,16 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
                         onClose: () => { dismissNotification() },
                     }) }, 50);
             }
-        } else if (mode == 'modal') {
-            setIsModalOpen(true);
+        } else if (mode == 'modal' && currentNotifications.length > 0) {
+          console.log(`>>> currentNotifications: ${currentNotifications}`);
+          setIsModalOpen(true);
         } else {
-            setIsModalOpen(false);
+          setIsModalOpen(false);
         }
     }, [currentNotifications]); // Rerun effect when currentNotifications or mode changes
     
     // Handle empty state
-    if (isLoading || (currentNotifications?.length == 0)) {
+    if (isPending || (currentNotifications?.length == 0)) {
         return <div></div>;
     }
 

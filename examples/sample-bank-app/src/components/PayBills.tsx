@@ -1,7 +1,7 @@
 import '@mantine/core/styles.css';
 import { Card, Text, Image, Title } from '@mantine/core';
 import classes from '../css/MainLayout.module.css'; // Adjust the path as necessary
-import { TinadComponent, TinadTemplateProps } from '@thisisnotadrill/react-ui';
+import { TinadComponent, TinadTemplateProps } from '@this-is-not-a-drill/react-ui';
 
 export const PayBills = () => {
     return (

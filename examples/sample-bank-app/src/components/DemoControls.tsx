@@ -1,7 +1,7 @@
 import { Anchor, Card, Group, Image , Title } from '@mantine/core';
 import '@mantine/core/styles.css';
 import classes from '../css/MainLayout.module.css'; // Adjust the path as necessary
-import { getTinadSDKConfig, resetAllViews } from '@thisisnotadrill/react-core';
+import { getTinadSDKConfig, useSDKData } from '@this-is-not-a-drill/react-core';
 import {
     IconBook,
     IconRecycle,
@@ -9,12 +9,13 @@ import {
 } from '@tabler/icons-react';
 
 const DemoControls = () => {
-
+  const { reset: resetCore, pageId } = useSDKData();
   const handleResetAllViews = async () => {
     // Call the core to reset all views. this may mess up if the user is right in the middle of a chain of notifs.
     console.log('Executing resetAllViews.');
+    
     try {
-      await resetAllViews();
+      await resetCore(pageId);
       console.log('Views reset successfully');
     } catch (error) {
       console.log('Failed to reset views:', error);
