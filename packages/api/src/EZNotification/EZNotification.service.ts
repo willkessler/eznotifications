@@ -266,7 +266,7 @@ export class EZNotificationService {
                 // Find all "not yet served to this user" (today) notifications and serve them
                 //console.log('startOfDay:', startOfDay, ' endOfDay:', endOfDay);
                 const query = this.ezNotificationRepository.createQueryBuilder('notifications')
-                    .leftJoinAndSelect('notifications.endUsersServed', 'endUsersServed')
+                    .leftJoinAndSelect('notifications.endUsersServed', 'endUsersServed', `"endUsersServed"."ignored" IS FALSE`)
                     .leftJoinAndSelect('endUsersServed.endUser', 'endUser',`"endUser"."end_user_id" = :userId`, { userId })
                     .andWhere(`(notifications.deleted IS FALSE)`)
                     .andWhere(`((notifications.startDate IS NULL OR notifications.endDate IS NULL) OR

@@ -7,16 +7,21 @@ import {
     IconRecycle,
     IconMovie,
 } from '@tabler/icons-react';
+import { usePageId } from './PageIdContext';
 
 const DemoControls = () => {
-  const { reset: resetCore, pageId } = useSDKData();
+  const { pageId } = usePageId();
+  console.log('DemoControls: Page id=', pageId);
+  const { reset: resetAllViewsCore } = useSDKData(pageId);
+
   const handleResetAllViews = async () => {
     // Call the core to reset all views. this may mess up if the user is right in the middle of a chain of notifs.
     console.log('Executing resetAllViews.');
     
     try {
-      await resetCore(pageId);
+      await resetAllViewsCore();
       console.log('Views reset successfully');
+      window.location.reload();
     } catch (error) {
       console.log('Failed to reset views:', error);
     }

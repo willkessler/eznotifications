@@ -98,7 +98,7 @@ export const useSDKData = (pageId?: string) => {
         endDate: notification.endDate ? new Date(notification.endDate) : undefined,
       }));
     }
-    console.log(`******* fetchNotifications returning: ${JSON.stringify(mappedData,null,2)}`);
+    //console.log(`******* fetchNotifications returning: ${JSON.stringify(mappedData,null,2)}`);
     return mappedData;
   };
 
@@ -205,6 +205,7 @@ export const useSDKData = (pageId?: string) => {
       throw new Error('Network response was not ok');
     }
 
+    setDismissedNotificationIds([]); // need to be sure we can serve the ones that were previously dismissed 
     setQueriesInvalid(true);
 
     return Promise.resolve(true);
@@ -270,7 +271,7 @@ export const useSDKData = (pageId?: string) => {
     reset: resetAllViewsCore,
   };
 
-  console.log(`Returning this object: ${JSON.stringify(returnObj,null,2)}`);
+  //console.log(`Returning this object: ${JSON.stringify(returnObj,null,2)}`);
   return returnObj;
 };
 

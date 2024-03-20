@@ -1,9 +1,17 @@
+import React, { useEffect } from 'react';
 import '@mantine/core/styles.css';
 import { Card, Text, Image, Title } from '@mantine/core';
 import classes from '../css/MainLayout.module.css'; // Adjust the path as necessary
 import { TinadComponent, TinadTemplateProps } from '@this-is-not-a-drill/react-ui';
+import { usePageId } from './PageIdContext';
 
 export const PayBills = () => {
+  const { setPageId } = usePageId();
+  useEffect(() => {
+    console.log('setting page id to pay');
+    setPageId('pay');
+  }, [setPageId]);
+
     return (
         <>
           <Title>Pay Bills</Title>

@@ -1,9 +1,17 @@
+import React, { useEffect } from 'react'
 import { Card, Image, Text, Group } from '@mantine/core';
 import '@mantine/core/styles.css';
 import classes from '../css/MainLayout.module.css'; // Adjust the path as necessary
 import { TinadComponent, TinadTemplateProps } from '@this-is-not-a-drill/react-ui';
+import { usePageId } from './PageIdContext';
   
 const HomePage = () => {
+
+  const { setPageId } = usePageId();
+  useEffect(() => {
+    console.log('setting page id to home');
+    setPageId('home');
+  }, [setPageId]);
 
   // Example of a Custom Template that a client can pass in for inline notifications.
   const CustomTemplate: React.FC<TinadTemplateProps> = ({ tinadContent, tinadType, dismiss }) => {
