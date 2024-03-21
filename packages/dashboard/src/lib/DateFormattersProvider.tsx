@@ -67,6 +67,9 @@ export const DateFormattersProvider: React.FC<{children: React.ReactNode}>  = ({
         const displayFormat = "LLL dd, yyyy h:mma";
         const displayDate = userTimezoneDate.toFormat(displayFormat) + ' ' + userTimezoneDate.offsetNameShort;
 
+        if (prefix == '') {
+          return displayDate;
+        }
         return `${prefix}: ${displayDate}`;
 
     };
