@@ -7,50 +7,45 @@ import {
 } from '@tanstack/react-query';
 import { getSdkQueryClient } from './queryClientSingleton';
 
-import { v4 as uuidv4 } from 'uuid';
-
 import type { SDKProviderProps, SDKConfig, SDKNotification, SDKDataReturn } from './types';
+import { ReactQueryAction } from './types';
 export { SDKProviderProps, SDKNotification, SDKDataReturn } from './types';
 
-import { initTinadSDK, getTinadSDKConfig } from './config';
-export { initTinadSDK, getTinadSDKConfig };
+import { TinadSDKCoreProvider, useTinadSDKContext } from './context';
+import { initTinadSDK, getTinadSDKConfig, updateTinadSDK, buildApiUrlString } from './config';
+export { initTinadSDK, getTinadSDKConfig, updateTinadSDK, useTinadSDKContext };
 
 export const TinadSDKProvider:React.FC<SDKProviderProps> = ({ children }) => {
   const queryClient = getSdkQueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <TinadSDKCoreProvider>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </TinadSDKCoreProvider>
   );
 };
 
 
-export const useSDKData = (pageId?: string) => {
-  console.log('TINAD: useSDKData w/tanstack');
-  const sdkConfig = getTinadSDKConfig();
-  const queryClient = useQueryClient();
-
-  const [ queriesInvalid, setQueriesInvalid ] = useState<boolean>(false);
+export const useSDKData = () => {
+  console.log('This Is Not A Drill (TINAD): Core fetch running now.');
   const [ dismissedNotificationIds, setDismissedNotificationIds ] = useState<string[]>([]);
-  //const [ currentPageId, setCurrentPageId ] = useState<string | null>(null);
+  const [ reactQueryTodo, setReactQueryTodo ] = useState<ReactQueryAction>(ReactQueryAction.OK_AS_IS);
+  const { pageId, apiUrlString } = useTinadSDKContext();
 
   useEffect( () => {
-    if (queriesInvalid) {
-      console.log('Invalidating tanstack queries.');
-      queryClient.refetchQueries({ queryKey: ['notifications'] });
-      setQueriesInvalid(false);
+    if (reactQueryTodo !== ReactQueryAction.OK_AS_IS) {
+      if (reactQueryTodo === ReactQueryAction.REFRESH) {
+        console.log('Refreshing react queries.');
+        queryClient.refetchQueries({ queryKey: ['notifications'] });
+      } else if (reactQueryTodo === ReactQueryAction.INVALIDATE) {
+        console.log('Invalidating react queries.');
+        queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      }
+      setReactQueryTodo(ReactQueryAction.OK_AS_IS);
     }
-  }, [queriesInvalid]);
-
-  if (!sdkConfig) {
-    throw new Error("Be sure to initialize TinadSDK with a valid API key before using.");
-  }
-  const apiKey = sdkConfig.apiKey;
-
-  //console.log('useSDKData: here is the sdkConfig:', sdkConfig);
-  const apiBaseUrl = sdkConfig.apiBaseUrl;
-  const apiUrl = new URL(apiBaseUrl + '/notifications');
+  }, [reactQueryTodo]);
 
   const getLocalStorage = (key:string) => {
     const localStorageValue = localStorage.getItem(key);
@@ -61,11 +56,6 @@ export const useSDKData = (pageId?: string) => {
     localStorage.setItem(key,value);
   };        
 
-  // Function to generate a UUID
-  const generateUniqueId = (): string  => {
-    return 'tinad_user_' + uuidv4(); // This will generate a random UUID
-  };
-
   // Function to determine the latest date between startDate and endDate
   const getLatestDate = (startDate?: Date, endDate?: Date): Date => {
     if (!startDate) return endDate!;
@@ -74,8 +64,16 @@ export const useSDKData = (pageId?: string) => {
   };
 
 
-  const fetchNotifications = async (url: string) => {
-    const response = await fetch(apiUrl, {
+  const fetchNotifications = async (url?: string) => {
+    const sdkConfig = getTinadSDKConfig();
+    if (!sdkConfig) {
+      throw new Error("Be sure to initialize TinadSDK with a valid API key before using.");
+    }
+    if (!url) {
+      throw new Error('fetchNotifications requires a url to be set');
+    }
+    const apiKey = sdkConfig.apiKey;
+    const response = await fetch(url, {
       headers: {
         'Authorization': "Bearer " + apiKey,
         'X-Tinad-Source': "SDK",
@@ -155,7 +153,7 @@ export const useSDKData = (pageId?: string) => {
       notificationUuid,
       userId, // note that in the backend this is called endUserId
     };
-    console.log(`react-core dismissNotificationCore post : ${JSON.stringify(postData,null,2)}`);
+    //console.log(`react-core dismissNotificationCore post : ${JSON.stringify(postData,null,2)}`);
     
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -178,7 +176,7 @@ export const useSDKData = (pageId?: string) => {
       return currentIds; // Return the current state if UUID is already included
     });
 
-    setQueriesInvalid(true);
+    setReactQueryTodo(ReactQueryAction.REFRESH);
 
     return Promise.resolve(true);
   };
@@ -206,10 +204,14 @@ export const useSDKData = (pageId?: string) => {
     }
 
     setDismissedNotificationIds([]); // need to be sure we can serve the ones that were previously dismissed 
-    setQueriesInvalid(true);
+    setReactQueryTodo(ReactQueryAction.REFRESH);
 
     return Promise.resolve(true);
   };
+
+  const invalidateQueriesCore = ():void => {
+    setReactQueryTodo(ReactQueryAction.INVALIDATE);
+  }
 
   //
   //
@@ -217,37 +219,13 @@ export const useSDKData = (pageId?: string) => {
   //
   //
 
-  let userId;
-  let sdkUserId = sdkConfig.userId;
-  if (sdkUserId) {
-    userId = sdkUserId;
-    setLocalStorage('sdkUserId', userId);
-  } else {    
-    userId = getLocalStorage('sdkUserId');
-    if (!userId) {
-      userId = generateUniqueId();
-      setLocalStorage('sdkUserId', userId);
-      console.log(`Generated and saved user id ${userId}`);
-    }
-  }
+  const queryClient = useQueryClient();
+  const newApiUrlString = buildApiUrlString();
+  console.log('React-query fetching data from : ' + newApiUrlString);
 
-  apiUrl.searchParams.append('userId', userId);
-  if (pageId) {
-    apiUrl.searchParams.append('pageId', pageId as string);
-  }
-  if (sdkConfig.environment) {
-    apiUrl.searchParams.append('environment', sdkConfig.environment as string);
-  }
-
-  const apiUrlString = apiUrl.toString();
-  //console.log('React-query fetching data from : ' + apiUrlString);
-
-  // save the current pageId so that reset views will reset for the correct page
-  //setCurrentPageId(pageId);
-  
   // Main focus on the function here is using tanstack useQuery as per below.
   const { isPending, isFetching, error, data } = useQuery({
-    queryKey: ['notifications'],
+    queryKey: ['notifications', apiUrlString],
     queryFn: () => fetchNotifications(apiUrlString),
     select: (data: SDKNotification[] | undefined) => {
       if (!data) return [];
@@ -269,6 +247,7 @@ export const useSDKData = (pageId?: string) => {
     pageId: pageId,
     dismiss: dismissNotificationCore,
     reset: resetAllViewsCore,
+    invalidateQueries: invalidateQueriesCore, // call this function in the demo apps when changing user so that React queries get rerun with a new page Id
   };
 
   //console.log(`Returning this object: ${JSON.stringify(returnObj,null,2)}`);

@@ -211,7 +211,7 @@ export const envConfig = {
       <Title order={2}>
         Playground Testing
       </Title>
-      <Text size="md" mt="md">Try out the service instantly! via a <b>Stackblitz Playground</b>.</Text>
+      <Text size="md" mt="md">Experiment with the SDK in a <b>Stackblitz Playground</b>.</Text>
       <Group>
         <Stack align="stretch" justify="flex-start">
           <div className={apiKeyClasses.apiKeyRow}>

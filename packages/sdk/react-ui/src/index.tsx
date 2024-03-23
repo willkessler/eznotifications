@@ -32,7 +32,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     mode = 'inline',
     clientDismissFunction,
 }) => {
-    const { data: sdkNotifications, isPending, isError, error, dismiss: dismissCore } = useSDKData(pageId);
+    const { data: sdkNotifications, isPending, isError, error, dismiss: dismissCore } = useSDKData();
 
     const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[]>([]);
     const [ isModalOpen, setIsModalOpen ] = useState(false);

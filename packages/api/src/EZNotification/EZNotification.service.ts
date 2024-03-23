@@ -311,6 +311,10 @@ export class EZNotificationService {
                             if (existingRecord.dismissed) {
                                 alreadyViewedNotifications.push(notification.uuid);
                             }
+                            if (existingRecord.endUser == null) {
+                              console.log('Null/invalid endUser reference in endUsersServed record, skipping updating the record.');
+                              continue;
+                            }
                             // Update existing record
                             console.log(`^^^^^^ Updating existing endUsersServed record, notif: ${notification.uuid}`);
                             existingRecord.latestAccessTime = rightNow;

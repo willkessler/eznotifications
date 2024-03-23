@@ -1,0 +1,38 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  user-select: none; /* Prevent text selection while dragging */
+}
+
+.panelsContainer {
+  display: flex;
+  flex: 1; /* Take up remaining space */
+}
+
+.topPanel {
+  height: 50px;
+  background-color: #666;
+  color: #fff;
+  padding: 10px;
+  box-sizing: border-box;
+  border-bottom: 5px solid #aaa;
+}
+
+.panel {
+  flex-grow: 1;
+  height:100%;
+  border: none;
+}
+
+.divider {
+  cursor: ew-resize;
+  background-color: #aaa;
+  width: 12px;
+  height: 100%;
+  transition: background-color 0.2s;
+}
+
+.divider:hover {
+  background-color: #888;
+}

@@ -1,5 +1,11 @@
 import React, { ReactNode } from 'react';
 
+export enum ReactQueryAction {
+  OK_AS_IS,
+  REFRESH,
+  INVALIDATE,
+};
+
 export type SDKProviderProps = {
   children: ReactNode;
 };
@@ -32,4 +38,5 @@ export interface SDKDataReturn {
   pageId: string | undefined,
   dismiss: (notificationUuid: string) => Promise<boolean>;
   reset: () => Promise<boolean>;
+  invalidateQueries: () => void;
 }

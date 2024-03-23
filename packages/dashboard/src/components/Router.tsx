@@ -9,9 +9,9 @@ import Settings from './Account/Settings';
 import Statistics from './Account/Statistics';
 import LoginComponent from './Account/LoginComponent'; 
 import SignUpComponent from './Account/SignUpComponent'; 
-import OnboardComponent from './Account/OnboardComponent'; 
+import OnboardComponent from './Account/OnboardComponent';
 import PlaygroundComponent from './Account/PlaygroundComponent'; 
-import SandpackComponent from './Account/SandpackComponent'; 
+import DemoLayout from './Layout/DemoLayout'; 
 import AuthWrapper from './Account/AuthWrapper'; 
 import { SettingsProvider } from './Account/SettingsContext';
 import { APIKeysProvider } from './Account/APIKeysContext';
@@ -37,6 +37,7 @@ const RouterComponent = () => {
               <Routes>
                 <Route path="/login" element={<LoginComponent />} />
                 <Route path="/sign-up" element={<SignUpComponent />} />
+                <Route path="/demo" element={<DemoLayout />} />
                 <Route path="/" element={<MainLayout />} >
                   <Route index element={<Notifications />} />
                   <Route path="statistics" element={<Statistics />} />
@@ -51,7 +52,6 @@ const RouterComponent = () => {
                   <Route path="/settings/account/billing" element={<Settings />} />
 
                   <Route path="/playground" element={<PlaygroundComponent />} />
-                  <Route path="/sandpack" element={<SandpackComponent />} />
 
                 </Route>
               </Routes>
