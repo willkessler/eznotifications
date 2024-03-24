@@ -12,7 +12,7 @@ const defaultContextValue: TinadSDKContextType = {
   pageId: undefined,
   setPageId: () => { console.log('Default setPageId function') }, // Provide a noop function as a default
   apiUrlString: '',
-  setApiUrlString: () => {}, // Provide a noop function as a default
+  setApiUrlString: (url: string) => {}, // Provide a noop function as a default
 };
 
 const TinadSDKContext = createContext<TinadSDKContextType>(defaultContextValue);

@@ -278,11 +278,17 @@ export class EZNotificationService {
 
                 if (pageId) {
                     query.andWhere('notifications.pageId = :pageId', { pageId });
+                } else {
+                  // Do not include any notifications where pageId is not set, when no pageId was provided
+                    query.andWhere('notifications.pageId IS NULL');
                 }
 
                 if (environments && environments.length > 0) {
                     query.andWhere('(notifications.environments && :environments OR notifications.environments = \'{}\' )',
                                    { environments });
+                } else {
+                    // Only include notifs where environments was not set if none was provided
+                    query.andWhere('notifications.environments IS NULL'); 
                 }
 
                 //console.log('>>>>>>>>>> Final query:', query.getSql());
