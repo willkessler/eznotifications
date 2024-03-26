@@ -1,5 +1,5 @@
 import React, { ReactElement, useState, useEffect, ReactNode } from 'react';
-import { getTinadSDKConfig, SDKNotification, useSDKData } from '@this-is-not-a-drill/react-core';
+import { SDKNotification, useSDKData } from '@this-is-not-a-drill/react-core';
 import type { TinadTemplateProps, TinadNotificationsComponentProps } from './types';
 export { TinadTemplateProps } from './types';
 import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison

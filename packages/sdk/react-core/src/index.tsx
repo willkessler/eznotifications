@@ -9,13 +9,10 @@ import { getSdkQueryClient } from './queryClientSingleton';
 
 import type { SDKProviderProps, SDKConfig, SDKNotification, SDKDataReturn } from './types';
 import { ReactQueryAction } from './types';
-export { SDKProviderProps, SDKNotification, SDKDataReturn } from './types';
 
-import { TinadSDKCoreProvider, useTinadSDKContext } from './context';
-import { initTinadSDK, getTinadSDKConfig, updateTinadSDK, buildApiUrlString } from './config';
-export { initTinadSDK, getTinadSDKConfig, updateTinadSDK, useTinadSDKContext };
+import { TinadSDKCoreProvider, useTinadSDK } from './context';
 
-export const TinadSDKProvider:React.FC<SDKProviderProps> = ({ children }) => {
+const TinadSDKProvider:React.FC<SDKProviderProps> = ({ children }) => {
   const queryClient = getSdkQueryClient();
 
   return (
@@ -27,12 +24,22 @@ export const TinadSDKProvider:React.FC<SDKProviderProps> = ({ children }) => {
   );
 };
 
+export { SDKProviderProps, SDKNotification, SDKDataReturn } from './types';
+export { TinadSDKProvider, useTinadSDK };
 
-export const useSDKData = () => {
+export const useSDKData = (): SDKDataReturn => {
   console.log('This Is Not A Drill (TINAD): Core fetch running now.');
+  const queryClient = useQueryClient();
   const [ dismissedNotificationIds, setDismissedNotificationIds ] = useState<string[]>([]);
   const [ reactQueryTodo, setReactQueryTodo ] = useState<ReactQueryAction>(ReactQueryAction.OK_AS_IS);
-  const { pageId, apiUrlString } = useTinadSDKContext();
+  const { tinadConfig } = useTinadSDK();
+  const apiUrlString = tinadConfig.apiUrlString;
+
+/*
+  useEffect (() => {
+    console.log(`>>>> We noticed tinadConfig changed: ${JSON.stringify(tinadConfig,null,2)}`);
+  }, [tinadConfig]);
+*/
 
   useEffect( () => {
     if (reactQueryTodo !== ReactQueryAction.OK_AS_IS) {
@@ -63,17 +70,22 @@ export const useSDKData = () => {
     return startDate > endDate ? startDate : endDate;
   };
 
+  const getConfig = (): SDKConfig => {
+    console.log(`getConfig, returning ${JSON.stringify(tinadConfig,null,2)}`);
+    return tinadConfig;
+  }
 
-  const fetchNotifications = async (url?: string) => {
-    const sdkConfig = getTinadSDKConfig();
-    if (!sdkConfig) {
+  const fetchNotifications = async () => {
+    if (!tinadConfig) {
       throw new Error("Be sure to initialize TinadSDK with a valid API key before using.");
     }
-    if (!url) {
-      throw new Error('fetchNotifications requires a url to be set');
+    if (!tinadConfig.apiKey) {
+      console.log('fetchNotifications: missing API key.');
+      return null;
     }
-    const apiKey = sdkConfig.apiKey;
-    const response = await fetch(url, {
+    const apiKey = tinadConfig.apiKey;
+    console.log(`fetchNotifications hitting: ${tinadConfig.apiUrlString} with apiKey ${tinadConfig.apiKey}`);
+    const response = await fetch(tinadConfig.apiUrlString, {
       headers: {
         'Authorization': "Bearer " + apiKey,
         'X-Tinad-Source': "SDK",
@@ -86,7 +98,7 @@ export const useSDKData = () => {
     try {
       data = await response.json();
     } catch(error) {
-      console.log(`Couldn't get json response, error: ${error}`);
+      console.log(`Couldn't get actual json response from ${tinadConfig.apiUrlString}, error: ${error}`);
     }
     if (data) {
       mappedData = data.map((notification: any) => ({
@@ -141,14 +153,13 @@ export const useSDKData = () => {
 
 
   const dismissNotificationCore = async (notificationUuid: string): Promise<boolean> => {
-    const sdkConfig = getTinadSDKConfig();
-    if (!sdkConfig) {
+    if (!tinadConfig) {
       throw new Error("Be sure to initialize TinadSDK with a valid API key before using.");
     }
-    const apiKey = sdkConfig.apiKey;
-    const apiBaseUrl = sdkConfig.apiBaseUrl;
+    const apiKey = tinadConfig.apiKey;
+    const apiBaseUrl = tinadConfig.apiBaseUrl;
     const apiUrl = new URL(apiBaseUrl + '/notifications/dismiss');
-    const userId = sdkConfig.userId;
+    const userId = tinadConfig.userId;
     const postData = {
       notificationUuid,
       userId, // note that in the backend this is called endUserId
@@ -182,12 +193,11 @@ export const useSDKData = () => {
   };
 
   const resetAllViewsCore = async (): Promise<boolean> => {
-    const sdkConfig = getTinadSDKConfig();
-    if (!sdkConfig) {
+    if (!tinadConfig) {
       throw new Error("Be sure to initialize TinadSDK with a valid API key before using.");
     }
-    const apiKey = sdkConfig.apiKey;
-    const apiBaseUrl = sdkConfig.apiBaseUrl;
+    const apiKey = tinadConfig.apiKey;
+    const apiBaseUrl = tinadConfig.apiBaseUrl;
     const apiUrl = new URL(apiBaseUrl + '/notifications/reset-views/all');
     const postData = { apiKey };
     const response = await fetch(apiUrl, {
@@ -215,24 +225,20 @@ export const useSDKData = () => {
 
   //
   //
-  // Main code for SDK starts here.
+  // Main invocation of tanstack/react-query begins here.
   //
   //
-
-  const queryClient = useQueryClient();
-  const newApiUrlString = buildApiUrlString();
-  console.log('React-query fetching data from : ' + newApiUrlString);
 
   // Main focus on the function here is using tanstack useQuery as per below.
   const { isPending, isFetching, error, data } = useQuery({
-    queryKey: ['notifications', apiUrlString],
-    queryFn: () => fetchNotifications(apiUrlString),
+    queryKey: ['notifications', tinadConfig],
+    queryFn: () => fetchNotifications(),
     select: (data: SDKNotification[] | undefined) => {
       if (!data) return [];
       // First, filter out dismissed notifications
-      const filteredData = data.filter((notification: SDKNotification) => 
-        !dismissedNotificationIds.includes(notification.uuid)
-                                      );
+      const filteredData = data.filter(
+        (notification: SDKNotification) => 
+          !dismissedNotificationIds.includes(notification.uuid) );
       // Then, apply sorting and grouping function to the filtered data
       return sortAndGroupNotifications(filteredData);
     },
@@ -244,13 +250,12 @@ export const useSDKData = () => {
     isPending: isPending,
     isError: !!error,
     error,
-    pageId: pageId,
+    getConfig: getConfig,
     dismiss: dismissNotificationCore,
     reset: resetAllViewsCore,
-    invalidateQueries: invalidateQueriesCore, // call this function in the demo apps when changing user so that React queries get rerun with a new page Id
+    invalidate: invalidateQueriesCore, // call this function in the demo apps when changing user so that React queries get rerun with a new page Id
   };
 
   //console.log(`Returning this object: ${JSON.stringify(returnObj,null,2)}`);
   return returnObj;
 };
-
