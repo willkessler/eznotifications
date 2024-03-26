@@ -286,9 +286,9 @@ export class EZNotificationService {
                 if (environments && environments.length > 0) {
                     query.andWhere('(notifications.environments && :environments OR notifications.environments = \'{}\' )',
                                    { environments });
-                } else {
+//                } else {
                     // Only include notifs where environments was not set if none was provided
-                    query.andWhere('notifications.environments IS NULL'); 
+//                    query.andWhere('notifications.environments IS NULL'); 
                 }
 
                 //console.log('>>>>>>>>>> Final query:', query.getSql());

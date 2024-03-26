@@ -32,7 +32,7 @@ export const useSDKData = (): SDKDataReturn => {
   const queryClient = useQueryClient();
   const [ dismissedNotificationIds, setDismissedNotificationIds ] = useState<string[]>([]);
   const [ reactQueryTodo, setReactQueryTodo ] = useState<ReactQueryAction>(ReactQueryAction.OK_AS_IS);
-  const { tinadConfig } = useTinadSDK();
+  const { tinadConfig, updateTinadConfig } = useTinadSDK();
   const apiUrlString = tinadConfig.apiUrlString;
 
 /*
@@ -53,15 +53,6 @@ export const useSDKData = (): SDKDataReturn => {
       setReactQueryTodo(ReactQueryAction.OK_AS_IS);
     }
   }, [reactQueryTodo]);
-
-  const getLocalStorage = (key:string) => {
-    const localStorageValue = localStorage.getItem(key);
-    return localStorageValue;
-  };        
-
-  const setLocalStorage = (key:string, value:string) => {
-    localStorage.setItem(key,value);
-  };        
 
   // Function to determine the latest date between startDate and endDate
   const getLatestDate = (startDate?: Date, endDate?: Date): Date => {
