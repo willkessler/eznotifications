@@ -2,11 +2,20 @@ import '@mantine/core/styles.css';
 import { Card, Code, Image, Text, Button, Group } from '@mantine/core';
 import classes from '../css/MainLayout.module.css';
 
+import { TinadComponent } from '@this-is-not-a-drill/react-ui';
+import { usePageId } from './PageIdContext';
+
 const goHome = () => {
   window.location.assign('/');
 }
 
 export const About = () => {
+  const { setPageId } = usePageId();
+  useEffect(() => {
+    console.log('setting page id to About');
+    setPageId('about');
+  }, [setPageId]);
+
     return (
         <>
 

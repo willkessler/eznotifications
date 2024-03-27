@@ -1,5 +1,5 @@
 import React, { ReactElement, useState, useEffect, ReactNode } from 'react';
-import { SDKNotification, useSDKData } from '@this-is-not-a-drill/react-core';
+import { useTinadSDK, useSDKData, SDKNotification } from '@this-is-not-a-drill/react-core';
 import type { TinadTemplateProps, TinadNotificationsComponentProps } from './types';
 export { TinadTemplateProps } from './types';
 import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison
@@ -33,6 +33,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     clientDismissFunction,
 }) => {
     const { data: sdkNotifications, isPending, isError, error, dismiss: dismissCore } = useSDKData();
+    const { updateTinadConfig } = useTinadSDK();
 
     const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[]>([]);
     const [ isModalOpen, setIsModalOpen ] = useState(false);
@@ -78,8 +79,15 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     };
 
     useEffect(() => {
-        Modal.setAppElement('#root');
+      Modal.setAppElement('#root');
     }, []);
+
+    useEffect(() => {
+      if (pageId) {
+        const newConfig = { pageId };
+        updateTinadConfig(newConfig);
+      }
+    }, [updateTinadConfig]);
 
     useEffect(() => {
         if (sdkNotifications && sdkNotifications.length > 0) {
@@ -117,7 +125,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
           setIsModalOpen(false);
         }
     }, [currentNotifications]); // Rerun effect when currentNotifications or mode changes
-    
+
     // Handle empty state
     if (isPending || (currentNotifications?.length == 0)) {
         return <div></div>;
@@ -130,7 +138,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     }
 
     const TemplateToRender = CustomTemplate || DefaultTemplate;
-    
+
     //console.log(`currentNotifications: ${JSON.stringify(currentNotifications,null,2)}`);
     console.log(`currentNotifications length: ${currentNotifications.length}`);
     // We do have a notification, so return its data merged into the template.
@@ -140,7 +148,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
         case 'modal':
             return (
                 <>
-                    <Modal 
+                    <Modal
                 className={modalClasses.Modal}
                 overlayClassName={modalClasses.Overlay}
                 shouldCloseOnOverlayClick={false}
@@ -155,7 +163,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
                 </>
             );
         case 'toast':
-            return ( 
+            return (
                 <ToastContainer
                   position="top-center"
                   className={tinadToastClasses.tinadCustomToast}

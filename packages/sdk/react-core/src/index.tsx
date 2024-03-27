@@ -22,6 +22,7 @@ const TinadSDKProvider:React.FC<SDKProviderProps> = ({ children }) => {
       </QueryClientProvider>
     </TinadSDKCoreProvider>
   );
+
 };
 
 export { SDKProviderProps, SDKNotification, SDKDataReturn } from './types';

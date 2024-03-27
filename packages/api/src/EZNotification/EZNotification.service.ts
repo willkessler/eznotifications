@@ -286,9 +286,6 @@ export class EZNotificationService {
                 if (environments && environments.length > 0) {
                     query.andWhere('(notifications.environments && :environments OR notifications.environments = \'{}\' )',
                                    { environments });
-//                } else {
-                    // Only include notifs where environments was not set if none was provided
-//                    query.andWhere('notifications.environments IS NULL'); 
                 }
 
                 //console.log('>>>>>>>>>> Final query:', query.getSql());
@@ -307,7 +304,7 @@ export class EZNotificationService {
                         if (notification.endUsersServed) {
                             for (const endUserServed of notification.endUsersServed) {
                                 console.log(`endUserServed.uuid:${endUserServed.uuid}`);
-                                if (!endUserServed.ignored) {
+                                if (!endUserServed.ignored && endUserServed.endUser) {
                                     console.log('Found not ignored record');
                                     existingRecord = endUserServed;
                                 }
