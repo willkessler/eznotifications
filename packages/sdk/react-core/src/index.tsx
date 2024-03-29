@@ -1,4 +1,4 @@
-import React, { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import {
   QueryClientProvider,
   QueryClient,
@@ -25,22 +25,21 @@ const TinadSDKProvider:React.FC<SDKProviderProps> = ({ children }) => {
 
 };
 
+interface DismissedNotifications {
+  [userId: string]: string[]; // Mapping of userId to an array of dismissed notification UUIDs
+}
+
+
 export { SDKProviderProps, SDKNotification, SDKDataReturn } from './types';
 export { TinadSDKProvider, useTinadSDK };
 
 export const useSDKData = (): SDKDataReturn => {
   console.log('This Is Not A Drill (TINAD): Core fetch running now.');
   const queryClient = useQueryClient();
-  const [ dismissedNotificationIds, setDismissedNotificationIds ] = useState<string[]>([]);
+  const [dismissedNotificationIds, setDismissedNotificationIds] = useState<DismissedNotifications>({});
   const [ reactQueryTodo, setReactQueryTodo ] = useState<ReactQueryAction>(ReactQueryAction.OK_AS_IS);
   const { tinadConfig, updateTinadConfig } = useTinadSDK();
   const apiUrlString = tinadConfig.apiUrlString;
-
-/*
-  useEffect (() => {
-    console.log(`>>>> We noticed tinadConfig changed: ${JSON.stringify(tinadConfig,null,2)}`);
-  }, [tinadConfig]);
-*/
 
   useEffect( () => {
     if (reactQueryTodo !== ReactQueryAction.OK_AS_IS) {
@@ -50,6 +49,7 @@ export const useSDKData = (): SDKDataReturn => {
       } else if (reactQueryTodo === ReactQueryAction.INVALIDATE) {
         console.log('Invalidating react queries.');
         queryClient.invalidateQueries({ queryKey: ['notifications'] });
+        setDismissedNotificationIds({});
       }
       setReactQueryTodo(ReactQueryAction.OK_AS_IS);
     }
@@ -86,31 +86,43 @@ export const useSDKData = (): SDKDataReturn => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    let data, mappedData = [];
+    const userId = tinadConfig.userId;
+    let data;
     try {
       data = await response.json();
     } catch(error) {
       console.log(`Couldn't get actual json response from ${tinadConfig.apiUrlString}, error: ${error}`);
     }
     if (data) {
-      mappedData = data.map((notification: any) => ({
+      console.log(`******* fetchNotifications source data: ${JSON.stringify(data,null,2)}`);
+      const mappedData = data.map((notification: any) => ({
         ...notification,
         createdAt: new Date(notification.createdAt),
         startDate: notification.startDate ? new Date(notification.startDate) : undefined,
         endDate: notification.endDate ? new Date(notification.endDate) : undefined,
       }));
+      const filteredData = mappedData.filter(
+        (notification: any) => 
+          dismissedNotificationIds[userId] == undefined || !dismissedNotificationIds[userId].includes(notification.uuid) );
+      // Then apply sorting and grouping function to the filtered data before returning it.
+      const sortedGroupedData = sortAndGroupNotifications(filteredData);
+
+      console.log(`******* fetchNotifications mappedData: ${JSON.stringify(mappedData,null,2)}`);
+      console.log(`******* fetchNotifications dismissedNotificationIds: ${JSON.stringify(dismissedNotificationIds,null,2)}`);
+      console.log(`******* fetchNotifications filteredData: ${JSON.stringify(filteredData,null,2)}`);
+      console.log(`******* fetchNotifications returning: ${JSON.stringify(sortedGroupedData,null,2)}`);
+      return sortedGroupedData;
     }
-    //console.log(`******* fetchNotifications returning: ${JSON.stringify(mappedData,null,2)}`);
-    return mappedData;
+    return [];
   };
 
 
-  const sortAndGroupNotifications = (data: SDKNotification[]): SDKNotification[] => {
+  const sortAndGroupNotifications = (data: any[]): SDKNotification[] => {
     // Sort the results into two (subsorted) groups, those with start and/or end dates, and those without.
     const noDateNotifications: SDKNotification[] = [];
     const withDateNotifications: SDKNotification[] = [];
 
-    //console.log(`sortAndGroupNotifications got data: ${JSON.stringify(data)}`);
+    console.log(`sortAndGroupNotifications got data: ${JSON.stringify(data)}`);
     data.forEach((notification: any) => { // 
       // Convert date strings to Date objects
       const sdkNotification: SDKNotification = {
@@ -118,6 +130,7 @@ export const useSDKData = (): SDKDataReturn => {
         createdAt: new Date(notification.createdAt),
         startDate: notification.startDate ? new Date(notification.startDate) : undefined,
         endDate: notification.endDate ? new Date(notification.endDate) : undefined,
+        timeMarker: new Date().getTime(),
       };
 
       if (!sdkNotification.startDate && !sdkNotification.endDate) {
@@ -171,12 +184,23 @@ export const useSDKData = (): SDKDataReturn => {
       throw new Error('Network response was not ok');
     }
 
-    setDismissedNotificationIds(currentIds => {
-      // Check if the UUID is already in the array to avoid duplicates
-      if (!currentIds.includes(notificationUuid)) {
-        return [...currentIds, notificationUuid];
+    setDismissedNotificationIds(currentState => {
+      // Clone the current state to avoid mutating it directly
+      const updatedState = { ...currentState };
+
+      // Check if the userId exists
+      if (updatedState[userId]) {
+        // Check if the UUID is already in the user's array to avoid duplicates
+        if (!updatedState[userId].includes(notificationUuid)) {
+          // User exists and UUID is new, add it to the user's array
+          updatedState[userId] = [...updatedState[userId], notificationUuid];
+        }
+      } else {
+        // User does not exist, create a new array with the new UUID
+        updatedState[userId] = [notificationUuid];
       }
-      return currentIds; // Return the current state if UUID is already included
+
+      return updatedState; // Return the updated state
     });
 
     setReactQueryTodo(ReactQueryAction.REFRESH);
@@ -205,7 +229,7 @@ export const useSDKData = (): SDKDataReturn => {
       throw new Error('Network response was not ok');
     }
 
-    setDismissedNotificationIds([]); // need to be sure we can serve the ones that were previously dismissed 
+    setDismissedNotificationIds({}); // need to be sure we can serve the ones that were previously dismissed 
     setReactQueryTodo(ReactQueryAction.REFRESH);
 
     return Promise.resolve(true);
@@ -225,15 +249,6 @@ export const useSDKData = (): SDKDataReturn => {
   const { isPending, isFetching, error, data } = useQuery({
     queryKey: ['notifications', tinadConfig],
     queryFn: () => fetchNotifications(),
-    select: (data: SDKNotification[] | undefined) => {
-      if (!data) return [];
-      // First, filter out dismissed notifications
-      const filteredData = data.filter(
-        (notification: SDKNotification) => 
-          !dismissedNotificationIds.includes(notification.uuid) );
-      // Then, apply sorting and grouping function to the filtered data
-      return sortAndGroupNotifications(filteredData);
-    },
     refetchInterval: 15000, // Polling interval
   });
 

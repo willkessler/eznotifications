@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect, ReactNode } from 'react';
+import { ReactElement, useState, useEffect, ReactNode } from 'react';
 import { useTinadSDK, useSDKData, SDKNotification } from '@this-is-not-a-drill/react-core';
 import type { TinadTemplateProps, TinadNotificationsComponentProps } from './types';
 export { TinadTemplateProps } from './types';
@@ -33,9 +33,10 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     clientDismissFunction,
 }) => {
     const { data: sdkNotifications, isPending, isError, error, dismiss: dismissCore } = useSDKData();
-    const { updateTinadConfig } = useTinadSDK();
+    const { tinadConfig, updateTinadConfig } = useTinadSDK();
 
     const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[]>([]);
+    const [ lastKnownUserId, setLastKnownUserId ] = useState<string | null>(null);
     const [ isModalOpen, setIsModalOpen ] = useState(false);
     const [ modalContent, setModalContent ] = useState(null);
 
@@ -55,13 +56,23 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     const afterOpenModal = () => {
     };
 
-    const addNewNotifications = (notifications: SDKNotification[]) => {
-        console.log(`addNewNotifications, adding ${notifications.length} notifications`);
-        const newNotifications = notifications.filter(
-            notif => !currentNotifications.some(cn => notif.uuid === cn.uuid)).map(notif => _.cloneDeep(notif));
-        if (newNotifications.length > 0) {
-            console.log(`Going to actually add ${newNotifications.length} notifs`);
-            setCurrentNotifications(prev => [...prev, ...newNotifications]);
+    const addNewNotifications = () => {
+        console.log(`addNewNotifications, adding ${sdkNotifications?.length} notifications`);
+        if (sdkNotifications) {
+          // Step 1: Filter out any existing notifications that do not match the current userId
+          const relevantCurrentNotifications = currentNotifications.filter(
+            notif => notif.userId === tinadConfig.userId
+          );
+          // Step 2: Add new notifications that match the current userId and are not already present
+          const newNotifications = sdkNotifications.filter(
+            notif => notif.userId === tinadConfig.userId &&
+                   !relevantCurrentNotifications.some(cn => notif.uuid === cn.uuid)
+          ).map(notif => _.cloneDeep(notif)); // Clone to ensure immutability
+
+          if (newNotifications.length > 0 || relevantCurrentNotifications.length !== currentNotifications.length) {
+            console.log(`Updating notifications. Total: ${relevantCurrentNotifications.length + newNotifications.length}`);
+            setCurrentNotifications([...relevantCurrentNotifications, ...newNotifications]);
+          }
         }
     };
 
@@ -88,12 +99,41 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
         updateTinadConfig(newConfig);
       }
     }, [updateTinadConfig]);
-
+  
+/*
     useEffect(() => {
-        if (sdkNotifications && sdkNotifications.length > 0) {
-            addNewNotifications(sdkNotifications);
+      console.log('Checking for userId change.');
+      if (lastKnownUserId === null) {
+        setLastKnownUserId(tinadConfig.userId);
+      } else {
+        console.log(`lastKnownUserId: ${lastKnownUserId}, tinadConfig.userId: ${tinadConfig.userId}`);
+        if (lastKnownUserId !== tinadConfig.userId) {
+          // We may have switched user id's since the last fetch. If so clear out current notifications.
+          console.log('Clearing current notifs');
+          setCurrentNotifications([]);
         }
-    }, [sdkNotifications]);
+      }
+
+      console.log('Checking if we need to add notifs.');
+      if (sdkNotifications && sdkNotifications.length > 0) {
+        console.log('We need to add notifs');
+        addNewNotifications();
+      }
+
+      if (lastKnownUserId !== tinadConfig.userId) {
+        setLastKnownUserId(tinadConfig.userId);
+      }
+
+    }, [tinadConfig, sdkNotifications]);
+  */
+
+  useEffect(() => {
+    console.log(`>>>> Checking sdkNotifications: ${JSON.stringify(sdkNotifications,null,2)}`);
+    if (sdkNotifications && sdkNotifications.length > 0) {
+      console.log('We need to add notifs');
+      addNewNotifications();
+    }
+  }, [sdkNotifications]);
 
     useEffect(() => {
         // Check if there are any current notifications and update the modal's open state accordingly

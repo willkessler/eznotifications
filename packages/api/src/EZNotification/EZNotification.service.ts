@@ -138,10 +138,10 @@ export class EZNotificationService {
                     await this.endUsersServedRepository
                         .createQueryBuilder()
                         .update(EndUsersServed)
-                        .set({ 
-                            ignored: true, 
-                            dismissed: false, 
-                            updatedAt: rightNow 
+                        .set({
+                            ignored: true,
+                            dismissed: false,
+                            updatedAt: rightNow
                         })
                         .where("notification_uuid = :notificationUuid", { notificationUuid })
                         .andWhere("ignored = :ignored", { ignored: false })
@@ -159,7 +159,7 @@ export class EZNotificationService {
 
     async resetViewsForNonProductionNotifications(apiKeyString:string): Promise<boolean> {
         // Retrieve the organization UUID based on the API key
-        const apiKeyDetails = 
+        const apiKeyDetails =
             await this.apiKeyRepository.findOne({
                     where: {
                         apiKey: apiKeyString,
@@ -180,17 +180,17 @@ export class EZNotificationService {
                 await this.endUsersServedRepository
                     .createQueryBuilder()
                     .update(EndUsersServed)
-                    .set({ 
+                    .set({
                         ignored: true,
                         dismissed: false,
                         updatedAt: rightNow,
                     })
                     .where(`uuid IN (
-                        SELECT eus.uuid 
-                        FROM end_users_served eus 
-                        INNER JOIN end_users eu ON eus.end_user_uuid = eu.uuid 
-                        INNER JOIN notifications n ON eus.notification_uuid = n.uuid 
-                        WHERE eu.organization_uuid = :organizationUuid 
+                        SELECT eus.uuid
+                        FROM end_users_served eus
+                        INNER JOIN end_users eu ON eus.end_user_uuid = eu.uuid
+                        INNER JOIN notifications n ON eus.notification_uuid = n.uuid
+                        WHERE eu.organization_uuid = :organizationUuid
                         AND NOT ('production' = ANY(n.environments))
                         )`, { organizationUuid })
                     .execute();
@@ -244,108 +244,99 @@ export class EZNotificationService {
             const pageId = queryParams.pageId;
             const environments = queryParams.environments;
             const organization = queryParams.organization;
+            const alreadyViewedNotifications:string[] = [];
+            const servedNotifications:EZNotification[] = [];
+            // Convert today's date to the user's local timezone
+            const today = new Date();
+            const startOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 1));
+            const endOfDay = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getUTCDate(), 23, 59, 59));
+            //console.log('startOfDay:', startOfDay, ' endOfDay:', endOfDay);
             console.log('We found organization with uuid:', organization?.uuid);
-            let alreadyViewedNotifications:string[] = [];
 
-            return this.connection.transaction(async transactionalEntityManager => {
-                // Convert today's date to the user's local timezone
-                const today = new Date();
-                const startOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 1));
-                const endOfDay = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getUTCDate(), 23, 59, 59));
+          return this.connection.transaction(async transactionalEntityManager => {
+            // Check if an EndUser record corresponding to the passed user id exists, and if not, create it.
+            let endUser = await transactionalEntityManager.findOne(EndUser, { where: { endUserId: userId } });
+            if (!endUser) {
+              endUser = transactionalEntityManager.create(EndUser, {
+                endUserId: userId,
+                organization: organization,
+              });
+              await transactionalEntityManager.save(EndUser, endUser);
+            }
 
-                // Check if EndUser record corresponding to the passed user id exists, and if not, create it.
-                let endUser = await transactionalEntityManager.findOne(EndUser, { where: { endUserId: userId } });
-                if (!endUser) {
-                    endUser = transactionalEntityManager.create(EndUser, {
-                        endUserId: userId,
-                        organization: organization,
-                    });
-                    await transactionalEntityManager.save(EndUser, endUser);
-                }
+            // Find all notifications not yet served to this user, and serve them
+            const eligibleNotifications =
+              await transactionalEntityManager.createQueryBuilder(EZNotification, 'notification')
+                .andWhere(`(notification.deleted IS FALSE)`)
+                .andWhere(`((notification.startDate IS NULL OR notification.endDate IS NULL) OR
+(notification.startDate <= :endOfDay AND notification.endDate >= :startOfDay) OR
+((notification.startDate BETWEEN :startOfDay AND :endOfDay) OR
+(notification.endDate BETWEEN :startOfDay AND :endOfDay))
+)`, { startOfDay, endOfDay })
+                .andWhere('notification.pageId = :pageId OR notification.pageId IS NULL', { pageId })
+                .andWhere('notification.environments && :environments OR notification.environments = \'{}\'', { environments })
+                .getMany();
 
-                // Find all "not yet served to this user" (today) notifications and serve them
-                //console.log('startOfDay:', startOfDay, ' endOfDay:', endOfDay);
-                const query = this.ezNotificationRepository.createQueryBuilder('notifications')
-                    .leftJoinAndSelect('notifications.endUsersServed', 'endUsersServed', `"endUsersServed"."ignored" IS FALSE`)
-                    .leftJoinAndSelect('endUsersServed.endUser', 'endUser',`"endUser"."end_user_id" = :userId`, { userId })
-                    .andWhere(`(notifications.deleted IS FALSE)`)
-                    .andWhere(`((notifications.startDate IS NULL OR notifications.endDate IS NULL) OR
-                                (notifications.startDate <= :endOfDay AND notifications.endDate >= :startOfDay) OR
-                                ((notifications.startDate BETWEEN :startOfDay AND :endOfDay) OR 
-                                 (notifications.endDate BETWEEN :startOfDay AND :endOfDay))
-                                )`, { startOfDay, endOfDay });
+            // Persist the served notifications as EndUsersServed
+            if (eligibleNotifications.length > 0) {
+              console.log(`Persisting potentially ${eligibleNotifications.length} endUserServed records.`);
+              console.log(`Eligible Notifications: ${JSON.stringify(eligibleNotifications,null,2)}`);
+            }
 
+            const rightNow = new Date();
+            for (const notification of eligibleNotifications) {
+              // Check if there's an existing record for this notification and end user
+              console.log(`Checking notification ${notification.uuid} for existing end_users_served record.`);
+              const existingRecord = await transactionalEntityManager.findOne(EndUsersServed, {
+                where: {
+                  endUser: { endUserId: userId },
+                  notification: { uuid: notification.uuid },
+                  ignored: false,
+                },
+              });
 
-                if (pageId) {
-                    query.andWhere('notifications.pageId = :pageId', { pageId });
+              if (existingRecord) {
+                if (existingRecord.dismissed) {
+                  alreadyViewedNotifications.push(notification.uuid);
                 } else {
-                  // Do not include any notifications where pageId is not set, when no pageId was provided
-                    query.andWhere('notifications.pageId IS NULL');
+                  // Any notif viewed, but not yet dismissed, can be returned to the end user.
+                  servedNotifications.push(notification);
                 }
 
-                if (environments && environments.length > 0) {
-                    query.andWhere('(notifications.environments && :environments OR notifications.environments = \'{}\' )',
-                                   { environments });
-                }
+                // Update existing end_users_served record.
+                console.log(`^^^^^^ Updating existing endUsersServed record, notif: ${notification.uuid}`);
+                existingRecord.latestAccessTime = rightNow;
+                existingRecord.viewCount += 1;
+                await transactionalEntityManager.save(existingRecord);
+              } else {
+                // Create a new EndUsersServed record as it doesn't exist
+                console.log(`^^^^^^ Creating new endUsersServed record, notif: ${notification.uuid}`);
+                const newEndUsersServedRecord = transactionalEntityManager.create(EndUsersServed, {
+                  notification: notification,
+                  endUser: endUser,
+                  firstAccessTime: rightNow,
+                  latestAccessTime: rightNow,
+                  viewCount: 1,
+                  // notifs that don't need to be dismissed are "auto-dismissed" with their first (and only)
+                  // viewing
+                  dismissed: false,
+                });
+                await transactionalEntityManager.save(newEndUsersServedRecord);
+                servedNotifications.push(notification);
+              }
+            }
 
-                //console.log('>>>>>>>>>> Final query:', query.getSql());
-                const notifications = await query.getMany();
+            const filteredNotifications =
+              servedNotifications.filter(notification => !alreadyViewedNotifications.includes(notification.uuid))
+                .map(notification => ({
+                  ...notification,
+                  userId: userId,
+                  organizationUuid: organization.uuid,
+                }));
+            console.log(`filteredNotifications: ${JSON.stringify(filteredNotifications,null,2)}`);
 
-                // Persist the served notifications as EndUsersServed
-                if (notifications.length > 0) {
-                    console.log(`Persisting potentially ${notifications.length} endUserServed records.`);
-                    console.log(`Notifications: ${JSON.stringify(notifications,null,2)}`);
-                    const rightNow = new Date();
-                    let existingRecord;
-                    for (const notification of notifications) {
-                        // Check if there's an existing record for this notification and end user
-                        console.log(`Checking notif: ${notification.uuid}`);
-                        existingRecord = null;
-                        if (notification.endUsersServed) {
-                            for (const endUserServed of notification.endUsersServed) {
-                                console.log(`endUserServed.uuid:${endUserServed.uuid}`);
-                                if (!endUserServed.ignored && endUserServed.endUser) {
-                                    console.log('Found not ignored record');
-                                    existingRecord = endUserServed;
-                                }
-                            }
-                        }
-                        if (existingRecord) {
-                            if (existingRecord.dismissed) {
-                                alreadyViewedNotifications.push(notification.uuid);
-                            }
-                            if (existingRecord.endUser == null) {
-                              console.log('Null/invalid endUser reference in endUsersServed record, skipping updating the record.');
-                              continue;
-                            }
-                            // Update existing record
-                            console.log(`^^^^^^ Updating existing endUsersServed record, notif: ${notification.uuid}`);
-                            existingRecord.latestAccessTime = rightNow;
-                            existingRecord.viewCount += 1;
-                            await transactionalEntityManager.save(existingRecord);
-                        } else {
-                            // Create a new EndUsersServed record as it doesn't exist
-                            console.log(`^^^^^^ Creating new endUsersServed record, notif: ${notification.uuid}`);
-                            const newEndUsersServedRecord = transactionalEntityManager.create(EndUsersServed, {
-                                notification: notification,
-                                endUser: endUser,
-                                firstAccessTime: rightNow,
-                                latestAccessTime: rightNow,
-                                viewCount: 1,
-                                // notifs that don't need to be dismissed are "auto-dismissed" with their first (and only)
-                                // viewing
-                                dismissed: false,
-                            });
-                            await transactionalEntityManager.save(newEndUsersServedRecord);
-                        }
-                    }
-                }
-                const filteredNotifications = 
-                    notifications.filter(notification => !alreadyViewedNotifications.includes(notification.uuid));
-                console.log(`filteredNotifications: ${filteredNotifications}`);
-
-                return filteredNotifications;
-            });
+            return filteredNotifications;
+          });
         }
     }
 
@@ -354,7 +345,7 @@ export class EZNotificationService {
     }
 
     async deleteNotification(id: string): Promise<void> {
-        const rightNow = new Date();       
+        const rightNow = new Date();
         await this.ezNotificationRepository.update(id, {
             deleted: true,
             deletedAt: rightNow,
@@ -730,7 +721,7 @@ export class EZNotificationService {
         // Return the updated organization entity (optionally refresh it from the database if needed)
         return organization;
     }
-    
+
     async fetchGithubCodeAsString(clerkUserId: string, githubUrl: string): Promise<Object> {
         console.log('fetchGithubCodeAsString');
         const userOrganization = await this.findUserOrganizationByClerkId(clerkUserId);

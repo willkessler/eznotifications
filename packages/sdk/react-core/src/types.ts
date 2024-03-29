@@ -30,10 +30,13 @@ export interface SDKNotification {
   endDate?: Date;
   live: boolean;
   dismissed: boolean;
+  // Only stored on return values from the SDK. The notifications table in the db doesn't have user_id on it
+  // but it's added in return results to allow for dynamic user_id switching.
+  userId?: string;
 }
 
 export interface SDKDataReturn {
-  data: SDKNotification[] | undefined;
+  data: SDKNotification[] | null | undefined;
   isPending: boolean;
   isError: boolean;
   error: any;

@@ -72,6 +72,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
       apiUrl.searchParams.append('environment', config.environment ?? 'development');
     }
     
+    // apiUrl.searchParams.append('time', new Date().getTime().toString());
     const newApiUrlString = apiUrl.toString();
     console.log(`buildApiUrlString built: ${newApiUrlString} `);
     return newApiUrlString;
