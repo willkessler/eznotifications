@@ -246,11 +246,6 @@ export class EZNotificationService {
             const organization = queryParams.organization;
             const alreadyViewedNotifications:string[] = [];
             const servedNotifications:EZNotification[] = [];
-            // Convert today's date to the user's local timezone
-            const today = new Date();
-            const startOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 1));
-            const endOfDay = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getUTCDate(), 23, 59, 59));
-            //console.log('startOfDay:', startOfDay, ' endOfDay:', endOfDay);
             console.log('We found organization with uuid:', organization?.uuid);
 
           return this.connection.transaction(async transactionalEntityManager => {
@@ -268,11 +263,11 @@ export class EZNotificationService {
             const eligibleNotifications =
               await transactionalEntityManager.createQueryBuilder(EZNotification, 'notification')
                 .andWhere(`(notification.deleted IS FALSE)`)
-                .andWhere(`((notification.startDate IS NULL OR notification.endDate IS NULL) OR
-(notification.startDate <= :endOfDay AND notification.endDate >= :startOfDay) OR
-((notification.startDate BETWEEN :startOfDay AND :endOfDay) OR
-(notification.endDate BETWEEN :startOfDay AND :endOfDay))
-)`, { startOfDay, endOfDay })
+                .andWhere(`((notification.startDate IS NULL  AND notification.endDate IS NULL) OR    -- no time frame set
+                            (notification.startDate <= NOW() AND notification.endDate >= NOW() ) OR  -- current time within time frame window
+                            (notification.startDate <= NOW() AND notification.endDate IS NULL) OR    -- current time past start time with no end time
+                            (notification.startDate IS NULL  AND notification.endDate >= NOW() )     -- current time is before end time with no start time
+                         )`)
                 .andWhere('notification.pageId = :pageId OR notification.pageId IS NULL', { pageId })
                 .andWhere('notification.environments && :environments OR notification.environments = \'{}\'', { environments })
                 .getMany();
