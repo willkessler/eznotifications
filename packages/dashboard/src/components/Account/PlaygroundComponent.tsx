@@ -88,6 +88,7 @@ export const envConfig = {
   TINAD_ENDUSER_ID: 'user12345',
   TINAD_IMAGE_LOCATION: 'https://raw.githubusercontent.com/willkessler/this-is-not-a-drill-examples/main/public/',
   TINAD_API_KEY: '${temporaryAPIKeyValue}',
+  TINAD_IS_DEMO_SITE: false,
 };
 `;
 
