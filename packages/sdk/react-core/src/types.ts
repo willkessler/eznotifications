@@ -29,7 +29,7 @@ export interface SDKNotification {
 }
 
 export interface SDKDataReturn {
-  data: SDKNotification[] | null | undefined;
+  data: SDKNotification[];
   fetchPending: boolean;
   fetchError: string | null;
   dismiss: (notificationUuid: string) => Promise<boolean>;

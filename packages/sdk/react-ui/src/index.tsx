@@ -1,5 +1,5 @@
 import { ReactElement, useState, useEffect, ReactNode } from 'react';
-import { useTinadSDK, useSDKData, SDKNotification } from '@this-is-not-a-drill/react-core';
+import { useTinadSDK, useSDKData } from '@this-is-not-a-drill/react-core';
 import type { TinadTemplateProps, TinadNotificationsComponentProps } from './types';
 export { TinadTemplateProps } from './types';
 import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison
@@ -33,11 +33,8 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     environments = 'Development',
     clientDismissFunction,
 }) => {
-    const { data: sdkNotifications, fetchPending, fetchError, dismiss: dismissCore } = useSDKData();
     const { getTinadConfig, updateTinadConfig } = useTinadSDK();
-
-    const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[]>([]);
-    const [ lastKnownUserId, setLastKnownUserId ] = useState<string | null>(null);
+    const { data: notificationsQueue, fetchPending, fetchError, dismiss: dismissCore } = useSDKData();
     const [ isModalOpen, setIsModalOpen ] = useState(false);
     const [ modalContent, setModalContent ] = useState(null);
 
@@ -57,35 +54,11 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     const afterOpenModal = () => {
     };
 
-    const addNewNotifications = () => {
-      const tinadConfig = getTinadConfig();
-      console.log(`In addNewNotifications, validing inbound notifications: ${sdkNotifications?.length}`);
-      if (sdkNotifications) {
-        // Step 1: Filter out any existing notifications that do not match the current userId and optional pageId
-        const relevantCurrentNotifications = currentNotifications.filter(
-          notif => notif.userId === tinadConfig.userId
-        );
-        // Step 2: Add new notifications that match the current userId and are not already present
-        const newNotifications = sdkNotifications.filter(
-          notif => notif.userId === tinadConfig.userId &&
-                 notif.live &&
-                 (tinadConfig.pageId ? notif.pageId === tinadConfig.pageId : true) &&
-                 !relevantCurrentNotifications.some(cn => notif.uuid === cn.uuid)
-        ).map(notif => _.cloneDeep(notif)); // Clone to ensure immutability
-
-        if (newNotifications.length > 0 || relevantCurrentNotifications.length !== currentNotifications.length) {
-          console.log(`Updating notifications. Total: ${relevantCurrentNotifications.length + newNotifications.length}`);
-          setCurrentNotifications([...relevantCurrentNotifications, ...newNotifications]);
-        }
-      }
-    };
-
     const dismissNotification = async () => {
         console.log('react-ui: dismissNotification');
-        if (currentNotifications.length > 0) {
-            console.log(`Dismissing notification with id ${currentNotifications[0].uuid}`);
-            await dismissCore(currentNotifications[0].uuid);
-            setCurrentNotifications(currentNotifications.slice(1));
+        if (notificationsQueue.length > 0) {
+            console.log(`Dismissing notification with id ${notificationsQueue[0].uuid}`);
+            await dismissCore(notificationsQueue[0].uuid);
             // Call client-provided dismiss function as a side effect (if one was passed in).
             if (clientDismissFunction) {
                 clientDismissFunction();
@@ -112,6 +85,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     }, [updateTinadConfig]);
   
 
+/*
   useEffect(() => {
     console.log(`>>>> Checking sdkNotifications: ${JSON.stringify(sdkNotifications,null,2)}`);
     if (sdkNotifications && sdkNotifications.length > 0) {
@@ -119,11 +93,12 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
       addNewNotifications();
     }
   }, [sdkNotifications]);
-
+  */
+  
     useEffect(() => {
         // Check if there are any current notifications and update the modal's open state accordingly
-        if (mode === 'toast' && currentNotifications.length > 0) {
-            const notification = currentNotifications[0];
+        if (mode === 'toast' && notificationsQueue.length > 0) {
+            const notification = notificationsQueue[0];
             console.log(`About to show toast on notification:${JSON.stringify(notification,null,2)}`);
             console.log(`Toast active: ${toast.isActive(notification.uuid)}`);
             if (notification && !toast.isActive(notification.uuid)) {
@@ -143,16 +118,16 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
                         onClose: () => { dismissNotification() },
                     }) }, 50);
             }
-        } else if (mode == 'modal' && currentNotifications.length > 0) {
-          console.log(`>>> currentNotifications: ${currentNotifications}`);
+        } else if (mode == 'modal' && notificationsQueue.length > 0) {
+          console.log(`>>> notificationsQueue: ${JSON.stringify(notificationsQueue, null, 2)}`);
           setIsModalOpen(true);
         } else {
           setIsModalOpen(false);
         }
-    }, [currentNotifications]); // Rerun effect when currentNotifications or mode changes
+    }, [notificationsQueue]); // Rerun effect when currentNotifications or mode changes
 
     // Handle empty state
-    if (fetchPending || (currentNotifications?.length == 0)) {
+    if (fetchPending || (notificationsQueue?.length == 0)) {
         return <div></div>;
     }
 
@@ -164,53 +139,53 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
 
     const TemplateToRender = CustomTemplate || DefaultTemplate;
 
-    //console.log(`currentNotifications: ${JSON.stringify(currentNotifications,null,2)}`);
-    console.log(`currentNotifications length: ${currentNotifications.length}`);
+    //console.log(`notificationsQueue: ${JSON.stringify(notificationsQueue,null,2)}`);
+    console.log(`notificationsQueue length: ${notificationsQueue.length}`);
     // We do have a notification, so return its data merged into the template.
-    const content = (currentNotifications[0] ? currentNotifications[0].content : '');
-    //    const markedContent = renderMarkdown(currentNotifications[0]?.content);
+    const content = (notificationsQueue[0] ? notificationsQueue[0].content : '');
+    //    const markedContent = renderMarkdown(notificationsQueue[0]?.content);
     switch (mode) {
         case 'modal':
             return (
-                <>
-                    <Modal
-                className={modalClasses.Modal}
-                overlayClassName={modalClasses.Overlay}
-                shouldCloseOnOverlayClick={false}
+              <>
+                <Modal
+                  className={modalClasses.Modal}
+                  overlayClassName={modalClasses.Overlay}
+                  shouldCloseOnOverlayClick={false}
                   isOpen={isModalOpen}
                   onAfterOpen={afterOpenModal}
                   onRequestClose={closeModal}
                   contentLabel="Tinad modal"
                 >
-                    {<ReactMarkdown>content</ReactMarkdown>}
-                    <button onClick={closeModal}>OK</button>
-                 </Modal>
-                </>
+                  {<ReactMarkdown>content</ReactMarkdown>}
+                  <button onClick={closeModal}>OK</button>
+                </Modal>
+              </>
             );
         case 'toast':
             return (
-                <ToastContainer
-                  position="top-center"
-                  className={tinadToastClasses.tinadCustomToast}
-                  autoClose={5000}
-                  hideProgressBar
-                  newestOnTop={false}
-                  closeOnClick
-                  rtl={false}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover
-                  theme="light"
-                  transition={Bounce}
-                />
+              <ToastContainer
+                position="top-center"
+                className={tinadToastClasses.tinadCustomToast}
+                autoClose={5000}
+                hideProgressBar
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                transition={Bounce}
+              />
             );
         case 'inline':
         default:
             return (
-                <TemplateToRender
+              <TemplateToRender
                 tinadContent={<ReactMarkdown>{content}</ReactMarkdown>}
-                tinadType={currentNotifications[0]?.notificationType}
+                tinadType={notificationsQueue[0]?.notificationType}
                 dismiss={dismissNotification}
-                    />);
+              />);
     }
 }

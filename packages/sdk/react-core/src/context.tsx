@@ -219,6 +219,11 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
       throw new Error('Network response was not ok');
     }
 
+    // Remove the notification from the queue (should be the first one in the queue).
+    setNotificationsQueue(notificationsQueue.filter(
+      (notification: SDKNotification) => 
+        notification.uuid !== notificationUuid));
+
     setDismissedNotificationIds(currentState => {
       // Clone the current state to avoid mutating it directly
       const updatedState = { ...currentState };
