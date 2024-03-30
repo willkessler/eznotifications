@@ -268,8 +268,8 @@ export class EZNotificationService {
                             (notification.startDate <= NOW() AND notification.endDate IS NULL) OR    -- current time past start time with no end time
                             (notification.startDate IS NULL  AND notification.endDate >= NOW() )     -- current time is before end time with no start time
                          )`)
-                .andWhere('notification.pageId = :pageId OR notification.pageId IS NULL', { pageId })
-                .andWhere('notification.environments && :environments OR notification.environments = \'{}\'', { environments })
+                .andWhere(`(notification.pageId = :pageId OR notification.pageId IS NULL)`, { pageId })
+                .andWhere(`(notification.environments && :environments OR notification.environments = \'{}\')`, { environments })
                 .getMany();
 
             // Persist the served notifications as EndUsersServed

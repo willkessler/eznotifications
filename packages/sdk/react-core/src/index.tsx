@@ -38,7 +38,7 @@ export const useSDKData = (): SDKDataReturn => {
   const queryClient = useQueryClient();
   const [dismissedNotificationIds, setDismissedNotificationIds] = useState<DismissedNotifications>({});
   const [ reactQueryTodo, setReactQueryTodo ] = useState<ReactQueryAction>(ReactQueryAction.OK_AS_IS);
-  const { tinadConfig, updateTinadConfig } = useTinadSDK();
+  const { tinadConfig, buildApiUrlString } = useTinadSDK();
   const apiUrlString = tinadConfig.apiUrlString;
 
   useEffect( () => {
@@ -67,7 +67,10 @@ export const useSDKData = (): SDKDataReturn => {
     return tinadConfig;
   }
 
-  const fetchNotifications = async () => {
+  //
+  // Core API fetch call for getting notifications back from TINAD API.
+  //
+  const fetchNotifications = async (tinadConfig: SDKConfig) => {
     if (!tinadConfig) {
       throw new Error("Be sure to initialize TinadSDK with a valid API key before using.");
     }
@@ -76,8 +79,9 @@ export const useSDKData = (): SDKDataReturn => {
       return null;
     }
     const apiKey = tinadConfig.apiKey;
-    console.log(`fetchNotifications hitting: ${tinadConfig.apiUrlString} with apiKey ${tinadConfig.apiKey}`);
-    const response = await fetch(tinadConfig.apiUrlString, {
+    const currentApiUrlString = buildApiUrlString();
+    console.log(`fetchNotifications hitting: ${currentApiUrlString} with apiKey ${tinadConfig.apiKey}`);
+    const response = await fetch(currentApiUrlString, {
       headers: {
         'Authorization': "Bearer " + apiKey,
         'X-Tinad-Source': "SDK",
@@ -239,6 +243,20 @@ export const useSDKData = (): SDKDataReturn => {
     setReactQueryTodo(ReactQueryAction.INVALIDATE);
   }
 
+  // When the tinadConfig is updated by a call to context:updateTinadConfig(), we need to set up
+  // react-query to clear its cache.
+  useEffect( () => {
+    console.log(`[][][]][][][][][] core invalidating bc tinadConfig updated, tinadConfig=${JSON.stringify(tinadConfig,null,2)}`);
+    invalidateQueriesCore();
+  }, [tinadConfig, invalidateQueriesCore]);
+
+  useEffect(() => {
+    return () => {
+      // Invalidate the query when the component unmounts
+      queryClient.invalidateQueries('notifications');
+    };
+  }, [queryClient]);
+
   //
   //
   // Main invocation of tanstack/react-query begins here.
@@ -247,8 +265,8 @@ export const useSDKData = (): SDKDataReturn => {
 
   // Main focus on the function here is using tanstack useQuery as per below.
   const { isPending, isFetching, error, data } = useQuery({
-    queryKey: ['notifications', tinadConfig],
-    queryFn: () => fetchNotifications(),
+    queryKey: ['notifications'],
+    queryFn: () => fetchNotifications(tinadConfig),
     refetchInterval: 15000, // Polling interval
   });
 

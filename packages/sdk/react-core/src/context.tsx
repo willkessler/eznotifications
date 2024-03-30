@@ -19,11 +19,13 @@ const defaultTinadConfig = {
 interface TinadSDKContextType {
   tinadConfig: SDKConfig;
   updateTinadConfig: (configPartial: Partial<SDKConfig>) => void;
+  buildApiUrlString: () => string;
 }  
 
 const TinadSDKContext = createContext<TinadSDKContextType>({
   tinadConfig: defaultTinadConfig,
   updateTinadConfig: () => {},
+  buildApiUrlString: () => '',
 });
 
 // Define a provider component. This will allow clients to persist their API key and other important configurations.
@@ -62,14 +64,14 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
     storeTinadConfig();
   }, [tinadConfig]);
 
-  const buildApiUrlString = (config:SDKConfig) => {
-    const apiUrl = new URL(`${config.apiBaseUrl}/notifications`);
-    apiUrl.searchParams.append('userId', config.userId);
+  const buildApiUrlString = () => {
+    const apiUrl = new URL(`${tinadConfig.apiBaseUrl}/notifications`);
+    apiUrl.searchParams.append('userId', tinadConfig.userId);
     if (tinadConfig.pageId) {
-      apiUrl.searchParams.append('pageId', config.pageId ?? '');
+      apiUrl.searchParams.append('pageId', tinadConfig.pageId ?? '');
     }
-    if (tinadConfig.environment) {
-      apiUrl.searchParams.append('environment', config.environment ?? 'development');
+    if (tinadConfig.environments) {
+      apiUrl.searchParams.append('environments', tinadConfig.environments ?? 'development');
     }
     
     // apiUrl.searchParams.append('time', new Date().getTime().toString());
@@ -91,7 +93,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
       });
       if (isChanged) {
         const partlyUpdatedConfig = { ...prevConfig, ...configPartial };
-        const newApiUrlString = buildApiUrlString(partlyUpdatedConfig);
+        const newApiUrlString = buildApiUrlString();
         const updatedConfig = { ...partlyUpdatedConfig, apiUrlString: newApiUrlString };
         console.log(`Inside setTinadConfig: updatedConfig = ${JSON.stringify(updatedConfig,null,2)}`);
 
@@ -106,7 +108,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
   }, []);
 
   return (
-    <TinadSDKContext.Provider value={{ tinadConfig, updateTinadConfig  }}>
+    <TinadSDKContext.Provider value={{ tinadConfig, updateTinadConfig, buildApiUrlString  }}>
       {children}
     </TinadSDKContext.Provider>
   );

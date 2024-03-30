@@ -16,7 +16,7 @@ export interface SDKConfig {
   apiBaseUrl?: string;
   apiUrlString: string;
   pageId?: string;
-  environment?: string;
+  environments?: string;
 }
 
 export interface SDKNotification {

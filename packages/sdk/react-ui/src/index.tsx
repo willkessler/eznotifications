@@ -30,9 +30,10 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     pageId,
     template: CustomTemplate = DefaultTemplate,
     mode = 'inline',
+    environments = 'Development',
     clientDismissFunction,
 }) => {
-    const { data: sdkNotifications, isPending, isError, error, dismiss: dismissCore } = useSDKData();
+    const { data: sdkNotifications, isPending, isError, error, dismiss: dismissCore, getConfig } = useSDKData();
     const { tinadConfig, updateTinadConfig } = useTinadSDK();
 
     const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[]>([]);
@@ -94,38 +95,18 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     }, []);
 
     useEffect(() => {
+      const newConfig = getConfig();
       if (pageId) {
-        const newConfig = { pageId };
+        newConfig['pageId'] = pageId;
+      }
+      if (environments) {
+        newConfig['environments'] = environments;
+      }
+      if (Object.keys(newConfig).length > 0) {
         updateTinadConfig(newConfig);
       }
     }, [updateTinadConfig]);
   
-/*
-    useEffect(() => {
-      console.log('Checking for userId change.');
-      if (lastKnownUserId === null) {
-        setLastKnownUserId(tinadConfig.userId);
-      } else {
-        console.log(`lastKnownUserId: ${lastKnownUserId}, tinadConfig.userId: ${tinadConfig.userId}`);
-        if (lastKnownUserId !== tinadConfig.userId) {
-          // We may have switched user id's since the last fetch. If so clear out current notifications.
-          console.log('Clearing current notifs');
-          setCurrentNotifications([]);
-        }
-      }
-
-      console.log('Checking if we need to add notifs.');
-      if (sdkNotifications && sdkNotifications.length > 0) {
-        console.log('We need to add notifs');
-        addNewNotifications();
-      }
-
-      if (lastKnownUserId !== tinadConfig.userId) {
-        setLastKnownUserId(tinadConfig.userId);
-      }
-
-    }, [tinadConfig, sdkNotifications]);
-  */
 
   useEffect(() => {
     console.log(`>>>> Checking sdkNotifications: ${JSON.stringify(sdkNotifications,null,2)}`);
