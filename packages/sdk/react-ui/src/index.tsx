@@ -33,7 +33,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     environments = 'Development',
     clientDismissFunction,
 }) => {
-    const { data: sdkNotifications, isPending, isError, error, dismiss: dismissCore } = useSDKData();
+    const { data: sdkNotifications, fetchPending, fetchError, dismiss: dismissCore } = useSDKData();
     const { getTinadConfig, updateTinadConfig } = useTinadSDK();
 
     const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[]>([]);
@@ -106,6 +106,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
         newConfig['environments'] = environments;
       }
       if (Object.keys(newConfig).length > 0) {
+        console.log(`_+_+_+_+_+_+_+ New page navigated to, updating config with ${JSON.stringify(newConfig,null,2)}`);
         updateTinadConfig(newConfig);
       }
     }, [updateTinadConfig]);
@@ -151,12 +152,12 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     }, [currentNotifications]); // Rerun effect when currentNotifications or mode changes
 
     // Handle empty state
-    if (isPending || (currentNotifications?.length == 0)) {
+    if (fetchPending || (currentNotifications?.length == 0)) {
         return <div></div>;
     }
 
     // Handle error state
-    if (isError) {
+    if (fetchError) {
         console.log('*** TINAD error: Failed to fetch' || "No notifications");
         return <div></div>;
     }

@@ -1,4 +1,5 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import pkg from  'rollup-plugin-analyzer';
@@ -28,6 +29,10 @@ export default {
     },
   ],
   plugins: [
+    resolve({
+      browser: true,
+      preferBuiltins:false,
+    }),
     nodeResolve(), // Tells Rollup how to find node modules in node_modules
     commonjs(), // Converts CommonJS modules to ES6, so they can be included in a Rollup bundle
     typescript({ tsconfig: './tsconfig.json' }), // Compile TypeScript files

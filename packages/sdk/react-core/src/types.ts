@@ -1,11 +1,5 @@
 import React, { ReactNode } from 'react';
 
-export enum ReactQueryAction {
-  OK_AS_IS,
-  REFRESH,
-  INVALIDATE,
-};
-
 export type SDKProviderProps = {
   children: ReactNode;
 };
@@ -36,10 +30,8 @@ export interface SDKNotification {
 
 export interface SDKDataReturn {
   data: SDKNotification[] | null | undefined;
-  isPending: boolean;
-  isError: boolean;
-  error: any;
+  fetchPending: boolean;
+  fetchError: string | null;
   dismiss: (notificationUuid: string) => Promise<boolean>;
   reset: () => Promise<boolean>;
-  invalidate: () => void;
 }
