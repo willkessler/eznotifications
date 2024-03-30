@@ -17,98 +17,62 @@ const defaultTinadConfig = {
 }
 
 interface TinadSDKContextType {
-  tinadConfig: SDKConfig;
+  getTinadConfig: () => SDKConfig;
   updateTinadConfig: (configPartial: Partial<SDKConfig>) => void;
-  buildApiUrlString: () => string;
 }  
 
 const TinadSDKContext = createContext<TinadSDKContextType>({
-  tinadConfig: defaultTinadConfig,
+  getTinadConfig: () => defaultTinadConfig,
   updateTinadConfig: () => {},
-  buildApiUrlString: () => '',
 });
 
 // Define a provider component. This will allow clients to persist their API key and other important configurations.
 export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
-  const getLocalStorage = (key:string) => {
-    const localStorageValue = localStorage.getItem(key);
-    return localStorageValue;
-  };        
-
-  const setLocalStorage = (key:string, value:string) => {
-    localStorage.setItem(key,value);
-  };        
-
-  console.log('+_+_+_+_+_+_+_ TinadSDKCoreProvider (context.tsx) mount. Restoring saved config from local store.');
-  let previousConfig = { ...defaultTinadConfig };
-  const previousConfigB64 = getLocalStorage('tinad');
-  if (previousConfigB64) {
-    try {
-      const previousConfigStr = atob(previousConfigB64);
-      previousConfig = JSON.parse(previousConfigStr);
-      console.log(`index.tsx: previousConfig: ${JSON.stringify(previousConfig,null,2)}`);
-    } catch (e) {
-      console.error('Error restoring config from local storage:', e);
-    }
-  }
-
-  const [ tinadConfig, setTinadConfig ] = useState<SDKConfig>(previousConfig);
-
-  useEffect(() => {
-    const storeTinadConfig = ( ) => {
-      const b64Config = btoa(JSON.stringify(tinadConfig));
-      localStorage.setItem('tinad', b64Config);
-    };
-    console.log(`Storing tinad config in local : ${JSON.stringify(tinadConfig,null,2)}`);
-    storeTinadConfig();
-  }, [tinadConfig]);
-
-  const buildApiUrlString = () => {
-    const apiUrl = new URL(`${tinadConfig.apiBaseUrl}/notifications`);
-    apiUrl.searchParams.append('userId', tinadConfig.userId);
-    if (tinadConfig.pageId) {
-      apiUrl.searchParams.append('pageId', tinadConfig.pageId ?? '');
-    }
-    if (tinadConfig.environments) {
-      apiUrl.searchParams.append('environments', tinadConfig.environments ?? 'development');
-    }
-    
-    // apiUrl.searchParams.append('time', new Date().getTime().toString());
-    const newApiUrlString = apiUrl.toString();
-    console.log(`buildApiUrlString built: ${newApiUrlString} `);
-    return newApiUrlString;
+  const storeTinadConfig = (tinadConfig:SDKConfig) => {
+    const b64Config = btoa(JSON.stringify(tinadConfig));
+    localStorage.setItem('tinad', b64Config);
   };
 
-
-  const updateTinadConfig = useCallback((configPartial: Partial<SDKConfig>) => {
-    console.log(`updateTinadConfig: Updating tinad config with: ${JSON.stringify(configPartial,null,2)}`);
-    setTinadConfig((prevConfig) => {
-      const isChanged = Object.entries(configPartial).some(([key, value]) => {
-        if (key in prevConfig) {
-          const prevValue = prevConfig[key as keyof SDKConfig];
-          return prevValue !== value;
-        }
-        return false;
-      });
-      if (isChanged) {
-        const partlyUpdatedConfig = { ...prevConfig, ...configPartial };
-        const newApiUrlString = buildApiUrlString();
-        const updatedConfig = { ...partlyUpdatedConfig, apiUrlString: newApiUrlString };
-        console.log(`Inside setTinadConfig: updatedConfig = ${JSON.stringify(updatedConfig,null,2)}`);
-
-        const callStack = new Error(">>>>>>> updateTinadConfig: SDK Function Call Stack");
-        console.log(callStack.stack);
-
-        return updatedConfig;
+  const getTinadConfig = ():SDKConfig => {
+    let currentConfig = { ...defaultTinadConfig };
+    const previousConfigB64 = localStorage.getItem('tinad');
+    if (previousConfigB64) {
+      try {
+        const previousConfigStr = atob(previousConfigB64);
+        currentConfig = JSON.parse(previousConfigStr);
+        console.log(`index.tsx: currentConfig: ${JSON.stringify(currentConfig,null,2)}`);
+      } catch (e) {
+        console.log('Cannot restore config from local storage:', e);
       }
-      console.log('No change to Tinad config.');
-      return prevConfig;
+    }
+    return currentConfig;
+  };  
+
+  console.log('+_+_+_+_+_+_+_ TinadSDKCoreProvider (context.tsx) mount. Restoring saved config from local store.');
+
+  const updateTinadConfig = (configPartial: Partial<SDKConfig>) => {
+    console.log(`updateTinadConfig: Updating tinad config with: ${JSON.stringify(configPartial,null,2)}`);
+    let currentConfig = getTinadConfig();
+    const isChanged = Object.entries(configPartial).some(([key, value]) => {
+      if (key in currentConfig) {
+        const currentValue = currentConfig[key as keyof SDKConfig];
+        return currentValue !== value;
+      }
+      return false;
     });
-  }, []);
+    if (isChanged) {
+      const partlyUpdatedConfig = { ...currentConfig, ...configPartial };
+      storeTinadConfig(partlyUpdatedConfig);
+      const callStack = new Error(">>>>>>> updateTinadConfig: SDK Function Call Stack");
+      console.log(callStack.stack);
+    }
+    console.log('No change to Tinad config.');
+    return currentConfig;
+  };
 
   return (
-    <TinadSDKContext.Provider value={{ tinadConfig, updateTinadConfig, buildApiUrlString  }}>
+    <TinadSDKContext.Provider value={{ getTinadConfig, updateTinadConfig  }}>
       {children}
     </TinadSDKContext.Provider>
   );

@@ -33,8 +33,8 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     environments = 'Development',
     clientDismissFunction,
 }) => {
-    const { data: sdkNotifications, isPending, isError, error, dismiss: dismissCore, getConfig } = useSDKData();
-    const { tinadConfig, updateTinadConfig } = useTinadSDK();
+    const { data: sdkNotifications, isPending, isError, error, dismiss: dismissCore } = useSDKData();
+    const { getTinadConfig, updateTinadConfig } = useTinadSDK();
 
     const [ currentNotifications, setCurrentNotifications ] = useState<SDKNotification[]>([]);
     const [ lastKnownUserId, setLastKnownUserId ] = useState<string | null>(null);
@@ -58,23 +58,26 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     };
 
     const addNewNotifications = () => {
-        console.log(`addNewNotifications, adding ${sdkNotifications?.length} notifications`);
-        if (sdkNotifications) {
-          // Step 1: Filter out any existing notifications that do not match the current userId
-          const relevantCurrentNotifications = currentNotifications.filter(
-            notif => notif.userId === tinadConfig.userId
-          );
-          // Step 2: Add new notifications that match the current userId and are not already present
-          const newNotifications = sdkNotifications.filter(
-            notif => notif.userId === tinadConfig.userId &&
-                   !relevantCurrentNotifications.some(cn => notif.uuid === cn.uuid)
-          ).map(notif => _.cloneDeep(notif)); // Clone to ensure immutability
+      const tinadConfig = getTinadConfig();
+      console.log(`In addNewNotifications, validing inbound notifications: ${sdkNotifications?.length}`);
+      if (sdkNotifications) {
+        // Step 1: Filter out any existing notifications that do not match the current userId and optional pageId
+        const relevantCurrentNotifications = currentNotifications.filter(
+          notif => notif.userId === tinadConfig.userId
+        );
+        // Step 2: Add new notifications that match the current userId and are not already present
+        const newNotifications = sdkNotifications.filter(
+          notif => notif.userId === tinadConfig.userId &&
+                 notif.live &&
+                 (tinadConfig.pageId ? notif.pageId === tinadConfig.pageId : true) &&
+                 !relevantCurrentNotifications.some(cn => notif.uuid === cn.uuid)
+        ).map(notif => _.cloneDeep(notif)); // Clone to ensure immutability
 
-          if (newNotifications.length > 0 || relevantCurrentNotifications.length !== currentNotifications.length) {
-            console.log(`Updating notifications. Total: ${relevantCurrentNotifications.length + newNotifications.length}`);
-            setCurrentNotifications([...relevantCurrentNotifications, ...newNotifications]);
-          }
+        if (newNotifications.length > 0 || relevantCurrentNotifications.length !== currentNotifications.length) {
+          console.log(`Updating notifications. Total: ${relevantCurrentNotifications.length + newNotifications.length}`);
+          setCurrentNotifications([...relevantCurrentNotifications, ...newNotifications]);
         }
+      }
     };
 
     const dismissNotification = async () => {
@@ -95,7 +98,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     }, []);
 
     useEffect(() => {
-      const newConfig = getConfig();
+      const newConfig = getTinadConfig();
       if (pageId) {
         newConfig['pageId'] = pageId;
       }
