@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Body, Param, Put, Delete, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body, Param, Put, Delete, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiKeyAuthGuard } from '../auth/api-key-auth.guard';
@@ -160,8 +160,9 @@ export class EZNotificationController {
     @ApiOperation({summary: 'Fetch all current notifications, with filters applied. Filters required for SDK use.'})
     @ApiResponse({ status: 200, description: 'Return all current notifications for given filters.' })
     @UseGuards(EitherAuthGuard)
-    findAllNotifications(
+    async findAllNotifications(
         @Req() request: CustomRequest,
+        @Res() response: Response,
         @Query('userId') userId: string,
         @Query('environments') environments: string,
         @Query('pageId') pageId: string,
@@ -170,7 +171,9 @@ export class EZNotificationController {
         const environmentsArray = environments ? environments.split(',') : [];
         const organization = request.organization;
         const query = { userId, environments: environmentsArray, pageId, clerkUserId, organization };
-        return this.EZNotificationService.findAllNotifications(query);
+        response.set('X-Tinad-Poll-Interval', process.env.REACT_CLIENT_POLL_INTERVAL);
+        const notifications = await this.EZNotificationService.findAllNotifications(query);
+        response.json(notifications);
     }
 
     @Get('/notifications/:id')

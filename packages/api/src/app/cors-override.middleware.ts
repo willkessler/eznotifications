@@ -49,6 +49,7 @@ export class CorsOverrideMiddleware implements NestMiddleware {
                 methods: 'OPTIONS,GET,HEAD,PUT,PATCH,POST,DELETE',
                 credentials: true,
                 allowedHeaders: [ 'Content-Type', 'Accept', 'Authorization', 'X-Tinad-Source'],
+                exposedHeaders: ['X-Tinad-Poll-Interval'],
             };
             if (sourceIsDashboard || validApiAccess) {
                 console.log(sourceIsDashboard ?

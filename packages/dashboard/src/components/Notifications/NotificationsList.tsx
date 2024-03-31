@@ -208,7 +208,7 @@ const NotificationsList = () => {
 
     if (isSmallScreen) {
         // phones, tablets
-        console.log('Rendering for phones');
+        // console.log('Rendering for phones');
         return (
             <Skeleton visible={notificationsLoading} height="100vh">
                 <div>
@@ -220,7 +220,7 @@ const NotificationsList = () => {
         );
     } else {
         // laptop screens and larger
-        console.log('Rendering for large screens');
+        // console.log('Rendering for large screens');
         return (
           <Skeleton visible={notificationsLoading} height="100vh">
             <Grid gutter={{ base: 5, xs: 20, md: 20, xl: 20 }}>
