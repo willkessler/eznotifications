@@ -52,9 +52,9 @@ interface DismissedNotifications {
 export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const [ notificationsQueue, setNotificationsQueue ] = useState<SDKNotification[]>([]);
-  const [dismissedNotificationIds, setDismissedNotificationIds] = useState<DismissedNotifications>({});
-  const [fetchPending, setFetchPending] = useState<boolean>(false);
-  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [ dismissedNotificationIds, setDismissedNotificationIds ] = useState<DismissedNotifications>({});
+  const [ fetchPending, setFetchPending ] = useState<boolean>(false);
+  const [ fetchError, setFetchError ] = useState<string | null>(null);
   
   // Function to determine the latest date between startDate and endDate
   const getLatestDate = (startDate?: Date, endDate?: Date): Date => {
@@ -65,7 +65,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   const addNotificationsToQueue = (notifications:SDKNotification[]) => {
     const tinadConfig = getTinadConfig();
-    console.log('addNotificationsToQueue.');
+    console.log(`addNotificationsToQueue, queue length: ${notifications?.length}.`);
     if (notifications) {
       console.log(`In addNotificationsToQueue, validing ${notifications?.length} inbound notifications.`);
       // Step 2: Add new notifications that match the current userId

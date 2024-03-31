@@ -13,7 +13,6 @@ const TinadSDKProvider:React.FC<SDKProviderProps> = ({ children }) => {
 
 };
 
-
 export { SDKProviderProps, SDKNotification, SDKDataReturn } from './types';
 export { TinadSDKProvider, useTinadSDK };
 

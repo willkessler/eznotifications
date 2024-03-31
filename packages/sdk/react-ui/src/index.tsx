@@ -79,7 +79,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
         newConfig['environments'] = environments;
       }
       if (Object.keys(newConfig).length > 0) {
-        console.log(`_+_+_+_+_+_+_+ New page navigated to, updating config with ${JSON.stringify(newConfig,null,2)}`);
+        //console.log(`_+_+_+_+_+_+_+ New page navigated to, updating config with ${JSON.stringify(newConfig,null,2)}`);
         updateTinadConfig(newConfig);
       }
     }, [updateTinadConfig]);
@@ -119,16 +119,16 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
                     }) }, 50);
             }
         } else if (mode == 'modal' && notificationsQueue.length > 0) {
-          console.log(`>>> notificationsQueue: ${JSON.stringify(notificationsQueue, null, 2)}`);
+          //console.log(`>>> notificationsQueue: ${JSON.stringify(notificationsQueue, null, 2)}`);
           setIsModalOpen(true);
         } else {
+          //console.log(`>>> notificationsQueue (inline): ${JSON.stringify(notificationsQueue, null, 2)}`);
           setIsModalOpen(false);
         }
     }, [notificationsQueue]); // Rerun effect when currentNotifications or mode changes
 
-    // Handle empty state
-    if (fetchPending || (notificationsQueue?.length == 0)) {
-        return <div></div>;
+    if (notificationsQueue?.length == 0) { // no notifications in queue
+      return null;
     }
 
     // Handle error state

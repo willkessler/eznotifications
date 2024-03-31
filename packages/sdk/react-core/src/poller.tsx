@@ -1,11 +1,12 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 import axios from 'axios';
 import type { SDKConfig } from './types';
 import { useTinadSDK } from './context';
 
 export const usePolling = ():void => {
   const { getTinadConfig, processNotificationsData, setFetchPending, setFetchError } = useTinadSDK();
-  const [ backoffFactor, setBackoffFactor ] = useState(1); // Starts with no backoff
+  
+  const backoffFactorRef = useRef(1); // Starts with no backoff
 
   const buildApiUrl = (tinadConfig:SDKConfig) => {
     const apiUrl = new URL(`${tinadConfig.apiBaseUrl}/notifications`);
@@ -24,8 +25,8 @@ export const usePolling = ():void => {
   };
 
   useEffect(() => {
-    const MAX_BACKOFF_FACTOR = 90 * 1000; // 90 seconds
-    const BASE_INTERVAL_TIME = 15000;
+    const MAX_BACKOFF_FACTOR = 128;
+    const BASE_INTERVAL_TIME = 10000;
     let timeoutId: number | undefined = undefined;
     const fetchData = async () => {
       setFetchPending(true);
@@ -39,16 +40,18 @@ export const usePolling = ():void => {
             'X-Tinad-Source': "SDK",
         }});
         processNotificationsData(response.data); // Update context with new data
-        setBackoffFactor(1); // Reset backoff after a successful request
+        backoffFactorRef.current = 1; // Reset backoff after a successful request
         timeoutId = scheduleNextPoll(BASE_INTERVAL_TIME); // Use a base interval of 10 seconds
         setFetchError(null);
       } catch (error:any) {
         setFetchError(error as string);
-        console.error("Polling error:", error);
         // Apply backoff factor (exponential backoff)
-        timeoutId = scheduleNextPoll(BASE_INTERVAL_TIME * backoffFactor);
-        const newBackoffFactor = Math.max(backoffFactor * 2, MAX_BACKOFF_FACTOR); // Double the backoff factor
-        setBackoffFactor(newBackoffFactor); 
+        const nextPollInterval = BASE_INTERVAL_TIME * backoffFactorRef.current;
+        timeoutId = scheduleNextPoll(nextPollInterval);
+        console.log(`We think backoffFactor = ${backoffFactorRef.current}`);
+        const newBackoffFactor = Math.min(backoffFactorRef.current * 2, MAX_BACKOFF_FACTOR); // Double the backoff factor
+        backoffFactorRef.current = newBackoffFactor; // Reset backoff after a successful request
+        console.error("Polling error:", error, `\nBacking off to ${newBackoffFactor}`);
       } finally {
         setFetchPending(false);
       }
