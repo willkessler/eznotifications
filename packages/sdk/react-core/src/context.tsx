@@ -15,7 +15,6 @@ const defaultTinadConfig = {
   userId: 'user-1',
   environment: 'development',
   pageId: '',
-  apiUrlString: '',
 }
 
 interface TinadSDKContextType {
@@ -90,7 +89,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
     const noDateNotifications: SDKNotification[] = [];
     const withDateNotifications: SDKNotification[] = [];
 
-    console.log(`sortAndGroupNotifications got data: ${JSON.stringify(data)}`);
+    //console.log(`sortAndGroupNotifications got data: ${JSON.stringify(data)}`);
     data.forEach((notification: any) => { // 
       // Convert date strings to Date objects
       const sdkNotification: SDKNotification = {
@@ -125,7 +124,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
   };
 
   const processNotificationsData = (data: any[]):void => {
-    console.log(`******* updateNotifications source data: ${JSON.stringify(data,null,2)}`);
+    //console.log(`******* updateNotifications source data: ${JSON.stringify(data,null,2)}`);
     const mappedData = data.map((notification: any) => ({
       ...notification,
       createdAt: new Date(notification.createdAt),
@@ -151,6 +150,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   const storeTinadConfig = (tinadConfig:SDKConfig) => {
     const b64Config = btoa(JSON.stringify(tinadConfig));
+    console.log(`Storing tinadConfig : ${JSON.stringify(tinadConfig)}`);
     localStorage.setItem('tinad', b64Config);
   };
 
@@ -169,10 +169,8 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
     return currentConfig;
   };  
 
-  console.log('+_+_+_+_+_+_+_ TinadSDKCoreProvider (context.tsx) mount. Restoring saved config from local store.');
-
   const updateTinadConfig = (configPartial: Partial<SDKConfig>) => {
-    console.log(`updateTinadConfig: Updating tinad config with: ${JSON.stringify(configPartial,null,2)}`);
+    //console.log(`updateTinadConfig: Updating tinad config with: ${JSON.stringify(configPartial,null,2)}`);
     let currentConfig = getTinadConfig();
     const isChanged = Object.entries(configPartial).some(([key, value]) => {
       if (key in currentConfig) {
@@ -182,12 +180,12 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
       return false;
     });
     if (isChanged) {
-      const partlyUpdatedConfig = { ...currentConfig, ...configPartial };
-      storeTinadConfig(partlyUpdatedConfig);
-      const callStack = new Error(">>>>>>> updateTinadConfig: SDK Function Call Stack");
-      console.log(callStack.stack);
+      const updatedConfig = { ...currentConfig, ...configPartial };
+      storeTinadConfig(updatedConfig);
+      //const callStack = new Error(">>>>>>> updateTinadConfig: SDK Function Call Stack");
+      //console.log(callStack.stack);
     }
-    console.log('No change to Tinad config.');
+    //console.log('No change to Tinad config.');
     return currentConfig;
   };
 
