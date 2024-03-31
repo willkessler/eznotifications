@@ -25,6 +25,7 @@ export const usePolling = ():void => {
 
   useEffect(() => {
     const MAX_BACKOFF_FACTOR = 90 * 1000; // 90 seconds
+    const BASE_INTERVAL_TIME = 15000;
     let timeoutId: number | undefined = undefined;
     const fetchData = async () => {
       setFetchPending(true);
@@ -39,13 +40,13 @@ export const usePolling = ():void => {
         }});
         processNotificationsData(response.data); // Update context with new data
         setBackoffFactor(1); // Reset backoff after a successful request
-        timeoutId = scheduleNextPoll(10000); // Use a base interval of 10 seconds
+        timeoutId = scheduleNextPoll(BASE_INTERVAL_TIME); // Use a base interval of 10 seconds
         setFetchError(null);
       } catch (error:any) {
         setFetchError(error as string);
         console.error("Polling error:", error);
         // Apply backoff factor (exponential backoff)
-        timeoutId = scheduleNextPoll(10000 * backoffFactor);
+        timeoutId = scheduleNextPoll(BASE_INTERVAL_TIME * backoffFactor);
         const newBackoffFactor = Math.max(backoffFactor * 2, MAX_BACKOFF_FACTOR); // Double the backoff factor
         setBackoffFactor(newBackoffFactor); 
       } finally {

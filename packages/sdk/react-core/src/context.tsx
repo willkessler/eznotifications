@@ -141,9 +141,9 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
     // Then apply sorting and grouping function to the filtered data before returning it.
     const sortedGroupedData = sortAndGroupNotifications(filteredData);
 
-    console.log(`******* fetchNotifications mappedData: ${JSON.stringify(mappedData,null,2)}`);
-    console.log(`******* fetchNotifications dismissedNotificationIds: ${JSON.stringify(dismissedNotificationIds,null,2)}`);
-    console.log(`******* fetchNotifications filteredData: ${JSON.stringify(filteredData,null,2)}`);
+//    console.log(`******* fetchNotifications mappedData: ${JSON.stringify(mappedData,null,2)}`);
+//    console.log(`******* fetchNotifications dismissedNotificationIds: ${JSON.stringify(dismissedNotificationIds,null,2)}`);
+//    console.log(`******* fetchNotifications filteredData: ${JSON.stringify(filteredData,null,2)}`);
     console.log(`******* fetchNotifications returning: ${JSON.stringify(sortedGroupedData,null,2)}`);
     addNotificationsToQueue(sortedGroupedData);
 
@@ -161,7 +161,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
       try {
         const previousConfigStr = atob(previousConfigB64);
         currentConfig = JSON.parse(previousConfigStr);
-        console.log(`index.tsx: currentConfig: ${JSON.stringify(currentConfig,null,2)}`);
+        //console.log(`index.tsx: currentConfig: ${JSON.stringify(currentConfig,null,2)}`);
       } catch (e) {
         console.log('Cannot restore config from local storage:', e);
       }
