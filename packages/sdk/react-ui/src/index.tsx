@@ -24,6 +24,15 @@ const DefaultTemplate: React.FC<TinadTemplateProps> = ({ tinadContent, tinadType
     );
 };
 
+const defaultToastProps = {
+  position:"top-center", 
+  autoClose:5000, 
+  hideProgressBar: true, 
+  rtl: false, 
+  theme: "light", 
+  transition: Bounce,
+};
+
 // The "mode" parameter allows clients to choose to use our built in modals or toasts for notifs if they want
 // Possible values are: 'inline', 'modal', 'toast'.
 export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
@@ -31,14 +40,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     template: CustomTemplate = DefaultTemplate,
     mode = 'inline',
     environments = 'Development',
-    toastProps={
-      position:"top-center", 
-      autoClose:5000, 
-      hideProgressBar: true, 
-      rtl: false, 
-      theme: "light", 
-      transition: Bounce,
-    },
+    toastProps=defaultToastProps,
     clientDismissFunction,
 }) => {
     const { getTinadConfig, updateTinadConfig } = useTinadSDK();
@@ -93,22 +95,6 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     }, [updateTinadConfig]);
   
 
-{/*
-                position="bottom-left"
-                className={tinadToastClasses.tinadCustomToast}
-                autoClose={toastProps.autoClose}
-                {toastProps.hideProgressBar && hideProgressBar}
-                newestOnTop={false}
-                closeOnClick
-                rtl={toastProps.rtl}
-                pauseOnFocusLoss={true}
-                draggable
-                pauseOnHover
-                theme={toastProps.theme}
-                transition={toastProps.transition}
-              />
-*/}
-
     useEffect(() => {
         // Check if there are any current notifications and update the modal's open state accordingly
         if (mode === 'toast' && notificationsQueue.length > 0) {
@@ -116,19 +102,35 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
             console.log(`About to show toast on notification:${JSON.stringify(notification,null,2)}`);
             console.log(`Toast active: ${toast.isActive(notification.uuid)}`);
             if (notification && !toast.isActive(notification.uuid)) {
-                setTimeout(() => {
-                    toast.info(<ReactMarkdown>{notification.content}</ReactMarkdown> || '', {
+              let toastFunc:any;
+              switch(notification.notificationType) {
+                case 'info':
+                case 'change':
+                case 'other':
+                  toastFunc = toast.info;
+                  break;
+                case 'alert':
+                case 'call_to_action':
+                  toastFunc = toast.warning;
+                  break;
+                case 'outage':
+                  toastFunc = toast.error;
+                  break;
+              }
+              
+              setTimeout(() => {
+                    toastFunc(<ReactMarkdown>{notification.content}</ReactMarkdown> || '', {
                         toastId: notification.uuid,
-                        icon: customToastIcon(IconSvgs[notification.notificationType].svg),
-                        position: toastProps.position,
-                        autoClose: toastProps.autoClose,
-                        hideProgressBar: toastProps.hideProgressBar,
+                      // icon: customToastIcon(IconSvgs[notification.notificationType].svg),
+                        position: (toastProps.position ? toastProps.position : defaultToastProps.position),
+                        autoClose: (toastProps.autoClose ? toastProps.autoClose : defaultToastProps.autoClose),
+                        hideProgressBar: (toastProps.hideProgressBar ? toastProps.hideProgressBar : defaultToastProps.hideProgressBar),
                         closeOnClick: true,
                         pauseOnHover: true,
                         draggable: true,
                         progress: undefined,
-                        theme: toastProps.theme,
-                        transition: Bounce,
+                        theme: (toastProps.theme ? toastProps.theme : defaultToastProps.theme),
+                        transition: (toastProps.transition ? toastProps.transition : defaultToastProps.transition),
                         onClose: () => { dismissNotification() },
                     }) }, 50);
             }
