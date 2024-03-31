@@ -176,7 +176,7 @@ const NotificationsModal = () => {
                 }));
             } else if ((name === 'endDate') &&
                 (value && notificationData.startDate &&
-                    value <= notificationData.startDate)) {
+                    value < notificationData.startDate)) {
                 setNotificationData(prevData => ({
                     ...prevData as EZNotification,
                     startDate: null,

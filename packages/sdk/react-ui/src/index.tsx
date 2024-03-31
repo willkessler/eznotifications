@@ -1,4 +1,6 @@
 import { ReactElement, useState, useEffect, ReactNode } from 'react';
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import toastify css
 import { useTinadSDK, useSDKData } from '@this-is-not-a-drill/react-core';
 import type { TinadTemplateProps, TinadNotificationsComponentProps } from './types';
 export { TinadTemplateProps } from './types';
@@ -7,8 +9,6 @@ import _ from 'lodash';
 import ReactMarkdown from 'react-markdown';
 import Modal from 'react-modal';
 import modalClasses from './react-modal.module.css';
-import { ToastContainer, toast, Bounce } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Import toastify css
 import tinadToastClasses from './react-toastify.module.css';
 import IconSvgs from './iconSvgs.module';
 
@@ -31,6 +31,14 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     template: CustomTemplate = DefaultTemplate,
     mode = 'inline',
     environments = 'Development',
+    toastProps={
+      position:"top-center", 
+      autoClose:5000, 
+      hideProgressBar: true, 
+      rtl: false, 
+      theme: "light", 
+      transition: Bounce,
+    },
     clientDismissFunction,
 }) => {
     const { getTinadConfig, updateTinadConfig } = useTinadSDK();
@@ -85,16 +93,22 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     }, [updateTinadConfig]);
   
 
-/*
-  useEffect(() => {
-    console.log(`>>>> Checking sdkNotifications: ${JSON.stringify(sdkNotifications,null,2)}`);
-    if (sdkNotifications && sdkNotifications.length > 0) {
-      console.log('We need to add notifs');
-      addNewNotifications();
-    }
-  }, [sdkNotifications]);
-  */
-  
+{/*
+                position="bottom-left"
+                className={tinadToastClasses.tinadCustomToast}
+                autoClose={toastProps.autoClose}
+                {toastProps.hideProgressBar && hideProgressBar}
+                newestOnTop={false}
+                closeOnClick
+                rtl={toastProps.rtl}
+                pauseOnFocusLoss={true}
+                draggable
+                pauseOnHover
+                theme={toastProps.theme}
+                transition={toastProps.transition}
+              />
+*/}
+
     useEffect(() => {
         // Check if there are any current notifications and update the modal's open state accordingly
         if (mode === 'toast' && notificationsQueue.length > 0) {
@@ -106,14 +120,14 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
                     toast.info(<ReactMarkdown>{notification.content}</ReactMarkdown> || '', {
                         toastId: notification.uuid,
                         icon: customToastIcon(IconSvgs[notification.notificationType].svg),
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: true,
+                        position: toastProps.position,
+                        autoClose: toastProps.autoClose,
+                        hideProgressBar: toastProps.hideProgressBar,
                         closeOnClick: true,
                         pauseOnHover: true,
                         draggable: true,
                         progress: undefined,
-                        theme: "light",
+                        theme: toastProps.theme,
                         transition: Bounce,
                         onClose: () => { dismissNotification() },
                     }) }, 50);
@@ -164,20 +178,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
             );
         case 'toast':
             return (
-              <ToastContainer
-                position="top-center"
-                className={tinadToastClasses.tinadCustomToast}
-                autoClose={5000}
-                hideProgressBar
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-                transition={Bounce}
-              />
+              <ToastContainer />
             );
         case 'inline':
         default:
