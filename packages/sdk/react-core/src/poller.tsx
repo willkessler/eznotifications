@@ -19,7 +19,10 @@ export const usePolling = ():void => {
       apiUrl.searchParams.append('pageId', tinadConfig.pageId ?? '');
     }
     if (tinadConfig.environments) {
-      apiUrl.searchParams.append('environments', tinadConfig.environments ?? 'development');
+      apiUrl.searchParams.append('environments', tinadConfig.environments.join(',') ?? 'development');
+    }
+    if (tinadConfig.domains) {
+      apiUrl.searchParams.append('domains', tinadConfig.domains.join(',') ?? '');
     }
     
     // apiUrl.searchParams.append('time', new Date().getTime().toString());

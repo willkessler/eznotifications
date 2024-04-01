@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useUser } from "@clerk/clerk-react";
 import { DateTime } from 'luxon';
-import { Anchor, Group, Pill, Space, Text, Tooltip } from '@mantine/core';
+import { Anchor, Group, Pill, Space, Stack, Text, Title, Tooltip } from '@mantine/core';
 import toast, { Toaster } from 'react-hot-toast';
 import { IconSpeakerphone,
          IconInfoCircle, 
@@ -33,6 +33,7 @@ const defaultContextValue: NotificationsContextType = {
     formatNotificationConditionsBlock: (notification: EZNotification) => <></>,
     formatNotificationControlIcons: (notification: EZNotification, showTooltip: boolean) => <></>,
     formatCreateInfo : (notification: EZNotification) => <></>,
+    formatUpdateInfo : (notification: EZNotification) => <></>,
     formatNotificationType: (prefix: string, notificationType: NotificationType, iconSize: number) => <></>,
 
     notifications: [],
@@ -157,14 +158,19 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             notification.notificationType as NotificationType : 'info';
         return (
             <>
-                Page: {(notification.pageId ? 
+              <Text size="sm" span>Page:</Text> {(notification.pageId ? 
                     <Text size="sm" style={{ margin:'2px', padding:'2px 4px 2px 4px', border: '1px dotted #aaa' }} span className={classes.pageId}>{notification.pageId}</Text> : '<not set>')}<br />
-                Envs: 
-                <Pill style={{ backgroundColor: '#6aa', color: 'navy', margin:'4px' }} radius="md">
-                {notification.environments != null ? 
-                    (notification.environments.length ? notification.environments.join(', ') : 'Any') : 'Any'}
+                <Text size="sm" span>Environments:</Text>
+                <Pill style={{ backgroundColor: '#6aa', color: 'navy', margin:'4px' }} radius="md" title={'Environments served: ' + notification.environments?.join(',')}>
+                  {notification.environments != null ? 
+                   (notification.environments.length ? notification.environments.join(', ') : 'All') : 'All'}
                 </Pill><br/>
-                {formatNotificationType('Type:',notificationType, 24)}
+                <Text size="sm" span>Domains:</Text>
+                <Pill style={{ backgroundColor: '#6aa', color: 'navy', margin:'4px' }} radius="md" title={'Domains served: ' + notification.domains?.join(',')}>
+                  {notification.domains != null ? 
+                   (notification.domains.length ? notification.domains.join(', ') : 'All') : 'All'}
+                </Pill><br/>
+                {formatNotificationType('Type:',notificationType, 20)}
             </>
         );
     }
@@ -174,8 +180,18 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         const humanFormattedDate = jsDate.toLocaleDateString() + ' ' + jsDate.toLocaleTimeString();
         return (
             <>
-                Created: {humanFormattedDate} by {notificationData.creator?.primaryEmail}
+              <b>Created On:</b> {humanFormattedDate}, by {notificationData.creator?.primaryEmail}
             </>
+        );
+    };
+
+    const formatUpdateInfo = (notificationData: EZNotification) => {
+        const jsDate = new Date(notificationData.updatedAt);
+        const humanFormattedDate = jsDate.toLocaleDateString() + ' ' + jsDate.toLocaleTimeString();
+        return (
+          <>
+            <b>Last Updated:</b> {humanFormattedDate}, by {notificationData.creator?.primaryEmail}
+          </>
         );
     };
 
@@ -198,10 +214,10 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
 
         return (
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                {prefix}
-                <Tooltip openDelay={500} label={title} position="bottom" withArrow>
-            {React.createElement(icon, { style: { color:bgColor } , size: iconSize} ) }
-                </Tooltip>
+              <Text size="sm">{prefix}&nbsp;</Text>
+              <Tooltip openDelay={500} label={title} position="bottom" withArrow>
+                {React.createElement(icon, { style: { color:bgColor } , size: iconSize} ) }
+              </Tooltip>
             </div>
         );
     }
@@ -590,6 +606,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
                     startDate: notificationData.startDate ? formatDateForAPISubmission(notificationData.startDate) : null,
                     endDate: notificationData.endDate ? formatDateForAPISubmission(notificationData.endDate) : null,
                     environments: [...notificationData.environments],
+                    domains: [...notificationData.domains],
                     live: notificationData.live,
                     mustBeDismissed: notificationData.mustBeDismissed,
                     notificationType: (notificationData.notificationType ? notificationData.notificationType : 'info'),
@@ -598,7 +615,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
                 },
                 clerkCreatorId: notificationData.clerkCreatorId,
             };
-            console.log('Posting object before stringificiation:', postingObject);
+            console.log('Posting object before stringification:', postingObject);
             const postingObjectString = JSON.stringify(postingObject);
             console.log(`submitNotification with body: ${JSON.stringify(postingObject)}`);
             const response = await fetch(apiUrl, {
@@ -624,6 +641,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         formatNotificationConditionsBlock,
         formatNotificationControlIcons,
         formatCreateInfo,
+        formatUpdateInfo,
         formatNotificationType,
 
         notifications,

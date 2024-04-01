@@ -19,6 +19,7 @@ export class CreateNotifications1708544099795 implements MigrationInterface {
             "notification_type" text,
             "notification_type_other" text,
             "environments" _text,
+            "domains" _text,
             "creator_uuid" uuid,
             "organization_uuid" uuid,
             CONSTRAINT "PK_notifications_uuid" PRIMARY KEY ("uuid")

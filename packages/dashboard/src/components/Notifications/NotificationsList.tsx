@@ -224,21 +224,6 @@ const NotificationsList = () => {
         return (
           <Skeleton visible={notificationsLoading} height="100vh">
             <Grid gutter={{ base: 5, xs: 20, md: 20, xl: 20 }}>
-                {/*
-                <Grid.Col span={1} className={classes.notificationsListHeader}>
-                <span>Active?</span>
-                </Grid.Col>
-                <Grid.Col span={6} className={classes.notificationsListHeader}>
-                <span style={{color:'#5c5'}}>What</span> <span style={{color:'#888'}}>Will It Tell Your User?</span>
-                </Grid.Col>
-                <Grid.Col span={3} className={classes.notificationsListHeader}>
-                <span style={{color:'#5c5'}}>When</span> <span style={{color:'#888'}}>Will It Display?</span>
-                </Grid.Col>
-                <Grid.Col span={2} className={classes.notificationsListHeader}>
-                <span style={{color:'#5c5'}}>Where</span> <span style={{color:'#888'}}>Will It Display?</span>
-                </Grid.Col>
-                 */}
-
               {notifications.map((notification) => (
                   <Fragment key={notification.uuid}>
                       <Grid.Col span={1}>
@@ -252,7 +237,7 @@ const NotificationsList = () => {
                       />
                     </Grid.Col>
 
-                    <Grid.Col span={6}>
+                    <Grid.Col span={5}>
                       <div className={classes.notificationsListContent}>
 
                         <Spoiler maxHeight={50} showLabel="Show more" hideLabel="Hide" style={{paddingBottom:'10px'}}>
@@ -265,11 +250,11 @@ const NotificationsList = () => {
                       </div>
                     </Grid.Col>
 
-                      <Grid.Col span={3} className={classes.notificationsListDates}>
+                      <Grid.Col span={2} className={classes.notificationsListDates}>
                         {formatNotificationDatesBlock(notification)}
                      </Grid.Col>
 
-                      <Grid.Col span={2} className={classes.notificationsListConditions}>
+                      <Grid.Col span={4} className={classes.notificationsListConditions}>
                         {formatNotificationConditionsBlock(notification)}
                       </Grid.Col>
                   </Fragment>

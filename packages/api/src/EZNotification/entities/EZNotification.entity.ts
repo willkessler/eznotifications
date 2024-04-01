@@ -49,6 +49,9 @@ export class EZNotification {
   @Column( { type: 'text', name: 'environments', array: true, nullable: true })
   environments: string[];
     
+  @Column( { type: 'text', name: 'domains', array: true, nullable: true })
+  domains: string[];
+
   @OneToMany(() => EndUsersServed, endUsersServed => endUsersServed.notification)
   endUsersServed: EndUsersServed[];
     

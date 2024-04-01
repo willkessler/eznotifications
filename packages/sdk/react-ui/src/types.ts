@@ -12,7 +12,6 @@ export interface TinadNotificationsComponentProps {
   pageId?: string;
   template?: React.ComponentType<TinadTemplateProps>;
   mode?: string;
-  environments? : string;
   toastProps? : { position: ToastPosition, autoClose: number, hideProgressBar: boolean, rtl: boolean, theme: string, transition: ToastTransition };
   clientDismissFunction?: () => void;
 }

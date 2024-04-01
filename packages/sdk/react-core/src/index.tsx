@@ -4,9 +4,9 @@ import type { SDKProviderProps, SDKConfig, SDKNotification, SDKDataReturn } from
 import { TinadSDKCoreProvider, useTinadSDK } from './context';
 import { usePolling } from './poller';
 
-const TinadSDKProvider:React.FC<SDKProviderProps> = ({ children }) => {
+const TinadSDKProvider:React.FC<SDKProviderProps> = ({ children, domains, environments }) => {
   return (
-    <TinadSDKCoreProvider>
+    <TinadSDKCoreProvider domains={domains} environments={environments}>
       {children}
     </TinadSDKCoreProvider>
   );

@@ -62,13 +62,13 @@ const NotificationsHeader:React.FC = () => {
         <Grid.Col span={1}>
           <span>Active?</span>
         </Grid.Col>
-        <Grid.Col span={6}>
+        <Grid.Col span={5}>
           <span style={{color:'#5c5'}}>What</span> <span style={{color:'#888'}}>Will It Tell Your User?</span>
         </Grid.Col>
-        <Grid.Col span={3}>
+        <Grid.Col span={2}>
           <span style={{color:'#5c5'}}>When</span> <span style={{color:'#888'}}>Will It Display?</span>
         </Grid.Col>
-        <Grid.Col span={2}>
+        <Grid.Col span={4}>
           <span style={{color:'#5c5'}}>Where</span> <span style={{color:'#888'}}>Will It Display?</span>
         </Grid.Col>
       </Grid>

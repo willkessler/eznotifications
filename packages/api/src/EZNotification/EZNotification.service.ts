@@ -22,6 +22,7 @@ interface QueryParamProps {
     clerkUserId? : string,
     pageId? : string,
     environments?: string[],
+    domains?: string[],
     organization?: Organization,
 }
 
@@ -228,6 +229,7 @@ export class EZNotificationService {
                         'notification.notificationType',
                         'notification.notificationTypeOther',
                         'notification.environments',
+                        'notification.domains',
                         'creator.primaryEmail',
                     ])
                     .where('notification.deleted = :deleted', { deleted: false })
@@ -243,6 +245,7 @@ export class EZNotificationService {
             const userId = queryParams.userId;
             const pageId = queryParams.pageId;
             const environments = queryParams.environments;
+            const domains = queryParams.domains;
             const organization = queryParams.organization;
             const alreadyViewedNotifications:string[] = [];
             const servedNotifications:EZNotification[] = [];
@@ -270,6 +273,7 @@ export class EZNotificationService {
                          )`)
                 .andWhere(`(notification.pageId = :pageId OR notification.pageId IS NULL)`, { pageId })
                 .andWhere(`(notification.environments && :environments OR notification.environments = \'{}\')`, { environments })
+                .andWhere(`(notification.domains && :domains OR notification.domains = \'{}\')`, { domains })
                 .getMany();
 
             // Persist the served notifications as EndUsersServed

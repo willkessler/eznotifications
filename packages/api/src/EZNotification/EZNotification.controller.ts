@@ -165,12 +165,14 @@ export class EZNotificationController {
         @Res() response: Response,
         @Query('userId') userId: string,
         @Query('environments') environments: string,
+        @Query('domains') domains: string,
         @Query('pageId') pageId: string,
         @Query('clerkUserId') clerkUserId: string,
     ) {
         const environmentsArray = environments ? environments.split(',') : [];
+        const domainsArray = domains ? domains.split(',') : [];
         const organization = request.organization;
-        const query = { userId, environments: environmentsArray, pageId, clerkUserId, organization };
+        const query = { userId, environments: environmentsArray, domains:domainsArray, pageId, clerkUserId, organization };
         response.set('X-Tinad-Poll-Interval', process.env.REACT_CLIENT_POLL_INTERVAL);
         const notifications = await this.EZNotificationService.findAllNotifications(query);
         response.json(notifications);

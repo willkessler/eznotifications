@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Anchor, Button, Checkbox, Group, Modal, MultiSelect, Paper, Select, Textarea, Text, TextInput, Title } from '@mantine/core';
+import { Anchor, Button, Checkbox, Group, Modal, MultiSelect, Paper, Select, Stack, Textarea, Text, TextInput, Title } from '@mantine/core';
 import { DateTime } from 'luxon';
 import { DateTimePicker, DateValue } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
@@ -14,6 +14,7 @@ import Expando from '../../lib/Expando';
 import TimezonePicker from '../../lib/TimezonePicker';
 import { NotificationTypeSelector } from '../../lib/NotificationTypeSelector';
 import { useNotifications } from './NotificationsContext';
+import { useSettings } from '../Account/SettingsContext';
 import { useTimezone } from '../../lib/TimezoneContext';
 import { useDateFormatters } from '../../lib/DateFormattersProvider';
 
@@ -28,10 +29,13 @@ const NotificationsModal = () => {
             closeModal, 
             submitNotification,
             formatCreateInfo,
+            formatUpdateInfo,
           } = useNotifications();
     const { formatDisplayTime,
             formatDisplayDate,
           } = useDateFormatters();
+
+    const { permittedDomains } = useSettings();
 
     const editing = (modalInitialData != null);
     const { user } = useUser();
@@ -74,6 +78,14 @@ const NotificationsModal = () => {
         setNotificationData(prevData => ({
             ...prevData as EZNotification,
             environments: values
+        }));
+    };
+
+    const handleDomainsChange = (values: string[]) => {
+        //console.log('domains change:', values);
+        setNotificationData(prevData => ({
+            ...prevData as EZNotification,
+            domains: values
         }));
     };
 
@@ -280,6 +292,7 @@ const NotificationsModal = () => {
             const formattedStartDate = (modalInitialData.startDate == null ? null : new Date(modalInitialData.startDate));
             const formattedEndDate   = (modalInitialData.endDate == null ? null : new Date(modalInitialData.endDate));
             const initialEnvironmentsArray = modalInitialData.environments;
+            const initialDomainsArray = modalInitialData.domains;
             //console.log('initialEnvironmentsArray:', initialEnvironmentsArray);
 
             //console.log('pre-iso', formattedStartDate, formattedStartTime);
@@ -291,6 +304,7 @@ const NotificationsModal = () => {
                 startDate: formattedStartDate,
                 endDate:   formattedEndDate,
                 environments: initialEnvironmentsArray || [],
+                domains: initialDomainsArray || [],
             });
             const modalInitialContents = modalInitialData.content.trim();
             setSubmissionDisabled(modalInitialContents.length == 0);
@@ -312,7 +326,9 @@ const NotificationsModal = () => {
         const pgLabel = (<CustomLabelWithHint text="Page ID (optional)"
                          hintText="You can use any value you like here. When you pass a page ID value (or substring) in your SDK or API calls we will match against this value." />);
         const envLabel = (<CustomLabelWithHint text="Environments"
-                          hintText="Depending on which environment you pass in via the SDK or an API call, we will serve to that environment if you specify it here." />);
+                          hintText="Depending on which environment(s) you pass in via the SDK's Provider (or an API call), we will serve to those environment(s) when you specify them here." />);
+        const domainsLabel = (<CustomLabelWithHint text="Domains"
+                          hintText="Depending on which domain(s) you pass in via the SDK's Provider (or an API call), we will serve to those domain(s) when you specify them here." />);
         return ( 
             <div>
                 <Modal
@@ -409,30 +425,43 @@ const NotificationsModal = () => {
             placeholder="Enter page ID"
             description="Enter an ID to limit this notification to a specific page or section of your application."
                 />
-                <Group gap="xl" align="start" style={{marginTop:'20px'}}>
-            <NotificationTypeSelector
-            value={notificationData?.notificationType as NotificationType}
-            notificationTypeOther={(notificationData?.notificationTypeOther ? notificationData?.notificationTypeOther : null)}
-            onSelectionChange={handleNotificationTypeChange}
-            onCustomTypeChange={handleCustomNotificationTypeChange}
+            <Group gap="xl" align="start" style={{marginTop:'20px'}}>
+              <NotificationTypeSelector
+                value={notificationData?.notificationType as NotificationType}
+                notificationTypeOther={(notificationData?.notificationTypeOther ? notificationData?.notificationTypeOther : null)}
+                onSelectionChange={handleNotificationTypeChange}
+                onCustomTypeChange={handleCustomNotificationTypeChange}
+              />
+              <Stack>
+                <MultiSelect
+                  name="environments"
+                  value={Array.isArray(notificationData?.environments) ? notificationData?.environments : []}
+                  pointer
+                  label={envLabel}
+                  description="Choose the environments to serve this notification to."
+                  placeholder="Pick values"
+                  data={['Development', 'Staging', 'UAT', 'Production']}
+                  comboboxProps={{ shadow: 'md' }}
+                  onChange={(value) => handleEnvironmentsChange(value)}
                 />
                 <MultiSelect
-            name="environments"
-            value={Array.isArray(notificationData?.environments) ? notificationData?.environments : []}
-            pointer
-            label={envLabel}
-            description="Choose the environments to serve this notification to."
-            placeholder="Pick values"
-            data={['Development', 'Staging', 'UAT', 'Production']}
-            comboboxProps={{ shadow: 'md' }}
-            onChange={(value) => handleEnvironmentsChange(value)}
+                  name="domains"
+                  value={Array.isArray(notificationData?.domains) ? notificationData?.domains : []}
+                  pointer
+                  label={domainsLabel}
+                  description="Choose the domains to serve this notification to (if none specified, will serve to all domains)."
+                  placeholder="Pick values"
+                  data={permittedDomains.split("\n")}
+                  comboboxProps={{ shadow: 'md' }}
+                  onChange={(value) => handleDomainsChange(value)}
                 />
-            <Checkbox 
-            checked={notificationData?.mustBeDismissed ? notificationData.mustBeDismissed : mustBeDismissed}
+              </Stack>
+            </Group>
+            <Checkbox style={{ marginTop: '15px'}}
+              checked={notificationData?.mustBeDismissed ? notificationData.mustBeDismissed : mustBeDismissed}
               onChange={handleMustBeDismissed} 
               label="Notification must be dismissed by end users"
             />
-                </Group>
                 </Paper>
                 </Expando>
                 </Paper>
@@ -443,9 +472,14 @@ const NotificationsModal = () => {
             </Anchor>
                 </div>
                 {editing && (
-                    <Text size="xs" style={{marginTop:'10px',paddingTop:'10px',marginLeft:'10px',borderTop:'1px solid #888'}}> 
+                  <Group style={{marginTop:'10px',paddingTop:'10px',marginLeft:'10px',borderTop:'1px solid #888'}}>
+                    <Text size="xs">
                         {formatCreateInfo(notificationData)}
                     </Text>
+                    <Text size="xs">
+                        {formatUpdateInfo(notificationData)}
+                    </Text>
+                  </Group>
                 )}
             </form>
                 </Modal>

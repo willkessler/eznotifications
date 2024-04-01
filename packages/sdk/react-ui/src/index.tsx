@@ -39,7 +39,6 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     pageId,
     template: CustomTemplate = DefaultTemplate,
     mode = 'inline',
-    environments = 'Development',
     toastProps=defaultToastProps,
     clientDismissFunction,
 }) => {
@@ -84,9 +83,6 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
       const newConfig = getTinadConfig();
       if (pageId) {
         newConfig['pageId'] = pageId;
-      }
-      if (environments) {
-        newConfig['environments'] = environments;
       }
       if (Object.keys(newConfig).length > 0) {
         //console.log(`_+_+_+_+_+_+_+ New page navigated to, updating config with ${JSON.stringify(newConfig,null,2)}`);

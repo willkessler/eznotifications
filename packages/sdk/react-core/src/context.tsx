@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useState, useContext, useEffect, useCallback } from 'react';
+import React, { createContext, ReactNode, useState, useContext, useEffect, useCallback, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { SDKConfig, SDKNotification } from './types';
 import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison
@@ -13,7 +13,8 @@ const defaultTinadConfig = {
   apiKey: '',
   apiBaseUrl: 'https://api.this-is-not-a-drill.com',
   userId: 'user-1',
-  environment: 'development',
+  environments: [],
+  domains: [],
   pageId: '',
 }
 
@@ -47,15 +48,24 @@ interface DismissedNotifications {
   [userId: string]: string[]; // Mapping of userId to an array of dismissed notification UUIDs
 }
 
+interface AdditionalConfigType {
+  domains?: string[];
+  environments?: string[];
+}
+
 
 // Define a provider component. This will allow clients to persist their API key and other important configurations.
-export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-
+export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: string, environments?: string }> = ({ children, domains, environments }) => {
   const [ notificationsQueue, setNotificationsQueue ] = useState<SDKNotification[]>([]);
   const [ dismissedNotificationIds, setDismissedNotificationIds ] = useState<DismissedNotifications>({});
   const [ fetchPending, setFetchPending ] = useState<boolean>(false);
   const [ fetchError, setFetchError ] = useState<string | null>(null);
+  const additionalConfig = useRef<AdditionalConfigType>({ domains: [], environments: [] });
   
+  additionalConfig.current.environments = environments?.split(',').map(item => item.trim());
+  additionalConfig.current.domains = domains?.split(',').map(item => item.trim());;
+  console.log(`Passed in additional config: ${JSON.stringify(additionalConfig.current)}`);
+
   // Function to determine the latest date between startDate and endDate
   const getLatestDate = (startDate?: Date, endDate?: Date): Date => {
     if (!startDate) return endDate!;
@@ -181,6 +191,8 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode }> = ({ childr
     });
     if (isChanged) {
       const updatedConfig = { ...currentConfig, ...configPartial };
+      updatedConfig.environments = _.cloneDeep(additionalConfig.current.environments);
+      updatedConfig.domains =  _.cloneDeep(additionalConfig.current.domains);
       storeTinadConfig(updatedConfig);
       //const callStack = new Error(">>>>>>> updateTinadConfig: SDK Function Call Stack");
       //console.log(callStack.stack);
