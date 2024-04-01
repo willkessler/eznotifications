@@ -58,12 +58,12 @@ const APIKeysPanel = () => {
   return (
       <div className={classes.apiKeyPanel} >
         <Toaster />
-        <Title style={{borderBottom:'1px solid #555', paddingTop:'15px', marginTop:'5px'}} order={3}>Environments</Title>
-        <Text style={{marginTop:'10px'}} size="lg">Development API Keys</Text>
+        <Title style={{borderBottom:'1px solid #555', marginTop:'15px', marginBottom:'5px'}} order={3}>API Keys</Title>
+        <Text style={{marginTop:'10px'}} size="lg">Development</Text>
         <APIKeysTable />
         <Button onClick={createDevelopmentApiKey} size="xs" style={{marginTop:'10px'}}>Generate new development key</Button>
 
-        <Text size="lg" style={{marginTop:'30px'}}>Production API Key</Text>
+        <Text size="lg" style={{marginTop:'30px'}}>Production Key</Text>
 
         <div className={classes.apiKeyRow}>
           <Text size="sm" className={classes.apiProdKeyDisplay}>
@@ -73,7 +73,7 @@ const APIKeysPanel = () => {
           <CopyButton value={productionAPIKeyValue ? productionAPIKeyValue : ''} timeout={2000}>
             {({ copied, copy }) => (
               <Tooltip label={copied ? 'Copied Production API Key!' : 'Copy'} withArrow position="right">
-                <ActionIcon color={copied ? '#f33' : 'gray'} variant="subtle" onClick={copy}>
+                <ActionIcon color={copied ? '#f33' : 'gray'} variant="subtle" onClick={copy} style={{color:'#3f3'}}>
                   {copied ? (
                     <IconCheck style={{ width: rem(16) }} />
                   ) : (
@@ -85,7 +85,7 @@ const APIKeysPanel = () => {
           </CopyButton>
         </div>
 
-        <Button onClick={createProdApiKey} size="xs" style={{marginTop:'10px', backgroundColor:'#f00'}}>Generate New Production API Key</Button>
+        <Button onClick={createProdApiKey} size="xs" style={{marginTop:'10px', color:'#020', backgroundColor:'#3f3'}}>Generate New Production API Key</Button>
         <Checkbox style={{marginTop:'10px', maxWidth:'300px'}} 
                   checked={agreeToRegenerateProdKey} 
                   onChange={(event) => setAgreeToRegenerateProdKey(event.currentTarget.checked) }

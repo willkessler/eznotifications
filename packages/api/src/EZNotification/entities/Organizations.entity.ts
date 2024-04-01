@@ -43,9 +43,17 @@ export class Organization {
     @OneToMany(() => ApiKey, apiKey => apiKey.organization)
     apiKeys: ApiKey[];
 
+    @Column({
+      type: 'text',
+      array: true,
+      nullable: true,
+      default: () => `'{"Development","Staging","UAT","Production"}'`,
+    })
+    environments: string[];
+
     @OneToMany(() => PermittedDomains, (permittedDomains) => permittedDomains.organization)
     permittedDomains: PermittedDomains[];    
-
+  
     @OneToMany(() => EndUser, EndUser => EndUser.organization)
     endUsers: EndUser[];
 }

@@ -30,6 +30,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
     const { createOrganization, setActive } = useOrganizationList();
     const [ organizationName, setOrganizationName ] = useState('My Team');
     const [ permittedDomains, setPermittedDomains ] = useState('stackblitz.io\ncodesandbox.io\n');
+    const [ environments, setEnvironments ] = useState('Development\nStaging\nUAT\nProduction');
     const [ isSetupComplete, setIsSetupComplete ] = useState(false);
     const [ createdLocalUser, setCreatedLocalUser ] = useState(false);
     const [ createdLocalOrg, setCreatedLocalOrg ] = useState(false);
@@ -56,9 +57,10 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                     }
                 } else {
                     const data = await response.json();
-                    console.log('Fetched stored settings, now storing in context.');
+                    console.log(`Fetched stored settings ${JSON.stringify(data,null,2)}, now storing in context.`);
                     const orgProps = data as OrganizationDataProps;
                     setPermittedDomains(orgProps.permittedDomains);
+                    setEnvironments(orgProps.environments);
                     return orgProps;
                 }
             } catch (error) {
@@ -72,7 +74,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
         if (user) {
             const clerkCreatorId = user.id;
             const apiUrl = `${apiBaseUrl}/organization/configure`;
-            console.log('in saveSettings, permittedDomains:', permittedDomains);
+            console.log('in saveSettings, permittedDomains:', permittedDomains, 'environments: ' , environments);
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
@@ -83,6 +85,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                         clerkCreatorId: clerkCreatorId,
                         clerkOrganizationId: clerkOrganizationId,
                         permittedDomains: permittedDomains,
+                        environments: environments,
                     })
                 });
                 if (!response.ok) {
@@ -339,22 +342,24 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
     return (
       <SettingsContext.Provider 
         value={{ 
-            isSetupComplete,
-            setIsSetupComplete,
-            createdLocalUser,
-            setCreatedLocalUser,
-            createdLocalOrg,
-            setCreatedLocalOrg,
-            getSettings,
-            saveSettings,
-            createLocalUser,
-            createLocalOrganization,
-            addUserToOurOrg,
-            setupClerkOrganizationAndMirrorRecords,
-            organizationName,
-            setOrganizationName,
-            permittedDomains,
-            setPermittedDomains,
+          isSetupComplete,
+          setIsSetupComplete,
+          createdLocalUser,
+          setCreatedLocalUser,
+          createdLocalOrg,
+          setCreatedLocalOrg,
+          getSettings,
+          saveSettings,
+          createLocalUser,
+          createLocalOrganization,
+          addUserToOurOrg,
+          setupClerkOrganizationAndMirrorRecords,
+          organizationName,
+          setOrganizationName,
+          permittedDomains,
+          setPermittedDomains,
+          environments,
+          setEnvironments,
         }}>
             {children}
         </SettingsContext.Provider>

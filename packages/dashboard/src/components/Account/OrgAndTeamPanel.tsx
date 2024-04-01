@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Anchor, Button, Text, TextInput } from '@mantine/core';
+import { Anchor, Button, Card, Text, TextInput } from '@mantine/core';
 import ManageTeam from './ManageTeam';
 import classes from './css/Settings.module.css';
 import { useUser, useOrganization, useOrganizationList, OrganizationList } from "@clerk/clerk-react";
@@ -61,8 +61,9 @@ const TeamPanel = () => {
   const controlTitle = teamNameInputDisplay ? 'Save' : 'Edit';
 
   return (
-      <div className={classes.team} >
-          <Text size="xl">Your Team</Text>
+    <div className={classes.team} >
+      <Card>
+        <Text size="xl">Your Team</Text>
         {!teamExists && (
           <>
             <Text size="sm">Edit (and save) your team name, below, and then you will be able to invite members to your team.</Text>
@@ -96,6 +97,8 @@ const TeamPanel = () => {
             )}
           </>
         )}
+
+      </Card>
 
         {!isAdmin && teamExists && (
           <>

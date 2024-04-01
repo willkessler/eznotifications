@@ -11,6 +11,7 @@ export class CreateOrganizations1708543936412 implements MigrationInterface {
             "clerk_creator_id" varchar(255),
             "clerk_organization_id" varchar(255),
             "name" varchar(1000),
+            "environments" _text,
             "pricing_model_uuid" uuid,
             CONSTRAINT "PK_organizations" PRIMARY KEY ("uuid")
         );

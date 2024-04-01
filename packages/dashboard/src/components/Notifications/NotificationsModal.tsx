@@ -35,7 +35,7 @@ const NotificationsModal = () => {
             formatDisplayDate,
           } = useDateFormatters();
 
-    const { permittedDomains } = useSettings();
+    const { environments, permittedDomains } = useSettings();
 
     const editing = (modalInitialData != null);
     const { user } = useUser();
@@ -432,7 +432,7 @@ const NotificationsModal = () => {
                 onSelectionChange={handleNotificationTypeChange}
                 onCustomTypeChange={handleCustomNotificationTypeChange}
               />
-              <Stack>
+              <Stack style={{maxWidth:'450px'}}>
                 <MultiSelect
                   name="environments"
                   value={Array.isArray(notificationData?.environments) ? notificationData?.environments : []}
@@ -440,7 +440,7 @@ const NotificationsModal = () => {
                   label={envLabel}
                   description="Choose the environments to serve this notification to."
                   placeholder="Pick values"
-                  data={['Development', 'Staging', 'UAT', 'Production']}
+                  data={environments.split('\n')}
                   comboboxProps={{ shadow: 'md' }}
                   onChange={(value) => handleEnvironmentsChange(value)}
                 />

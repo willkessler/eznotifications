@@ -32,6 +32,7 @@ interface OrganizationDataProps {
     clerkCreatorId: string,
     clerkOrganizationId: string,
     permittedDomains: string,
+    environments: string,
 }
 
 @Injectable()
@@ -662,6 +663,7 @@ export class EZNotificationService {
             clerkCreatorId:      organization.clerkCreatorId,
             clerkOrganizationId: organization.clerkOrganizationId,
             permittedDomains:    permittedDomainsString,
+            environments:        organization.environments.join('\n'),
         };
         console.log('orgConfig:', JSON.stringify(orgConfig,null,2));
         return orgConfig;
@@ -678,6 +680,7 @@ export class EZNotificationService {
         const organization = userOrganization[0].organization;
         const userUuid = userOrganization[0].user.uuid;
         organization.name = orgConfiguration.organizationName;
+        organization.environments = orgConfiguration.environments.split('\n');
 
         console.log(`Saving organization config for organization: ` +
             `${JSON.stringify(organization,null,2)}, ` +

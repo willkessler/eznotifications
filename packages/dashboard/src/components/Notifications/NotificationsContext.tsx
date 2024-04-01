@@ -158,8 +158,8 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             notification.notificationType as NotificationType : 'info';
         return (
             <>
-              <Text size="sm" span>Page:</Text> {(notification.pageId ? 
-                    <Text size="sm" style={{ margin:'2px', padding:'2px 4px 2px 4px', border: '1px dotted #aaa' }} span className={classes.pageId}>{notification.pageId}</Text> : '<not set>')}<br />
+              <Text size="sm" span>Page:</Text>
+              <Text size="sm" style={{ margin:'2px', padding:'2px 4px 2px 4px', border: '1px dotted #aaa' }} span className={classes.pageId}>{notification.pageId ? notification.pageId : 'All pages'}</Text><br />
                 <Text size="sm" span>Environments:</Text>
                 <Pill style={{ backgroundColor: '#6aa', color: 'navy', margin:'4px' }} radius="md" title={'Environments served: ' + notification.environments?.join(',')}>
                   {notification.environments != null ? 

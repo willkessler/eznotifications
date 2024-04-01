@@ -85,13 +85,12 @@ const InvitationsManager = () => {
                radius="md" 
                withBorder 
                p="sm">
-          <Stack align="flex-start" justify="flex-start" gap="xs">
+          <Group align="center" justify="flex-start" gap="xs">
             <Text>{invitation.emailAddress}</Text>
             <Text size="xs">(invited to be a {invitation.role === 'org:member' ? 'member' : 'admin'})</Text>
             <Anchor size="xs" component="button" type="button" onClick={() => ResendInvitation(invitation)}>Resend Invitation</Anchor>
             <Anchor size="xs" component="button" type="button" onClick={() => RevokeInvitation(invitation)}>Revoke Invitation</Anchor>
-
-              </Stack>
+              </Group>
         </Paper>
       ))}
       <form onSubmit={sendInvitation}>

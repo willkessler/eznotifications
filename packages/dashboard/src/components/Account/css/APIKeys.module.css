@@ -12,10 +12,10 @@
 
 .apiProdKeyDisplay {
   padding:5px;
-  border: 1px dotted red;
+  border: 1px dotted #3f3;
   width:30%;
   font-weight:bold;
-  color:#f33;
+  color:#3f3;
 }
 
 .apiTemporaryKeyDisplay {
