@@ -44,7 +44,7 @@ const InvitationsManager = () => {
     try {
       await organization?.inviteMember({ emailAddress, role });
     } catch (error) {
-      console.log(`Cannot send invitation to ${emailAddress}, they are already invited.`);
+      console.log(`Cannot send invitation to ${emailAddress}. Error: ${error}.`);
     }
     await invitations?.revalidate?.();
     setEmailAddress('');
