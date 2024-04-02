@@ -6,6 +6,7 @@ import { UnauthorizedExceptionFilter } from './auth/unauthorized-exception.filte
 import * as dotenv from 'dotenv';
 import * as express from 'express';
 import * as cookieParser from 'cookie-parser';
+import * as heapdump from 'heapdump';
 
 async function bootstrap() {
     dotenv.config();
@@ -78,5 +79,13 @@ async function bootstrap() {
     console.log(`API listening on port ${port}`);
 
     await app.listen(port);
+
+  if (process.env.ENABLE_HEAPDUMP) {
+    heapdump.writeSnapshot((err, filename) => {
+      if (err) console.error(err);
+      else console.log('Heap dump written to', filename);
+    });
+  }
+
 }
 bootstrap();
