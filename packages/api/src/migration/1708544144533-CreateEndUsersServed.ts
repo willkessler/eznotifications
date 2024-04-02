@@ -19,7 +19,7 @@ export class CreateEndUsersServed1708544144533 implements MigrationInterface {
             );
         `);
 
-        await queryRunner.query(`CREATE INDEX "idx_end_users_served_by_access_time" ON public.end_users_served USING btree ("end_user_uuid", "access_time");`);
+        await queryRunner.query(`CREATE INDEX "idx_end_users_served_by_first_access_time" ON public.end_users_served USING btree ("end_user_uuid", "first_access_time");`);
 
         // Foreign key to the notifications table
         await queryRunner.query(`ALTER TABLE public.end_users_served ADD CONSTRAINT "FK_end_users_served_to_notifications" FOREIGN KEY ("notification_uuid") REFERENCES public.notifications("uuid") ON DELETE CASCADE;`);
@@ -35,7 +35,7 @@ export class CreateEndUsersServed1708544144533 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE public.end_users_served DROP CONSTRAINT IF EXISTS "FK_end_users_served_to_end_users";`);
 
         // Drop index
-        await queryRunner.query(`DROP INDEX IF EXISTS public."idx_end_users_served_by_access_time";`);
+        await queryRunner.query(`DROP INDEX IF EXISTS public."idx_end_users_served_by_first_access_time";`);
 
         // Then drop the table
         await queryRunner.query(`DROP TABLE IF EXISTS public.end_users_served;`);
