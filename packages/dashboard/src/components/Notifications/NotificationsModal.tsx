@@ -96,9 +96,9 @@ const NotificationsModal = () => {
         setSubmissionDisabled(currentTextTrimmed.length == 0);
     };
 
-    const handleDateTimeClick = (value: DateValue, name:string) => {
+    const handleDateTimeClick = (name:string) => {
         if (name === 'startDate') {
-            const currentValue = notificationData.startDate;
+            const currentValue = notificationData?.startDate;
             if (currentValue === null) {
                 setNotificationData(prevData => ({
                     ...prevData as EZNotification,
@@ -106,7 +106,7 @@ const NotificationsModal = () => {
                 }));
             }
         } else {
-            const currentValue = notificationData.endDate;
+            const currentValue = notificationData?.endDate;
             if (currentValue === null) {
                 const now = DateTime.now();
                 const oneHourFromNowJs = now.plus({ hours: 1}).toJSDate();
@@ -119,8 +119,8 @@ const NotificationsModal = () => {
     };
 
     const handleTimeframeShortcut = (shortcutName:string) => {
-        let now = null, later;
         const currentTime = DateTime.now();
+        let now:DateTime = currentTime, later:DateTime;
         switch (shortcutName) {
             case 'next_hour':
                 now = DateTime.now();
@@ -360,7 +360,7 @@ const NotificationsModal = () => {
             label={dtLabel}
             value={notificationData?.startDate}
             onChange={(value) => handleDateTimeChange(value, 'startDate')}
-            onClick={(value) => handleDateTimeClick(value, 'startDate')}
+            onClick={(value) => handleDateTimeClick('startDate')}
             onFocus={handleFocus}
             style={{marginTop:'10px',  minWidth:'90%', maxWidth:'200px'}}
                 />
@@ -371,7 +371,7 @@ const NotificationsModal = () => {
             value={notificationData?.endDate}
             onChange={(value) => handleDateTimeChange(value, 'endDate')}
             onFocus={handleFocus}
-            onClick={(value) => handleDateTimeClick(value, 'endDate')}
+            onClick={(value) => handleDateTimeClick('endDate')}
             style={{marginTop:'10px', minWidth:'90%', maxWidth:'200px'}}
                 />
                 <Group justify="flex-start" gap="xs">

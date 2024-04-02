@@ -8,7 +8,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { useAPIKeys } from './APIKeysContext';
 import { useDateFormatters } from '../../lib/DateFormattersProvider';
 import { useConfig } from '../../lib/ConfigContext';
-import sdk from '@stackblitz/sdk';
+import sdk, { ProjectFiles } from '@stackblitz/sdk';
 
 import LogoComponent from '../Layout/LogoComponent';
 import Navbar from '../Layout/Navbar';
@@ -17,13 +17,18 @@ import introClasses from './css/IntroPages.module.css';
 import logoClasses from '../Layout/css/MainLayout.module.css';
 import apiKeyClasses from './css/APIKeys.module.css';
 
+interface FilesObject {
+  files: {
+    [key:string] : string;
+  }
+};
+
 const PlaygroundComponent = () => {
   const { isSignedIn,user } = useUser();
   const { createAPIKey, fetchAPIKeys, playgroundAPIKeys } = useAPIKeys();
   const { pastTense, formatDisplayDate, formatDisplayTime } = useDateFormatters();
-  const { tempKeyPresent, setTempKeyPresent } = useState(false);
   const { apiBaseUrl, getBearerHeader } = useConfig();
-  const [ repoFiles, setRepoFiles ] = useState<Object | null>(null);
+  const [ repoFiles, setRepoFiles ] = useState<ProjectFiles>({});
 
   if (!isSignedIn) {
     return <Navigate to="/login" replace />;
@@ -42,11 +47,15 @@ const PlaygroundComponent = () => {
   }
 
   const fetchExampleRepo = async () => {
-    let filesObj = {};
+    let filesObj:FilesObject = {
+      files: {}
+    };
     if (user) {
 
       // Check if a valid API key exists. If not generate one.
-      if (!temporaryAPIKeyValue || pastTense(playgroundAPIKeys[0]?.expiresAt.toISOString())) {
+      const expiresAt = playgroundAPIKeys[0]?.expiresAt?.toISOString();
+      const isPast = (expiresAt ? pastTense(expiresAt) : false);
+      if (!temporaryAPIKeyValue || isPast) {
         // If no valid key, generate a new one
         await createTemporaryKey();
       }
@@ -101,15 +110,17 @@ export const envConfig = {
     setRepoFiles(filesObj.files);
   }
 
+/*
   const openStackblitz = async () => {
     await sdk.openGithubProject('willkessler/eznotifications', {
       openFile:'examples/react_sdk/src/App.tsx',
       newWindow: true,
       height:'90vh',
       showSidebar: true,
-      view: 'both'
+      view: 'both' as UIViewOption,
     });
   }
+*/
 
   const gotoPlayground = async () => {
     // Now, we assume `temporaryAPIKeyValue` holds a valid API key (either existing or newly generated)
@@ -121,17 +132,17 @@ export const envConfig = {
       console.error('Failed to copy API key to clipboard', err);
     }
 
-    // Open the playground
+    // Open the playground in codesandbox: doesn't work
     //https://codesandbox.io/p/devbox/github/willkessler/this-is-not-a-drill-examples?file=%2FREADME.md
-//    const codeSandboxUrl = 
-//          'https://codesandbox.io/p/sandbox/github/willkessler/this-is-not-a-drill-examples/main?file=README.md';
+    //    const codeSandboxUrl = 
+    //          'https://codesandbox.io/p/sandbox/github/willkessler/this-is-not-a-drill-examples/main?file=README.md';
     //const stackblitzUrl = 
     // 'https://stackblitz.com/~/github.com/willkessler/this-is-not-a-drill-examples?apiKey=abc123';
     
     //window.open(stackblitzUrl, '_blank');
     //sdk.embedGithubProject('stackblitz', 'willkessler/this-is-not-a-drill-examples', {
 
-    // this works
+    // this does work
 
     /* sdk.openGithubProject('willkessler/this-is-not-a-drill-examples', {
      *   newWindow: true,
@@ -145,41 +156,43 @@ export const envConfig = {
     //console.log(`Files contains: ${JSON.stringify(repoFiles,null,2)}`);    
     //console.log(`tsconfig.json: ${repoFiles['tsconfig.json']}`);
 
-    sdk.openProject({
-      files: repoFiles,
-      newWindow: true,
-      openFile: 'src/components/App.tsx',
-      template: 'create-react-app',
-      view: 'both',
-      showSidebar: true,
-      theme: 'dark',
-      dependencies: {
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "react-router-dom": "^6.22.3",
-        "@tanstack/react-query": "^5.28.4",
-        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-        "@mantine/core": "^7.6.1",
-        "@mantine/hooks": "^7.6.1",
-        "@tabler/icons-react": "^3.1.0",
-        "@testing-library/jest-dom": "^5.17.0",
-        "@testing-library/react": "^13.4.0",
-        "@testing-library/user-event": "^13.5.0",
-        "@this-is-not-a-drill/react-core": "latest",
-        "@this-is-not-a-drill/react-ui": "latest",
-        "@types/jest": "^27.5.2",
-        "@types/node": "^16.18.83",
-        "@types/react": "^18.2.58",
-        "@types/react-dom": "^18.2.19",
-        "dompurify": "^3.0.9",
-        "lodash": "^4.17.21",
-        "marked": "^12.0.1",
-      }
-    });
-
-
-
-    
+    sdk.openProject(
+      {
+        title: 'This Is Not A Drill! Demo App',
+        description: 'A simple app demonstrating how to use the TINAD React SDK.',
+        files: repoFiles,
+        template: 'create-react-app',
+        dependencies: {
+          "react": "^18.2.0",
+          "react-dom": "^18.2.0",
+          "react-router-dom": "^6.22.3",
+          "react-toastify": "^10.0.5",
+          "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+          "@mantine/core": "^7.6.1",
+          "@mantine/hooks": "^7.6.1",
+          "@tabler/icons-react": "^3.1.0",
+          "@testing-library/jest-dom": "^5.17.0",
+          "@testing-library/react": "^13.4.0",
+          "@testing-library/user-event": "^13.5.0",
+          "@this-is-not-a-drill/react-core": "latest",
+          "@this-is-not-a-drill/react-ui": "latest",
+          "@types/jest": "^27.5.2",
+          "@types/node": "^16.18.83",
+          "@types/react": "^18.2.58",
+          "@types/react-dom": "^18.2.19",
+          "dompurify": "^3.0.9",
+          "lodash": "^4.17.21",
+          "marked": "^12.0.1"
+        }
+      },
+      {
+        newWindow: true,
+        openFile: 'src/components/App.tsx',
+        showSidebar: true,
+        theme: 'dark',
+        view: 'default',
+      },
+    );    
   }  
 
   useEffect(() => {

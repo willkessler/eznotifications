@@ -12,6 +12,7 @@ export default interface EZNotification {
     pageId:                string | null;
     notificationType:      string;
     notificationTypeOther: string | null;
+    domains:               string[];
     environments:          string[];
     creator?: {
         uuid:              string;

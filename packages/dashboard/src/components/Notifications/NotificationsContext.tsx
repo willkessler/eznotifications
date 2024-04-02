@@ -186,13 +186,13 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     };
 
     const formatUpdateInfo = (notificationData: EZNotification) => {
-        const jsDate = new Date(notificationData.updatedAt);
-        const humanFormattedDate = jsDate.toLocaleDateString() + ' ' + jsDate.toLocaleTimeString();
-        return (
-          <>
-            <b>Last Updated:</b> {humanFormattedDate}, by {notificationData.creator?.primaryEmail}
-          </>
-        );
+      const jsDate = notificationData.updatedAt ? new Date(notificationData.updatedAt) : null;
+      const humanFormattedDate = jsDate ? jsDate.toLocaleDateString() + ' ' + jsDate.toLocaleTimeString() : 'N/A';
+      return (
+        <>
+          <b>Last Updated:</b> {humanFormattedDate}, by {notificationData.creator?.primaryEmail}
+        </>
+      );
     };
 
     const formatNotificationType = (prefix: string, notificationType: NotificationType , iconSize: number) => {

@@ -13,6 +13,7 @@ export interface NotificationsContextType {
     formatNotificationConditionsBlock: (notification: EZNotification) => React.ReactNode;
     formatNotificationControlIcons: (notification: EZNotification, showTooltip: boolean) => React.ReactNode;
     formatCreateInfo : (notification: EZNotification) => React.ReactNode;
+    formatUpdateInfo : (notification: EZNotification) => React.ReactNode;
     formatNotificationType: (prefix: string, notificationType: NotificationType, iconSize: number) => React.ReactNode;
 
     notifications: EZNotification[];

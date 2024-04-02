@@ -54,6 +54,7 @@ const NotificationsList = () => {
             notificationsLoading,
             toastNotify,
             formatCreateInfo,
+            formatUpdateInfo,
             formatNotificationDatesBlock,
             formatNotificationConditionsBlock,
             formatNotificationControlIcons,

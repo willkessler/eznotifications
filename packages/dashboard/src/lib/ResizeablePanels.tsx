@@ -4,17 +4,17 @@ import classes from './css/ResizablePanels.module.css'; // Assuming you are usin
 interface PanelProps {
     url?: string;
     content?: string;
-    minSize: number;
-    maxSize: number;
+    minWidth: number;
+    maxWidth: number;
 }
 
 interface ResizablePanelsProps {
-  top: PanelProps;
-  left: PanelProps;
-  right: PanelProps;
+  topPanel: PanelProps;
+  leftPanel: PanelProps;
+  rightPanel: PanelProps;
 }
 
-const ResizablePanels: React.FC<ResizablePanelsProps> = ({ topPanelProps, leftPanelProps, rightPanelProps }) => {
+const ResizablePanels: React.FC<ResizablePanelsProps> = ({ topPanel, leftPanel, rightPanel }) => {
   const [dividerPosition, setDividerPosition] = useState<number>(500);
   const [ isDragging, setIsDragging ] = useState<boolean>(false); // track if currently dragging
 
@@ -50,22 +50,22 @@ const ResizablePanels: React.FC<ResizablePanelsProps> = ({ topPanelProps, leftPa
 
   return (
     <div className={classes.container}>
-      <div className={classes.topPanel}>{topPanelProps.content}</div>
+      <div className={classes.topPanel}>{topPanel.content}</div>
       <div className={classes.panelsContainer}>
         <iframe
-          src={leftPanelProps.url}
+          src={leftPanel.url}
           style={{
-            minWidth:(leftPanelProps.minWidth ? leftPanelProps.minWidth : 500),
-            maxWidth:leftPanelProps.maxWidth | 800,
+            minWidth:(leftPanel.minWidth ? leftPanel.minWidth : 500),
+            maxWidth:leftPanel.maxWidth | 800,
             width: `${dividerPosition}px`
           }}
           className={classes.panel}
           title="Left Panel" />
         <div className={classes.divider} onMouseDown={onMouseDown}></div>
         <iframe
-          src={rightPanelProps.url}
+          src={rightPanel.url}
           style={{
-            minWidth: rightPanelProps.minWidth | 100,
+            minWidth: rightPanel.minWidth | 100,
             width: `calc(100% - ${dividerPosition}px - 5px)`
           }}
           className={classes.panel}

@@ -1,9 +1,10 @@
 export interface OrganizationDataProps {
-    organizationName: string,
-    clerkEmail?: string,
-    clerkCreatorId: string,
-    clerkOrganizationId: string,
-    permittedDomains: string,
+    organizationName: string;
+    clerkEmail?: string;
+    clerkCreatorId: string;
+    clerkOrganizationId: string;
+    permittedDomains: string;
+    environments: string;
 }
 
 export interface CallbackOutcomes {
@@ -18,9 +19,11 @@ export interface SettingsContextType {
     setIsSetupComplete: (setupComplete: boolean) => void;
     organizationName: string;
     permittedDomains: string;
+    environments: string;
     getSettings: () => Promise<OrganizationDataProps | null>;
     saveSettings: (clerkOrganizationId: string) => Promise<boolean>;
     setPermittedDomains: (domains: string) => void;
+    setEnvironments: (environments: string) => void;
     createLocalUser:  (clerkUserId: string) => Promise<any>;
     createLocalOrganization: (organization: OrganizationDataProps) => Promise<boolean>;
     addUserToOurOrg:  (clerkOrganizationId: string) => Promise<boolean>;

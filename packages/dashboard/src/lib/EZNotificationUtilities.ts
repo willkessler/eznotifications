@@ -15,10 +15,12 @@ export const createBlankEZNotification = (): EZNotification => {
         notificationType: 'info',
         notificationTypeOther: null,
         environments: ['Development'],
+        domains: ['example.com'],
 
         creator: null,
         organization:null,
         editing: false,
+        mustBeDismissed: true,
         clerkCreatorId: null,
         clerkUserId: null,
     };

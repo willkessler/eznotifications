@@ -7,10 +7,12 @@ const SettingsContext = createContext<SettingsContextType>({
     isSetupComplete: false,
     setIsSetupComplete: (setupComplete: boolean) => {},
     organizationName: 'My Team',
-    permittedDomains: 'stackblitz.io\ncodesandbox.io\n',
+    permittedDomains: '',
+    environments: '',
     getSettings: async () => Promise.resolve(null),
     saveSettings: async (clerkOrganizationId: string) => Promise.resolve(true),
     setPermittedDomains: (domains:string) => {},
+    setEnvironments: (environments:string) => {},
     createLocalUser: async (clerkUserId: string) => Promise.resolve(true),
     createLocalOrganization: async (organizationData: OrganizationDataProps) => Promise.resolve(true),
     addUserToOurOrg: async (clerkOrganizationId: string) => Promise.resolve(true),
@@ -231,6 +233,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                         clerkCreatorId: user.id, // clerkId of the owner of the new org.
                         clerkOrganizationId: clerkOrgId,
                         permittedDomains: permittedDomains,
+                        environments: environments,
                     });
                     return true;
                 } catch (error) {
