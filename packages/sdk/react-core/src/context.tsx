@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useState, useContext, useEffect, useCallback, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import type { SDKConfig, SDKNotification } from './types';
+import type { SDKConfig, SDKNotification, RestartPollingFunction } from './types';
 import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison
 import _ from 'lodash';
 
@@ -29,6 +29,7 @@ interface TinadSDKContextType {
   setFetchError: (newValue: string | null) => void;
   dismissNotificationCore: (notificationUuid:string) => Promise<boolean>;
   resetAllViewsCore: () => Promise<boolean>;
+  savePollerRestart: (restartPolling: RestartPollingFunction) => void;
 }  
 
 const TinadSDKContext = createContext<TinadSDKContextType>({
@@ -42,6 +43,8 @@ const TinadSDKContext = createContext<TinadSDKContextType>({
   setFetchError: (newValue: string | null) => {},
   dismissNotificationCore: (notificationUuid: string) => Promise.resolve(true),
   resetAllViewsCore: () => Promise.resolve(true),
+  savePollerRestart: (restartPolling: RestartPollingFunction) => {},
+
 });
 
 interface DismissedNotifications {
@@ -53,18 +56,22 @@ interface AdditionalConfigType {
   environments?: string[];
 }
 
-
 // Define a provider component. This will allow clients to persist their API key and other important configurations.
 export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: string, environments?: string }> = ({ children, domains, environments }) => {
   const [ notificationsQueue, setNotificationsQueue ] = useState<SDKNotification[]>([]);
-  const [ dismissedNotificationIds, setDismissedNotificationIds ] = useState<DismissedNotifications>({});
   const [ fetchPending, setFetchPending ] = useState<boolean>(false);
   const [ fetchError, setFetchError ] = useState<string | null>(null);
   const additionalConfig = useRef<AdditionalConfigType>({ domains: [], environments: [] });
+  const pollerRestartFunction = useRef<RestartPollingFunction | null>(null);
+  const dismissedNotificationIds = useRef<DismissedNotifications>({});
   
   additionalConfig.current.environments = environments?.split(',').map(item => item.trim());
   additionalConfig.current.domains = domains?.split(',').map(item => item.trim());;
   console.log(`Passed in additional config: ${JSON.stringify(additionalConfig.current)}`);
+
+  const savePollerRestart = (restartPolling: RestartPollingFunction) => {
+    pollerRestartFunction.current = restartPolling;
+  };
 
   // Function to determine the latest date between startDate and endDate
   const getLatestDate = (startDate?: Date, endDate?: Date): Date => {
@@ -146,12 +153,12 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
 
     const filteredData = mappedData.filter(
       (notification: any) => 
-        dismissedNotificationIds[userId] == undefined || !dismissedNotificationIds[userId].includes(notification.uuid) );
+        dismissedNotificationIds.current[userId] == undefined || !dismissedNotificationIds.current[userId].includes(notification.uuid) );
     // Then apply sorting and grouping function to the filtered data before returning it.
     const sortedGroupedData = sortAndGroupNotifications(filteredData);
 
     //    console.log(`******* fetchNotifications mappedData: ${JSON.stringify(mappedData,null,2)}`);
-    //    console.log(`******* fetchNotifications dismissedNotificationIds: ${JSON.stringify(dismissedNotificationIds,null,2)}`);
+    //    console.log(`******* fetchNotifications dismissedNotificationIds: ${JSON.stringify(dismissedNotificationIds.current,null,2)}`);
     //    console.log(`******* fetchNotifications filteredData: ${JSON.stringify(filteredData,null,2)}`);
     //    console.log(`******* fetchNotifications returning: ${JSON.stringify(sortedGroupedData,null,2)}`);
     addNotificationsToQueue(sortedGroupedData);
@@ -234,26 +241,12 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
       (notification: SDKNotification) => 
         notification.uuid !== notificationUuid));
 
-    setDismissedNotificationIds(currentState => {
-      // Clone the current state to avoid mutating it directly
-      const updatedState = { ...currentState };
+    const currentIds = dismissedNotificationIds.current[userId] || [];
+    if (!currentIds.includes(notificationUuid)) {
+      dismissedNotificationIds.current[userId] = [...currentIds, notificationUuid];
+    }
 
-      // Check if the userId exists
-      if (updatedState[userId]) {
-        // Check if the UUID is already in the user's array to avoid duplicates
-        if (!updatedState[userId].includes(notificationUuid)) {
-          // User exists and UUID is new, add it to the user's array
-          updatedState[userId] = [...updatedState[userId], notificationUuid];
-        }
-      } else {
-        // User does not exist, create a new array with the new UUID
-        updatedState[userId] = [notificationUuid];
-      }
-
-      return updatedState; // Return the updated state
-    });
-
-    return Promise.resolve(true);
+    return true;
   };
 
   const resetAllViewsCore = async (): Promise<boolean> => {
@@ -278,7 +271,13 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
       throw new Error('Network response was not ok');
     }
 
-    setDismissedNotificationIds({}); // need to be sure we can serve the ones that were previously dismissed 
+    dismissedNotificationIds.current = {}; // need to be sure we can serve the ones that were previously dismissed 
+
+    // Make poller restart right away so user sees immediate effect of resetting views. Otherwise they may think
+    // the service is slow because they reset views right in the middle of the polling cycle.
+    if (pollerRestartFunction.current) {
+      pollerRestartFunction.current();
+    }
 
     return Promise.resolve(true);
   };
@@ -295,7 +294,8 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
       fetchError, 
       setFetchError,
       dismissNotificationCore,
-      resetAllViewsCore
+      resetAllViewsCore,
+      savePollerRestart
     }}>
       {children}
     </TinadSDKContext.Provider>

@@ -18,9 +18,12 @@ export { TinadSDKProvider, useTinadSDK };
 
 export const useSDKData = (): SDKDataReturn => {
   console.log('This Is Not A Drill (TINAD): Core fetch running now.');
-  const { getTinadConfig, updateTinadConfig, notificationsQueue, fetchPending, fetchError, dismissNotificationCore, resetAllViewsCore } = useTinadSDK();
-  const poller = usePolling();
 
+  const { getTinadConfig, updateTinadConfig, notificationsQueue, fetchPending, fetchError, dismissNotificationCore, resetAllViewsCore, savePollerRestart } = useTinadSDK();
+
+  const { restartPolling } = usePolling();
+  savePollerRestart(restartPolling); // save the poller restart fn in the SDK for use by resetViewsAllCore
+  
   const returnObj: SDKDataReturn = {
     data: notificationsQueue,
     fetchPending: fetchPending,
