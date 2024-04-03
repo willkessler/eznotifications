@@ -169,7 +169,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
                   onRequestClose={closeModal}
                   contentLabel="Tinad modal"
                 >
-                  {<ReactMarkdown>content</ReactMarkdown>}
+                  {<ReactMarkdown>{content}</ReactMarkdown>}
                   <button onClick={closeModal}>OK</button>
                 </Modal>
               </>

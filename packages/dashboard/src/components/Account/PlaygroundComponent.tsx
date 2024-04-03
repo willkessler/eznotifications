@@ -93,11 +93,13 @@ const PlaygroundComponent = () => {
     // is used to create "environment variables" on the fly.
     const envFileContents = `
 export const envConfig = {
-  TINAD_API_BASE_URL: 'http://localhost:8080',
-  TINAD_ENDUSER_ID: 'user12345',
+  TINAD_API_BASE_URL: import.meta.env.VITE_API_TARGET,
+  TINAD_ENDUSER_ID: 'user-1',
   TINAD_IMAGE_LOCATION: 'https://raw.githubusercontent.com/willkessler/this-is-not-a-drill-examples/main/public/',
   TINAD_API_KEY: '${temporaryAPIKeyValue}',
   TINAD_IS_DEMO_SITE: false,
+  TINAD_DEMOPANEL_URL: 'https://demo.this-is-not-a-drill.com',
+  TINAD_DASHBOARDPANEL_URL: 'https://app.this-is-not-a-drill.com"',
 };
 `;
 

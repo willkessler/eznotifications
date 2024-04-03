@@ -27,7 +27,6 @@
 }
 
 .authComponents {
-  flex-grow: 1; /* Allow this section to fill available space */
   text-align: left; /* Align SignIn/SignUp components to the left */
 }
 
