@@ -1,10 +1,10 @@
-import React, { createContext, ReactNode, useState, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { createContext, ReactNode, useState, useContext, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import type { SDKConfig, SDKNotification, RestartPollingFunction } from './types';
 import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison
 import _ from 'lodash';
-import { usePollerInstance } from './usePollerInstance';
+import Poller  from './poller';
 
 // Function to generate a UUID
 const generateUniqueId = (): string  => {
@@ -24,8 +24,6 @@ interface TinadSDKContextType {
   getTinadConfig: () => SDKConfig;
   updateTinadConfig: (configPartial: Partial<SDKConfig>) => void;
   notificationsQueue: SDKNotification[];
-  fetchData: () => Promise<boolean>;
-  processData: (data: any[]) => void;
   fetchPending: boolean;
   fetchError: string | null;
   dismissNotificationCore: (notificationUuid:string) => Promise<boolean>;
@@ -36,8 +34,6 @@ const TinadSDKContext = createContext<TinadSDKContextType>({
   getTinadConfig: () => defaultTinadConfig,
   updateTinadConfig: (configPartial: Partial<SDKConfig>) => {},
   notificationsQueue: [],
-  fetchData: () => { return Promise.resolve(true) },
-  processData: (data: any[]) => {},
   fetchPending: false,
   fetchError: null,
   dismissNotificationCore: (notificationUuid: string) => Promise.resolve(true),
@@ -59,16 +55,16 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
   const [ fetchPending, setFetchPending ] = useState<boolean>(false);
   const [ fetchError, setFetchError ] = useState<string | null>(null);
   const additionalConfig = useRef<AdditionalConfigType>({ domains: [], environments: [] });
-  const pollerRestartFunction = useRef<RestartPollingFunction | null>(null);
+  const poller = useRef<Poller | null>(null);
+  const INITIAL_POLL_INTERVAL = 5000;
   const dismissedNotificationIds = useRef<DismissedNotifications>({});
-  const pollInterval = 5000;
-  const maxRetries = 5;
   
   additionalConfig.current.environments = environments?.split(',').map(item => item.trim());
   additionalConfig.current.domains = domains?.split(',').map(item => item.trim());;
   console.log(`Passed in additional config: ${JSON.stringify(additionalConfig.current)}`);
 
-  const buildApiUrl = (tinadConfig:SDKConfig) => {
+  const buildApiUrl = ():string => {
+    const tinadConfig = getTinadConfig();
     const apiUrl = new URL(`${tinadConfig.apiBaseUrl}/notifications`);
     apiUrl.searchParams.append('userId', tinadConfig.userId);
     if (tinadConfig.pageId) {
@@ -87,7 +83,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     return newApiUrlString;
   };
 
-  const fetchData = async () => {
+  const fetchNotifications = async (): Promise<boolean> => {
     setFetchPending(true);
     setFetchError(null);
     try {
@@ -95,7 +91,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
       console.log(`fetchData running.`);
       const tinadConfig = getTinadConfig();
       const nowish = new Date().getTime();
-      const apiUrl = buildApiUrl(tinadConfig) + `t=${nowish}`;;
+      const apiUrl = buildApiUrl() + `&t=${nowish}`;;
       const response = await axios.get(apiUrl, {
         headers: {
           'Authorization': "Bearer " + tinadConfig.apiKey,
@@ -107,6 +103,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
         console.log(`TINAD server is telling us the polling time should be: ${pollIntervalSeconds}`);
       }
       setFetchError(null);
+      processNotifications(response.data as unknown as any[]);
     } catch (error:any) {
       setFetchError(error as string);
       return Promise.resolve(false);
@@ -182,14 +179,18 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     return sortedNotifications;
   };
 
-  const processData = (data: any[]):void => {
+  const processNotifications = (data: any[]):void => {
     //console.log(`******* updateNotifications source data: ${JSON.stringify(data,null,2)}`);
+    console.log('Got to map step');
     const mappedData = data.map((notification: any) => ({
       ...notification,
       createdAt: new Date(notification.createdAt),
       startDate: notification.startDate ? new Date(notification.startDate) : undefined,
       endDate: notification.endDate ? new Date(notification.endDate) : undefined,
     }));
+    console.log('comopleted map step');
+    //console.log(`******* processNotifications mappedData: ${JSON.stringify(mappedData,null,2)}`);
+
     const tinadConfig = getTinadConfig();
     const userId = tinadConfig.userId;
 
@@ -199,10 +200,9 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     // Then apply sorting and grouping function to the filtered data before returning it.
     const sortedGroupedData = sortAndGroupNotifications(filteredData);
 
-    //    console.log(`******* fetchNotifications mappedData: ${JSON.stringify(mappedData,null,2)}`);
-    //    console.log(`******* fetchNotifications dismissedNotificationIds: ${JSON.stringify(dismissedNotificationIds.current,null,2)}`);
-    //    console.log(`******* fetchNotifications filteredData: ${JSON.stringify(filteredData,null,2)}`);
-    //    console.log(`******* fetchNotifications returning: ${JSON.stringify(sortedGroupedData,null,2)}`);
+    //console.log(`******* processNotifications dismissedNotificationIds: ${JSON.stringify(dismissedNotificationIds.current,null,2)}`);
+    //console.log(`******* processNotifications filteredData: ${JSON.stringify(filteredData,null,2)}`);
+    //console.log(`******* processNotifications returning: ${JSON.stringify(sortedGroupedData,null,2)}`);
     addNotificationsToQueue(sortedGroupedData);
 
   };
@@ -317,35 +317,28 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
 
     // Make poller restart right away so user sees immediate effect of resetting views. Otherwise they may think
     // the service is slow because they reset views right in the middle of the polling cycle.
-    if (pollerRestartFunction.current) {
-      pollerRestartFunction.current();
+    if (poller.current) {
+      poller.current.restartPolling();
     }
 
     return Promise.resolve(true);
   };
 
-  const pollerInstance = usePollerInstance({
-    fetchData,
-    processData,
-    pollInterval,
-    maxRetries
-  });
-
-  const contextValue = useMemo(
-    () => ({
-      getTinadConfig, 
-      updateTinadConfig, 
-      notificationsQueue, 
-      isPolling: pollerInstance ? pollerInstance.isPolling : false, // Add null check
-      fetchData,
-      processData,
-      fetchPending,
-      fetchError, 
-      dismissNotificationCore,
-      resetAllViewsCore,
-    }),
-    [notificationsQueue, pollerInstance]
-  );
+  useEffect(() => {
+    console.log('Context useEffect.');
+    // This call creates the poller AND it kicks off interval polling.
+    poller.current = Poller.getInstance(fetchNotifications, INITIAL_POLL_INTERVAL);
+  }, []);
+  
+  const contextValue = {
+    getTinadConfig, 
+    updateTinadConfig, 
+    notificationsQueue, 
+    fetchPending,
+    fetchError, 
+    dismissNotificationCore,
+    resetAllViewsCore,
+  };
 
   return (
     <TinadSDKContext.Provider value={contextValue}>

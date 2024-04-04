@@ -2,7 +2,6 @@ import { ReactNode, useState, useEffect } from 'react';
 
 import type { SDKProviderProps, SDKConfig, SDKNotification, SDKDataReturn } from './types';
 import { TinadSDKCoreProvider, useTinadSDK } from './context';
-import { usePoller } from './poller';
 
 const TinadSDKProvider:React.FC<SDKProviderProps> = ({ children, domains, environments }) => {
   return (
