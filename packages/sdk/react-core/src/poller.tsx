@@ -14,6 +14,7 @@ export const usePolling = (): UsePollingReturnType => {
   const timeoutIdRef = useRef<number | undefined>(undefined);
   const debounceTimeoutIdRef = useRef<number | undefined>(undefined);
   const restartAttempted = useRef<boolean>(false);
+  const pending = useRef<boolean>(false);
 
   const MAX_BACKOFF_FACTOR = 128;
   const DEBOUNCE_PAUSE_DELAY = 1 * 1000; // stop polling only after 30 secs of no focus
@@ -39,10 +40,17 @@ export const usePolling = (): UsePollingReturnType => {
   };
 
   const fetchData = async () => {
+    if (pending.current) {
+      console.log('already fetching, not executing fetchData again.');
+      return;
+    }
+
     setFetchPending(true);
+    pending.current = true;
     try {
       // Dynamically get the latest SDK configuration before each poll
       if (!pollingPaused.current) { // don't poll while browser tab not focused
+        console.log(`fetchData running, tidRef.current=${timeoutIdRef.current}`);
         const tinadConfig = getTinadConfig();
         const nowish = new Date().getTime();
         const apiUrl = buildApiUrl(tinadConfig) + `t=${nowish}`;;
@@ -59,7 +67,7 @@ export const usePolling = (): UsePollingReturnType => {
         }
         processNotificationsData(response.data); // Update context with new data
         backoffFactorRef.current = 1; // Reset backoff after a successful request
-        scheduleNextPoll(baseIntervalTime.current * 1000); // Use a base interval of 10 seconds
+        //scheduleNextPoll(baseIntervalTime.current * 1000); // Use a base interval of 10 seconds
         setFetchError(null);
       }
     } catch (error:any) {
@@ -73,6 +81,7 @@ export const usePolling = (): UsePollingReturnType => {
       console.error("Polling error:", error, `\nBacking off to ${newBackoffFactor}`);
     } finally {
       setFetchPending(false);
+      pending.current=false;
     }
   };
   
@@ -131,7 +140,14 @@ export const usePolling = (): UsePollingReturnType => {
   };
 
   useEffect(() => {
-    fetchData(); // Initial fetch and start the polling loop
+
+    const nowish = new Date().getTime();
+    console.log(`useEffect, time=${nowish}`);
+    debouncedRestartPolling();
+
+    //fetchData(); // Initial fetch and start the polling loop
+
+/*
 
     const reentry = (e:MouseEvent) => {
       console.log('e:', e);
@@ -160,6 +176,7 @@ export const usePolling = (): UsePollingReturnType => {
       windowIsActive.current = false;
       checkForContinuedPolling();
     }, true);
+*/
     
     return () => {
       // Cleanup function to clear timeout when the component unmounts 
