@@ -1,8 +1,10 @@
-import React, { createContext, ReactNode, useState, useContext, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, ReactNode, useState, useContext, useEffect, useMemo, useRef } from 'react';
+import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import type { SDKConfig, SDKNotification, RestartPollingFunction } from './types';
 import isEqual from 'lodash/isEqual'; // If using Lodash for deep comparison
 import _ from 'lodash';
+import { usePollerInstance } from './usePollerInstance';
 
 // Function to generate a UUID
 const generateUniqueId = (): string  => {
@@ -22,29 +24,24 @@ interface TinadSDKContextType {
   getTinadConfig: () => SDKConfig;
   updateTinadConfig: (configPartial: Partial<SDKConfig>) => void;
   notificationsQueue: SDKNotification[];
-  processNotificationsData: (data: any[]) => void;
+  fetchData: () => Promise<boolean>;
+  processData: (data: any[]) => void;
   fetchPending: boolean;
-  setFetchPending: (newValue: boolean) => void;
   fetchError: string | null;
-  setFetchError: (newValue: string | null) => void;
   dismissNotificationCore: (notificationUuid:string) => Promise<boolean>;
   resetAllViewsCore: () => Promise<boolean>;
-  savePollerRestart: (restartPolling: RestartPollingFunction) => void;
 }  
 
 const TinadSDKContext = createContext<TinadSDKContextType>({
   getTinadConfig: () => defaultTinadConfig,
   updateTinadConfig: (configPartial: Partial<SDKConfig>) => {},
   notificationsQueue: [],
-  processNotificationsData: (data: any[]) => {},
+  fetchData: () => { return Promise.resolve(true) },
+  processData: (data: any[]) => {},
   fetchPending: false,
-  setFetchPending: (newValue:boolean) => {},
   fetchError: null,
-  setFetchError: (newValue: string | null) => {},
   dismissNotificationCore: (notificationUuid: string) => Promise.resolve(true),
   resetAllViewsCore: () => Promise.resolve(true),
-  savePollerRestart: (restartPolling: RestartPollingFunction) => {},
-
 });
 
 interface DismissedNotifications {
@@ -64,13 +61,58 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
   const additionalConfig = useRef<AdditionalConfigType>({ domains: [], environments: [] });
   const pollerRestartFunction = useRef<RestartPollingFunction | null>(null);
   const dismissedNotificationIds = useRef<DismissedNotifications>({});
+  const pollInterval = 5000;
+  const maxRetries = 5;
   
   additionalConfig.current.environments = environments?.split(',').map(item => item.trim());
   additionalConfig.current.domains = domains?.split(',').map(item => item.trim());;
   console.log(`Passed in additional config: ${JSON.stringify(additionalConfig.current)}`);
 
-  const savePollerRestart = (restartPolling: RestartPollingFunction) => {
-    pollerRestartFunction.current = restartPolling;
+  const buildApiUrl = (tinadConfig:SDKConfig) => {
+    const apiUrl = new URL(`${tinadConfig.apiBaseUrl}/notifications`);
+    apiUrl.searchParams.append('userId', tinadConfig.userId);
+    if (tinadConfig.pageId) {
+      apiUrl.searchParams.append('pageId', tinadConfig.pageId ?? '');
+    }
+    if (tinadConfig.environments) {
+      apiUrl.searchParams.append('environments', tinadConfig.environments.join(',') ?? 'development');
+    }
+    if (tinadConfig.domains) {
+      apiUrl.searchParams.append('domains', tinadConfig.domains.join(',') ?? '');
+    }
+    
+    // apiUrl.searchParams.append('time', new Date().getTime().toString());
+    const newApiUrlString = apiUrl.toString();
+    console.log(`buildApiUrl output: ${newApiUrlString} `);
+    return newApiUrlString;
+  };
+
+  const fetchData = async () => {
+    setFetchPending(true);
+    setFetchError(null);
+    try {
+      // Dynamically get the latest SDK configuration before each poll
+      console.log(`fetchData running.`);
+      const tinadConfig = getTinadConfig();
+      const nowish = new Date().getTime();
+      const apiUrl = buildApiUrl(tinadConfig) + `t=${nowish}`;;
+      const response = await axios.get(apiUrl, {
+        headers: {
+          'Authorization': "Bearer " + tinadConfig.apiKey,
+          'X-Tinad-Source': "SDK",
+      }});
+      const pollInterval = response.headers['x-tinad-poll-interval'];
+      if (pollInterval) {
+        const pollIntervalSeconds = parseInt(pollInterval); 
+        console.log(`TINAD server is telling us the polling time should be: ${pollIntervalSeconds}`);
+      }
+      setFetchError(null);
+    } catch (error:any) {
+      setFetchError(error as string);
+      return Promise.resolve(false);
+    }
+    setFetchPending(false);
+    return Promise.resolve(true);
   };
 
   // Function to determine the latest date between startDate and endDate
@@ -140,7 +182,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     return sortedNotifications;
   };
 
-  const processNotificationsData = (data: any[]):void => {
+  const processData = (data: any[]):void => {
     //console.log(`******* updateNotifications source data: ${JSON.stringify(data,null,2)}`);
     const mappedData = data.map((notification: any) => ({
       ...notification,
@@ -282,21 +324,31 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     return Promise.resolve(true);
   };
 
+  const pollerInstance = usePollerInstance({
+    fetchData,
+    processData,
+    pollInterval,
+    maxRetries
+  });
 
-  return (
-    <TinadSDKContext.Provider value={{ 
+  const contextValue = useMemo(
+    () => ({
       getTinadConfig, 
       updateTinadConfig, 
       notificationsQueue, 
-      processNotificationsData,
+      isPolling: pollerInstance ? pollerInstance.isPolling : false, // Add null check
+      fetchData,
+      processData,
       fetchPending,
-      setFetchPending,
       fetchError, 
-      setFetchError,
       dismissNotificationCore,
       resetAllViewsCore,
-      savePollerRestart
-    }}>
+    }),
+    [notificationsQueue, pollerInstance]
+  );
+
+  return (
+    <TinadSDKContext.Provider value={contextValue}>
       {children}
     </TinadSDKContext.Provider>
   );

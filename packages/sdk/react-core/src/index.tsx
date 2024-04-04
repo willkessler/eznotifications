@@ -2,7 +2,7 @@ import { ReactNode, useState, useEffect } from 'react';
 
 import type { SDKProviderProps, SDKConfig, SDKNotification, SDKDataReturn } from './types';
 import { TinadSDKCoreProvider, useTinadSDK } from './context';
-import { usePolling } from './poller';
+import { usePoller } from './poller';
 
 const TinadSDKProvider:React.FC<SDKProviderProps> = ({ children, domains, environments }) => {
   return (
@@ -19,11 +19,14 @@ export { TinadSDKProvider, useTinadSDK };
 export const useSDKData = (): SDKDataReturn => {
   console.log('This Is Not A Drill (TINAD): Core fetch running now.');
 
-  const { getTinadConfig, updateTinadConfig, notificationsQueue, fetchPending, fetchError, dismissNotificationCore, resetAllViewsCore, savePollerRestart } = useTinadSDK();
+  const { 
+    fetchPending,
+    fetchError, 
+    notificationsQueue,
+    dismissNotificationCore, 
+    resetAllViewsCore,
+  } = useTinadSDK();
 
-  const { restartPolling } = usePolling();
-  savePollerRestart(restartPolling); // save the poller restart fn in the SDK for use by resetViewsAllCore
-  
   const returnObj: SDKDataReturn = {
     data: notificationsQueue,
     fetchPending: fetchPending,
