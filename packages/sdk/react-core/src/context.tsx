@@ -56,7 +56,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
   const [ fetchError, setFetchError ] = useState<string | null>(null);
   const additionalConfig = useRef<AdditionalConfigType>({ domains: [], environments: [] });
   const poller = useRef<Poller | null>(null);
-  const INITIAL_POLL_INTERVAL = 5000;
+  const INITIAL_POLL_INTERVAL = 10000;
   const dismissedNotificationIds = useRef<DismissedNotifications>({});
   
   additionalConfig.current.environments = environments?.split(',').map(item => item.trim());
@@ -79,11 +79,11 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     
     // apiUrl.searchParams.append('time', new Date().getTime().toString());
     const newApiUrlString = apiUrl.toString();
-    console.log(`buildApiUrl output: ${newApiUrlString} `);
+    //console.log(`buildApiUrl output: ${newApiUrlString} `);
     return newApiUrlString;
   };
 
-  const fetchNotifications = async (): Promise<void> => {
+  const fetchNotifications = async (): Promise<number> => {
     setFetchPending(true);
     // Dynamically get the latest SDK configuration before each poll
     console.log(`fetchData running.`);
@@ -102,6 +102,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     }
     processNotifications(response.data as unknown as any[]);
     setFetchPending(false);
+    return (pollInterval * 1000);
   };
 
   // Function to determine the latest date between startDate and endDate

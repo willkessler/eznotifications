@@ -64,19 +64,19 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     };
 
     const dismissNotification = async () => {
-        console.log('react-ui: dismissNotification');
-        if (notificationsQueue.length > 0) {
-          console.log(`Dismissing notification with id ${notificationsQueue[0].uuid}`);
-          try {
-            await dismissCore(notificationsQueue[0].uuid);
-            // Call client-provided dismiss function as a side effect (if one was passed in).
-            if (clientDismissFunction) {
-                clientDismissFunction();
-            }
-          } catch (error) {
-            console.log(`Unable to dismiss notification uuid ${notificationsQueue[0].uuid}`);
+      //console.log('react-ui: dismissNotification');
+      if (notificationsQueue.length > 0) {
+        console.log(`Dismissing notification with id ${notificationsQueue[0].uuid}`);
+        try {
+          await dismissCore(notificationsQueue[0].uuid);
+          // Call client-provided dismiss function as a side effect (if one was passed in).
+          if (clientDismissFunction) {
+            clientDismissFunction();
           }
+        } catch (error) {
+          console.log(`Unable to dismiss notification uuid ${notificationsQueue[0].uuid}`);
         }
+      }
     };
 
     useEffect(() => {
@@ -99,8 +99,8 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
         // Check if there are any current notifications and update the modal's open state accordingly
         if (mode === 'toast' && notificationsQueue.length > 0) {
             const notification = notificationsQueue[0];
-            console.log(`About to show toast on notification:${JSON.stringify(notification,null,2)}`);
-            console.log(`Toast active: ${toast.isActive(notification.uuid)}`);
+            //console.log(`About to show toast on notification:${JSON.stringify(notification,null,2)}`);
+            // console.log(`Toast active: ${toast.isActive(notification.uuid)}`);
             if (notification && !toast.isActive(notification.uuid)) {
               let toastFunc:any;
               switch(notification.notificationType) {
@@ -158,7 +158,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     const TemplateToRender = CustomTemplate || DefaultTemplate;
 
     //console.log(`notificationsQueue: ${JSON.stringify(notificationsQueue,null,2)}`);
-    console.log(`notificationsQueue length: ${notificationsQueue.length}`);
+    //console.log(`notificationsQueue length: ${notificationsQueue.length}`);
     // We do have a notification, so return its data merged into the template.
     const content = (notificationsQueue[0] ? notificationsQueue[0].content : '');
     //    const markedContent = renderMarkdown(notificationsQueue[0]?.content);
