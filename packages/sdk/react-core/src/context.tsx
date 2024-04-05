@@ -61,7 +61,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
   
   additionalConfig.current.environments = environments?.split(',').map(item => item.trim());
   additionalConfig.current.domains = domains?.split(',').map(item => item.trim());;
-  console.log(`Passed in additional config: ${JSON.stringify(additionalConfig.current)}`);
+  //console.log(`Passed in additional config: ${JSON.stringify(additionalConfig.current)}`);
 
   const buildApiUrl = ():string => {
     const tinadConfig = getTinadConfig();
@@ -86,7 +86,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
   const fetchNotifications = async (): Promise<number> => {
     setFetchPending(true);
     // Dynamically get the latest SDK configuration before each poll
-    console.log(`fetchData running.`);
+    //console.log(`fetchData running.`);
     const tinadConfig = getTinadConfig();
     const nowish = new Date().getTime();
     const apiUrl = buildApiUrl() + `&t=${nowish}`;;
@@ -98,7 +98,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     const pollInterval = response.headers['x-tinad-poll-interval'];
     if (pollInterval) {
       const pollIntervalSeconds = parseInt(pollInterval); 
-      console.log(`TINAD server is telling us the polling time should be: ${pollIntervalSeconds}`);
+      //console.log(`TINAD server is telling us the polling time should be: ${pollIntervalSeconds}`);
     }
     processNotifications(response.data as unknown as any[]);
     setFetchPending(false);
@@ -114,9 +114,9 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
 
   const addNotificationsToQueue = (notifications:SDKNotification[]) => {
     const tinadConfig = getTinadConfig();
-    console.log(`addNotificationsToQueue, queue length: ${notifications?.length}.`);
+    //console.log(`addNotificationsToQueue, queue length: ${notifications?.length}.`);
     if (notifications) {
-      console.log(`In addNotificationsToQueue, validing ${notifications?.length} inbound notifications.`);
+      //console.log(`In addNotificationsToQueue, validing ${notifications?.length} inbound notifications.`);
       // Step 2: Add new notifications that match the current userId
       // (and pageId and environment if those are set) and are not already in queue.
       const newNotifications = notifications.filter(
@@ -127,7 +127,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
       ).map(notif => _.cloneDeep(notif)); // Clone to ensure immutability
 
       if (newNotifications.length > 0) {
-        console.log(`Updating new ${newNotifications.length} notifications to a queue of ${notificationsQueue.length} length.`);
+        console.log(`Updating new ${newNotifications.length} notifications to a queue of length: ${notificationsQueue.length}.`);
         setNotificationsQueue([...notificationsQueue, ...newNotifications]);
       }
     }
@@ -174,14 +174,12 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
 
   const processNotifications = (data: any[]):void => {
     //console.log(`******* updateNotifications source data: ${JSON.stringify(data,null,2)}`);
-    console.log('Got to map step');
     const mappedData = data.map((notification: any) => ({
       ...notification,
       createdAt: new Date(notification.createdAt),
       startDate: notification.startDate ? new Date(notification.startDate) : undefined,
       endDate: notification.endDate ? new Date(notification.endDate) : undefined,
     }));
-    console.log('comopleted map step');
     //console.log(`******* processNotifications mappedData: ${JSON.stringify(mappedData,null,2)}`);
 
     const tinadConfig = getTinadConfig();
@@ -202,7 +200,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
 
   const storeTinadConfig = (tinadConfig:SDKConfig) => {
     const b64Config = btoa(JSON.stringify(tinadConfig));
-    console.log(`Storing tinadConfig : ${JSON.stringify(tinadConfig)}`);
+    //console.log(`Storing tinadConfig : ${JSON.stringify(tinadConfig)}`);
     localStorage.setItem('tinad', b64Config);
   };
 
@@ -317,10 +315,37 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     return Promise.resolve(true);
   };
 
+  const setupPollerMouseEvents = ():void => {
+    const pausePoller = ():void => {
+      if (poller.current !== null) {
+        console.log('Queueing up to pause polling.');
+        poller.current.pausePollingDelayed(60 * 1000); // keep polling for a minute before pausing polling
+      }
+    };
+
+    const restartPoller = ():void => {
+      if (poller.current !== null) {
+        console.log('Restarting polling');
+        poller.current.resumePolling();
+      }
+    };
+    
+    document.addEventListener("visibilitychange", () => {
+      document.visibilityState === 'visible' ? restartPoller() : pausePoller();
+    });
+
+    //document.addEventListener('focus', debouncedRestartPolling, true); // Capture phase
+    document.addEventListener('mouseenter', restartPoller, true); // Capture phase
+    document.addEventListener('focus', restartPoller, true); // Capture phase
+    document.addEventListener('mouseleave', pausePoller, true); // Capture phase
+    document.addEventListener('focus', pausePoller, true); // Capture phase
+  }
+
   useEffect(() => {
-    console.log('Context useEffect.');
+    //console.log('Context useEffect.');
     // This call creates the poller AND it kicks off interval polling.
     poller.current = Poller.getInstance(fetchNotifications, INITIAL_POLL_INTERVAL, setFetchError);
+    setupPollerMouseEvents();
   }, []);
   
   const contextValue = {

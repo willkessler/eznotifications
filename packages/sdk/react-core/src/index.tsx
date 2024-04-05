@@ -16,7 +16,7 @@ export { SDKProviderProps, SDKNotification, SDKDataReturn } from './types';
 export { TinadSDKProvider, useTinadSDK };
 
 export const useSDKData = (): SDKDataReturn => {
-  console.log('This Is Not A Drill (TINAD): Core fetch running now.');
+  //console.log('This Is Not A Drill (TINAD): Core fetch running now.');
 
   const { 
     fetchPending,
