@@ -50,6 +50,7 @@ const NotificationsList = () => {
             highlightedId, 
             notifications, 
             submitNotification, 
+            handleSwitchChange,
             fetchNotifications,
             notificationsLoading,
             toastNotify,
@@ -70,20 +71,7 @@ const NotificationsList = () => {
     if (!isLoaded || !isSignedIn ) {
         return null;
     }
-  
-  // Handle turning a notification on and off
-  const handleSwitchChange = async (notificationData: EZNotification, checked: boolean) => {
-      const notificationDataCopy:EZNotification = {
-          ...notificationData,
-      };
 
-      notificationDataCopy.live = checked;
-      notificationDataCopy.editing = true;
-      notificationDataCopy.updatedAt = new Date();
-      notificationDataCopy.clerkUserId = user?.id;
-      await submitNotification(notificationDataCopy);
-  }
-  
     useEffect(() => {
         const fetchData = async () => {
             //console.log('clerkUserId in fetchData=', clerkUserId);

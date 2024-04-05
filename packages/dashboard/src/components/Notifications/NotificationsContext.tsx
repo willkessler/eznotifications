@@ -39,6 +39,7 @@ const defaultContextValue: NotificationsContextType = {
     notifications: [],
     fetchNotifications: () => Promise.resolve(),
     submitNotification: (notification: EZNotification) => Promise.resolve(),
+    handleSwitchChange: (notification: EZNotification) => Promise.resolve(),
     notificationsLastUpdated: null,
     notificationsLoading: false,
 
@@ -593,6 +594,19 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         return backendDateTimeUTCString;
     };
     
+    // Handle turning a notification on and off
+    const handleSwitchChange = async (notificationData: EZNotification, checked: boolean) => {
+        const notificationDataCopy:EZNotification = {
+            ...notificationData,
+        };
+  
+        notificationDataCopy.live = checked;
+        notificationDataCopy.editing = true;
+        notificationDataCopy.updatedAt = new Date();
+        notificationDataCopy.clerkUserId = user?.id;
+        await submitNotification(notificationDataCopy);
+    }
+
     const submitNotification = useCallback(async (notificationData: EZNotification): Promise<void> => {
         console.log('Notification data on form submit:', notificationData);
         const method = (notificationData.editing ? 'PUT' : 'POST' ); // PUT will do an update, POST will create a new posting
@@ -605,8 +619,8 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
                     content: notificationData.content,
                     startDate: notificationData.startDate ? formatDateForAPISubmission(notificationData.startDate) : null,
                     endDate: notificationData.endDate ? formatDateForAPISubmission(notificationData.endDate) : null,
-                    environments: [...notificationData.environments],
-                    domains: [...notificationData.domains],
+                    environments: notificationData.environments ? [...notificationData.environments] : [],
+                    domains: notificationData.domains ? [...notificationData.domains] : [],
                     live: notificationData.live,
                     mustBeDismissed: notificationData.mustBeDismissed,
                     notificationType: (notificationData.notificationType ? notificationData.notificationType : 'info'),
@@ -646,6 +660,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
 
         notifications,
         fetchNotifications, 
+        handleSwitchChange,
         submitNotification,
         notificationsLastUpdated,
         notificationsLoading,
