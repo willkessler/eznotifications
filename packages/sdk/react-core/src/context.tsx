@@ -191,9 +191,9 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     // Then apply sorting and grouping function to the filtered data before returning it.
     const sortedGroupedData = sortAndGroupNotifications(filteredData);
 
-    //console.log(`******* processNotifications dismissedNotificationIds: ${JSON.stringify(dismissedNotificationIds.current,null,2)}`);
-    //console.log(`******* processNotifications filteredData: ${JSON.stringify(filteredData,null,2)}`);
-    //console.log(`******* processNotifications returning: ${JSON.stringify(sortedGroupedData,null,2)}`);
+    console.log(`******* processNotifications dismissedNotificationIds: ${JSON.stringify(dismissedNotificationIds.current,null,2)}`);
+    console.log(`******* processNotifications filteredData: ${JSON.stringify(filteredData,null,2)}`);
+    console.log(`******* processNotifications returning: ${JSON.stringify(sortedGroupedData,null,2)}`);
     addNotificationsToQueue(sortedGroupedData);
 
   };
