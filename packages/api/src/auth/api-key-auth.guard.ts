@@ -27,7 +27,7 @@ export class ApiKeyAuthGuard implements CanActivate {
         if (this.isFrontendRequest(request)) {
             return this.validateFrontendApiKey(apiKey, request);
         } else {
-            return this.validateBackendApiKey(apiKey);
+            return this.validateBackendApiKey(apiKey, request);
         }
     }
 
@@ -87,12 +87,18 @@ export class ApiKeyAuthGuard implements CanActivate {
         return true;
     }
 
-    private async validateBackendApiKey(apiKey: string): Promise<boolean> {
-        const apiKeyEntity = await this.apiKeyRepository.findOne({ where: { apiKey, isActive: true } });
+    private async validateBackendApiKey(apiKey: string, request: CustomRequest): Promise<boolean> {
+        const apiKeyEntity = await this.apiKeyRepository.findOne({ 
+          where: { apiKey, isActive: true },
+          relations: ['organization'],
+        });
         if (!apiKeyEntity) {
             throw new UnauthorizedException('Unknown API key');
         }
         console.log(`Found valid api key:${apiKeyEntity.apiKey}`);
+        // Now attach the org to the request so the API can use it later
+        request.organization = apiKeyEntity.organization;
+
         return true;
     }
 
