@@ -19,6 +19,7 @@ export interface NotificationsContextType {
     notifications: EZNotification[];
     fetchNotifications: () => Promise<void>;
     submitNotification: (notification: EZNotification) => Promise<void>;
+    handleSwitchChange: (notification: EZNotification, checked: boolean) => Promise<void>;
     notificationsLastUpdated: number | null;
     notificationsLoading: boolean;
 

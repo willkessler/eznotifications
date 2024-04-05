@@ -39,7 +39,7 @@ const defaultContextValue: NotificationsContextType = {
     notifications: [],
     fetchNotifications: () => Promise.resolve(),
     submitNotification: (notification: EZNotification) => Promise.resolve(),
-    handleSwitchChange: (notification: EZNotification) => Promise.resolve(),
+    handleSwitchChange: (notification: EZNotification, checked: boolean) => Promise.resolve(),
     notificationsLastUpdated: null,
     notificationsLoading: false,
 
@@ -603,7 +603,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
         notificationDataCopy.live = checked;
         notificationDataCopy.editing = true;
         notificationDataCopy.updatedAt = new Date();
-        notificationDataCopy.clerkUserId = user?.id;
+        notificationDataCopy.clerkUserId = (user ? user.id : null);
         await submitNotification(notificationDataCopy);
     }
 

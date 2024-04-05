@@ -135,7 +135,7 @@ export const envConfig = {
     // Now, we assume `temporaryAPIKeyValue.current` holds a valid API key (either existing or newly generated)
     try {
       // Copy the API key to the clipboard
-      await navigator.clipboard.writeText(temporaryAPIKeyValue.current);
+      await navigator.clipboard.writeText(temporaryAPIKeyValue.current as unknown as string);
       console.log('API Key copied to clipboard');
     } catch (err) {
       console.error('Failed to copy API key to clipboard', err);
@@ -242,7 +242,7 @@ export const envConfig = {
               {temporaryAPIKeyValue.current}
             </Text>
 
-            <CopyButton value={temporaryAPIKeyValue} timeout={2000} >
+            <CopyButton value={temporaryAPIKeyValue.current !== null ? temporaryAPIKeyValue.current : ''} timeout={2000} >
               {({ copied, copy }) => (
                 <Tooltip label={copied ? 'Copied Temporary API Key!' : 'Copy'} withArrow position="right">
                   <ActionIcon color={copied ? 'teal' : 'gray'} variant="subtle" onClick={copy}>
