@@ -65,6 +65,7 @@ const PlaygroundComponent = () => {
           }
       } else {
         console.log('Generating temporary key because none exist yet.');
+        await createTemporaryKey();
       }       
 
       const repoUrl = 'https://github.com/willkessler/this-is-not-a-drill-examples';
