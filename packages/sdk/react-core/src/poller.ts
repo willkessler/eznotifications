@@ -45,7 +45,7 @@ export default class Poller {
         } finally {
           if (this.updatedPollingInterval !== null && this.updatedPollingInterval !== this.pollingInterval) { 
             // We have an updated interval time so trigger next interval differently
-            console.log(`Updating polling time to ${this.updatedPollingInterval} (from ${this.pollingInterval}).`);
+            //console.log(`Updating polling time to ${this.updatedPollingInterval} (from ${this.pollingInterval}).`);
             if (this.intervalId !== null) clearInterval(this.intervalId);
             this.pollingInterval = this.updatedPollingInterval;
             this.updatedPollingInterval = null;
@@ -67,7 +67,7 @@ export default class Poller {
 
   public pausePollingDelayed(pollingPauseDelay:number) {
     this.pausePollingDelayTimeout = window.setTimeout(():void => {
-      console.log('Pausing polling after debounce timeout.');
+      //console.log('Pausing polling after debounce timeout.');
       this.pausePolling();
     }, pollingPauseDelay);
   }
@@ -81,7 +81,7 @@ export default class Poller {
   }
 
   public restartPolling(): void { // immediately restart of polling
-    console.log('polling restarting.');
+    //console.log('polling restarting.');
     if (this.intervalId !== null) clearInterval(this.intervalId);
     this.pollingPaused = false;
     this.startPolling();
@@ -100,7 +100,7 @@ export default class Poller {
     }, this.backoffInterval);
     // Increase backoff interval for the next attempt, capped at maxBackoffInterval
     this.backoffInterval = Math.min(this.backoffInterval * 2, this.maxBackoffInterval);
-    console.log(`Poller backing off to ${this.backoffInterval}`);
+    //console.log(`Poller backing off to ${this.backoffInterval}`);
   }
 
 }

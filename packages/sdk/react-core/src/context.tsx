@@ -127,7 +127,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
       ).map(notif => _.cloneDeep(notif)); // Clone to ensure immutability
 
       if (newNotifications.length > 0) {
-        console.log(`Updating new ${newNotifications.length} notifications to a queue of length: ${notificationsQueue.length}.`);
+        //console.log(`Updating new ${newNotifications.length} notifications to a queue of length: ${notificationsQueue.length}.`);
         setNotificationsQueue([...notificationsQueue, ...newNotifications]);
       }
     }
@@ -318,14 +318,14 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
   const setupPollerMouseEvents = ():void => {
     const pausePoller = ():void => {
       if (poller.current !== null) {
-        console.log('Queueing up to pause polling.');
+        //console.log('Queueing up to pause polling.');
         poller.current.pausePollingDelayed(60 * 1000); // keep polling for a minute before pausing polling
       }
     };
 
     const restartPoller = ():void => {
       if (poller.current !== null) {
-        console.log('Restarting polling');
+        //console.log('Restarting polling');
         poller.current.resumePolling();
       }
     };
