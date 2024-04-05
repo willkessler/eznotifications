@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import { IconCopy, IconCheck } from '@tabler/icons-react';
 import { useUser } from "@clerk/clerk-react";
@@ -35,7 +35,7 @@ const PlaygroundComponent = () => {
   }
     
   const [opened, { toggle }] = useDisclosure();
-  const [ temporaryAPIKeyValue,  setTemporaryAPIKeyValue ] = useState('');
+  const temporaryAPIKeyValue = useRef<string | null>(null);
   const [ temporaryAPIKeyExpiration,  setTemporaryAPIKeyExpiration ] = useState('');
 
   const createTemporaryKey = async () => {
@@ -55,10 +55,17 @@ const PlaygroundComponent = () => {
       // Check if a valid API key exists. If not generate one.
       const expiresAt = playgroundAPIKeys[0]?.expiresAt?.toISOString();
       const isPast = (expiresAt ? pastTense(expiresAt) : false);
-      if (!temporaryAPIKeyValue || isPast) {
-        // If no valid key, generate a new one
-        await createTemporaryKey();
-      }
+
+      if (playgroundAPIKeys.length > 0) {
+        if (expiresAt && isPast) {
+            //if (temporaryAPIKeyValue.current === null || isPast) {
+            // If no valid key, generate a new one
+            console.log('Generating temporary key because latest one is expired.');
+            await createTemporaryKey();
+          }
+      } else {
+        console.log('Generating temporary key because none exist yet.');
+      }       
 
       const repoUrl = 'https://github.com/willkessler/this-is-not-a-drill-examples';
       try {
@@ -93,11 +100,11 @@ const PlaygroundComponent = () => {
     // is used to create "environment variables" on the fly.
     const envFileContents = `
 export const envConfig = {
-  TINAD_API_BASE_URL: import.meta.env.VITE_API_TARGET,
+  TINAD_API_BASE_URL: '${import.meta.env.VITE_API_TARGET}',
   TINAD_ENDUSER_ID: 'user-1',
   TINAD_IMAGE_LOCATION: 'https://raw.githubusercontent.com/willkessler/this-is-not-a-drill-examples/main/public/',
-  TINAD_API_KEY: '${temporaryAPIKeyValue}',
-  TINAD_IS_DEMO_SITE: false,
+  TINAD_API_KEY: '${temporaryAPIKeyValue.current}',
+  TINAD_IS_DEMO_SITE: true,
   TINAD_DEMOPANEL_URL: 'https://demo.this-is-not-a-drill.com',
   TINAD_DASHBOARDPANEL_URL: 'https://app.this-is-not-a-drill.com"',
 };
@@ -125,10 +132,10 @@ export const envConfig = {
 */
 
   const gotoPlayground = async () => {
-    // Now, we assume `temporaryAPIKeyValue` holds a valid API key (either existing or newly generated)
+    // Now, we assume `temporaryAPIKeyValue.current` holds a valid API key (either existing or newly generated)
     try {
       // Copy the API key to the clipboard
-      await navigator.clipboard.writeText(temporaryAPIKeyValue);
+      await navigator.clipboard.writeText(temporaryAPIKeyValue.current);
       console.log('API Key copied to clipboard');
     } catch (err) {
       console.error('Failed to copy API key to clipboard', err);
@@ -199,7 +206,7 @@ export const envConfig = {
 
   useEffect(() => {
     fetchExampleRepo();
-  }, [temporaryAPIKeyValue]);
+  }, [temporaryAPIKeyValue.current]);
 
   useEffect(() => {
     if (user && user.id) {
@@ -215,7 +222,7 @@ export const envConfig = {
 
           const temporaryKeyExpiration = formatDisplayDate('', playgroundAPIKeys[0].expiresAt);
           console.log(`Temporary API key: ${temporaryKeyVal}`);
-          setTemporaryAPIKeyValue(temporaryKeyVal); // show latest one
+          temporaryAPIKeyValue.current = temporaryKeyVal; // show latest one
           setTemporaryAPIKeyExpiration(temporaryKeyExpiration);
         }
       }
@@ -232,7 +239,7 @@ export const envConfig = {
         <Stack align="stretch" justify="flex-start">
           <div className={apiKeyClasses.apiKeyRow}>
             <Text size="md"  className={apiKeyClasses.apiTemporaryKeyDisplay}>
-              {temporaryAPIKeyValue}
+              {temporaryAPIKeyValue.current}
             </Text>
 
             <CopyButton value={temporaryAPIKeyValue} timeout={2000} >
