@@ -66,12 +66,16 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     const dismissNotification = async () => {
         console.log('react-ui: dismissNotification');
         if (notificationsQueue.length > 0) {
-            console.log(`Dismissing notification with id ${notificationsQueue[0].uuid}`);
+          console.log(`Dismissing notification with id ${notificationsQueue[0].uuid}`);
+          try {
             await dismissCore(notificationsQueue[0].uuid);
             // Call client-provided dismiss function as a side effect (if one was passed in).
             if (clientDismissFunction) {
                 clientDismissFunction();
             }
+          } catch (error) {
+            console.log(`Unable to dismiss notification uuid ${notificationsQueue[0].uuid}`);
+          }
         }
     };
 
@@ -145,8 +149,10 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
 
     // Handle error state
     if (fetchError) {
-        console.log('*** TINAD error: Failed to fetch' || "No notifications");
-        return <div></div>;
+      console.log('*** TINAD error: Failed to fetch' || "No notifications");
+      if (notificationsQueue.length == 0) {
+        return <div></div>; // if no previous notifications in the queue return early, nothing to render
+      }
     }
 
     const TemplateToRender = CustomTemplate || DefaultTemplate;
