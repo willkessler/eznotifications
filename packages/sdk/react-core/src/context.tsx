@@ -83,33 +83,25 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     return newApiUrlString;
   };
 
-  const fetchNotifications = async (): Promise<boolean> => {
+  const fetchNotifications = async (): Promise<void> => {
     setFetchPending(true);
-    setFetchError(null);
-    try {
-      // Dynamically get the latest SDK configuration before each poll
-      console.log(`fetchData running.`);
-      const tinadConfig = getTinadConfig();
-      const nowish = new Date().getTime();
-      const apiUrl = buildApiUrl() + `&t=${nowish}`;;
-      const response = await axios.get(apiUrl, {
-        headers: {
-          'Authorization': "Bearer " + tinadConfig.apiKey,
-          'X-Tinad-Source': "SDK",
-      }});
-      const pollInterval = response.headers['x-tinad-poll-interval'];
-      if (pollInterval) {
-        const pollIntervalSeconds = parseInt(pollInterval); 
-        console.log(`TINAD server is telling us the polling time should be: ${pollIntervalSeconds}`);
-      }
-      setFetchError(null);
-      processNotifications(response.data as unknown as any[]);
-    } catch (error:any) {
-      setFetchError(error as string);
-      return Promise.resolve(false);
+    // Dynamically get the latest SDK configuration before each poll
+    console.log(`fetchData running.`);
+    const tinadConfig = getTinadConfig();
+    const nowish = new Date().getTime();
+    const apiUrl = buildApiUrl() + `&t=${nowish}`;;
+    const response = await axios.get(apiUrl, {
+      headers: {
+        'Authorization': "Bearer " + tinadConfig.apiKey,
+        'X-Tinad-Source': "SDK",
+    }});
+    const pollInterval = response.headers['x-tinad-poll-interval'];
+    if (pollInterval) {
+      const pollIntervalSeconds = parseInt(pollInterval); 
+      console.log(`TINAD server is telling us the polling time should be: ${pollIntervalSeconds}`);
     }
+    processNotifications(response.data as unknown as any[]);
     setFetchPending(false);
-    return Promise.resolve(true);
   };
 
   // Function to determine the latest date between startDate and endDate
@@ -327,7 +319,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
   useEffect(() => {
     console.log('Context useEffect.');
     // This call creates the poller AND it kicks off interval polling.
-    poller.current = Poller.getInstance(fetchNotifications, INITIAL_POLL_INTERVAL);
+    poller.current = Poller.getInstance(fetchNotifications, INITIAL_POLL_INTERVAL, setFetchError);
   }, []);
   
   const contextValue = {
@@ -335,7 +327,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     updateTinadConfig, 
     notificationsQueue, 
     fetchPending,
-    fetchError, 
+    fetchError,
     dismissNotificationCore,
     resetAllViewsCore,
   };
