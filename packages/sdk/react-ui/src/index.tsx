@@ -84,14 +84,21 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
     }, []);
 
     useEffect(() => {
+      /*
       const newConfig = getTinadConfig();
+      console.log(`before react-ui update, tinadConfig has: ${JSON.stringify(newConfig,null,2)}`);
       if (pageId) {
         newConfig['pageId'] = pageId;
       }
       if (Object.keys(newConfig).length > 0) {
-        //console.log(`_+_+_+_+_+_+_+ New page navigated to, updating config with ${JSON.stringify(newConfig,null,2)}`);
+        console.log(`_+_+_+_+_+_+_+ New page navigated to, updating config with ${JSON.stringify(newConfig,null,2)}`);
         updateTinadConfig(newConfig);
       }
+      */
+      if (pageId) {
+        updateTinadConfig({ pageId });
+      }
+        
     }, [updateTinadConfig]);
   
 

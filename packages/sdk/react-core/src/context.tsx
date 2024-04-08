@@ -13,8 +13,8 @@ const generateUniqueId = (): string  => {
 
 const defaultTinadConfig = {
   apiKey: '',
-  apiBaseUrl: 'https://api.this-is-not-a-drill.com',
-  userId: 'user-1',
+  apiBaseUrl: '',
+  userId: '',
   environments: [],
   domains: [],
   pageId: '',
@@ -191,16 +191,17 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     // Then apply sorting and grouping function to the filtered data before returning it.
     const sortedGroupedData = sortAndGroupNotifications(filteredData);
 
-    console.log(`******* processNotifications dismissedNotificationIds: ${JSON.stringify(dismissedNotificationIds.current,null,2)}`);
-    console.log(`******* processNotifications filteredData: ${JSON.stringify(filteredData,null,2)}`);
-    console.log(`******* processNotifications returning: ${JSON.stringify(sortedGroupedData,null,2)}`);
+    //console.log(`******* processNotifications dismissedNotificationIds: ${JSON.stringify(dismissedNotificationIds.current,null,2)}`);
+    //console.log(`******* processNotifications filteredData: ${JSON.stringify(filteredData,null,2)}`);
+    //console.log(`******* processNotifications returning: ${JSON.stringify(sortedGroupedData,null,2)}`);
     addNotificationsToQueue(sortedGroupedData);
 
   };
 
   const storeTinadConfig = (tinadConfig:SDKConfig) => {
-    const b64Config = btoa(JSON.stringify(tinadConfig));
-    //console.log(`Storing tinadConfig : ${JSON.stringify(tinadConfig)}`);
+    //const b64Config = btoa(JSON.stringify(tinadConfig));
+    const b64Config = JSON.stringify(tinadConfig);
+    console.log(`Storing tinadConfig : ${JSON.stringify(tinadConfig)}`);
     localStorage.setItem('tinad', b64Config);
   };
 
@@ -209,7 +210,8 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
     const previousConfigB64 = localStorage.getItem('tinad');
     if (previousConfigB64) {
       try {
-        const previousConfigStr = atob(previousConfigB64);
+        //const previousConfigStr = atob(previousConfigB64);
+        const previousConfigStr = previousConfigB64;
         currentConfig = JSON.parse(previousConfigStr);
         //console.log(`index.tsx: currentConfig: ${JSON.stringify(currentConfig,null,2)}`);
       } catch (e) {
@@ -220,22 +222,22 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
   };  
 
   const updateTinadConfig = (configPartial: Partial<SDKConfig>) => {
-    //console.log(`updateTinadConfig: Updating tinad config with: ${JSON.stringify(configPartial,null,2)}`);
+    console.log(`updateTinadConfig: Updating tinad config with: ${JSON.stringify(configPartial,null,2)}`);
+    const callStack = new Error(">>>>>>> updateTinadConfig: SDK Function Call Stack");
+    console.log(callStack.stack);
     let currentConfig = getTinadConfig();
+    // Check if any key-value pairs in configPartial are different from currentConfig or if configPartial contains new keys
     const isChanged = Object.entries(configPartial).some(([key, value]) => {
-      if (key in currentConfig) {
         const currentValue = currentConfig[key as keyof SDKConfig];
-        return currentValue !== value;
-      }
-      return false;
+        // Check if the key exists in the current config and if the value is different, or if the key is new
+        return currentValue !== value || !(key in currentConfig);
     });
     if (isChanged) {
       const updatedConfig = { ...currentConfig, ...configPartial };
+      console.log(`updateTinadConfig: Detected change to tinadConfig, storing new tinadConfig ${JSON.stringify(updatedConfig,null,2)}`);
       updatedConfig.environments = _.cloneDeep(additionalConfig.current.environments);
       updatedConfig.domains =  _.cloneDeep(additionalConfig.current.domains);
       storeTinadConfig(updatedConfig);
-      //const callStack = new Error(">>>>>>> updateTinadConfig: SDK Function Call Stack");
-      //console.log(callStack.stack);
     }
     //console.log('No change to Tinad config.');
     return currentConfig;
