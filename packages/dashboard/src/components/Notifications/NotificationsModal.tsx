@@ -96,6 +96,12 @@ const NotificationsModal = () => {
         setSubmissionDisabled(currentTextTrimmed.length == 0);
     };
 
+    const handlePageIdChange = (e:React.ChangeEvent<HTMLTextAreaElement>|React.ChangeEvent<HTMLInputElement>) => {
+      const currentPageId = e.target.value;
+      const currentPageIdTrimmed = currentPageId.trim();
+      setNotificationData({ ...notificationData as EZNotification, pageId: currentPageIdTrimmed });
+    };
+
     const handleDateTimeClick = (name:string) => {
         if (name === 'startDate') {
             const currentValue = notificationData?.startDate;
@@ -419,7 +425,7 @@ const NotificationsModal = () => {
             <TextInput
             name="pageId"
             value={(notificationData?.pageId ? notificationData.pageId : '')}
-            onChange={handleTextChange}
+            onChange={handlePageIdChange}
             label={pgLabel}
             style={{marginTop:'0px'}}
             placeholder="Enter page ID"

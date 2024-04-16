@@ -122,7 +122,7 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
       const newNotifications = notifications.filter(
         notif => notif.userId === tinadConfig.userId &&
                notif.live &&
-               (tinadConfig.pageId ? notif.pageId === tinadConfig.pageId : true) &&
+               ((tinadConfig.pageId ? notif.pageId === tinadConfig.pageId : true) || (notif.pageId === '')) &&
                !notificationsQueue.some(cn => notif.uuid === cn.uuid)
       ).map(notif => _.cloneDeep(notif)); // Clone to ensure immutability
 

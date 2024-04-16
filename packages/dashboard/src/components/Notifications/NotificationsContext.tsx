@@ -625,7 +625,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
                     mustBeDismissed: notificationData.mustBeDismissed,
                     notificationType: (notificationData.notificationType ? notificationData.notificationType : 'info'),
                     notificationTypeOther: notificationData.notificationTypeOther,
-                    pageId: notificationData.pageId || '',
+                    pageId: notificationData.pageId || '', // always uses empty string to indicate all pages
                 },
                 clerkCreatorId: notificationData.clerkCreatorId,
             };
