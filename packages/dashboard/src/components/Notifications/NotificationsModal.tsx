@@ -330,7 +330,7 @@ const NotificationsModal = () => {
         const dtLabel = (<CustomLabelWithHint text="Start date/time (optional):" 
                          hintText="You can either set both dates, or only one date.  (All dates and times are stored internally in UTC.)   If you set just the Start date-time, this notification will be served forever, beginning at the Start date-time. If you set just an End date-time, the notification will stop being served after the End date-time. (All times shown are in your local timezone.)" />);
         const pgLabel = (<CustomLabelWithHint text="Page ID (optional)"
-                         hintText="You can use any value you like here. When you pass a page ID value (or substring) in your SDK or API calls we will match against this value." />);
+                         hintText="You can use any value you like here. When you pass a page ID value (or substring) in your SDK or API calls we will match against this value. (Leave this blank to show this notification on any page.)" />);
         const envLabel = (<CustomLabelWithHint text="Environments"
                           hintText="Depending on which environment(s) you pass in via the SDK's Provider (or an API call), we will serve to those environment(s) when you specify them here." />);
         const domainsLabel = (<CustomLabelWithHint text="Domains"
