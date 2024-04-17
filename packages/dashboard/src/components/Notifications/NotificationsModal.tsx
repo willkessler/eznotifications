@@ -5,6 +5,7 @@ import { DateTimePicker, DateValue } from '@mantine/dates';
 import { ActionIcon, rem } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
 import { useUser } from "@clerk/clerk-react";
+import { useTinadSDK } from '@this-is-not-a-drill/react-core';
 
 import type EZNotification from '../../lib/shared_dts/EZNotification';
 import { NotificationType } from '../../lib/shared_dts/NotificationsContext.d';
@@ -40,6 +41,7 @@ const NotificationsModal = () => {
     const editing = (modalInitialData != null);
     const { user } = useUser();
     const { userTimezone, setUserTimezone } = useTimezone();
+    const { getTinadConfig, updateTinadConfig } = useTinadSDK();
 
     //console.log('modalInitialData:', modalInitialData, ' editing:', editing);
 
@@ -208,8 +210,7 @@ const NotificationsModal = () => {
 
     const handleMustBeDismissed = (event:React.ChangeEvent<HTMLInputElement>) => {
         const isChecked = event.target.checked;
-        // Save to localStorage
-        localStorage.setItem('mustBeDismissed', isChecked.toString());
+        updateTinadConfig( { mustBeDismissed: isChecked } );
         setMustBeDismissed(isChecked);
         setNotificationData({ ...notificationData as EZNotification, 'mustBeDismissed': isChecked });
     };

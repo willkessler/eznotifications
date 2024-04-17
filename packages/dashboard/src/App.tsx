@@ -6,10 +6,12 @@ import { Anchor, Button, Code, Group, Image, Modal, Textarea, Text } from '@mant
 import { IconLogout } from '@tabler/icons-react';
 import RouterComponent from './components/Router';
 import { ConfigProvider } from './lib/ConfigContext';
+
 import { ClerkProvider } from '@clerk/clerk-react'
 import { dark } from '@clerk/themes';
 import classes from './pages/NavbarSimple.module.css';
 import { TimezoneProvider } from './lib/TimezoneContext';
+import { TinadSDKProvider } from '@this-is-not-a-drill/react-core';
 
 // Import your publishable key for Clerk
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -31,11 +33,13 @@ export default function App() {
         <Router>
           <MantineProvider defaultColorScheme="dark" >
             <TimezoneProvider>
-              <RouterComponent />
+              <TinadSDKProvider environments="Development">
+                <RouterComponent />
+              </TinadSDKProvider>
             </TimezoneProvider>
           </MantineProvider>
-         </Router>
-       </ConfigProvider>
-      </ClerkProvider>
-    );
+        </Router>
+      </ConfigProvider>
+    </ClerkProvider>
+  );
 }

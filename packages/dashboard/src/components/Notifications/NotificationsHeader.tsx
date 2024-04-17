@@ -4,17 +4,20 @@ import { useMediaQuery } from '@mantine/hooks';
 import { useDisclosure } from '@mantine/hooks';
 import { useNotifications } from './NotificationsContext';
 import notificationClasses from './Notifications.module.css';
+import { useTinadSDK } from '@this-is-not-a-drill/react-core';
 
 const NotificationsHeader:React.FC = () => {
   const { openModal } = useNotifications();
   const [opened, handlers] = useDisclosure();
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
+
   const { displayPastNotifications, setDisplayPastNotifications } = useNotifications();
+  const { getTinadConfig, updateTinadConfig } = useTinadSDK();
 
   const handleShowPastNotificationsChange = (event:React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = event.target.checked;
-    // Save to localStorage
-    localStorage.setItem('displayPastNotifications', isChecked.toString());
+    // Save to tinadconfig in localStorage
+    updateTinadConfig( { displayPastNotifications: isChecked } );
     setDisplayPastNotifications(isChecked);
   }
 

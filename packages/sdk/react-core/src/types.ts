@@ -20,6 +20,8 @@ export interface SDKConfig {
   pageId?: string;
   environments?: string[];
   domains?: string[];
+  mustBeDismissed? : boolean;        // Used to store a dashboard preference, not used by the SDK directly
+  displayPastNotifications? : boolean;  // Used to store a dashboard preference, not used by the SDK directly
 }
 
 export interface SDKNotification {

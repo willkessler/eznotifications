@@ -64,7 +64,7 @@ export interface NotificationsContextType {
     showResetViewsModal: () => void;
     closeResetViewsModal: () => void;
 
-    displayPastNotifications: boolean;
+    displayPastNotifications: boolean | undefined;
     setDisplayPastNotifications: (newSetting: boolean) => void;
 
 };

@@ -24,6 +24,7 @@ import { IconSpeakerphone,
 import { useConfig } from '../../lib/ConfigContext';
 import { useDateFormatters } from '../../lib/DateFormattersProvider';
 import { useTimezone } from '../../lib/TimezoneContext';
+import { useTinadSDK } from '@this-is-not-a-drill/react-core';
 import type EZNotification from '../../lib/shared_dts/EZNotification';
 import { NotificationType, NotificationsContextType, TypeMapValue } from '../../lib/shared_dts/NotificationsContext.d';
 import classes from './Notifications.module.css';
@@ -99,9 +100,11 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     const [notifications, setNotifications] = useState<EZNotification[]>([]);
     const [notificationsLastUpdated, setNotificationsLastUpdated] = useState<number | null>(null);
     const [notificationsLoading, setNotificationsLoading] = useState(true);
+    const { getTinadConfig } = useTinadSDK();
     const [displayPastNotifications, setDisplayPastNotifications] = useState(() => {
-        const saved = localStorage.getItem('displayPastNotifications');
-        return saved ? saved === 'true' : false;
+        const tinadConfig = getTinadConfig();
+        const saved = tinadConfig.displayPastNotifications || false;
+        return saved;
     });
 
     const { user } = useUser();
