@@ -26,7 +26,8 @@ const DefaultTemplate: React.FC<TinadTemplateProps> = ({ tinadContent, tinadType
 
 const defaultToastProps = {
   position:"top-center", 
-  autoClose:5000, 
+  autoClose:true,
+  autoCloseTime:5000, 
   hideProgressBar: true, 
   rtl: false, 
   theme: "light", 
@@ -131,6 +132,7 @@ export const TinadComponent: React.FC<TinadNotificationsComponentProps> = ({
                       // icon: customToastIcon(IconSvgs[notification.notificationType].svg),
                         position: (toastProps.position ? toastProps.position : defaultToastProps.position),
                         autoClose: (toastProps.autoClose ? toastProps.autoClose : defaultToastProps.autoClose),
+                        autoCloseTime: (toastProps.autoCloseTime ? toastProps.autoCloseTime : defaultToastProps.autoCloseTime),
                         hideProgressBar: (toastProps.hideProgressBar ? toastProps.hideProgressBar : defaultToastProps.hideProgressBar),
                         closeOnClick: true,
                         pauseOnHover: true,

@@ -4272,10 +4272,10 @@
   resolved "https://registry.npmjs.org/@testing-library/user-event/-/user-event-14.5.2.tgz"
   integrity sha512-YAh82Wh4TIrxYLmfGcixwD18oIjyC1pFQC2Y01F2lzV2HTMiYrI0nze0FD0ocB//CKS/7jIUgae+adPqxK5yCQ==
 
-"@this-is-not-a-drill/react-core@workspace:^1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@this-is-not-a-drill/react-core/-/react-core-1.0.10.tgz#e52fcd214ed1d442d6599e7b09c071fe64f042b8"
-  integrity sha512-JDW2mXtE1CU0Lk/sOcL3obL/xi+luySTrUulhMdkqloroLNbwB2UUV5XiP+javK/LLL1t/6N7Zpd3AdgVHu4qw==
+"@this-is-not-a-drill/react-core@^latest":
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/@this-is-not-a-drill/react-core/-/react-core-1.0.11.tgz#be66d3d85358ef4d4884ab8d1f69274b384f0e30"
+  integrity sha512-CEpHPKbbjc0AATP7w3bZlkW8yqwR063ndscqWD9hbJuWUdEt3ewFm90Y3/hyN8eq3TdrsdHC+z07fU4pnLxyHQ==
   dependencies:
     "@rollup/plugin-commonjs" "^25.0.7"
     "@rollup/plugin-node-resolve" "^15.2.3"
