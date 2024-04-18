@@ -77,7 +77,8 @@ const Navbar: React.FC<NavbarProps> = ({ toggleMobile, toggleDesktop }) => {
         }}
         key={item.label}
       >
-        { (item.label == 'Logout' && (import.meta.env.VITE_IS_DEMO_SITE === 'false')) && 
+    
+        { (item.label == 'Logout') &&       // && (import.meta.env.VITE_IS_DEMO_SITE === 'true')) && 
           <SignOutButton>
             <Group style={{ marginLeft:'5px'}}>
               <Icon className={classes.linkIcon} stroke={1.5} />
