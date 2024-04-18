@@ -19,7 +19,6 @@ const GlobalSettingsPanel = () => {
           setPermittedDomains,
           environments,
           setEnvironments,
-          extractFullDomain,
         } = useSettings();
   const { user } = useUser();
 
