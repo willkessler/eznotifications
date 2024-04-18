@@ -4,6 +4,7 @@ export type SDKProviderProps = {
   children: ReactNode;
   domains?: string;
   environments?: string;
+  skipPolling?: boolean;
 };
 
 export type RestartPollingFunction = () => void;

@@ -15,7 +15,7 @@ export const createBlankEZNotification = (): EZNotification => {
         notificationType: 'info',
         notificationTypeOther: null,
         environments: ['Development'],
-        domains: ['example.com'],
+        domains: [],
 
         creator: null,
         organization:null,

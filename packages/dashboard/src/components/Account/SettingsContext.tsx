@@ -9,6 +9,7 @@ const SettingsContext = createContext<SettingsContextType>({
     organizationName: 'My Team',
     permittedDomains: '',
     environments: '',
+    extractFullDomain: {},
     getSettings: async () => Promise.resolve(null),
     saveSettings: async (clerkOrganizationId: string) => Promise.resolve(true),
     setPermittedDomains: (domains:string) => {},
@@ -72,11 +73,43 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
         return null;
     };
         
+    const extractFullDomain = (url: string): string | null => {
+      try {
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          url = 'http://' + url;  // Prepend 'http://' to treat as a valid URL
+        }
+        const urlObj = new URL(url);
+        return urlObj.hostname;  // This includes the full domain with subdomains
+      } catch (error) {
+        return null; // throw out non urls
+      }
+    }
+
+    const cleanPermittedDomains = (domainsStr: string):string => {
+      const trimmedDomainsStr = domainsStr.trim();
+      if (trimmedDomainsStr.length === 0) {
+        return '';
+      }
+      const domainLines = trimmedDomainsStr.split('\n');
+      const domainSet = new Set<string>();
+      domainLines.forEach( line => {
+        const lineTrimmed = line.trim();
+        const domain = extractFullDomain(lineTrimmed);
+        if (domain !== null) {
+          domainSet.add(domain);
+        }
+      });
+      const sortedDomains = Array.from(domainSet).sort();
+      return sortedDomains.join('\n') + '\n';
+    }
+
     const saveSettings = async (clerkOrganizationId: string) => {
         if (user) {
             const clerkCreatorId = user.id;
             const apiUrl = `${apiBaseUrl}/organization/configure`;
             console.log('in saveSettings, permittedDomains:', permittedDomains, 'environments: ' , environments);
+            const cleanedPermittedDomains = cleanPermittedDomains(permittedDomains);
+            setPermittedDomains(cleanedPermittedDomains);
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
@@ -86,7 +119,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                         organizationName: organizationName,
                         clerkCreatorId: clerkCreatorId,
                         clerkOrganizationId: clerkOrganizationId,
-                        permittedDomains: permittedDomains,
+                        permittedDomains: cleanedPermittedDomains,
                         environments: environments,
                     })
                 });
@@ -351,6 +384,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
           setCreatedLocalUser,
           createdLocalOrg,
           setCreatedLocalOrg,
+          extractFullDomain,
           getSettings,
           saveSettings,
           createLocalUser,

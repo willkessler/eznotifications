@@ -50,7 +50,7 @@ interface AdditionalConfigType {
 }
 
 // Define a provider component. This will allow clients to persist their API key and other important configurations.
-export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: string, environments?: string }> = ({ children, domains, environments }) => {
+export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: string, environments?: string, skipPolling?: boolean }> = ({ children, domains, environments, skipPolling }) => {
   const [ notificationsQueue, setNotificationsQueue ] = useState<SDKNotification[]>([]);
   const [ fetchPending, setFetchPending ] = useState<boolean>(false);
   const [ fetchError, setFetchError ] = useState<string | null>(null);
@@ -59,6 +59,13 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
   const INITIAL_POLL_INTERVAL = 10000;
   const dismissedNotificationIds = useRef<DismissedNotifications>({});
   
+  let actuallyPolling = true;
+  if (skipPolling) {
+    // if TINAD provider is instantiated in order to use getTinadConfig,
+    // but not to actually poll the backend, it can be defeated via the polling parameter.
+    actuallyPolling = false;
+  }
+
   additionalConfig.current.environments = environments?.split(',').map(item => item.trim());
   additionalConfig.current.domains = domains?.split(',').map(item => item.trim());;
   //console.log(`Passed in additional config: ${JSON.stringify(additionalConfig.current)}`);
@@ -84,24 +91,27 @@ export const TinadSDKCoreProvider: React.FC<{ children: ReactNode, domains?: str
   };
 
   const fetchNotifications = async (): Promise<number> => {
-    setFetchPending(true);
-    // Dynamically get the latest SDK configuration before each poll
-    //console.log(`fetchData running.`);
-    const tinadConfig = getTinadConfig();
-    const nowish = new Date().getTime();
-    const apiUrl = buildApiUrl() + `&t=${nowish}`;;
-    const response = await axios.get(apiUrl, {
-      headers: {
-        'Authorization': "Bearer " + tinadConfig.apiKey,
-        'X-Tinad-Source': "SDK",
-    }});
-    const pollInterval = response.headers['x-tinad-poll-interval'];
-    if (pollInterval) {
-      const pollIntervalSeconds = parseInt(pollInterval); 
-      //console.log(`TINAD server is telling us the polling time should be: ${pollIntervalSeconds}`);
+    let pollInterval = INITIAL_POLL_INTERVAL;
+    if (actuallyPolling) {
+      setFetchPending(true);
+      // Dynamically get the latest SDK configuration before each poll
+      //console.log(`fetchData running.`);
+      const tinadConfig = getTinadConfig();
+      const nowish = new Date().getTime();
+      const apiUrl = buildApiUrl() + `&t=${nowish}`;;
+      const response = await axios.get(apiUrl, {
+        headers: {
+          'Authorization': "Bearer " + tinadConfig.apiKey,
+          'X-Tinad-Source': "SDK",
+      }});
+      const newPollInterval = response.headers['x-tinad-poll-interval'];
+      if (newPollInterval) {
+        const pollIntervalSeconds = parseInt(newPollInterval); 
+        //console.log(`TINAD server is telling us the polling time should be: ${pollIntervalSeconds}`);
+      }
+      processNotifications(response.data as unknown as any[]);
+      setFetchPending(false);
     }
-    processNotifications(response.data as unknown as any[]);
-    setFetchPending(false);
     return (pollInterval * 1000);
   };
 

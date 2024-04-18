@@ -33,7 +33,7 @@ export default function App() {
         <Router>
           <MantineProvider defaultColorScheme="dark" >
             <TimezoneProvider>
-              <TinadSDKProvider environments="Development">
+              <TinadSDKProvider environments="Development" skipPolling={true} >
                 <RouterComponent />
               </TinadSDKProvider>
             </TimezoneProvider>

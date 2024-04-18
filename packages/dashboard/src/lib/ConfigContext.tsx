@@ -33,6 +33,7 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return await getToken();
   };
 
+  //console.log(`In configContext we think VITE_API_TARGET = ${import.meta.env.VITE_API_TARGET}`);
   const config: Config = {
     apiBaseUrl: import.meta.env.VITE_API_TARGET || 'http://localhost:8080',
     // This function adds our Authorization: Bearer header, AND a special Tinad-only header so the API can

@@ -3,9 +3,9 @@ import { ReactNode, useState, useEffect } from 'react';
 import type { SDKProviderProps, SDKConfig, SDKNotification, SDKDataReturn } from './types';
 import { TinadSDKCoreProvider, useTinadSDK } from './context';
 
-const TinadSDKProvider:React.FC<SDKProviderProps> = ({ children, domains, environments }) => {
+const TinadSDKProvider:React.FC<SDKProviderProps> = ({ children, domains, environments, skipPolling }) => {
   return (
-    <TinadSDKCoreProvider domains={domains} environments={environments}>
+    <TinadSDKCoreProvider domains={domains} environments={environments} skipPolling={skipPolling} >
       {children}
     </TinadSDKCoreProvider>
   );

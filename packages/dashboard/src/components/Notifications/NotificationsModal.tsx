@@ -457,7 +457,7 @@ const NotificationsModal = () => {
                   pointer
                   label={domainsLabel}
                   description="Choose the domains to serve this notification to (if none specified, will serve to all domains)."
-                  placeholder="Pick values"
+                  placeholder="Choose domains from among your permitted domains"
                   data={permittedDomains.split("\n")}
                   comboboxProps={{ shadow: 'md' }}
                   onChange={(value) => handleDomainsChange(value)}

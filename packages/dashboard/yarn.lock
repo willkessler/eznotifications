@@ -4551,9 +4551,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@this-is-not-a-drill/react-core@npm:^1.0.11":
-  version: 1.0.11
-  resolution: "@this-is-not-a-drill/react-core@npm:1.0.11"
+"@this-is-not-a-drill/react-core@npm:latest":
+  version: 1.0.14
+  resolution: "@this-is-not-a-drill/react-core@npm:1.0.14"
   dependencies:
     "@rollup/plugin-commonjs": "npm:^25.0.7"
     "@rollup/plugin-node-resolve": "npm:^15.2.3"
@@ -4567,7 +4567,7 @@ __metadata:
     tsc: "npm:^2.0.4"
     typescript: "npm:^5.3.3"
     uuid: "npm:^9.0.1"
-  checksum: 2b13879b8b49d957e95d3096f896880a4d0bfcecebfd752434bb4eb63468acf4c2851f56ee45d7f753948daa4b53e945bc35a0172e28ae526b8a8b0f7e9f6426
+  checksum: 6a79d497e5781f6a4b80ddcac9029a698933ea029b3e418362abc4146f2a552d707f1be3e01dc836c725ad42c3b6225da5c71eb6bb7da9dd9203a2680d8636cf
   languageName: node
   linkType: hard
 
@@ -10330,7 +10330,7 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.1.5"
     "@testing-library/react": "npm:^14.1.2"
     "@testing-library/user-event": "npm:^14.5.1"
-    "@this-is-not-a-drill/react-core": "npm:^1.0.11"
+    "@this-is-not-a-drill/react-core": "npm:latest"
     "@tiptap/extension-link": "npm:^2.1.16"
     "@tiptap/react": "npm:^2.1.16"
     "@tiptap/starter-kit": "npm:^2.1.16"

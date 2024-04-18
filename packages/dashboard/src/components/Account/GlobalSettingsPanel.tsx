@@ -19,14 +19,15 @@ const GlobalSettingsPanel = () => {
           setPermittedDomains,
           environments,
           setEnvironments,
+          extractFullDomain,
         } = useSettings();
   const { user } = useUser();
 
   const [isChanged, setIsChanged] = useState(false);
   
   const handlePermittedDomainsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setPermittedDomains(e.target.value);
-      setIsChanged(true);
+    setPermittedDomains(e.target.value);
+    setIsChanged(true);
   };
   
   const handleEnvironmentsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
