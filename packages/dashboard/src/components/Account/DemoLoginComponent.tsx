@@ -10,7 +10,7 @@ const DemoLoginComponent = () => {
   // Redirect authenticated users back to the dashboard if they somehow navigated to login,
   // unless running on the demo site, in which case, redirect to the demo site.
   if (isSignedIn) {
-    return <Navigate to={redirectUrl} replace />;
+    return <Navigate to="/" replace />;
   } else if (import.meta.env.VITE_IS_DEMO_SITE === 'false') {
     // If not logged in and this is the demo site, send users to the special demo login page.
     return <Navigate to="/login" replace />;
