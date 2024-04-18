@@ -14,16 +14,16 @@ import { TimezoneProvider } from './lib/TimezoneContext';
 import { TinadSDKProvider } from '@this-is-not-a-drill/react-core';
 
 // Import your publishable key for Clerk
-const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const clerkKey = (import.meta.env.VITE_IS_DEMO_SITE === 'true' ? import.meta.env.VITE_CLERK_DEMO_PUBLISHABLE_KEY : import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
  
-if (!CLERK_PUBLISHABLE_KEY) {
+if (!clerkKey) {
   throw new Error("Missing Publishable Key")
 }
 
 export default function App() {
   return (
     <ClerkProvider 
-      publishableKey={CLERK_PUBLISHABLE_KEY}
+      publishableKey={clerkKey}
       appearance={{
         baseTheme: dark,
         signIn: { baseTheme: 'neobrutalism' as any }

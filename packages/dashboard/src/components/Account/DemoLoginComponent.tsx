@@ -3,15 +3,17 @@ import { Navigate } from 'react-router-dom';
 import { useUser, SignIn } from "@clerk/clerk-react";
 import AuthLayout from './AuthLayout';
 
-const LoginComponent = () => {
+const DemoLoginComponent = () => {
   const { isSignedIn } = useUser();
+  const redirectUrl = (import.meta.env.VITE_IS_DEMO_SITE === 'true' ? import.meta.env.VITE_TINAD_DEMOPANEL_URL + '/demo' : '/');
 
-  // Redirect authenticated users back to the dashboard if they somehow navigated to login.
+  // Redirect authenticated users back to the dashboard if they somehow navigated to login,
+  // unless running on the demo site, in which case, redirect to the demo site.
   if (isSignedIn) {
-    return <Navigate to="/" replace />;
-  } else if (import.meta.env.VITE_IS_DEMO_SITE === 'true') {
+    return <Navigate to={redirectUrl} replace />;
+  } else if (import.meta.env.VITE_IS_DEMO_SITE === 'false') {
     // If not logged in and this is the demo site, send users to the special demo login page.
-    return <Navigate to="/demo-login" replace />;
+    return <Navigate to="/login" replace />;
   }
   
   return (
@@ -26,7 +28,8 @@ const LoginComponent = () => {
               colorBackground: "#E66118",
             }
           }}
-          signUpUrl="/sign-up"
+          redirectUrl={redirectUrl}
+          initialValues={{ emailAddress: 'demo@this-is-not-a-drill.com' }}
         />
       </AuthLayout>
     </>
@@ -34,4 +37,4 @@ const LoginComponent = () => {
 }
 
 
-export default LoginComponent;
+export default DemoLoginComponent;

@@ -8,6 +8,7 @@ import Notifications from './Notifications/Notifications';
 import Settings from './Account/Settings';
 import Statistics from './Account/Statistics';
 import LoginComponent from './Account/LoginComponent'; 
+import DemoLoginComponent from './Account/DemoLoginComponent'; 
 import SignUpComponent from './Account/SignUpComponent'; 
 import OnboardComponent from './Account/OnboardComponent';
 import PlaygroundComponent from './Account/PlaygroundComponent'; 
@@ -35,6 +36,7 @@ const RouterComponent = () => {
             <DateFormattersProvider>
               <Routes>
                 <Route path="/login" element={<LoginComponent />} />
+                <Route path="/demo-login" element={<DemoLoginComponent />} />
                 <Route path="/sign-up" element={<SignUpComponent />} />
                 <Route path="/" element={<MainLayout />} >
                   <Route index element={<Notifications />} />
