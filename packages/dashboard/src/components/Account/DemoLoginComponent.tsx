@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useUser, SignIn } from "@clerk/clerk-react";
 import AuthLayout from './AuthLayout';
@@ -6,6 +6,15 @@ import AuthLayout from './AuthLayout';
 const DemoLoginComponent = () => {
   const { isSignedIn } = useUser();
   const redirectUrl = (import.meta.env.VITE_IS_DEMO_SITE === 'true' ? import.meta.env.VITE_TINAD_DEMOPANEL_URL + '/demo' : '/');
+
+  useEffect(() => {
+    if (import.meta.env.VITE_IS_DEMO_SITE === 'true') {
+      const styleLink = document.createElement('style');
+      styleLink.type = 'text/css';
+      styleLink.innerHTML = '.cl-footerActionLink, .cl-footerActionText { display: none; }';
+      document.head.appendChild(styleLink);
+    }
+  }, []);
 
   // Redirect authenticated users back to the dashboard if they somehow navigated to login,
   // unless running on the demo site, in which case, redirect to the demo site.
