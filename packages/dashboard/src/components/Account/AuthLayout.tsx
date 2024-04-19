@@ -40,7 +40,7 @@ const AuthLayout:React.FC<{children: React.ReactNode, imageUrl: string }> = ({ch
                         </Tooltip>
                       )}
                     </CopyButton>
-                    (and then paste it in once you see the password field)
+                    (and then paste it into the password field).
                   </List.Item>
                 </List>
               </Card>
