@@ -6,10 +6,20 @@ import { UserButton, UserProfile } from "@clerk/clerk-react"
 import classes from './css/Settings.module.css';
 import { IconArrowLeft, IconReceipt, IconEdit, IconCopy } from '@tabler/icons-react';
 
-import { Billing } from "./Billing";
 import { TermsOfService } from "./TermsOfService";
+import { Billing } from "./Billing";
 
 const AccountPanel = () => {
+
+  useEffect(() => {
+    if (import.meta.env.VITE_IS_DEMO_SITE === 'true') {
+      const styleLink = document.createElement('style');
+      styleLink.type = 'text/css';
+      styleLink.innerHTML = '.cl-profilePage__security, .cl-profileSection__emailAddresses { display: none; }';
+      document.head.appendChild(styleLink);
+    }
+  }, []);
+
 
   return (
       <div className={classes.account} >
