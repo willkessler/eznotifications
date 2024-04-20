@@ -48,6 +48,19 @@ export class EZNotificationController {
         return newUser;
     }
     
+    @Post('/user/signin_ticket')
+    @ApiOperation({summary: 'Get signin ticket for the demo user. (Not for direct client use, only valid on demo app)'})
+    async getSigninTicket(
+        @Body('userId') userId: string,
+    ): Promise<string | null> {
+      if (userId === process.env.CLERK_DEMO_USER_ID) {
+        const  ticket = await this.EZNotificationService.fetchSigninTicket(userId);
+        console.log(`controller returning ticket:${ticket}`);
+        return JSON.stringify({ ticket });
+      }
+      return null; // not allowed to get a signin ticket for any user except the demo app user
+    }
+
     @Post('/user/attach-to-organization')
     @ApiOperation({summary: 'Attach dashboard user to an organization. (Not for direct client use)'})
     @UseGuards(JwtAuthGuard)

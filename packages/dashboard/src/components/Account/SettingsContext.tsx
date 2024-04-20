@@ -22,6 +22,7 @@ const SettingsContext = createContext<SettingsContextType>({
     setCreatedLocalUser: (createdLocalUser: boolean) => {},
     createdLocalOrg: false,
     setCreatedLocalOrg: (createdLocalOrg: boolean) => {},
+    getSigninTicket: () => Promise.resolve(''),
 });
 
 export const useSettings = () => useContext(SettingsContext);
@@ -372,7 +373,28 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
             return (true);
     };
 
-
+    const getSigninTicket = async (userId: string) : Promise<string | null> => {
+      if (userId !== import.meta.env.VITE_CLERK_DEMO_USER_ID) {
+        return null; // can only get ticket for official demo user
+      }
+      const apiUrl = `${apiBaseUrl}/user/signin_ticket`;
+      const response = await fetch(apiUrl, {
+        method:'POST',
+        credentials: 'include',
+        headers: await getBearerHeader({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ 
+          userId
+        })
+      });
+      if (!response.ok) {
+        throw new Error (`HTTP error! status: ${response.status}`);
+      } else {
+        const data = await response.json();
+        console.log('getSigninTicket got data', data);
+        const ticket = data?.ticket;
+        return ticket ? ticket : null;
+      }      
+    };
 
     return (
       <SettingsContext.Provider 
@@ -395,6 +417,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
           setPermittedDomains,
           environments,
           setEnvironments,
+          getSigninTicket,
         }}>
             {children}
         </SettingsContext.Provider>

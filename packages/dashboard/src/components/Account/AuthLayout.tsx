@@ -17,37 +17,22 @@ const AuthLayout:React.FC<{children: React.ReactNode, imageUrl: string }> = ({ch
         {/* This div will have the background image */}
       </div>
       <div className={classes.rightColumn}>
+        { 
+          import.meta.env.VITE_IS_DEMO_SITE === 'true' && (
+            <>
+              <Card>
+                <Title style={{marginBottom:'5px',fontStyle:'italic'}} order={2}>Welcome to the demo of This Is Not A Drill!</Title>
+                <Text size="lg">If you are seeing this page in an iframe, please click&nbsp;
+                  <Anchor target="_blank" href="/" style={{fontWeight:800}}>here</Anchor> before entering the demo.</Text>
+                <Text size="lg" style={{paddingTop:'10px',fontStyle:'italic'}}>Please Note: This demo is best viewed on a laptop.</Text>
+              </Card>
+              <br />
+            </>
+          )
+        }
         <div className={classes.authComponents}>
           {children} {/* This will render SignIn or SignUp components */}
         </div>
-        { import.meta.env.VITE_IS_DEMO_SITE === 'true' && (
-            <>
-              <Card style={{marginLeft:'10px'}}>
-                <Title style={{marginBottom:'5px',fontStyle:'italic'}} order={5}>How to log in to the demo:</Title>
-                <List style={{paddingRight:'15px'}}>
-                  <List.Item>Use <Code>demo@this-is-not-a-drill.com</Code> for the email address.</List.Item>
-                  <List.Item>Copy the password to your clipboard by clicking this icon:
-                    <CopyButton value="#tinad1#" timeout={2000}>
-                      {({ copied, copy }) => (
-                        <Tooltip label={copied ? 'Copied password!' : 'Copy'} withArrow position="right">
-                          <ActionIcon color={copied ? '#333' : 'gray'} variant="subtle" onClick={copy} style={{color:'#fff'}}>
-                            {copied ? (
-                              <IconCheck style={{ width: rem(20) }} />
-                            ) : (
-                              <IconCopy style={{ width: rem(20) }} />
-                            )}
-                          </ActionIcon>
-                        </Tooltip>
-                      )}
-                    </CopyButton>
-                    (and then paste it into the password field).
-                  </List.Item>
-                </List>
-              </Card>
-              <br />
-              <Text>If you are seeing this signin page in an iframe, please click <Anchor target="_blank" href="/">here</Anchor> before logging in.</Text>
-            </>
-          )}
         {/*
             <div className={classes.customerNameplates}>
             Trusted by these brands:

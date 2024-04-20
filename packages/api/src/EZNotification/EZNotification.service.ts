@@ -767,5 +767,44 @@ export class EZNotificationService {
             throw new NotFoundException(errorMsg);
         }
     }
+  
+    async fetchSigninTicket(userId: string): Promise<string | null> {
+      try {
+        const signinTicketUrl = 'https://api.clerk.com/v1/sign_in_tokens';
+        const backendSecret = process.env.CLERK_DEMO_BACKEND_SECRET;
+        const headers = {
+            'Authorization': `Bearer ${backendSecret}`, 
+            'Content-type': 'application/json' 
+        };
+/*
+        const body = JSON.stringify({
+            email_address: 'demo@this-is-not-a-drill.com',
+            redirect_url: 'http://localhost:5173',
+        });
+*/
+        const body = JSON.stringify({
+          'user_id': 'user_2fHIpN82F9VZ2KTFOT1PHLBHyqh',
+          'expires_in_seconds' : 3600,
+        });
+        console.log(`headers: ${JSON.stringify(headers,null,2)}`);
+        console.log(`body: ${body}`);
+        const response = await fetch(signinTicketUrl, {
+          method:'POST',
+          headers,
+          body,
+        });
+        if (!response.ok) {
+          throw new Error(`Failed to fetch signin ticket data from Clerk: ${response.statusText}`);
+        } else {
+          const data = await response.json();
+          const ticket = data.token;
+          console.log('Got ticket:', ticket);
+          return ticket ? ticket : null;
+        }
+      } catch(error) {
+        console.log(`Failed to fetch signin ticket from Clerk at all: ${error}`);
+        return null;
+      }
+    }
 
 }

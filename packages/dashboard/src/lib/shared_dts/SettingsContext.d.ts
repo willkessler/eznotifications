@@ -33,4 +33,5 @@ export interface SettingsContextType {
     setCreatedLocalUser: (createdLocalUser: boolean) => void;
     createdLocalOrg: boolean;
     setCreatedLocalOrg: (createdLocalOrg: boolean) => void;
+    getSigninTicket: (userId: string) => Promise<string | null>;
 }
