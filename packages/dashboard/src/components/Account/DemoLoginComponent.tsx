@@ -4,6 +4,7 @@ import { useUser, useSignIn, SignIn } from "@clerk/clerk-react";
 import AuthLayout from './AuthLayout';
 import { useSettings } from './SettingsContext';
 import { Title, Text, Button } from '@mantine/core';
+import LogRocket from 'logrocket';
 
 interface ClerkSigninError extends Error {
   errors: { code: string; message: string }[];
@@ -17,9 +18,17 @@ const DemoLoginComponent = () => {
   const [ loginButtonTitle,  setLoginButtonTitle ] = useState<string>(defaultButtonTitle);
   const redirectUrl = (import.meta.env.VITE_IS_DEMO_SITE === 'true' ? import.meta.env.VITE_TINAD_DEMOPANEL_URL + '/demo' : '/');
   const demoPanelsUrl = import.meta.env.VITE_TINAD_DEMOPANEL_URL + '/demo';
-
+  
   if (!isLoaded) {
     return null;
+  }
+  
+  const logRocketIdentifyDemoUser = ():void => {
+    LogRocket.identify(import.meta.env.VITE_CLERK_DEMO_USER_ID, {
+      name: 'Demo User',
+      email: import.meta.env.VITE_CLERK_DEMO_USER_EMAIL,
+      subscriptionType: 'free',
+    });
   }
   
   const doSignIn = async ():Promise<boolean> => {
@@ -35,6 +44,7 @@ const DemoLoginComponent = () => {
         setLoginButtonTitle(defaultButtonTitle);
       } else {
         console.log('we signed in as demo user?');
+        logRocketIdentifyDemoUser();
         window.open(demoPanelsUrl, '_blank');
         window.close();
         return true;
@@ -45,6 +55,7 @@ const DemoLoginComponent = () => {
         console.log(`doSignin error: ${errorCode}`);
         if (errorCode === 'session_exists') {
           console.log('session exists');
+          logRocketIdentifyDemoUser();
           window.open(demoPanelsUrl, '_blank');
           window.close();
           return true;
@@ -59,6 +70,7 @@ const DemoLoginComponent = () => {
   // Redirect authenticated users back to the dashboard if they somehow navigated to login,
   // unless running on the demo site, in which case, redirect to the demo site.
   if (isSignedIn) {
+    logRocketIdentifyDemoUser();
     if (import.meta.env.VITE_IS_DEMO_SITE === 'true') {
       // on the demo site, if you land at the login page and you're already logged in, then go to the demo app
       window.location.href = demoPanelsUrl;

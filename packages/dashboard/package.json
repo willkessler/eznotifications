@@ -44,6 +44,7 @@
     "dompurify": "^3.0.8",
     "embla-carousel-react": "^8.0.0-rc19",
     "jszip": "^3.10.1",
+    "logrocket": "^8.1.0",
     "luxon": "^3.4.4",
     "marked": "^11.2.0",
     "moment-timezone": "^0.5.45",

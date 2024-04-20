@@ -10163,6 +10163,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"logrocket@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "logrocket@npm:8.1.0"
+  checksum: fef2973d8e304036ebc5e304a93bb157c3b32aac43966e0373e3d6007a6d287db05ea66f15e6691ce390d74298ead101684d5ea7400a1b0f4e5a813db4d947b9
+  languageName: node
+  linkType: hard
+
 "loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
@@ -10355,6 +10362,7 @@ __metadata:
     identity-obj-proxy: "npm:^3.0.0"
     jsdom: "npm:^23.0.1"
     jszip: "npm:^3.10.1"
+    logrocket: "npm:^8.1.0"
     luxon: "npm:^3.4.4"
     marked: "npm:^11.2.0"
     moment-timezone: "npm:^0.5.45"
