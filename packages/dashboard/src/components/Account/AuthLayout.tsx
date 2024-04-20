@@ -21,9 +21,7 @@ const AuthLayout:React.FC<{children: React.ReactNode, imageUrl: string }> = ({ch
           import.meta.env.VITE_IS_DEMO_SITE === 'true' && (
             <>
               <Card>
-                <Title style={{marginBottom:'5px',fontStyle:'italic'}} order={2}>Welcome to the demo of This Is Not A Drill!</Title>
-                <Text size="lg">If you are seeing this page in an iframe, please click&nbsp;
-                  <Anchor target="_blank" href="/" style={{fontWeight:800}}>here</Anchor> before entering the demo.</Text>
+                <Title style={{marginBottom:'5px'}} order={2}>Demo Site: This Is Not A Drill!</Title>
                 <Text size="lg" style={{paddingTop:'10px',fontStyle:'italic'}}>Please Note: This demo is best viewed on a laptop.</Text>
               </Card>
               <br />
