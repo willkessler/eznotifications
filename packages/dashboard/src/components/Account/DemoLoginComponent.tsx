@@ -5,6 +5,10 @@ import AuthLayout from './AuthLayout';
 import { useSettings } from './SettingsContext';
 import { Title, Text, Button } from '@mantine/core';
 
+interface ClerkSigninError extends Error {
+  errors: { code: string; message: string }[];
+}
+
 const DemoLoginComponent = () => {
   const defaultButtonTitle = 'Click here to enter the demo site!';
   const { isSignedIn } = useUser();
@@ -18,7 +22,7 @@ const DemoLoginComponent = () => {
     return null;
   }
   
-  const doSignIn = async ():boolean => {
+  const doSignIn = async ():Promise<boolean> => {
     const clerkTicket = await getSigninTicket(import.meta.env.VITE_CLERK_DEMO_USER_ID);
     setLoginButtonTitle('Working on it!...');
     try {
@@ -33,18 +37,23 @@ const DemoLoginComponent = () => {
         console.log('we signed in as demo user?');
         window.open(demoPanelsUrl, '_blank');
         window.close();
-    }
+        return true;
+      }
     } catch(error) {
-      const errorCode = error.errors[0].code;
-      console.log(`doSignin error: ${errorCode}`);
-      if (errorCode === 'session_exists') {
-        console.log('session exists');
-        window.open(demoPanelsUrl, '_blank');
-        window.close();
-      } else {
-        setLoginButtonTitle(defaultButtonTitle);
+      if ((error as ClerkSigninError).errors) {
+        const errorCode = (error as ClerkSigninError).errors[0].code;
+        console.log(`doSignin error: ${errorCode}`);
+        if (errorCode === 'session_exists') {
+          console.log('session exists');
+          window.open(demoPanelsUrl, '_blank');
+          window.close();
+          return true;
+        } else {
+          setLoginButtonTitle(defaultButtonTitle);
+        }
       }
     }
+    return false;
   }
 
   // Redirect authenticated users back to the dashboard if they somehow navigated to login,
