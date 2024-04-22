@@ -121,7 +121,7 @@ export class EZNotificationService {
                 console.log(`Set dismissed flag on: ${results.affected} end_users_served rows.`);
                 return ezNotification;
             } catch(error) {
-                throw new NotFoundException(`Cannot dismiss end_users_served row for Notification uuid ${notificationUuid}.`);
+                throw new NotFoundException(`Cannot dismiss end_users_served row for Notification uuid ${notificationUuid}, error: ${error}.`);
             }
         } else {
             throw new NotFoundException(`Notification w/uuid ${notificationUuid} not found, ` +
@@ -151,7 +151,7 @@ export class EZNotificationService {
                 console.log(`Set ignored flag on: ${results.affected} end_users_served rows.`);
                 return ezNotification;
             } catch (error) {
-                throw new NotFoundException(`Cannot update end_users_served rows for notification uuid: ${notificationUuid}.`);
+                throw new NotFoundException(`Cannot update end_users_served rows for notification uuid: ${notificationUuid}, error: ${error}.`);
             }
         } else {
             throw new NotFoundException(`Notification w/uuid ${notificationUuid} not found.`);
@@ -199,7 +199,7 @@ export class EZNotificationService {
             console.log(`Set ignored flag on: ${results.affected} end_users_served rows.`);
             return true;
         } catch (error) {
-            throw new Error('Cannot update EndUsersServed records to reset all views.');
+            throw new Error(`Cannot update EndUsersServed records to reset all views, error: ${error}.`);
         }
     }
 
@@ -404,7 +404,7 @@ export class EZNotificationService {
                 return newUserRecord;
             } catch(error) {
                 throw new NotFoundException(`--> createLocalUser : unable to create local user with clerkUserId: ` +
-                    `${clerkUserId}, primaryEmail: ${primaryEmail}`);
+                    `${clerkUserId}, primaryEmail: ${primaryEmail}, error: ${error}`);
             }
         }
     }
@@ -457,7 +457,7 @@ export class EZNotificationService {
                 });
                 return this.userOrganizationRepository.save(newUserOrganization);
             } catch (error) {
-                const errorMsg = 'Error: unable to create userOrganization ' + postfix;
+                const errorMsg = 'Error: unable to create userOrganization ' + postfix + ` error: ${error}`;
                 console.error(errorMsg);
                 throw new NotFoundException(errorMsg);
             }
@@ -502,7 +502,7 @@ export class EZNotificationService {
                 return this.organizationRepository.save(newOrganization);
             } catch (error) {
                 const errorMsg = `Unable to create an organization for ` +
-                    `clerk org id: ${organizationData.clerkOrganizationId}.`;
+                    `clerk org id: ${organizationData.clerkOrganizationId}, error: ${error}`;
                 console.log(errorMsg);
                 throw new NotFoundException(errorMsg);
             }

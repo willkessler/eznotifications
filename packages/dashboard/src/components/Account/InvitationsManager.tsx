@@ -8,8 +8,8 @@ const InvitationsManager = () => {
   const { isSignedIn, isLoaded } = useUser();
   const { invitations, organization } = useOrganization({ invitations: true });
   const [ invitationData, setInvitationData ] = useState([]);
-  const [ emailAddress, setEmailAddress ] = useState('');
-  const [ isValidEmail, setIsValidEmail ] = useState(false);
+  const [ emailAddress, setEmailAddress ] = useState('willkessler+test1@gmail.com');
+  const [ isValidEmail, setIsValidEmail ] = useState(true);
   const [ role, setRole ] = useState('org:member');
   const [ disabled, setDisabled ] = useState(false);
   const [ sendLabel, setSendLabel ] = useState('Send invitation');
@@ -40,6 +40,7 @@ const InvitationsManager = () => {
     setDisabled(true);
     console.log(`sendInvitation, organization:${JSON.stringify(organization, null, 2)}, organization.inviteMember: $`);
     setDisabled(true);
+
     setSendLabel('...working...');
     try {
       await organization?.inviteMember({ emailAddress, role });
@@ -47,6 +48,7 @@ const InvitationsManager = () => {
       console.log(`Cannot send invitation to ${emailAddress}. Error: ${error}.`);
     }
     await invitations?.revalidate?.();
+
     setEmailAddress('');
     setRole(role);
   };
@@ -93,34 +95,33 @@ const InvitationsManager = () => {
               </Group>
         </Paper>
       ))}
-      <form onSubmit={sendInvitation}>
-        <Group justify="flex-start" p="sm" gap="xs">
-          <Text size="md">Add teammates:</Text>
-          <TextInput
-            size="xs"
-            placeholder="teammate@example.com"
-            value={emailAddress}
-            onChange={handleEmailChange}
-            required
-          />
-          <Radio.Group
-            name="Role"
-            withAsterisk
-            value={role}
-            onChange={setRole}
-            size="xs"
-            className={classes.invitationControlsGroup}
-          >
-            <Group>
-              <Radio value="org:member" label="Member" size="xs" iconColor="dark.8" color="lime.4" />
-              <Radio value="org:admin" label="Admin" iconColor="dark.8" color="lime.4"  />
-            </Group>
-          </Radio.Group>
-          <Button size="xs" type="submit" disabled={disabled || !isValidEmail}>
-            {sendLabel}
-          </Button>
-        </Group>
-      </form>
+
+      <Group justify="flex-start" p="sm" gap="xs">
+        <Text size="md">Add teammates:</Text>
+        <TextInput
+          size="xs"
+          placeholder="teammate@example.com"
+          value={emailAddress}
+          onChange={handleEmailChange}
+          required
+        />
+        <Radio.Group
+          name="Role"
+          withAsterisk
+          value={role}
+          onChange={setRole}
+          size="xs"
+          className={classes.invitationControlsGroup}
+        >
+          <Group>
+            <Radio value="org:member" label="Member" size="xs" iconColor="dark.8" color="lime.4" />
+            <Radio value="org:admin" label="Admin" iconColor="dark.8" color="lime.4"  />
+          </Group>
+        </Radio.Group>
+        <Button onClick={sendInvitation} size="xs" type="submit" disabled={disabled || !isValidEmail}>
+          {sendLabel}
+        </Button>
+      </Group>
 
 
     </div>
