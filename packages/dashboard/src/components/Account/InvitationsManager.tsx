@@ -5,8 +5,15 @@ import { OrganizationInvitationResource } from "@clerk/types";
 import { Anchor, Button, Group, Paper, Radio, Stack, TextInput, Textarea, Text } from '@mantine/core';
 
 const InvitationsManager = () => {
-  const { isSignedIn, isLoaded } = useUser();
-  const { invitations, organization } = useOrganization({ invitations: true });
+  const { isSignedIn, isLoaded, user } = useUser();
+  console.log(JSON.stringify(user.organizationMemberships[0].organization, null, 2));
+  const organization = user?.organizationMemberships[0]?.organization;
+  const { invitations } = useOrganization({ invitations: true });
+  console.log('Organization:');
+  console.log(JSON.stringify(organization,null,2));
+  console.log('Invitations:');
+  console.log(JSON.stringify(invitations,null,2));
+  const [ storedInvites, setStoredInvites ] = useState([]);
   const [ invitationData, setInvitationData ] = useState([]);
   const [ emailAddress, setEmailAddress ] = useState('');
   const [ isValidEmail, setIsValidEmail ] = useState(false);
@@ -22,6 +29,7 @@ const InvitationsManager = () => {
     //console.log(`clerk organization: ${organization.inviteMember}`);
       setSendLabel('Send invitation');
       setDisabled(false);
+    setStoredInvites(organization.getInvitations());
   }, [invitations]);
 
   const validateEmail = (email:string) => {
@@ -38,8 +46,10 @@ const InvitationsManager = () => {
 
   const sendInvitation = async () => {
     setDisabled(true);
-    console.log(`sendInvitation, organization:${JSON.stringify(organization, null, 2)}, organization.inviteMember: $`);
+    //console.log(`sendInvitation, organization:${JSON.stringify(organization, null, 2)}, organization.inviteMember: $`);
     setDisabled(true);
+    console.log(storedInvites);
+    debugger;
 
     setSendLabel('...working...');
     try {
