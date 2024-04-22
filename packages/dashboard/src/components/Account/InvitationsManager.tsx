@@ -8,8 +8,8 @@ const InvitationsManager = () => {
   const { isSignedIn, isLoaded } = useUser();
   const { invitations, organization } = useOrganization({ invitations: true });
   const [ invitationData, setInvitationData ] = useState([]);
-  const [ emailAddress, setEmailAddress ] = useState('willkessler+test1@gmail.com');
-  const [ isValidEmail, setIsValidEmail ] = useState(true);
+  const [ emailAddress, setEmailAddress ] = useState('');
+  const [ isValidEmail, setIsValidEmail ] = useState(false);
   const [ role, setRole ] = useState('org:member');
   const [ disabled, setDisabled ] = useState(false);
   const [ sendLabel, setSendLabel ] = useState('Send invitation');

@@ -659,7 +659,12 @@ export class EZNotificationService {
         console.log('getOrgConfiguration: finding permittedDomains');
 
         const permittedDomains = await this.permittedDomainsRepository.find({ where: { organizationUuid } });
-        const permittedDomainsString = permittedDomains.map(pd => pd.domain).join('\n');
+        let permittedDomainsString;
+        if (permittedDomains) {
+          permittedDomainsString = permittedDomains.map(pd => pd.domain).join('\n');
+        } else {
+          permittedDomainsString = 'stackblitz.com';
+        }
         const orgConfig:OrganizationDataProps = {
             organizationName:    organization.name,
             clerkCreatorId:      organization.clerkCreatorId,
