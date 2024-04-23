@@ -178,9 +178,8 @@ export class EZNotificationService {
         // Update the EndUsersServed records
         const rightNow = new Date();
         try {
-            const results =
-                await this.endUsersServedRepository
-                    .createQueryBuilder()
+          const queryBuilder = this.endUsersServedRepository
+            .createQueryBuilder()
                     .update(EndUsersServed)
                     .set({
                         ignored: true,
@@ -194,10 +193,11 @@ export class EZNotificationService {
                         INNER JOIN notifications n ON eus.notification_uuid = n.uuid
                         WHERE eu.organization_uuid = :organizationUuid
                         AND NOT ('production' = ANY(n.environments))
-                        )`, { organizationUuid })
-                    .execute();
-            console.log(`Set ignored flag on: ${results.affected} end_users_served rows.`);
-            console.log(`Set ignored flag for organization id: ${organizationUuid}`);
+                        )`, { organizationUuid });
+            console.log(`SQL Query: ${queryBuilder.getQuery()}`);
+            console.log(`Params: ${queryBuilder.getParameters()}`);
+            const results = await queryBuilder.execute();
+            console.log(`Set ignored flag on: ${results.affected} end_users_served rows for organization id: ${organizationUuid}`);
             return true;
         } catch (error) {
             throw new Error(`Cannot update EndUsersServed records to reset all views, error: ${error}.`);
