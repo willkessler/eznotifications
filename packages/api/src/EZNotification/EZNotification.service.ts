@@ -664,6 +664,7 @@ export class EZNotificationService {
         console.log('getOrgConfiguration: finding permittedDomains');
 
         const permittedDomains = await this.permittedDomainsRepository.find({ where: { organizationUuid } });
+        console.log(`Query for permitted domains returned: ${JSON.stringify(permittedDomains)}, organizationUuid: ${organizationUuid}, clerkId: ${clerkId}`);
         let permittedDomainsString;
         if (permittedDomains) {
           permittedDomainsString = permittedDomains.map(pd => pd.domain).join('\n');
