@@ -55,7 +55,7 @@ export class ApiKeyAuthGuard implements CanActivate {
         });
         // Look up the api key's permitted domains via their common organization_uuid.
         // If the domain from the referrer header isn't among the permitted domains, reject.
-        console.log('We got this apiKeyEntity: ' , JSON.stringify(apiKeyEntity, null,2));
+      console.log(`We got this apiKey uuid: ${apiKeyEntity.uuid}.`);
         const apiKeyValue = apiKeyEntity.apiKey;
         const queryBuilder = this.apiKeyRepository
             .createQueryBuilder('api_key')
@@ -67,7 +67,7 @@ export class ApiKeyAuthGuard implements CanActivate {
         //const results = await queryBuilder.getMany(); // not sure why a regular getMany() didn't work here?
         //const domains = results.flatMap(result => result.organization.permittedDomains.map(pd => pd.domain));
         const results = await queryBuilder.getRawMany();
-        console.log('We got these results from getRawMany:', JSON.stringify(results));
+        //console.log('We got these results from getRawMany:', JSON.stringify(results));
         const domains = results.map(result => result.domain);
 
         console.log(process.env.NODE_ENV);

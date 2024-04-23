@@ -206,7 +206,7 @@ export class EZNotificationService {
     }
 
     async findAllNotifications(queryParams: QueryParamProps): Promise<EZNotification[]> {
-        console.log('findAll queryParams:', queryParams);
+        //console.log('findAll queryParams:', queryParams);
         if (queryParams.clerkUserId) {
             // The dashboard will send a clerk user id, we can use this to find the org for that user
             // and then pull up notifs for that org.
@@ -300,7 +300,7 @@ export class EZNotificationService {
                 },
               });
               if (existingRecord) {
-                console.log(`Got existingRecord ${JSON.stringify(existingRecord,null,2)}`);
+                // console.log(`Got existingRecord endUserServedRecord ${JSON.stringify(existingRecord)}`);
                 if (existingRecord.dismissed) {
                   alreadyViewedNotifications.push(notification.uuid);
                 } else {
