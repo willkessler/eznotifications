@@ -4272,10 +4272,10 @@
   resolved "https://registry.npmjs.org/@testing-library/user-event/-/user-event-14.5.2.tgz"
   integrity sha512-YAh82Wh4TIrxYLmfGcixwD18oIjyC1pFQC2Y01F2lzV2HTMiYrI0nze0FD0ocB//CKS/7jIUgae+adPqxK5yCQ==
 
-"@this-is-not-a-drill/react-core@^latest":
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/@this-is-not-a-drill/react-core/-/react-core-1.0.11.tgz#be66d3d85358ef4d4884ab8d1f69274b384f0e30"
-  integrity sha512-CEpHPKbbjc0AATP7w3bZlkW8yqwR063ndscqWD9hbJuWUdEt3ewFm90Y3/hyN8eq3TdrsdHC+z07fU4pnLxyHQ==
+"@this-is-not-a-drill/react-core@latest":
+  version "1.0.14"
+  resolved "https://registry.yarnpkg.com/@this-is-not-a-drill/react-core/-/react-core-1.0.14.tgz#fec9b65cd3193ea85351bf8f11d65e66083ee9ce"
+  integrity sha512-pT+lhrKo9Bify+7jwZZjnoc7TxJvtDRuib4xpjBHqs6p/aXUcWpFvR/UyrIZhNGcsEpjzy2KGflU+wpzLW91Ng==
   dependencies:
     "@rollup/plugin-commonjs" "^25.0.7"
     "@rollup/plugin-node-resolve" "^15.2.3"
@@ -11301,6 +11301,11 @@ log-symbols@^4.0.0, log-symbols@^4.1.0:
   dependencies:
     chalk "^4.1.0"
     is-unicode-supported "^0.1.0"
+
+logrocket@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/logrocket/-/logrocket-8.1.0.tgz#2b804985b5370b359831ee03c92423e08ac48044"
+  integrity sha512-0PRv9lnS90KBrL3mfiQzcKEPvNT3N55pRN0PRe/q3DqWFQbIW1p72MmMp9a3Qi9la6o+TXri7r68ZE0AM7vsDA==
 
 longest-streak@^3.0.0:
   version "3.1.0"

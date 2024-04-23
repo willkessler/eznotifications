@@ -249,6 +249,7 @@ export class EZNotificationService {
             const environments = queryParams.environments;
             const domains = queryParams.domains;
             const organization = queryParams.organization;
+            const organizationUuid = organization.uuid;
             const alreadyViewedNotifications:string[] = [];
             const servedNotifications:EZNotification[] = [];
             console.log('We found organization with uuid:', organization?.uuid);
