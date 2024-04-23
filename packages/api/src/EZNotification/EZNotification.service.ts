@@ -291,7 +291,7 @@ export class EZNotificationService {
             const rightNow = new Date();
             for (const notification of eligibleNotifications) {
               // Check if there's an existing record for this notification and end user
-              console.log(`Checking notification ${notification.uuid} for existing end_users_served record, userId: ${userId}, notification.uuid: ${notification.uuid}`);
+              //console.log(`Checking notification ${notification.uuid} for existing end_users_served record, userId: ${userId}, notification.uuid: ${notification.uuid}`);
               const existingRecord = await transactionalEntityManager.findOne(EndUsersServed, {
                 where: {
                   endUser: { endUserId: userId },
@@ -309,13 +309,13 @@ export class EZNotificationService {
                 }
 
                 // Update existing end_users_served record.
-                console.log(`^^^^^^ Updating existing endUsersServed record, notification uuid: ${notification.uuid}`);
+                // console.log(`^^^^^^ Updating existing endUsersServed record, notification uuid: ${notification.uuid}`);
                 existingRecord.latestAccessTime = rightNow;
                 existingRecord.viewCount += 1;
                 await transactionalEntityManager.save(existingRecord);
               } else {
                 // Create a new EndUsersServed record as it doesn't exist
-                console.log(`^^^^^^ Creating new endUsersServed record, notification uuid: ${notification.uuid}`);
+                // console.log(`^^^^^^ Creating new endUsersServed record, notification uuid: ${notification.uuid}`);
                 const newRecordData =  {
                   notification: notification,
                   endUser: endUser,
