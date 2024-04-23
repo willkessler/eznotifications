@@ -197,6 +197,7 @@ export class EZNotificationService {
                         )`, { organizationUuid })
                     .execute();
             console.log(`Set ignored flag on: ${results.affected} end_users_served rows.`);
+            console.log(`Set ignored flag for organization id: ${organizationUuid}`);
             return true;
         } catch (error) {
             throw new Error(`Cannot update EndUsersServed records to reset all views, error: ${error}.`);
@@ -266,6 +267,7 @@ export class EZNotificationService {
             // Find all notifications not yet served to this user, and serve them
             const eligibleNotifications =
               await transactionalEntityManager.createQueryBuilder(EZNotification, 'notification')
+                .andWhere(`(notification.live IS TRUE)`)
                 .andWhere(`(notification.deleted IS FALSE)`)
                 .andWhere(`((notification.startDate IS NULL  AND notification.endDate IS NULL) OR    -- no time frame set
                             (notification.startDate <= NOW() AND notification.endDate >= NOW() ) OR  -- current time within time frame window
@@ -275,6 +277,7 @@ export class EZNotificationService {
                 .andWhere(`(notification.pageId = :pageId OR notification.pageId = '')`, { pageId })
                 .andWhere(`(notification.environments && :environments OR notification.environments = \'{}\')`, { environments })
                 .andWhere(`(notification.domains && :domains OR notification.domains = \'{}\')`, { domains })
+                .andWhere('notification.organizationUuid = :organizationUuid', { organizationUuid })
                 .getMany();
 
             // Persist the served notifications as EndUsersServed
