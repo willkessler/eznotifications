@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Joyride from 'react-joyride';
-import { Anchor, Button, Image, Modal, Space } from '@mantine/core';
+import { Anchor, Button, Image, Modal, Space, Stack, Text, Title } from '@mantine/core';
 import mainClasses from './css/MainLayout.module.css';
 import navClasses from './css/Navbar.module.css';
 import { useSettings } from '../Account/SettingsContext';
@@ -21,81 +20,52 @@ interface Step {
 const Tutorial = () => {
 
   const { createdLocalUser, createdLocalOrg } = useSettings();
-  const [ joyrideRunState, setJoyrideRunState ] = useState(false);
   const [ isTutorialModalOpen, setIsTutorialModeOpen ] = useState(false);
   
   useEffect(() => {
-    setIsTutorialModeOpen(createdLocalUser || createdLocalOrg);
+    setIsTutorialModeOpen(createdLocalUser || createdLocalOrg || true);
   }, [createdLocalUser, createdLocalOrg]);
 
-  const takeTheTour = () => {
+  const getStarted = () => {
     setIsTutorialModeOpen(false);
-    setJoyrideRunState(true);
   };
   
   const closeTutorialModal = () => {
     setIsTutorialModeOpen(false);
-  };
-
-  const steps:Step[] = [
-      {
-        target: '[data-tour="notifications"]',
-        content: 'Start at the Notifications page: create and configure notifications to show your users.', 
-        disableBeacon: true,
-        placement: 'right-end',
-        locale: { skip: <strong aria-label="skip">Skip</strong> },
-      },
-      {
-        target: '[data-tour="playground"]',
-        content: 'After setting up a notification or two, you can quickly try it out in the playground.', 
-        disableBeacon: true,
-        placement: 'right-end',
-      },
-      {
-        target: '[data-tour="statistics"]',
-        content: `Once you're in production, track your Notifications' performance, right down to the individual user.`,
-        disableBeacon: true,
-        placement: 'right-end',
-      },
-      {
-        target: '[data-tour="account"]',
-        content: `Invite others to the dashboard, manage API keys and payment methods here.`,
-        disableBeacon: true,
-        placement: 'right-end',
-      },
-      {
-        target: '[data-tour="help"]',
-        content: `That's pretty much it! If you need help, look here. Have fun!`,
-        disableBeacon: true,
-        placement: 'right-end',
-      },
-  ];
+  }
 
   return (
-      <>
-        <Modal.Root size="lg"
-                    opened={isTutorialModalOpen}
-                    onClose={closeTutorialModal} 
-                    closeOnClickOutside={false}
-                    radius="xl"
-                    centered 
-                    padding="lg">
-          <Modal.Overlay />
-          <Modal.Content>
+    <>
+      <Modal.Root size="lg"
+        opened={isTutorialModalOpen}
+        onClose={closeTutorialModal} 
+        closeOnClickOutside={false}
+        radius="xl"
+        centered 
+        padding="lg">
+        <Modal.Overlay />
+        <Modal.Content style={{ minWidth:'95%'}} >
             <Modal.Header>
               <Modal.Title style={{fontSize:'24px', fontWeight:'800', color:'#d33'}}>
                 <Image src="/ThisIsNotADrill_cutout.png" w={120} />
-                Welcome{ (!createdLocalOrg && createdLocalUser) && (<>, team member</>)}!
               </Modal.Title>
+              <Stack>
+                <Title order={3}>Welcome{ (!createdLocalOrg && createdLocalUser) && (<>, team member</>)}!</Title>
+              <Text><span style={{fontStyle:'italic',fontWeight:'bold'}}>This Is Not A Drill! </span> makes it dead simple to set up immediate, critical, or scheduled notices to users, without zero deployments. Watch a basic walkthrough below (if you like), then, click <i>Let's Get Started</i>.</Text>
+              </Stack>
             </Modal.Header>
             <Modal.Body>
+
               <div style={{marginBottom:'10px'}}>
-                { createdLocalOrg && (
+                { (createdLocalOrg || true) && (
                   <>
-                    <p> <span style={{fontStyle:'italic',fontWeight:'bold'}}>This Is Not A Drill! </span>
-                      makes it dead simple to set up immediate, critical, or scheduled notices to users, 
-                    <span style={{fontWeight:'bold'}}>without deploying code</span>.</p>
-                    <p>Why not take the (literally) 30-second tour?</p>
+                    <div style={{position: 'relative', paddingBottom: '56.25%', height:0 }}>
+                      <iframe src="https://www.loom.com/embed/0ff3df6af4744f72917f1ffb4d1f597b?sid=9d58f8ba-9ea7-42ab-81ed-0463a2696762" 
+                        frameBorder="0" 
+                        allowFullScreen 
+                        style={{position: 'absolute', top:0, left:0, width:'100%', height: '100%' }} >
+                      </iframe>
+                    </div>
                   </>
                 )}
                 { (!createdLocalOrg && createdLocalUser) && (
@@ -107,33 +77,12 @@ const Tutorial = () => {
                 )}
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems:'center', marginTop:'30px' }}>
-                <Anchor onClick={() => { closeTutorialModal() }} style={{ fontStyle:'italic', marginRight:'10px', color:'#999'}}>No thanks, I got this!</Anchor>
-                <Button onClick={() => { takeTheTour() }}>Take the 30-second tour!</Button>
+                <Button onClick={() => { getStarted() }}>Let's Get Started</Button>
               </div>
             </Modal.Body>
           </Modal.Content>
         </Modal.Root>
 
-        <Joyride 
-          continuous
-          hideCloseButton
-          run={joyrideRunState}
-          scrollToFirstStep
-          showProgress
-          showSkipButton
-          steps={steps}
-          styles={{
-            options: {
-              zIndex: 10000,
-              arrowColor: '#fff',
-              backgroundColor: '#fff',
-              overlayColor: 'rgba(0, 0, 0, 0.5)',
-              primaryColor: '#f04',
-              spotlightShadow: '0 0 15px rgba(0, 0, 0, 0.5)',
-              textColor: '#333',
-            }
-          }}
-         />
     </>
   );
 
