@@ -194,8 +194,9 @@ export class EZNotificationService {
                         WHERE eu.organization_uuid = :organizationUuid
                         AND NOT ('production' = ANY(n.environments))
                         )`, { organizationUuid });
-            console.log(`SQL Query: ${queryBuilder.getQuery()}`);
-            console.log(`Params: ${queryBuilder.getParameters()}`);
+            console.log(`]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] SQL Query: ${queryBuilder.getQuery()}`);
+            const queryParams = queryBuilder.getParameters();
+            console.log(`]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] SQL Query Params: ${JSON.stringify(queryParams,null,2)}`);
             const results = await queryBuilder.execute();
             console.log(`Set ignored flag on: ${results.affected} end_users_served rows for organization id: ${organizationUuid}`);
             return true;
