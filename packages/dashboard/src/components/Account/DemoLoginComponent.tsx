@@ -86,7 +86,7 @@ const DemoLoginComponent = () => {
   return (
     <>
       <AuthLayout imageUrl="/ThisIsNotADrill1.png" >
-        <Button size="lg" onClick={doSignIn}>{loginButtonTitle}</Button>
+        <Button style={{marginLeft: '10px'}} size="lg" onClick={doSignIn}>{loginButtonTitle}</Button>
       </AuthLayout>
     </>
   );
