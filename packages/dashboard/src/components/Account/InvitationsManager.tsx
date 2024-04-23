@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import classes from './css/InviteUser.module.css';
-import { useUser, useOrganization } from "@clerk/clerk-react";
-import { OrganizationInvitationResource } from "@clerk/types";
+import { useUser, useSignIn, useOrganization } from "@clerk/clerk-react";
+import { OrganizationInvitationResource, SessionWithActivitiesResource } from "@clerk/types";
 import { Anchor, Button, Group, Paper, Radio, Stack, TextInput, Textarea, Text } from '@mantine/core';
 
 const InvitationsManager = () => {
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded, user } = useUser();
   const { invitations, organization } = useOrganization({ invitations: true });
-  const [ invitationData, setInvitationData ] = useState([]);
+  const { setActive } = useSignIn();
+
+  const [ userSession, setUserSession ] = useState<SessionWithActivitiesResource | null>(null);
   const [ emailAddress, setEmailAddress ] = useState('');
   const [ isValidEmail, setIsValidEmail ] = useState(false);
   const [ role, setRole ] = useState('org:member');
@@ -18,11 +20,28 @@ const InvitationsManager = () => {
     return null;
   }
 
+  // this code forces clerk to make its hook work
+  const getUserSessions = async () => {
+    const userSessions = await user.getSessions();
+    setUserSession(userSessions[0]);
+    const userOrganization = user.organizationMemberships[0].organization;
+    if (setActive) {
+      await setActive({
+        organization: userOrganization.id
+      });
+    } else {
+      console.error(`Cannot call setActive on the clerk userOrganization: ${JSON.stringify(userOrganization,null,1)}`);
+    }
+  }
+
   useEffect(() => {
     //console.log(`clerk organization: ${organization.inviteMember}`);
-      setSendLabel('Send invitation');
-      setDisabled(false);
-  }, [invitations]);
+    setSendLabel('Send invitation');
+    setDisabled(false);
+    //console.log(`user: ${JSON.stringify(user, null, 2)}`);
+    //console.log(`userSession: ${JSON.stringify(userSession, null, 2)}`);
+    getUserSessions();
+  }, []);
 
   const validateEmail = (email:string) => {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -37,8 +56,9 @@ const InvitationsManager = () => {
   };
 
   const sendInvitation = async () => {
+    //console.log(`organization: ${organization}`);
     setDisabled(true);
-    console.log(`sendInvitation, organization:${JSON.stringify(organization, null, 2)}, organization.inviteMember: $`);
+    //console.log(`sendInvitation, organization:${JSON.stringify(organization, null, 2)}, organization.inviteMember: $`);
     setDisabled(true);
 
     setSendLabel('...working...');
