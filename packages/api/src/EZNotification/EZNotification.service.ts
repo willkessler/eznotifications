@@ -676,7 +676,7 @@ export class EZNotificationService {
             clerkCreatorId:      organization.clerkCreatorId,
             clerkOrganizationId: organization.clerkOrganizationId,
             permittedDomains:    permittedDomainsString,
-            environments:        organization.environments ? organization.environments.join('\n') : '{"Development","Staging","UAT","Production"}';
+            environments:        organization.environments ? organization.environments.join('\n') : '{"Development","Staging","UAT","Production"}',
         };
         console.log('orgConfig:', JSON.stringify(orgConfig,null,2));
         return orgConfig;
