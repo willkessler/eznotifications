@@ -23,7 +23,7 @@ const Tutorial = () => {
   const [ isTutorialModalOpen, setIsTutorialModeOpen ] = useState(false);
   
   useEffect(() => {
-    setIsTutorialModeOpen(createdLocalUser || createdLocalOrg || true);
+    setIsTutorialModeOpen(createdLocalUser || createdLocalOrg);
   }, [createdLocalUser, createdLocalOrg]);
 
   const getStarted = () => {
@@ -57,7 +57,7 @@ const Tutorial = () => {
             <Modal.Body>
 
               <div style={{marginBottom:'10px'}}>
-                { (createdLocalOrg || true) && (
+                { (createdLocalOrg) && (
                   <>
                     <div style={{position: 'relative', paddingBottom: '56.25%', height:0 }}>
                       <iframe src="https://www.loom.com/embed/0ff3df6af4744f72917f1ffb4d1f597b?sid=9d58f8ba-9ea7-42ab-81ed-0463a2696762" 
