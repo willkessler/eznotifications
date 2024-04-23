@@ -502,6 +502,7 @@ export class EZNotificationService {
                     clerkCreatorId: organizationData.clerkCreatorId,
                     clerkOrganizationId: organizationData.clerkOrganizationId,
                     pricingModel: basePricingModel,
+                    environments: ["Development", "Staging", "UAT", "Production"],
                 });
                 console.log(`Created a new organization with id: ${newOrganization.uuid}`);
                 return this.organizationRepository.save(newOrganization);
