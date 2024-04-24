@@ -44,14 +44,20 @@ export class ApiKeyAuthGuard implements CanActivate {
     private isDomainAuthorized(apiKeyEntity: ApiKey, allowedDomains: string[], currentDomain: string): boolean {
       if (apiKeyEntity.expiresAt !== null) {
         // temporary API key. if the inbound domain is still current, proceed.
+        console.log(`Checking temporary key with expiresAt: ${apiKeyEntity.expiresAt}`);
         const rightNow = new Date().getTime();
         const dateCheck = new Date(apiKeyEntity.expiresAt).getTime();
         if (dateCheck < rightNow) {
+          console.log('Key seems to be expired');
           return false; // this temporary key has expired, do not honor
         }
         // if the temporary key ends in stackblitz.com, proceed.
-        return currentDomain.endsWith('stackblitz.com');
+        const isStackBlitz = currentDomain.endsWith('stackblitz.com');
+        console.log(`isStackblitz? : ${isStackblitz}`);
+        return isStackBlitz;
       }
+
+      console.log(`Proceeding to check against domains list ${JSON.stringify(allowedDomains)}`);
 
       return allowedDomains.some(allowedDomain => {
         if (allowedDomain.startsWith('*.')) {
