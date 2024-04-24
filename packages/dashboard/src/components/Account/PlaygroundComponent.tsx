@@ -271,6 +271,7 @@ export const envConfig = {
                 This <b>temporary API key</b> expires at: &nbsp; <span style={{padding:'3px', border:'1px dotted #666', fontStyle:'normal', color:'green'}}>
                 {temporaryAPIKeyExpiration ? temporaryAPIKeyExpiration : ''} </span> 
                 <br />The API key will be automatically injected into the Playground for you.
+                <br />Make sure you add <Code>*.stackblitz.com</Code> to your <Anchor href="/settings/app-config">allowed web domains</Anchor> before jumping to the playground.
                 <br />(You can also use this API key locally to try out the <Anchor target="_blank" href="https://github.com/willkessler/this-is-not-a-drill-examples">sample app</Anchor>).
               </Text>
           ) }

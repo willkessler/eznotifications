@@ -40,6 +40,18 @@ export class ApiKeyAuthGuard implements CanActivate {
         return 'referer' in request.headers;
     }
 
+    // Function to check if a domain matches any of the allowed patterns
+    private isDomainAuthorized(allowedDomains: string[], currentDomain: string): boolean {
+      return allowedDomains.some(allowedDomain => {
+        if (allowedDomain.startsWith('*.')) {
+          const baseDomain = allowedDomain.slice(2); // Remove '*.' to get the base domain
+          return currentDomain.endsWith(baseDomain);
+        } else {
+          return allowedDomain === currentDomain;
+        }
+      });
+    }
+
     private async validateFrontendApiKey(apiKey: string, request: CustomRequest): Promise<boolean> {
         const referer = new URL(request.headers.referer);
         const domain = referer.hostname;
@@ -77,7 +89,7 @@ export class ApiKeyAuthGuard implements CanActivate {
 
         console.log(`validateFrontendApiKey, domains: ${domains}, seeking domain: ${domain}`);
 
-        if (!apiKeyEntity || !apiKeyEntity.isActive || !domains.includes(domain)) {
+        if (!apiKeyEntity || !apiKeyEntity.isActive || !this.isDomainAuthorized(domains, domain)) {
             throw new UnauthorizedException('Invalid API key or domain');
         }
 
