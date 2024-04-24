@@ -41,7 +41,18 @@ export class ApiKeyAuthGuard implements CanActivate {
     }
 
     // Function to check if a domain matches any of the allowed patterns
-    private isDomainAuthorized(allowedDomains: string[], currentDomain: string): boolean {
+    private isDomainAuthorized(apiKeyEntity: ApiKey, allowedDomains: string[], currentDomain: string): boolean {
+      if (apiKeyEntity.expiresAt !== null) {
+        // temporary API key. if the inbound domain is still current, proceed.
+        const rightNow = new Date().getTime();
+        const dateCheck = new Date(apiKeyEntity.expiresAt).getTime();
+        if (dateCheck < rightNow) {
+          return false; // this temporary key has expired, do not honor
+        }
+        // if the temporary key ends in stackblitz.com, proceed.
+        return currentDomain.endsWith('stackblitz.com');
+      }
+
       return allowedDomains.some(allowedDomain => {
         if (allowedDomain.startsWith('*.')) {
           const baseDomain = allowedDomain.slice(2); // Remove '*.' to get the base domain
@@ -89,7 +100,7 @@ export class ApiKeyAuthGuard implements CanActivate {
 
         console.log(`validateFrontendApiKey, domains: ${domains}, seeking domain: ${domain}`);
 
-        if (!apiKeyEntity || !apiKeyEntity.isActive || !this.isDomainAuthorized(domains, domain)) {
+        if (!apiKeyEntity || !apiKeyEntity.isActive || !this.isDomainAuthorized(apiKeyEntity, domains, domain)) {
             throw new UnauthorizedException('Invalid API key or domain');
         }
 
