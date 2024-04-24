@@ -53,7 +53,7 @@ export class ApiKeyAuthGuard implements CanActivate {
           return false; // this temporary key has expired, do not honor
         }
         // if the temporary key ends in stackblitz.com, proceed.
-        const isStackblitz = ((currentDomain.endsWith('stackblitz.com') || currentDomain.endsWith('stackblitz.io'));
+        const isStackblitz = (currentDomain.endsWith('stackblitz.com') || currentDomain.endsWith('stackblitz.io'));
           
         console.log('isStackblitz : ', isStackblitz);
         return isStackblitz;
