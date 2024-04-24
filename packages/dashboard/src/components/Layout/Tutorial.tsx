@@ -44,40 +44,38 @@ const Tutorial = () => {
         centered 
         padding="lg">
         <Modal.Overlay />
-        <Modal.Content style={{ minWidth:'95%'}} >
+        <Modal.Content style={{ marginLeft:'20px', minWidth:'90vw',  maxWidth:'90vw'}} >
             <Modal.Header>
               <Modal.Title style={{fontSize:'24px', fontWeight:'800', color:'#d33'}}>
                 <Image src="/ThisIsNotADrill_cutout.png" w={120} />
               </Modal.Title>
-              <Stack>
+              <Stack align="flex-start" gap="sm">
                 <Title order={3}>Welcome{ (!createdLocalOrg && createdLocalUser) && (<>, team member</>)}!</Title>
-              <Text><span style={{fontStyle:'italic',fontWeight:'bold'}}>This Is Not A Drill! </span> makes it dead simple to set up immediate, critical, or scheduled notices to users, without zero deployments. Watch a basic walkthrough below (if you like), then, click <i>Let's Get Started</i>.</Text>
+                <Text><span style={{fontStyle:'italic',fontWeight:'bold'}}>This Is Not A Drill! </span> makes it dead simple to set up immediate, critical, or scheduled notices to users, with zero deployments.</Text>
+                  { (createdLocalOrg) && (
+                    <Text>Watch a basic walkthrough below (if you like), then, click <i>Let's Get Started</i>.</Text>
+                  )}
+                  { ((!createdLocalOrg && createdLocalUser)) && (
+                    <Text>
+                      Your teammate has invited you to help manage this service, which makes it dead simple to show immediate, critical,
+                      or scheduled notices to users, without code deploys.
+                    </Text>
+                    )}
+
               </Stack>
             </Modal.Header>
-            <Modal.Body>
-
-              <div style={{marginBottom:'10px'}}>
+            <Modal.Body style={{ display: 'flex', flexDirection: 'column', height: '70vh' }}>
+              <div style={{ flex: 1, minHeight: '0', position:'relative' }}>
                 { (createdLocalOrg) && (
-                  <>
-                    <div style={{position: 'relative', paddingBottom: '56.25%', height:0 }}>
-                      <iframe src="https://www.loom.com/embed/0ff3df6af4744f72917f1ffb4d1f597b?sid=9d58f8ba-9ea7-42ab-81ed-0463a2696762" 
-                        frameBorder="0" 
-                        allowFullScreen 
-                        style={{position: 'absolute', top:0, left:0, width:'100%', height: '100%' }} >
-                      </iframe>
-                    </div>
-                  </>
-                )}
-                { (!createdLocalOrg && createdLocalUser) && (
-                  <>
-                  <p>Your teammate has invited you to help manage this service, which makes it dead simple to show immediate, critical,
-                or scheduled notices to users, <span style={{fontWeight:'bold'}}>without deploying code</span>.</p>
-                  <p>But first, why not take the (literally) 30-second tour?</p>
-                  </>
-                )}
+                        <iframe src="https://www.loom.com/embed/0ff3df6af4744f72917f1ffb4d1f597b?sid=9d58f8ba-9ea7-42ab-81ed-0463a2696762" 
+                          frameBorder="0" 
+                          allowFullScreen 
+                          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} >
+                        </iframe>
+                  )}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems:'center', marginTop:'30px' }}>
-                <Button onClick={() => { getStarted() }}>Let's Get Started</Button>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginTop:'10px', padding: '10px' }}>
+                  <Button onClick={() => { getStarted() }}>Let's Get Started</Button>
               </div>
             </Modal.Body>
           </Modal.Content>
