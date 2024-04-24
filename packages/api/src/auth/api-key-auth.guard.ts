@@ -44,22 +44,22 @@ export class ApiKeyAuthGuard implements CanActivate {
     private isDomainAuthorized(apiKeyEntity: ApiKey, allowedDomains: string[], currentDomain: string): boolean {
       if (apiKeyEntity.expiresAt !== null) {
         // temporary API key. if the inbound domain is still current, proceed.
-        console.log(`Checking temporary key with expiresAt: ${apiKeyEntity.expiresAt}`);
+        //console.log(`Checking temporary key with expiresAt: ${apiKeyEntity.expiresAt}`);
         const rightNow = new Date().getTime();
         const dateCheck = new Date(apiKeyEntity.expiresAt).getTime();
-        console.log(`Comparing rightNow ${rightNow},  against expiresAt: ${dateCheck}`);
+        //console.log(`Comparing rightNow ${rightNow},  against expiresAt: ${dateCheck}`);
         if (dateCheck < rightNow) {
-          console.log('Key seems to be expired.');
+          //console.log('Key seems to be expired.');
           return false; // this temporary key has expired, do not honor
         }
         // if the temporary key ends in stackblitz.com, proceed.
         const isStackblitz = (currentDomain.endsWith('stackblitz.com') || currentDomain.endsWith('stackblitz.io'));
           
-        console.log('isStackblitz : ', isStackblitz);
+        //console.log('isStackblitz : ', isStackblitz);
         return isStackblitz;
       }
 
-      console.log(`Proceeding to check against domains list ${JSON.stringify(allowedDomains)}`);
+      //console.log(`Proceeding to check against domains list ${JSON.stringify(allowedDomains)}`);
 
       return allowedDomains.some(allowedDomain => {
         if (allowedDomain.startsWith('*.')) {
