@@ -47,12 +47,14 @@ export class ApiKeyAuthGuard implements CanActivate {
         console.log(`Checking temporary key with expiresAt: ${apiKeyEntity.expiresAt}`);
         const rightNow = new Date().getTime();
         const dateCheck = new Date(apiKeyEntity.expiresAt).getTime();
+        console.log(`Comparing rightNow ${rightNow},  against expiresAt: ${dateCheck}`);
         if (dateCheck < rightNow) {
-          console.log('Key seems to be expired');
+          console.log('Key seems to be expired.');
           return false; // this temporary key has expired, do not honor
         }
         // if the temporary key ends in stackblitz.com, proceed.
-        const isStackblitz = currentDomain.endsWith('stackblitz.com');
+        const isStackblitz = ((currentDomain.endsWith('stackblitz.com') || currentDomain.endsWith('stackblitz.io'));
+          
         console.log('isStackblitz : ', isStackblitz);
         return isStackblitz;
       }
