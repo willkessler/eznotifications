@@ -20,7 +20,7 @@ const placeholderGetBearerHeader = async (otherHeaders: Headers | null = {}): Pr
 };
 
 const defaultConfig: Config = {
-  apiBaseUrl: import.meta.env.VITE_API_TARGET || 'http://localhost:8080',
+  apiBaseUrl: import.meta.env.VITE_TINAD_API_BASEURL || 'http://localhost:8080',
   getBearerHeader: placeholderGetBearerHeader,
 };
 
@@ -33,9 +33,9 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return await getToken();
   };
 
-  //console.log(`In configContext we think VITE_API_TARGET = ${import.meta.env.VITE_API_TARGET}`);
+  //console.log(`In configContext we think VITE_TINAD_API_BASEURL = ${import.meta.env.VITE_TINAD_API_BASEURL}`);
   const config: Config = {
-    apiBaseUrl: import.meta.env.VITE_API_TARGET || 'http://localhost:8080',
+    apiBaseUrl: import.meta.env.VITE_TINAD_API_BASEURL || 'http://localhost:8080',
     // This function adds our Authorization: Bearer header, AND a special Tinad-only header so the API can
     // recognize dashboard requests and apply the right CORS policy.
     getBearerHeader: async (otherHeaders: Headers | null = {}) => {
