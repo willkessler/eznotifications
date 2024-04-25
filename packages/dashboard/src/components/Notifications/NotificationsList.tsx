@@ -96,26 +96,25 @@ const NotificationsList = () => {
   } else if (notifications.length === 0) {
       console.log('no notifs');
     rows = (
-        <Table.Tr key={1} >
+        <Table.Tr key={1} style={{borderBottom:'none'}}>
             <Table.Td>
             &nbsp;
             </Table.Td>
             <Table.Td>
               <Text style={{ fontStyle: 'italic' }}>
-                Your notifications will appear here once you have created one.
-                <Anchor href="https://tellyourusers-help-pages.super.site">Need help?</Anchor>
+                Your notifications will appear here as soon as you create them. 
+                Click <Anchor onClick={() => 
+                { openModal(null) }} >create a new notification</Anchor> to get one going.
               </Text>
-            <Button onClick={() => 
-                { openModal(null) }} style={{ marginTop: '15px', marginLeft:'15px' }}>+ Create my first notification
-            </Button>
             </Table.Td>
             <Table.Td>
               &nbsp;
             </Table.Td>
         </Table.Tr>
     );
+    return ( <Table> {rows} </Table> );
   } else {
-  rows = notifications.map((row, index) => (
+    rows = notifications.map((row, index) => (
       <Table.Tr key={row.uuid || index} className={row.uuid === highlightedId ? classes['highlighted-row'] : ''} >
       <Table.Td className={classes.tableCellToTop}>
             <Switch
