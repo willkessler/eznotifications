@@ -235,7 +235,7 @@ export const envConfig = {
       <Title order={2}>
         Playground Testing
       </Title>
-      <Text size="md" mt="md">Experiment with the SDK in a <b>Stackblitz Playground</b>.</Text>
+      <Text size="md" mt="md">Experiment with our SDK in an instant <b>Stackblitz Playground</b>. Just click the green button.</Text>
       <Group>
         <Stack align="stretch" justify="flex-start">
           <div className={apiKeyClasses.apiKeyRow}>
@@ -261,7 +261,7 @@ export const envConfig = {
 
           <Button onClick={gotoPlayground} disabled={repoFiles === null}
             size="sm" variant="filled" color="green" >
-            {repoFiles === null ? <>Just a moment...</> : <>Jump to the Playground!</>}
+            {repoFiles === null ? <>Just a moment...</> : <>Jump To Playground!</>}
           </Button>
         </Stack>
         <Stack align="stretch" justify="flex-start" style={{paddingLeft:'10px', borderLeft: '1px dotted #666'}}>
@@ -271,7 +271,8 @@ export const envConfig = {
                 This <b>temporary API key</b> expires at: &nbsp; <span style={{padding:'3px', border:'1px dotted #666', fontStyle:'normal', color:'green'}}>
                 {temporaryAPIKeyExpiration ? temporaryAPIKeyExpiration : ''} </span> 
                 <br />The API key will be automatically injected into the Playground for you and is good for one hour.
-                <br />(You can also use this API key locally to try out the <Anchor target="_blank" href="https://github.com/willkessler/this-is-not-a-drill-examples">sample app</Anchor>).
+                <br />You can also watch a <Anchor target="_blank" href="https://www.loom.com/share/ffa0a90a52de4fccaacb0003fde075b4?sid=89e9d976-2f00-48d8-af01-75e56377f7d0">quick tutorial about the Playground.</Anchor>
+                <br />(You can also use temporary API keys locally to try out the <Anchor target="_blank" href="https://github.com/willkessler/this-is-not-a-drill-examples">sample app</Anchor>).
               </Text>
           ) }
         </div>
