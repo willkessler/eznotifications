@@ -545,6 +545,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
     };
 
     const fetchNotifications = useCallback(async (): Promise<void> => {
+      // console.log('Inside fetchNotifications, user: ', typeof(user));
         if (user) {
             setNotificationsLoading(true); // start loading process
             try {
@@ -582,7 +583,7 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             }
         }
     }, [displayPastNotifications]);
-    
+
     const highlightNotification = useCallback((id:string) => {
         setHighlightedId(id);
         // Remove highlight after 5 seconds
@@ -650,7 +651,6 @@ export const NotificationsProvider: React.FC<{children : React.ReactNode}> = ({ 
             console.error('Error creating notification:', error);
         }
     }, []);
-  
 
   return (
     <NotificationsContext.Provider value={{ 

@@ -100,6 +100,17 @@ export class EZNotificationController {
         return newOrganization;
     }
 
+    @Post('/organization/create_sample_notification')
+    @ApiOperation({summary: 'Create a sample notification for a new organization. (Not for direct client use)'})
+    @UseGuards(JwtAuthGuard)
+    async createSampleNotificationForNewOrganization (
+        @Body('clerkUserId') clerkUserId: string,
+    ): Promise<EZNotification> {
+      console.log(`controller: creating sample notification for clerk user id: ${clerkUserId}`);
+      const sampleNotification = await this.EZNotificationService.createSampleNotificationForNewOrganization(clerkUserId);
+      return sampleNotification;
+    }
+
     @Get('/organization/configure')
     @ApiOperation({summary: 'Fetch organization settings. (Not for direct client use)'})
     @UseGuards(JwtAuthGuard)

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Anchor, Button, Image, Modal, Space, Stack, Text, Title } from '@mantine/core';
 import mainClasses from './css/MainLayout.module.css';
 import navClasses from './css/Navbar.module.css';
@@ -18,27 +18,24 @@ interface Step {
 }
 
 const Tutorial = () => {
-
   const { createdLocalUser, createdLocalOrg } = useSettings();
-  const [ isTutorialModalOpen, setIsTutorialModeOpen ] = useState(false);
+  const [ isTutorialModalOpen, setIsTutorialModeOpen ] = useState<boolean>(false);
+  const [ startButtonLabel, setStartButtonLabel ] = useState<string>("Let's Get Started");
   
   useEffect(() => {
     setIsTutorialModeOpen(createdLocalUser || createdLocalOrg);
   }, [createdLocalUser, createdLocalOrg]);
-
-  const getStarted = () => {
-    setIsTutorialModeOpen(false);
+  
+  const getStarted = async () => {
+    setStartButtonLabel('Please wait, refreshing...');
+    window.location.reload();  /// uggggghhh, frickin react contexts don't work worth s***
   };
   
-  const closeTutorialModal = () => {
-    setIsTutorialModeOpen(false);
-  }
-
   return (
     <>
       <Modal.Root size="lg"
         opened={isTutorialModalOpen}
-        onClose={closeTutorialModal} 
+        onClose={getStarted} 
         closeOnClickOutside={false}
         radius="xl"
         centered 
@@ -67,7 +64,7 @@ const Tutorial = () => {
             <Modal.Body style={{ display: 'flex', flexDirection: 'column', height: '70vh' }}>
               <div style={{ flex: 1, minHeight: '0', position:'relative' }}>
                 { (createdLocalOrg) && (
-                        <iframe src="https://www.loom.com/embed/0ff3df6af4744f72917f1ffb4d1f597b?sid=9d58f8ba-9ea7-42ab-81ed-0463a2696762" 
+                        <iframe src="https://www.loom.com/embed/4922508649134ecd92665bbd28ff5a6f?sid=5eb729bd-cf4e-4b7c-9f4b-5e86e45c6bb1" 
                           frameBorder="0" 
                           allowFullScreen 
                           style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} >
@@ -75,7 +72,7 @@ const Tutorial = () => {
                   )}
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginTop:'10px', padding: '10px' }}>
-                  <Button onClick={() => { getStarted() }}>Let's Get Started</Button>
+                  <Button onClick={() => { getStarted() }}>{startButtonLabel}</Button>
               </div>
             </Modal.Body>
           </Modal.Content>

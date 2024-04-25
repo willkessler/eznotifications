@@ -85,6 +85,44 @@ export class EZNotificationService {
         }
     }
 
+  async createSampleNotificationForNewOrganization(clerkUserId: string): Promise<EZNotification> {
+    console.log(`createSampleNotificationForNewOrganization running.`);
+    // Look up org for the given user, and the user record to set the creator
+    const userOrganization = await this.findUserOrganizationByClerkId(clerkUserId);
+    if (userOrganization.length > 0) {
+      const organizationUuid = userOrganization[0].organization.uuid;
+      // now check if this org already has some notifications. If it does do not create a sample notification.
+      const oneExistingNotification = await this.ezNotificationRepository.findOne({
+        where: {
+          organizationUuid: organizationUuid
+        }
+      });
+      if (oneExistingNotification === null) {
+        const ezNotificationData:Partial<EZNotification> = {
+          creator: userOrganization[0].user,
+          organization:userOrganization[0].organization,
+          createdAt: new Date(),
+          updatedAt: null,
+          live: true,
+          deleted: false,
+          pageId: '',
+          mustBeDismissed: true,
+          notificationType: 'info',
+          environments: [ 'Development' ],
+          content: '# Sample notification!\n(Edit or delete me when I\'m no longer needed.)',
+        }
+        const ezNotification = await this.ezNotificationRepository.create(ezNotificationData);
+        return this.ezNotificationRepository.save(ezNotification);
+      } else {
+        console.log(`Not creating sample notification because notifications already exist for organization : ${organizationUuid}`);
+        return null;
+      }
+    } else {
+      throw new NotFoundException(`Org not found for clerk creator id: ${clerkUserId}.`);
+      return null
+    }
+  }
+
     async updateNotification(uuid: string, updateData: Partial<EZNotification>, clerkCreatorId: string):
                              Promise<EZNotification> {
         const ezNotification = await this.ezNotificationRepository.findOneBy({ uuid: uuid });

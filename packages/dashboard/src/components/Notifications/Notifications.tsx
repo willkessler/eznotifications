@@ -33,7 +33,7 @@ const Notifications = () => {
       setIsSetupComplete(true);
     }
     console.log('Notifications component completed');
-  }, []);
+  }, [user, isSetupComplete]);
 
   return (
       <>

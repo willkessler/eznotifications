@@ -277,6 +277,40 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
         return false;
     }
 
+    const createSampleNotification = async(clerkUserId : string): Promise<boolean> => {
+      const apiUrl = `${apiBaseUrl}/organization/create_sample_notification`;
+      console.log('In createSampleNotification, calling API to attempt to create a sample notification.');
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          credentials: 'include',
+          headers: await getBearerHeader({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ 
+            clerkUserId
+          })
+        });
+        if (response.ok) {
+          console.log('createSampleNotification: sample notification was created successfully.');
+          return true;
+        } else {
+          response.json().then(body => {
+            // Now `body` contains the parsed JSON body of the response
+            if ((response.status === 404) && 
+                body.message && body.message.startsWith('There are existing notifications')) {
+              console.log('createSampleNotification:  There are existing notifications');
+            } else {
+              // If the condition is not met, throw an error with the status
+              throw new Error(`createSampleNotification: HTTP error! status: ${response.status}`);
+            }
+          }
+          );
+        }
+      } catch (error) {
+        console.log(`Error creating sample notification for clerk user id ${clerkUserId}: ${error}`);
+      }
+      return false;
+    }
+
     // Set up clerk org, and set up everything on our side to mirror clerk as required.
     const setupClerkOrganizationAndMirrorRecords = 
         async (callbackFn: (outcomes: CallbackOutcomes) => void): Promise<boolean> => {
@@ -291,6 +325,7 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                 createdMirrorOrg: false,
                 attachedLocalUser: false,
                 savedSettings: false,
+                createdSampleNotification: false,
             };
 
             if (isSetupComplete) {
@@ -360,8 +395,14 @@ export const SettingsProvider: React.FC<{children: React.ReactNode}> = ({ childr
                             outcomes.savedSettings = true;
                         }
                     } catch (error) {
-                        console.error(`Error saving default settings for our mirror organization: ${error}`);
+                      console.error(`Error saving default settings for our mirror organization: ${error}`);
                     }
+                  try {
+                    console.log('Setting up an example notification since new organization was created.');
+                    const exampleNotificationCreated = await createSampleNotification(clerkUserId);
+                  } catch (error) {
+                    console.error(`Error creating example notification: ${error}`);
+                  }
                 }
             }
 
