@@ -1,7 +1,6 @@
 import Toastify from 'toastify-js';
 import "toastify-js/src/toastify.css";
 
-
 export interface SimpleToastOptions {
   content: string;
   onClose?: () => void;
@@ -9,7 +8,6 @@ export interface SimpleToastOptions {
   stayOpen?: boolean;
   duration?: number; // Duration should be a number
 }
-
 
 export class SimpleToast {
   private toastContainer: HTMLDivElement;

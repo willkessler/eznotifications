@@ -1,0 +1,39 @@
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%); /* Start from above the top */
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 0.95; /* Since you want 95% opacity */
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(0);
+    opacity: 0.95;
+  }
+  to {
+    transform: translateY(-100%); /* Slide up above the top */
+    opacity: 0;
+  }
+}
+
+#notification-banner {
+  min-height:50px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #ddd;
+  color: #222;
+  text-align: center;
+  padding: 10px;
+  z-index: 10000;
+  animation: slideDown 0.25s ease-out forwards; /* Adjust time as needed */
+}
+
+#notification-banner.slideUp {
+  animation: slideUp 0.25s ease-out forwards;
+}

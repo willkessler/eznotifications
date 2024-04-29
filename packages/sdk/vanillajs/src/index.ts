@@ -8,10 +8,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const scriptTag = document.getElementById('api-script') as HTMLScriptElement;
   const apiKey = scriptTag.getAttribute('data-api-key') || '';
   const apiEndpoint = scriptTag.getAttribute('data-api-endpoint') || 'https://api.this-is-not-a-drill.com';
-  const apiDisplayMode = scriptTag.getAttribute('data-api-display-mode') || 'inline';
+  const displayMode = scriptTag.getAttribute('data-api-display-mode') || 'inline';
   const apiEnvironments = scriptTag.getAttribute('data-api-environments') || 'Development';
   const apiDomains = scriptTag.getAttribute('data-api-domains') || '';
-  const sdk = new SDK(apiEndpoint, apiKey, apiEnvironments, apiDomains );
+  const sdk = new SDK(apiEndpoint, apiKey, apiEnvironments, apiDomains, displayMode );
   try {
     await sdk.pollApi();
   } catch (error) {
@@ -24,8 +24,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   const toaster = SimpleToast.init();
+/*
   toaster.show({
     content: 'Welcome! This toast is auto-initialized on DOM content load.',
     duration: 1000
   });
+*/
 });
