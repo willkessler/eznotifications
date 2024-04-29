@@ -1,43 +1,40 @@
 import Toastify from 'toastify-js';
 import "toastify-js/src/toastify.css";
 
-export interface SimpleToastOptions {
-  content: string;
+export interface ToastNotificationOptions {
   onClose?: () => void;
   styles?: Record<string, any>; // Define style as an object with string keys and any type values
   stayOpen?: boolean;
   duration?: number; // Duration should be a number
+  dismissFunction?: () => void;
 }
 
-export class SimpleToast {
-  private toastContainer: HTMLDivElement;
+export class ToastNotification {
+  toastContainer: HTMLDivElement;
+  duration: number;
+  dismissFunction: () => void;
 
-  constructor() {
+  constructor(options: ToastNotificationOptions) {
     this.toastContainer = document.createElement('div');
     this.toastContainer.className = 'toast-container';
+    this.duration = options.duration || 3000;
+    const genericDismissFunction = () => { console.log('TINAD Toast dismissed') };
+    this.dismissFunction = options.dismissFunction || genericDismissFunction;
     document.body.appendChild(this.toastContainer);
   }
 
-  show(options: SimpleToastOptions = { content: 'Default message' }) {
+  show( content = 'Default message' ) {
+    // use toastify-js to actually display the toast
     Toastify({
-      text: options.content,
-      duration: 3000,
-      destination: "https://github.com/apvarun/toastify-js",
+      text: content,
+      duration: this.duration,
       newWindow: true,
       close: true,
       gravity: "top", // `top` or `bottom`
-      position: "left", // `left`, `center` or `right`
+      position: "center", // `left`, `center` or `right`
       stopOnFocus: true, // Prevents dismissing of toast on hover
-      style: {
-        background: "linear-gradient(to right, #00b09b, #96c93d)",
-      },
       onClick: function(){} // Callback after click
     }).showToast();
   }
 
-  // Static method to handle automatic initialization
-  static init() {
-    const instance = new SimpleToast();
-    return instance;
-  }
 }

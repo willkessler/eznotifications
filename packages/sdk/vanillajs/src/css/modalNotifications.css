@@ -1,0 +1,8 @@
+/* modal notifications css */
+.swal2-html-container {
+  text-align: left !important;
+}
+
+.swal2-actions {
+  justify-self: right;
+}  

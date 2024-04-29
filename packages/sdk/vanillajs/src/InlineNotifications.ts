@@ -1,6 +1,6 @@
 import './css/inlineNotifications.css';
 
-export class InlineNotifications {
+export class InlineNotification {
   private containers: HTMLElement[];  // Store references to all containers
 
   constructor() {
@@ -43,6 +43,5 @@ export class InlineNotifications {
       container.appendChild(this.createContentDiv(content, container));
     });
   }
-
 
 }

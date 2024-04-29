@@ -22,18 +22,46 @@
 }
 
 #notification-banner {
+  font-family: Arial, Helvetica;
   min-height:50px;
   position: fixed;
   top: 0;
   width: 100%;
+  height: auto;
+  padding: 10px 0;
   background-color: #ddd;
   color: #222;
   text-align: center;
   padding: 10px;
   z-index: 10000;
+  opacity:95%;
   animation: slideDown 0.25s ease-out forwards; /* Adjust time as needed */
+  display: none;
+  align-items: center; /* Vertically center items */
+  justify-content: center; /* Center content horizontally */
+}
+
+#notification-banner.slideDown {
+  display: flex;  /* Flexbox layout for internal alignment */
+  animation: slideDown 0.25s ease-out forwards;
+}
+
+#notification-banner .content {
+  flex-grow: 1;
+  text-align: center;
 }
 
 #notification-banner.slideUp {
+  display:flex;
   animation: slideUp 0.25s ease-out forwards;
+}
+
+#notification-banner .dismiss-x {
+  position: absolute; /* Absolute position to the upper right */
+  top: 10px; /* Adjust for spacing */
+  right: 30px; /* Adjust for spacing */
+  background: none; /* Remove background styling */
+  border: none; /* Remove border styling */
+  font-size: 20px; /* Font size for "X" */
+  cursor: pointer; /* Pointer cursor for interactivity */
 }

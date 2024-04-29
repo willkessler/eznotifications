@@ -1,12 +1,16 @@
-import { SimpleToast, SimpleToastOptions } from './SimpleToast';
-import { InlineNotifications } from './InlineNotifications';
-import { ModalNotification } from './ModalNotification';
-import { BannerNotification } from './BannerNotification';
+// send notifs and toasts out one by one
+// improve poller
+
+
+import { ToastNotification, ToastNotificationOptions } from './ToastNotifications';
+import { InlineNotification } from './InlineNotifications';
+import { ModalNotification } from './ModalNotifications';
+import { BannerNotification } from './BannerNotifications';
 import Toastify from 'toastify-js';
 
 export class SDK {
-  toastNotification: SimpleToast;
-  inlineNotifications: InlineNotifications;
+  toastNotification: ToastNotification;
+  inlineNotification: InlineNotification;
   modalNotification: ModalNotification;
   bannerNotification: BannerNotification;
   apiKey: string;
@@ -20,48 +24,16 @@ export class SDK {
     this.apiKey = apiKey;
     this.apiEnvironments = apiEnvironments;
     this.apiDomains = apiDomains;
-    this.initializeToasts();
-/*
-    const simpleToastOptions:Partial<SimpleToastOptions> = {
-      onClose: () => { console.log('toast closed') },
-      duration:5000,
-    };
-*/
 
-    this.toastNotification = new SimpleToast();
-    this.inlineNotifications = new InlineNotifications();
+    const toastOptions:Partial<ToastNotificationOptions> = {
+      duration: 10000,
+    };
+    this.toastNotification = new ToastNotification(toastOptions);
+    this.inlineNotification = new InlineNotification();
     this.modalNotification = new ModalNotification();
-    this.bannerNotification = new BannerNotification({ okButtonText:'Got it', duration: 3000 });
+    this.bannerNotification = new BannerNotification({ duration: 5000 });
     this.displayMode = displayMode;
   }
-
-  initializeToasts() {
-    const container = document.createElement('div');
-    container.id = 'toast-container';
-    document.body.appendChild(container);
-  }
-
-  showToast(options: Partial<SimpleToastOptions>) {
-    const { content, onClose } = options;
-    Toastify({
-      text: options.content,
-      duration: options.duration,
-      destination: "https://github.com/apvarun/toastify-js",
-      newWindow: true,
-      close: true,
-      gravity: "top", // `top` or `bottom`
-      position: "left", // `left`, `center` or `right`
-      stopOnFocus: true, // Prevents dismissing of toast on hover
-      style: {
-        background: "#000",
-        color: '#fff',
-        padding: '20px',
-      },
-      onClick: onClose,
-    }).showToast();
-
-  }
-
 
   async pollApi() {
     const fetchOptions = {
@@ -83,10 +55,10 @@ export class SDK {
           console.log('Content:', notification.content);
           switch (this.displayMode) {
             case 'toast':
-              //this.showToast(simpleToastOptions);
+              this.toastNotification.show(notification.content);
               break;
             case 'inline':
-              this.inlineNotifications.show(notification.content);
+              this.inlineNotification.show(notification.content);
               break;
             case 'modal':
               this.modalNotification.show(notification.content);
