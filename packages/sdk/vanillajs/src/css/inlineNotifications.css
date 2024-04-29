@@ -1,0 +1,52 @@
+.tinadNotification {
+  font-family: arial, helvetica;
+  background-color: #fff;  /* Light background color */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Small shadow */
+  border:1px solid #eee;
+  border-radius: 10px;  /* Rounded corners */
+  padding: 40px 20px 20px 20px;  /* Padding around content */
+  max-width: 90%;  /* Responsive width */
+  margin: 15px 5px;  /* Centered in its container, with top/bottom spacing */
+  position: relative;  /* Enable absolute positioning for child elements */
+  min-height:100px;
+}
+
+.tinadNotification > div {
+  text-align: left;  /* Left-justify content */
+  margin-bottom: 10px;  /* Spacing between message and buttons */
+}
+
+.tinadNotification .dismiss-x {
+  font-weight:800;
+  color: #999;
+  position: absolute;  /* Absolute position to place within its parent */
+  top: 12px;  /* Adjust as needed for correct spacing from top */
+  right: 12px;  /* Adjust as needed for correct spacing from right */
+  background: none;  /* Remove background styling */
+  border: 1px solid #fff;
+  font-size: 16px;  /* Font size for "X" */
+  cursor: pointer;  /* Pointer cursor to indicate clickable */
+}
+
+.tinadNotification .dismiss-x:hover {
+  border-radius: 2px;
+  border: 1px solid #ddd;
+  color: #000;
+}
+
+.tinadNotification .ok-button {
+  position:absolute;
+  bottom: 5px;
+  right:10px;
+  border:1px solid #999;
+  background-color: white;
+  color: black;  /* White text */
+  border-radius: 5px;  /* Small rounded corners */
+  padding: 10px 15px;  /* Padding for size and comfort */
+  cursor: pointer;  /* Pointer cursor */
+  min-width:100px;
+}
+
+.tinadNotification .ok-button:hover {
+  border: 1px solid #000;
+}

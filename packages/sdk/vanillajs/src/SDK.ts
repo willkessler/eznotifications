@@ -1,4 +1,5 @@
 import { SimpleToast, SimpleToastOptions } from './SimpleToast';
+import { InlineNotifications } from './InlineNotifications';
 import Toastify from 'toastify-js';
 
 export class SDK {
@@ -6,6 +7,7 @@ export class SDK {
   apiEndpoint: string;
   apiEnvironments: string;
   apiDomains: string;
+  inlineNotifications: InlineNotifications;
 
   constructor(apiEndpoint: string, apiKey: string, apiEnvironments: string, apiDomains: string) {
     this.apiEndpoint = apiEndpoint;
@@ -13,6 +15,7 @@ export class SDK {
     this.apiEnvironments = apiEnvironments;
     this.apiDomains = apiDomains;
     this.initializeToasts();
+    this.inlineNotifications = new InlineNotifications();
   }
 
   initializeToasts() {
@@ -40,24 +43,6 @@ export class SDK {
       onClick: onClose,
     }).showToast();
 
-/*
-    const toast = document.createElement('div');
-    toast.textContent = content;
-    toast.className = 'toast';
-
-    toast.onclick = () => {
-      document.getElementById('toast-container')?.removeChild(toast);
-      if (onClose) {
-        onClose();
-      }
-    };
-
-    document.getElementById('toast-container')?.appendChild(toast);
-
-    setTimeout(() => {
-      toast.click(); // Automatically close after 5 seconds
-    }, 5000);
-*/
   }
 
 
@@ -79,12 +64,15 @@ export class SDK {
         console.log('data:', data);
         data.forEach((notification) => {
           console.log('Content:', notification.content);
+/*
           const simpleToastOptions:Partial<SimpleToastOptions> = {
             content: notification.content,
             onClose: () => { console.log('toast closed') },
             duration:5000,
           };
           this.showToast(simpleToastOptions);
+*/
+          this.inlineNotifications.show(notification.content);
         });
 
       }

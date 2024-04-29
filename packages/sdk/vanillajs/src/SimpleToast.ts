@@ -36,30 +36,6 @@ export class SimpleToast {
       onClick: function(){} // Callback after click
     }).showToast();
   }
-/*
-  show(options: ToastOptions = { content: 'Default message' }) {
-    const { content = "Default message" } = options; // Provide a default message
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = content;
-
-    // Apply custom styles if any
-    if (options.styles) {
-      Object.assign(toast.style, options.styles);
-    }
-
-    // Auto-dismiss
-    if (!options.stayOpen) {
-      setTimeout(() => {
-        if (this.toastContainer.contains(toast)) {
-          this.toastContainer.removeChild(toast);
-        }
-      }, options.duration || 3000);
-    }
-
-    this.toastContainer.appendChild(toast);
-  }
-*/
 
   // Static method to handle automatic initialization
   static init() {

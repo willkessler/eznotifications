@@ -7,8 +7,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('DOMContentLoaded');
   const scriptTag = document.getElementById('api-script') as HTMLScriptElement;
   const apiKey = scriptTag.getAttribute('data-api-key') || '';
-  const apiEndpoint = scriptTag.getAttribute('data-api-endpoint') || '';
-  const apiEnvironments = scriptTag.getAttribute('data-api-environments') || '';
+  const apiEndpoint = scriptTag.getAttribute('data-api-endpoint') || 'https://api.this-is-not-a-drill.com';
+  const apiDisplayMode = scriptTag.getAttribute('data-api-display-mode') || 'inline';
+  const apiEnvironments = scriptTag.getAttribute('data-api-environments') || 'Development';
   const apiDomains = scriptTag.getAttribute('data-api-domains') || '';
   const sdk = new SDK(apiEndpoint, apiKey, apiEnvironments, apiDomains );
   try {
