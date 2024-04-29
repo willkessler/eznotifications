@@ -52,6 +52,7 @@ export class SDK {
       if (data && Array.isArray(data)) {
         console.log('data:', data);
         data.forEach((notification) => {
+          notification.content = notification.content + 'Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus, iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet.'; 
           console.log('Content:', notification.content);
           switch (this.displayMode) {
             case 'toast':
