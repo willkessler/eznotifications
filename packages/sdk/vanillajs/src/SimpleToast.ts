@@ -1,5 +1,9 @@
-export interface ToastOptions {
-  message: string;
+import Toastify from 'toastify-js';
+import "toastify-js/src/toastify.css";
+
+
+export interface SimpleToastOptions {
+  content: string;
   onClose?: () => void;
   styles?: Record<string, any>; // Define style as an object with string keys and any type values
   stayOpen?: boolean;
@@ -7,7 +11,7 @@ export interface ToastOptions {
 }
 
 
-export class Toast {
+export class SimpleToast {
   private toastContainer: HTMLDivElement;
 
   constructor() {
@@ -16,11 +20,28 @@ export class Toast {
     document.body.appendChild(this.toastContainer);
   }
 
-  show(options: ToastOptions = { message: 'Default message' }) {
-    const { message = "Default message" } = options; // Provide a default message
+  show(options: SimpleToastOptions = { content: 'Default message' }) {
+    Toastify({
+      text: options.content,
+      duration: 3000,
+      destination: "https://github.com/apvarun/toastify-js",
+      newWindow: true,
+      close: true,
+      gravity: "top", // `top` or `bottom`
+      position: "left", // `left`, `center` or `right`
+      stopOnFocus: true, // Prevents dismissing of toast on hover
+      style: {
+        background: "linear-gradient(to right, #00b09b, #96c93d)",
+      },
+      onClick: function(){} // Callback after click
+    }).showToast();
+  }
+/*
+  show(options: ToastOptions = { content: 'Default message' }) {
+    const { content = "Default message" } = options; // Provide a default message
     const toast = document.createElement('div');
     toast.className = 'toast';
-    toast.textContent = message;
+    toast.textContent = content;
 
     // Apply custom styles if any
     if (options.styles) {
@@ -38,10 +59,11 @@ export class Toast {
 
     this.toastContainer.appendChild(toast);
   }
+*/
 
   // Static method to handle automatic initialization
   static init() {
-    const instance = new Toast();
+    const instance = new SimpleToast();
     return instance;
   }
 }

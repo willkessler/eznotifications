@@ -1,4 +1,5 @@
-import { Toast, ToastOptions } from './Toast';
+import { SimpleToast, SimpleToastOptions } from './SimpleToast';
+import Toastify from 'toastify-js';
 
 export class SDK {
   apiKey: string;
@@ -20,10 +21,28 @@ export class SDK {
     document.body.appendChild(container);
   }
 
-  showToast(options: ToastOptions) {
-    const { message, onClose } = options;
+  showToast(options: Partial<SimpleToastOptions>) {
+    const { content, onClose } = options;
+    Toastify({
+      text: options.content,
+      duration: options.duration,
+      destination: "https://github.com/apvarun/toastify-js",
+      newWindow: true,
+      close: true,
+      gravity: "top", // `top` or `bottom`
+      position: "left", // `left`, `center` or `right`
+      stopOnFocus: true, // Prevents dismissing of toast on hover
+      style: {
+        background: "#000",
+        color: '#fff',
+        padding: '20px',
+      },
+      onClick: onClose,
+    }).showToast();
+
+/*
     const toast = document.createElement('div');
-    toast.textContent = message;
+    toast.textContent = content;
     toast.className = 'toast';
 
     toast.onclick = () => {
@@ -38,7 +57,9 @@ export class SDK {
     setTimeout(() => {
       toast.click(); // Automatically close after 5 seconds
     }, 5000);
+*/
   }
+
 
   async pollApi() {
     const fetchOptions = {
@@ -54,9 +75,20 @@ export class SDK {
       const fullUrl = `${this.apiEndpoint}/notifications?environments=${this.apiEnvironments}`;
       const response = await fetch(fullUrl, fetchOptions);
       const data = await response.json();
-      if (data.messages && Array.isArray(data.messages)) {
-        data.messages.forEach((message: string) => this.showToast({ message }));
+      if (data && Array.isArray(data)) {
+        console.log('data:', data);
+        data.forEach((notification) => {
+          console.log('Content:', notification.content);
+          const simpleToastOptions:Partial<SimpleToastOptions> = {
+            content: notification.content,
+            onClose: () => { console.log('toast closed') },
+            duration:5000,
+          };
+          this.showToast(simpleToastOptions);
+        });
+
       }
+
     } catch (error) {
       console.error(error);
     }
