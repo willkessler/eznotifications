@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths" : {
+      "*": ["src/*", "node_modules/*"],
+    },
+    "typeRoots": ["./node_modules/@types"],
+    "outDir": "./dist",
+    "module": "ESNext",
+    "target": "es5",
+    "lib": ["dom", "esnext"],
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "declaration": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

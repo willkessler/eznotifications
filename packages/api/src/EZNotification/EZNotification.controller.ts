@@ -31,10 +31,10 @@ export class EZNotificationController {
 
     @Get('/status')
     @ApiOperation({summary: 'Run liveness check against API.'})
-    @UseGuards(EitherAuthGuard)
+    @UseGuards(ApiKeyAuthGuard)
     getStatus() {
         console.log('Status check executed.');
-        return { status: 'ok' };
+        return { status: 'OK' };
     }
 
     @Post('/user/create')

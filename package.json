@@ -6,6 +6,7 @@
     "packages/api",
     "packages/sdk/react-core",
     "packages/sdk/react-ui",
+    "packages/sdk/vanillajs",
     "examples/react_sdk",
     "examples/sample-bank-app"
   ],

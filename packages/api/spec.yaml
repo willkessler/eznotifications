@@ -3,35 +3,25 @@ info:
   title: Notification Service API
   version: 1.0.0
 paths:
-  /notifications/new:
-    post:
-      summary: Create a new notification
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Notification'
-      responses:
-        '201':
-          description: Notification created
-
   /notifications:
     get:
-      summary: Retrieve (filtered) notifications
+      summary: Fetch all notifications
+      description: Fetch all live, non-dismissed notifications for a specific user, filtered (optionally) by pageId, target environments, and target domains.
+      security:
+        - ApiKeyAuth: []
       parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: Required user ID to filter notifications. (However, you will typically provide this when serving notifications to a specific end-user.)
         - in: query
           name: pageId
           schema:
             type: string
           required: false
-          description: Optional page ID to filter notifications
-        - in: query
-          name: userId
-          schema:
-            type: string
-          required: false
-          description: Optional user ID to filter notifications
+          description: Optional page ID to filter notifications to be served only to one specific page (page identifiers are up to you).
         - in: query
           name: environments
           schema:
@@ -41,20 +31,59 @@ paths:
           style: form
           explode: false
           required: false
-          description: Optional list of environments to filter notifications
+          description: Optional list of environments to filter notifications on (e.g. development, production) as defined in the dashboard
       responses:
         '200':
-          description: A list of notifications
+          description: Returns an JSON array of (filtered) notifications.
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Notification'
-
+  /notifications/new:
+    post:
+      security:
+        - ApiKeyAuth: []
+      summary: Create a new notification
+      description: Create a new notification via the API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notification'
+      responses:
+        '200':
+          description: Notification created successfully.
+  /notifications/dismiss:
+    post:
+      security:
+        - ApiKeyAuth: []
+      summary: Dismiss a notification
+      description: Call this when an end-user dismisses a notification so the service does not display it again for the same end-user.
+      operationId: dismissNotification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notificationUuid:
+                  type: string
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Notification dismissed successfully.
   /notifications/{id}:
+    security:
+      - ApiKeyAuth: []
     put:
-      summary: Update a specific notification
+      security:
+        - ApiKeyAuth: []
+      summary: Update a single notification
       parameters:
         - in: path
           name: id
@@ -69,10 +98,11 @@ paths:
               $ref: '#/components/schemas/Notification'
       responses:
         '200':
-          description: Notification updated
-
+          description: Notification updated successfully.
     delete:
-      summary: Delete a specific notification
+      security:
+        - ApiKeyAuth: []
+      summary: Delete a single notification
       parameters:
         - in: path
           name: id
@@ -80,56 +110,79 @@ paths:
           schema:
             type: string
       responses:
-        '204':
-          description: Notification deleted
-
-  /api-keys/{id}:
+        '200':
+          description: Notification deleted successfully.
+  /status:
     get:
-      summary: Get an API key by id
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-          description: ID of API key to get
-
-  /api-keys/create:
-    post:
-      summary: Create a new API key
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ApiKey'
+      summary: API status and key check
+      description: Checks that the TINAD API is up, and your API key is functional.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    message:
+                      type: string
+      security:
+        - ApiKeyAuth: []
 
 components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
   schemas:
     Notification:
       type: object
       required:
-        - text
-        - pageId
+        - content
       properties:
-        text:
+        content:
           type: string
+          description: 'The content to display (markdown permitted).'
+        notificationType:
+          type: string
+          nullable: true
+          description: 'The notification type (default: info), one of: info | change | alert | outage | call-to-action | other'
+        notificationTypeOther:
+          type: string
+          nullable: true
+          description: 'If the notification type is other, then you can specify an arbitrary type here.'
         pageId:
           type: string
+          nullable: true
+          description: 'The id of a page where the notification is to be served. Can be any page identifier you like.'
+        mustBeDismissed:
+          type: boolean
+          description: 'Send true if the notification must be dismissed by end-users after its displayed (or it will be displayed again until dismissed).'
         startDate:
           type: string
           format: date-time
           nullable: true
+          description: 'The first time the notification can be served.'
         endDate:
           type: string
           format: date-time
           nullable: true
-        canceled:
+          description: 'The last time the notification can be served.'
+        environments:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: 'Array of environment identifiers where the notification is active.'
+        domains:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: 'Array of domains where a notification can be served.'
+        live:
           type: boolean
-    ApiKey:
-      type: object
-      required:
-        - api_key_type
-      properties:
-        api_key_type:
-          type: string
+          description: 'Set to true only if you want a notification to go live immediately. Otherwise, you will have to take it live with the dashboard.'
