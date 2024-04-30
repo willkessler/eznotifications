@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const displayMode = scriptTag.getAttribute('data-api-display-mode') || 'inline';
   const apiEnvironments = scriptTag.getAttribute('data-api-environments') || 'Development';
   const apiDomains = scriptTag.getAttribute('data-api-domains') || '';
-  const sdk = new SDK(apiEndpoint, apiKey, apiEnvironments, apiDomains, displayMode );
+  const userId = scriptTag.getAttribute('data-api-user-id') || 'user-1';
+  const sdk = new SDK(apiEndpoint, apiKey, apiEnvironments, apiDomains, displayMode, userId );
   try {
     await sdk.pollApi();
   } catch (error) {

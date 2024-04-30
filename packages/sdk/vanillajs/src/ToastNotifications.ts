@@ -6,24 +6,25 @@ export interface ToastNotificationOptions {
   styles?: Record<string, any>; // Define style as an object with string keys and any type values
   stayOpen?: boolean;
   duration?: number; // Duration should be a number
-  dismissFunction?: () => void;
+  dismissCallback: (notificationUuid: string) => void;
 }
 
 export class ToastNotification {
-  toastContainer: HTMLDivElement;
-  duration: number;
-  dismissFunction: () => void;
+  private toastContainer: HTMLDivElement;
+  private duration: number;
+  private dismissCallback: (notificationUuid: string) => void;
+  private notificationUuid: string;
 
   constructor(options: ToastNotificationOptions) {
     this.toastContainer = document.createElement('div');
     this.toastContainer.className = 'toast-container';
     this.duration = options.duration || 3000;
-    const genericDismissFunction = () => { console.log('TINAD Toast dismissed') };
-    this.dismissFunction = options.dismissFunction || genericDismissFunction;
+    this.dismissCallback = options.dismissCallback;
     document.body.appendChild(this.toastContainer);
   }
 
-  show( content = 'Default message' ) {
+  show( content = 'Default message', notificationUuid: string ) {
+    this.notificationUuid = notificationUuid;
     // use toastify-js to actually display the toast
     Toastify({
       text: content,
@@ -33,7 +34,6 @@ export class ToastNotification {
       gravity: "top", // `top` or `bottom`
       position: "center", // `left`, `center` or `right`
       stopOnFocus: true, // Prevents dismissing of toast on hover
-      onClick: function(){} // Callback after click
     }).showToast();
   }
 
