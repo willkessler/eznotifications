@@ -7,10 +7,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const apiKey = scriptTag.getAttribute('data-api-key') || '';
   const apiEndpoint = scriptTag.getAttribute('data-api-endpoint') || 'https://api.this-is-not-a-drill.com';
   const displayMode = scriptTag.getAttribute('data-api-display-mode') || 'inline';
+  const toastPosition = scriptTag.getAttribute('data-api-toast-position') || 'top-left';
   const apiEnvironments = scriptTag.getAttribute('data-api-environments') || 'Development';
   const apiDomains = scriptTag.getAttribute('data-api-domains') || '';
   const userId = scriptTag.getAttribute('data-api-user-id') || 'user-1';
-  const sdk = new SDK(apiEndpoint, apiKey, apiEnvironments, apiDomains, displayMode, userId );
+  const sdk = new SDK(apiEndpoint,
+                      apiKey,
+                      apiEnvironments,
+                      apiDomains,
+                      displayMode,
+                      toastPosition,
+                      userId );
   try {
     await sdk.pollApi();
   } catch (error) {

@@ -1,5 +1,5 @@
 import Swal, { SweetAlertResult } from 'sweetalert2';
-import './css/modalNotifications.css';
+import './css/modalAndToastNotifications.css';
 
 export interface ModalNotificationOptions {
   dismissCallback: (notificationUuid: string) => void;
@@ -18,6 +18,7 @@ export class ModalNotification {
     if (this.modalOn) {
       return false; // do not try to show two modals at once
     }
+
     try {
       this.modalOn = true;
       const swalOutcome: SweetAlertResult = await Swal.fire({

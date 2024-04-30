@@ -7,7 +7,6 @@ import { InlineNotification } from './InlineNotifications';
 import { ModalNotification, ModalNotificationOptions } from './ModalNotifications';
 import { BannerNotification } from './BannerNotifications';
 import { Poller } from './Poller';
-import Toastify from 'toastify-js';
 
 export class SDK {
   poller: Poller;
@@ -20,12 +19,19 @@ export class SDK {
   apiEnvironments: string;
   apiDomains: string;
   displayMode: string;
+  toastPosition: string;
   userId: string;
   pollingInterval: number;
   notificationQueue: any[] = [];
   currentlyDisplayedNotificationUuid: string;
 
-  constructor(apiEndpoint: string, apiKey: string, apiEnvironments: string, apiDomains: string, displayMode: string, userId: string) {
+  constructor(apiEndpoint: string, 
+              apiKey: string, 
+              apiEnvironments: string, 
+              apiDomains: string, 
+              displayMode: string, 
+              toastPosition: string,
+              userId: string) {
     this.apiEndpoint = apiEndpoint;
     this.apiKey = apiKey;
     this.apiEnvironments = apiEnvironments;
@@ -36,6 +42,7 @@ export class SDK {
     const toastOptions:ToastNotificationOptions = {
       dismissCallback: this.markAsDismissed,
       duration: 10000,
+      position: toastPosition,
     };
     this.toastNotification = new ToastNotification(toastOptions);
 
