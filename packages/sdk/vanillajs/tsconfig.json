@@ -7,7 +7,7 @@
     "typeRoots": ["./node_modules/@types"],
     "outDir": "./dist",
     "module": "ESNext",
-    "target": "es5",
+    "target": "es2015",
     "lib": ["dom", "esnext"],
     "moduleResolution": "node",
     "sourceMap": true,
