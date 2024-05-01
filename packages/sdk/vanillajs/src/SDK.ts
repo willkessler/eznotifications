@@ -3,6 +3,7 @@
 // make it easy from the dashboard to configure these script snippets to drop into a page
 // test what happens if this snippet is dropped into the HEAD in Umso test site
 // make sure users realize they have to create a div for the inline modal
+// support markdown rendering
 
 import { Poller } from './Poller';
 import { ToastNotification, ToastNotificationOptions } from './ToastNotifications';
@@ -63,7 +64,7 @@ export class SDK {
 
     const pollingErrorHandler = (error: any) => { 
       if (error !== null) { 
-        console.error('Polling Error:', error);
+        console.log('Polling Error:', error);
       }
     };
     this.pollingInterval = 1000; // ms
@@ -104,11 +105,9 @@ export class SDK {
 
       // Display the next notification if there is one and nothing is currently displayed
       await this.displayNextNotification();
-
       return this.pollingInterval;  // Return updated interval if applicable
     } catch (error) {
-      console.error('API Poll Error:', error);
-      throw error;
+      return -1;
     }
   }
 
@@ -119,7 +118,7 @@ export class SDK {
 //        'Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. ' +
 //        'Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus,'+
 //        ' iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet.'; 
-      console.log('Content:', notification.content);
+      //console.log('Content:', notification.content);
       switch (this.displayMode) {
         case 'toast':
           this.toastNotification.show(notification.content, notification.uuid);

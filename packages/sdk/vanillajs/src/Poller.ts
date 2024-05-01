@@ -14,6 +14,7 @@ export class Poller {
   private updatedPollingInterval: number | null = null; // Holds updated interval
   private initialBackoffInterval: number = 3000; // Initial backoff interval
   private pollingPaused: boolean = false; // Flag for polling state
+  private POLLING_PAUSE_DELAY = 10000;
 
   private constructor() {}
 
@@ -39,13 +40,21 @@ export class Poller {
       if (this.pollingFunction && !this.pollingPaused) {
         try {
           const updatedPollingInterval = await this.pollingFunction();
-          if (updatedPollingInterval !== null) {
-            this.updatedPollingInterval = updatedPollingInterval;
+          if (updatedPollingInterval === -1) {
+            // network error caught in the fetch to the API. implement backoff.
+            this.applyBackoff();
+            console.log(`Poller got error back from pollingFunction. Backing off to ${this.backoffInterval}`);
+          } else {            
+            if (updatedPollingInterval !== null) {
+              this.updatedPollingInterval = updatedPollingInterval;
+            }
+            this.resetBackoffInterval();
+            this.handlePollingError(null);
           }
-          this.resetBackoffInterval();
-          this.handlePollingError(null);
         } catch (error) {
-          console.error(`Polling error: ${error}`);
+          // some other error occurred during polling. also implement backoff policy
+          console.log(`Polling error: ${error}`);
+          console.log(`new polling interval: ${this.pollingInterval}, backoff: ${this.backoffInterval}`);
           this.handlePollingError(error as string);
           this.applyBackoff();
         } finally {
@@ -116,8 +125,8 @@ export class Poller {
       document.body.appendChild(overlay);
       overlay.addEventListener('mouseenter', () => { this.resumePolling() }, true); // Capture phase
       overlay.addEventListener('focus', () => { this.resumePolling() }, true); // Capture phase
-      overlay.addEventListener('mouseleave', () => { this.pausePolling() }, true); // Capture phase
-      overlay.addEventListener('focus', () => { this.pausePolling() }, true); // Capture phase
+      overlay.addEventListener('mouseleave', () => { this.pausePollingDelayed(this.POLLING_PAUSE_DELAY) }, true); // Capture phase
+      overlay.addEventListener('focus', () => { this.pausePollingDelayed(this.POLLING_PAUSE_DELAY) }, true); // Capture phase
     }
   }
   
