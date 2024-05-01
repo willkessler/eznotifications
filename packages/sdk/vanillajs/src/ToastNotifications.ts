@@ -10,22 +10,35 @@ export interface ToastNotificationOptions {
   position?: string;
 }
 
+const positionMap: Record<string, SweetAlertPosition> = {
+  "top": "top",
+  "top-start": "top-start",
+  "top-end": "top-end",
+  "center": "center",
+  "center-start": "center-start",
+  "center-end": "center-end",
+  "bottom": "bottom",
+  "bottom-start": "bottom-start",
+  "bottom-end": "bottom-end",
+};
+
 export class ToastNotification {
   private toastContainer: HTMLDivElement;
   private duration: number;
   private dismissCallback: (notificationUuid: string) => void;
-  private position: string;
+  private position: SweetAlertPosition;
   private toastOn: boolean = false;
 
   constructor(options: ToastNotificationOptions) {
     this.toastContainer = document.createElement('div');
     this.toastContainer.className = 'toast-container';
-    this.duration = options.duration || 3000;
-    this.position = options.position || 'top-right';
+    this.duration = options.duration || 5000;
+    this.position = positionMap[options.position] || 'top-end';
     this.dismissCallback = options.dismissCallback;
     document.body.appendChild(this.toastContainer);
   }
 
+  
   async show( content = 'Default message', notificationUuid: string ):Promise<boolean> {
     let timerInterval: number | null = null;
 
@@ -36,14 +49,13 @@ export class ToastNotification {
     this.toastOn = true;
     try {
       const swalOutcome: SweetAlertResult = await Swal.fire({
+        toast:true,
         title: content,
         timer: this.duration,
-        position: this.position as SweetAlertPosition,
+        width: '20em',
+        position: this.position,
         showCloseButton: true,
         showConfirmButton: false,
-        customClass: {
-          popup: `toast-${this.position}`,  // Assign a custom CSS class for positioning
-        },
         didOpen: () => {
           const closeBtn = Swal.getPopup().querySelector('.close-btn');
           if (closeBtn) {

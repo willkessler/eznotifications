@@ -1,95 +1,41 @@
+/* Toast and Modal Styling */
+
 .swal2-popup {
-  padding:20px 10px 10px 10px;
+  padding: 20px 10px 10px 10px;
+  width: 25%;
+  min-width: 16em;
+  font-size: 1em;
+}
+
+.swal2-html-container {
+  padding-top: 30px;
 }
 
 .swal2-close {
+  font-size: 1.75em;
   margin-top: -12px;
   margin-right: -5px;
 }
 
-.swal2-html-container {
-  padding-top:30px;
-  text-align: left !important;
+.swal2-title, .swal2-html-container {
+  font-weight: normal;
   font-family: Arial, Helvetica;
+  text-align: left !important;
+  padding-bottom:1em;
 }
 
 .swal2-actions {
-  width:100%;
-  display: flex;  /* Ensure Flexbox layout */
-  justify-content: flex-end;  /* Align children (buttons) to the right */
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .swal2-actions button {
-  margin-right:20px;
-  margin-top:10px;
-  padding:10px 40px 10px 40px;
-  background-color:#eee !important;
+  margin-right: 10px;
+  margin-top: 10px;
+  padding: 5px 30px;
+  background-color: #eee !important;
   border: 2px solid #aaa !important;
   color: #999 !important;
 }
 
-.swal2-close {
-  font-size:2em;
-}
-
-.swal2-container.swal2-top-center {
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.swal2-container.swal2-bottom-center {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.swal2-container.swal2-left-center {
-  position: fixed;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.swal2-container.swal2-right-center {
-  position: fixed;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.toast-top-left {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-}
-
-.toast-bottom-right {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-}
-
-.toast-top-right {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-}
-
-.toast-bottom-left {
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-}
-
-.close-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-}

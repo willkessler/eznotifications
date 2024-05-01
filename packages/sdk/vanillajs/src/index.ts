@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const apiEndpoint = scriptTag.getAttribute('data-api-endpoint') || 'https://api.this-is-not-a-drill.com';
   const displayMode = scriptTag.getAttribute('data-api-display-mode') || 'inline';
   const toastPosition = scriptTag.getAttribute('data-api-toast-position') || 'top-left';
+  const toastDuration = parseInt(scriptTag.getAttribute('data-api-toast-duration')) || 5000;
   const apiEnvironments = scriptTag.getAttribute('data-api-environments') || 'Development';
   const apiDomains = scriptTag.getAttribute('data-api-domains') || '';
   const userId = scriptTag.getAttribute('data-api-user-id') || 'user-1';
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                       apiDomains,
                       displayMode,
                       toastPosition,
+                      toastDuration,
                       userId );
   try {
     await sdk.pollApi();
@@ -28,12 +30,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.addEventListener('dismissToast', () => {
     console.log('Toast dismissed!');
   });
-
-/*
-  const toaster = SimpleToast.init();
-  toaster.show({
-    content: 'Welcome! This toast is auto-initialized on DOM content load.',
-    duration: 1000
-  });
-*/
 });

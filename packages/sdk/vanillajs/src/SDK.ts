@@ -1,12 +1,13 @@
-// TODO
-// send notifs and toasts out one by one
-// improve poller
+// Todo
+// style toasts better.
+// allow for a css url that would load css for the toasts and modals as users prefer
+// make poller aware of browser focus
 
+import { Poller } from './Poller';
 import { ToastNotification, ToastNotificationOptions } from './ToastNotifications';
 import { InlineNotification } from './InlineNotifications';
 import { ModalNotification, ModalNotificationOptions } from './ModalNotifications';
 import { BannerNotification } from './BannerNotifications';
-import { Poller } from './Poller';
 
 export class SDK {
   poller: Poller;
@@ -19,7 +20,6 @@ export class SDK {
   apiEnvironments: string;
   apiDomains: string;
   displayMode: string;
-  toastPosition: string;
   userId: string;
   pollingInterval: number;
   notificationQueue: any[] = [];
@@ -31,6 +31,7 @@ export class SDK {
               apiDomains: string, 
               displayMode: string, 
               toastPosition: string,
+              toastDuration: number,
               userId: string) {
     this.apiEndpoint = apiEndpoint;
     this.apiKey = apiKey;
@@ -41,8 +42,11 @@ export class SDK {
 
     const toastOptions:ToastNotificationOptions = {
       dismissCallback: this.markAsDismissed,
-      duration: 10000,
+      // One of these (from swal2): 
+      // 'top', 'top-start', 'top-end', 'center', 'center-start', 'center-end', 
+      // 'bottom', 'bottom-start', or 'bottom-end'.
       position: toastPosition,
+      duration: toastDuration,
     };
     this.toastNotification = new ToastNotification(toastOptions);
 
