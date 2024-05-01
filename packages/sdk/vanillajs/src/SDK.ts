@@ -1,7 +1,8 @@
 // Todo
-// style toasts better.
 // allow for a css url that would load css for the toasts and modals as users prefer
 // make poller aware of browser focus
+// make it easy from the dashboard to configure these script snippets to drop into a page
+// make sure users realize they have to create a div for the inline modal
 
 import { Poller } from './Poller';
 import { ToastNotification, ToastNotificationOptions } from './ToastNotifications';
