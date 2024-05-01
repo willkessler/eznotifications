@@ -4,6 +4,6 @@
   left: 0;
   width: 100vw; /* Covers the full width of the viewport */
   height: 100vh; /* Covers the full height of the viewport */
-  z-index: 0;
+  z-index: -100;
   background-color: transparent;
 }
