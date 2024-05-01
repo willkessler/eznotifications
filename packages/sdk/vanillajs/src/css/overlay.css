@@ -1,0 +1,9 @@
+.tinad-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw; /* Covers the full width of the viewport */
+  height: 100vh; /* Covers the full height of the viewport */
+  z-index: 0;
+  background-color: transparent;
+}

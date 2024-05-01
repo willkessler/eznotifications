@@ -1,3 +1,5 @@
+import './css/overlay.css';
+
 export class Poller {
   private static instance: Poller | null = null;
   private intervalId: number | null = null;
@@ -63,6 +65,7 @@ export class Poller {
 
   public pausePolling() {
     this.pollingPaused = true;
+    console.log('paused polling');
   }
 
   public pausePollingDelayed(pollingPauseDelay: number) {
@@ -77,6 +80,7 @@ export class Poller {
       this.pausePollingDelayTimeout = null;
     }
     this.pollingPaused = false;
+    console.log('resume polling');
   }
 
   public restartPolling(): void {
@@ -100,15 +104,21 @@ export class Poller {
     this.backoffInterval = Math.min(this.backoffInterval * 2, this.maxBackoffInterval);
   }
 
-  private setupPollerMouseEvents() {
+  private setupPollerMouseEvents():void {
+
     document.addEventListener("visibilitychange", () => {
       document.visibilityState === 'visible' ? this.restartPolling() : this.pausePolling();
     });
 
-    document.addEventListener('mouseenter', () => { this.resumePolling() }, true); // Capture phase
-    document.addEventListener('focus', () => { this.resumePolling() }, true); // Capture phase
-    document.addEventListener('mouseleave', () => { this.pausePolling() }, true); // Capture phase
-    document.addEventListener('focus', () => { this.pausePolling() }, true); // Capture phase
+    const overlay = document.createElement('div');
+    if (overlay) {
+      overlay.className = 'tinad-overlay';
+      document.body.appendChild(overlay);
+      overlay.addEventListener('mouseenter', () => { this.resumePolling() }, true); // Capture phase
+      overlay.addEventListener('focus', () => { this.resumePolling() }, true); // Capture phase
+      overlay.addEventListener('mouseleave', () => { this.pausePolling() }, true); // Capture phase
+      overlay.addEventListener('focus', () => { this.pausePolling() }, true); // Capture phase
+    }
   }
   
 }
