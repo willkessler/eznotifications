@@ -26,6 +26,7 @@ export class Poller {
       Poller.instance.handlePollingError = errorHandler;
       Poller.instance.initialPollInterval = initialPollInterval;
       Poller.instance.pollingInterval = Poller.instance.initialPollInterval;
+      Poller.instance.setupPollerMouseEvents();
       Poller.instance.startPolling();
     }
     return Poller.instance;
@@ -98,4 +99,16 @@ export class Poller {
 
     this.backoffInterval = Math.min(this.backoffInterval * 2, this.maxBackoffInterval);
   }
+
+  private setupPollerMouseEvents() {
+    document.addEventListener("visibilitychange", () => {
+      document.visibilityState === 'visible' ? this.restartPolling() : this.pausePolling();
+    });
+
+    document.addEventListener('mouseenter', () => { this.resumePolling() }, true); // Capture phase
+    document.addEventListener('focus', () => { this.resumePolling() }, true); // Capture phase
+    document.addEventListener('mouseleave', () => { this.pausePolling() }, true); // Capture phase
+    document.addEventListener('focus', () => { this.pausePolling() }, true); // Capture phase
+  }
+  
 }

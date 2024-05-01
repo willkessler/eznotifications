@@ -1,7 +1,7 @@
 // Todo
 // allow for a css url that would load css for the toasts and modals as users prefer
-// make poller aware of browser focus
 // make it easy from the dashboard to configure these script snippets to drop into a page
+// test what happens if this snippet is dropped into the HEAD in Umso test site
 // make sure users realize they have to create a div for the inline modal
 
 import { Poller } from './Poller';
@@ -66,8 +66,8 @@ export class SDK {
         console.error('Polling Error:', error);
       }
     };
-    this.pollingInterval = 10000; // ms
-    this.poller = Poller.getInstance(this.pollApi, 5000, pollingErrorHandler);  // Directly pass as arrow function
+    this.pollingInterval = 1000; // ms
+    this.poller = Poller.getInstance(this.pollApi, this.pollingInterval, pollingErrorHandler);  // Directly pass as arrow function
 
   }
 
@@ -81,7 +81,7 @@ export class SDK {
   }
 
   pollApi = async ():Promise<number> => {
-    console.log('pollApi running');
+    //console.log('pollApi running');
     const fetchOptions: RequestInit = {
       method: 'GET',
       headers: new Headers({
@@ -141,7 +141,7 @@ export class SDK {
   }
 
   displayNextNotification = async () => {
-    console.log('displayNextNotification');
+    //console.log('displayNextNotification');
     if (this.notificationQueue.length === 0) return;  // Exit if no notifications in queue
 
     const notification = this.notificationQueue.shift();  // Get the next notification

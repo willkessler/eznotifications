@@ -2,7 +2,7 @@ import { SDK } from './SDK';
 
 // Adding event listener to initialize when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('DOMContentLoaded');
+  //console.log('DOMContentLoaded');
   const scriptTag = document.getElementById('api-script') as HTMLScriptElement;
   const apiKey = scriptTag.getAttribute('data-api-key') || '';
   const apiEndpoint = scriptTag.getAttribute('data-api-endpoint') || 'https://api.this-is-not-a-drill.com';
@@ -21,13 +21,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                       toastDuration,
                       userId );
   try {
-    await sdk.pollApi();
+    await sdk.pollApi(); // kick off polling
   } catch (error) {
     console.error(`Failed to poll TINAD API: ${error}`);
   }
 
-  // Listen for custom events
-  document.addEventListener('dismissToast', () => {
-    console.log('Toast dismissed!');
-  });
 });
