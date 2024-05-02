@@ -1,4 +1,5 @@
 import './css/bannerNotifications.css';
+import { MarkdownLib } from './Markdown';
 
 export interface BannerOptions {
   onClose?: () => void;
@@ -12,8 +13,8 @@ export class BannerNotification {
   private bannerOn: boolean;
   private dismissCallback: (notificationUuid: string) => Promise<void>;
   private currentNotificationUuid: string;
-  duration: number;
-  content:string;
+  private duration: number;
+  private content: string;
   
   constructor(options: BannerOptions) {
     this.banner = document.getElementById('notification-banner');
@@ -41,7 +42,7 @@ export class BannerNotification {
     this.banner.className = 'slideUp';
   }
 
-  show = (content:string = 'Default message', notificationUuid: string):boolean => {
+  public show = async (content: string = 'Default message', notificationUuid: string):Promise<boolean> => {
     if (this.bannerOn) {
       console.log('Banner currently showing, not running show.');
       return false;
@@ -51,10 +52,7 @@ export class BannerNotification {
     this.banner.innerHTML = '';
 
     // Insert content
-    const contentDiv = document.createElement('div');
-    contentDiv.textContent = content;
-    contentDiv.className = 'content';
-    this.banner.appendChild(contentDiv);
+    await MarkdownLib.insertMarkdownInDOM(content, this.banner, 'div', 'content');
 
     // Create and insert "X" button for instant dismissal
     const dismissButtonX = document.createElement('button');

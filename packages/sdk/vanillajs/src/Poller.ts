@@ -14,7 +14,7 @@ export class Poller {
   private updatedPollingInterval: number | null = null; // Holds updated interval
   private initialBackoffInterval: number = 3000; // Initial backoff interval
   private pollingPaused: boolean = false; // Flag for polling state
-  private POLLING_PAUSE_DELAY = 10000;
+  private POLLING_PAUSE_DELAY = 5000;
 
   private constructor() {}
 

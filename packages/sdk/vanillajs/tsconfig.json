@@ -8,6 +8,7 @@
     "outDir": "./dist",
     "module": "ESNext",
     "target": "es2015",
+    "allowSyntheticDefaultImports": true,
     "lib": ["dom", "esnext"],
     "moduleResolution": "node",
     "sourceMap": true,

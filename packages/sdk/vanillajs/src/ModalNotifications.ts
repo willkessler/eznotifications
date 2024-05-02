@@ -14,7 +14,7 @@ export class ModalNotification {
     this.modalOn = false;
   }
   
-  async show(content:string, notificationUuid: string):Promise<boolean> {
+  async show(content: string = 'Default text', notificationUuid: string):Promise<boolean> {
     if (this.modalOn) {
       return false; // do not try to show two modals at once
     }

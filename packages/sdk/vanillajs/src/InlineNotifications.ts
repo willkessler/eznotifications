@@ -1,4 +1,5 @@
 import './css/inlineNotifications.css';
+import { MarkdownLib } from './Markdown';
 
 export class InlineNotification {
   private containers: HTMLElement[];  // Store references to all containers
@@ -24,13 +25,12 @@ export class InlineNotification {
     }
   }
 
-  private createContentDiv(content: string, container: HTMLElement): HTMLElement {
+  private async createContentDiv(content: string, container: HTMLElement): Promise<HTMLElement> {
     const notificationDiv = document.createElement('div');
     notificationDiv.className = 'tinadNotification';
 
-    const contentDiv = document.createElement('div');
-    contentDiv.textContent = content;
-    notificationDiv.appendChild(contentDiv);
+    // Insert content
+    await MarkdownLib.insertMarkdownInDOM(content, notificationDiv, 'div', 'content');
 
     const dismissButtonX = document.createElement('button');
     dismissButtonX.className = 'dismiss-x';
@@ -47,16 +47,18 @@ export class InlineNotification {
     return notificationDiv;
   }
 
-  show(content: string, notificationUuid: string) {
+  public show = async (content: string = 'Default text', notificationUuid: string):Promise<void> => {
     if (this.inlineNotifOn) {
       return;
     }
     // Fill all containers with the same content
     this.currentNotificationUuid = notificationUuid;
-    this.containers.forEach(container => {
+    for (const container of this.containers) {
       container.innerHTML = '';  // Clear previous content
-      container.appendChild(this.createContentDiv(content, container));
-    });
+
+      const contentDiv = await this.createContentDiv(content, container);
+      container.appendChild(contentDiv);
+    }
     this.inlineNotifOn = true;
   }
 

@@ -124,13 +124,13 @@ export class SDK {
           this.toastNotification.show(notification.content, notification.uuid);
           break;
         case 'inline':
-          this.inlineNotification.show(notification.content, notification.uuid);
+          await this.inlineNotification.show(notification.content, notification.uuid);
           break;
         case 'modal':
           this.modalNotification.show(notification.content,  notification.uuid);
           break;
         case 'banner':
-          this.bannerNotification.show(notification.content, notification.uuid);
+          await this.bannerNotification.show(notification.content, notification.uuid);
           break;
       }
       this.currentlyDisplayedNotificationUuid = notification.uuid;

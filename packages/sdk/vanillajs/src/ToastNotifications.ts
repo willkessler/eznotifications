@@ -1,5 +1,6 @@
 import Swal, { SweetAlertResult, SweetAlertPosition } from 'sweetalert2';
 import './css/modalAndToastNotifications.css';
+import { MarkdownLib } from './Markdown';
 
 export interface ToastNotificationOptions {
   onClose?: () => void;
@@ -39,7 +40,7 @@ export class ToastNotification {
   }
 
   
-  async show( content = 'Default message', notificationUuid: string ):Promise<boolean> {
+  async show( content:string ='Default message', notificationUuid: string ):Promise<boolean> {
     let timerInterval: number | null = null;
 
     if (this.toastOn) {
