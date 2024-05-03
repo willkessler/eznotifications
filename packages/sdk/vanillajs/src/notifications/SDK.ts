@@ -1,6 +1,6 @@
 // Todo
 // X pass eznotifications around
-// create a src/lib directory
+// X create a src/lib directory
 // generate on-demand user id, store in local storage
 // allow for a css url that would load css for the toasts and modals as users prefer
 // make it easy from the dashboard to configure these script snippets to drop into a page

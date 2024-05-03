@@ -22,6 +22,7 @@
     "marked": "^12.0.2",
     "style-loader": "^4.0.0",
     "sweetalert2": "^11.10.8",
+    "uuidv4": "^6.2.13",
     "webpack-dev-server": "^5.0.4"
   }
 }

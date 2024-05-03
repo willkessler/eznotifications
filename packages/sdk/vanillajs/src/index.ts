@@ -1,4 +1,5 @@
 import { SDK } from './notifications/SDK';
+import { UserIdGenerator } from './lib/UserIdGenerator';
 
 // Adding event listener to initialize when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', async () => {
@@ -11,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const toastDuration = parseInt(scriptTag.getAttribute('data-api-toast-duration')) || 5000;
   const apiEnvironments = scriptTag.getAttribute('data-api-environments') || 'Development';
   const apiDomains = scriptTag.getAttribute('data-api-domains') || '';
-  const userId = scriptTag.getAttribute('data-api-user-id') || 'user-1';
+  let userId = UserIdGenerator.generate(scriptTag.getAttribute('data-api-user-id'), apiKey);
   const sdk = new SDK(apiEndpoint,
                       apiKey,
                       apiEnvironments,
