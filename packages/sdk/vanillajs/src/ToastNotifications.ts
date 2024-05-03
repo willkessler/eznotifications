@@ -1,5 +1,6 @@
 import Swal, { SweetAlertResult, SweetAlertPosition } from 'sweetalert2';
 import './css/modalAndToastNotifications.css';
+import { SDKNotification } from '../../react-core/src/types';
 import { MarkdownLib } from './Markdown';
 
 export interface ToastNotificationOptions {
@@ -40,7 +41,10 @@ export class ToastNotification {
   }
 
   
-  async show( content:string ='Default message', notificationUuid: string ):Promise<boolean> {
+  async show( notification: SDKNotification ):Promise<boolean> {
+    const content = notification.content || 'Default text';
+    const uuid = notification.uuid;
+    
     let timerInterval: number | null = null;
 
     if (this.toastOn) {
@@ -69,7 +73,7 @@ export class ToastNotification {
       } else if (swalOutcome.dismiss === Swal.DismissReason.cancel) {
         console.log(`Dismissed by : ${swalOutcome.dismiss}`);
       }
-      await this.dismissCallback(notificationUuid);
+      await this.dismissCallback(uuid);
       this.toastOn = false;
       return true;
     } catch (error) {

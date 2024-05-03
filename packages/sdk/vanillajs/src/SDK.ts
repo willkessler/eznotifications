@@ -1,10 +1,13 @@
 // Todo
+// X pass eznotifications around
+// generate on-demand user id, store in local storage
 // allow for a css url that would load css for the toasts and modals as users prefer
 // make it easy from the dashboard to configure these script snippets to drop into a page
-// test what happens if this snippet is dropped into the HEAD in Umso test site
-// make sure users realize they have to create a div for the inline modal
+// test what happens if this snippet is dropped into the HEAD in Umso test site -- use "defer" keyword
+// make sure users realize they have to create a div for the inline modal, or an existing target to insert as a child or right after
 // support markdown rendering
 
+import { SDKNotification } from '../../react-core/src/types';
 import { Poller } from './Poller';
 import { ToastNotification, ToastNotificationOptions } from './ToastNotifications';
 import { InlineNotification } from './InlineNotifications';
@@ -24,7 +27,7 @@ export class SDK {
   displayMode: string;
   userId: string;
   pollingInterval: number;
-  notificationQueue: any[] = [];
+  notificationQueue: SDKNotification[] = [];
   currentlyDisplayedNotificationUuid: string;
 
   constructor(apiEndpoint: string, 
@@ -72,12 +75,25 @@ export class SDK {
 
   }
 
-  addToNotificationQueue(notification: any): void {
+  addToNotificationQueue(rawNotification: any): void {
     // Check for existing notification by UUID
-    const exists = this.notificationQueue.some(n => n.uuid === notification.uuid) || (notification.uuid === this.currentlyDisplayedNotificationUuid);
+    const exists = this.notificationQueue.some(n => n.uuid === rawNotification.uuid) || (rawNotification.uuid === this.currentlyDisplayedNotificationUuid);
 
     if (!exists) {
-      this.notificationQueue.push(notification);  // Add if not a duplicate
+      const newNotification:SDKNotification = {
+        uuid:             rawNotification.uuid,
+        createdAt:        rawNotification.createdAt,
+        content:          rawNotification.content,
+        pageId:           rawNotification.pageId,
+        notificationType: rawNotification.notificationType,
+        environments:     rawNotification.environments,
+        domains:          rawNotification.domains,
+        startDate:        rawNotification.startDate,
+        endDate:          rawNotification.endDate,
+        live:             rawNotification.live,
+        dismissed:        rawNotification.dismissed,
+      }
+      this.notificationQueue.push(newNotification);  // Add if not a duplicate
     }
   }
 
@@ -121,16 +137,16 @@ export class SDK {
       //console.log('Content:', notification.content);
       switch (this.displayMode) {
         case 'toast':
-          this.toastNotification.show(notification.content, notification.uuid);
+          this.toastNotification.show(notification);
           break;
         case 'inline':
-          await this.inlineNotification.show(notification.content, notification.uuid);
+          await this.inlineNotification.show(notification);
           break;
         case 'modal':
-          this.modalNotification.show(notification.content,  notification.uuid);
+          this.modalNotification.show(notification);
           break;
         case 'banner':
-          await this.bannerNotification.show(notification.content, notification.uuid);
+          await this.bannerNotification.show(notification);
           break;
       }
       this.currentlyDisplayedNotificationUuid = notification.uuid;

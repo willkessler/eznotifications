@@ -1,5 +1,6 @@
 import Swal, { SweetAlertResult } from 'sweetalert2';
 import './css/modalAndToastNotifications.css';
+import { SDKNotification } from '../../react-core/src/types';
 
 export interface ModalNotificationOptions {
   dismissCallback: (notificationUuid: string) => void;
@@ -14,7 +15,10 @@ export class ModalNotification {
     this.modalOn = false;
   }
   
-  async show(content: string = 'Default text', notificationUuid: string):Promise<boolean> {
+  async show(notification:SDKNotification):Promise<boolean> {
+    const content = notification.content || 'Default text';
+    const uuid = notification.uuid;
+
     if (this.modalOn) {
       return false; // do not try to show two modals at once
     }
@@ -36,7 +40,7 @@ export class ModalNotification {
       } else if (swalOutcome.dismiss) {
         console.log(`Dismissed by: ${swalOutcome.dismiss}`);
       }
-      await this.dismissCallback(notificationUuid);
+      await this.dismissCallback(uuid);
       this.modalOn = false;
       return true;
     } catch (error) {

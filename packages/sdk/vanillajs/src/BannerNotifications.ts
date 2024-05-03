@@ -1,5 +1,6 @@
 import './css/bannerNotifications.css';
 import { MarkdownLib } from './Markdown';
+import { SDKNotification } from '../../react-core/src/types';
 
 export interface BannerOptions {
   onClose?: () => void;
@@ -42,7 +43,10 @@ export class BannerNotification {
     this.banner.className = 'slideUp';
   }
 
-  public show = async (content: string = 'Default message', notificationUuid: string):Promise<boolean> => {
+  public show = async (notification:SDKNotification):Promise<boolean> => {
+    const content = notification.content || 'Default text';
+    const uuid = notification.uuid;
+
     if (this.bannerOn) {
       console.log('Banner currently showing, not running show.');
       return false;
@@ -64,7 +68,7 @@ export class BannerNotification {
     this.banner.className = 'slideDown';
     this.banner.style.display = 'flex';
 
-    this.currentNotificationUuid = notificationUuid;
+    this.currentNotificationUuid = uuid;
     this.bannerOn = true;
 
     setTimeout(() => {

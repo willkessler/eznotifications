@@ -1,5 +1,6 @@
 import './css/inlineNotifications.css';
 import { MarkdownLib } from './Markdown';
+import { SDKNotification } from '../../react-core/src/types';
 
 export class InlineNotification {
   private containers: HTMLElement[];  // Store references to all containers
@@ -47,12 +48,15 @@ export class InlineNotification {
     return notificationDiv;
   }
 
-  public show = async (content: string = 'Default text', notificationUuid: string):Promise<void> => {
+  public show = async (notification:SDKNotification):Promise<void> => {
+    const content = notification.content || 'Default text';    
+    const uuid = notification.uuid;
+
     if (this.inlineNotifOn) {
       return;
     }
     // Fill all containers with the same content
-    this.currentNotificationUuid = notificationUuid;
+    this.currentNotificationUuid = uuid;
     for (const container of this.containers) {
       container.innerHTML = '';  // Clear previous content
 
