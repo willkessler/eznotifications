@@ -1,7 +1,6 @@
 import Swal, { SweetAlertResult, SweetAlertPosition } from 'sweetalert2';
-import './css/modalAndToastNotifications.css';
-import { SDKNotification } from '../../react-core/src/types';
-import { MarkdownLib } from './Markdown';
+import '../css/modalAndToastNotifications.css';
+import { SDKNotification } from '../../../react-core/src/types';
 
 export interface ToastNotificationOptions {
   onClose?: () => void;

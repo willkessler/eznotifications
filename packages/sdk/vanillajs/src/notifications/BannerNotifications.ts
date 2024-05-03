@@ -1,6 +1,6 @@
-import './css/bannerNotifications.css';
-import { MarkdownLib } from './Markdown';
-import { SDKNotification } from '../../react-core/src/types';
+import '../css/bannerNotifications.css';
+import { MarkdownLib } from '../lib/Markdown';
+import { SDKNotification } from '../../../react-core/src/types';
 
 export interface BannerOptions {
   onClose?: () => void;

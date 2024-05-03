@@ -1,4 +1,4 @@
-import { SDK } from './SDK';
+import { SDK } from './notifications/SDK';
 
 // Adding event listener to initialize when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', async () => {

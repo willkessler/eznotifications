@@ -1,6 +1,6 @@
 import Swal, { SweetAlertResult } from 'sweetalert2';
-import './css/modalAndToastNotifications.css';
-import { SDKNotification } from '../../react-core/src/types';
+import '../css/modalAndToastNotifications.css';
+import { SDKNotification } from '../../../react-core/src/types';
 
 export interface ModalNotificationOptions {
   dismissCallback: (notificationUuid: string) => void;

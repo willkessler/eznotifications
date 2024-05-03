@@ -1,5 +1,6 @@
 // Todo
 // X pass eznotifications around
+// create a src/lib directory
 // generate on-demand user id, store in local storage
 // allow for a css url that would load css for the toasts and modals as users prefer
 // make it easy from the dashboard to configure these script snippets to drop into a page
@@ -7,8 +8,8 @@
 // make sure users realize they have to create a div for the inline modal, or an existing target to insert as a child or right after
 // support markdown rendering
 
-import { SDKNotification } from '../../react-core/src/types';
-import { Poller } from './Poller';
+import { SDKNotification } from '../../../react-core/src/types';
+import { Poller } from '../lib/Poller';
 import { ToastNotification, ToastNotificationOptions } from './ToastNotifications';
 import { InlineNotification } from './InlineNotifications';
 import { ModalNotification, ModalNotificationOptions } from './ModalNotifications';

@@ -1,6 +1,6 @@
-import './css/inlineNotifications.css';
-import { MarkdownLib } from './Markdown';
-import { SDKNotification } from '../../react-core/src/types';
+import '../css/inlineNotifications.css';
+import { MarkdownLib } from '../lib/Markdown';
+import { SDKNotification } from '../../../react-core/src/types';
 
 export class InlineNotification {
   private containers: HTMLElement[];  // Store references to all containers

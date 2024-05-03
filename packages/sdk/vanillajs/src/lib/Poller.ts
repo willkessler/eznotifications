@@ -1,4 +1,4 @@
-import './css/overlay.css';
+import '../css/overlay.css';
 
 export class Poller {
   private static instance: Poller | null = null;
