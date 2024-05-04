@@ -1,14 +1,19 @@
 // Todo
+// X support markdown rendering
 // X pass eznotifications around
 // X create a src/lib directory
-// generate on-demand user id, store in local storage
+// X generate on-demand user id, store in local storage
+// change script tags so they don't all start with 'data-api'
+// make sure users realize they have to create a div for the inline modal, or an existing target to insert as a child or right after: target-inside, target-before, target-after.
+//    allow definition of a "close" element and a callback function... how?
+//    can they target just a message element and a dismiss element as well, so it's entirely custom? provide: outer div classname, message div classname, dismiss div classname. they should set outer div display:none so TINAD can show it
+// publish to npm
 // allow for a css url that would load css for the toasts and modals as users prefer
 // make it easy from the dashboard to configure these script snippets to drop into a page
 // test what happens if this snippet is dropped into the HEAD in Umso test site -- use "defer" keyword
-// make sure users realize they have to create a div for the inline modal, or an existing target to insert as a child or right after
-// support markdown rendering
 
 import { SDKNotification } from '../../../react-core/src/types';
+import { InsertType } from '../lib/Markdown';
 import { Poller } from '../lib/Poller';
 import { ToastNotification, ToastNotificationOptions } from './ToastNotifications';
 import { InlineNotification } from './InlineNotifications';
@@ -31,11 +36,13 @@ export class SDK {
   notificationQueue: SDKNotification[] = [];
   currentlyDisplayedNotificationUuid: string;
 
-  constructor(apiEndpoint: string, 
-              apiKey: string, 
-              apiEnvironments: string, 
-              apiDomains: string, 
-              displayMode: string, 
+  constructor(apiEndpoint: string,
+              apiKey: string,
+              apiEnvironments: string,
+              apiDomains: string,
+              displayMode: string,
+              inlineClassname: string,
+              inlinePlacement: InsertType,
               toastPosition: string,
               toastDuration: number,
               userId: string) {
@@ -48,15 +55,15 @@ export class SDK {
 
     const toastOptions:ToastNotificationOptions = {
       dismissCallback: this.markAsDismissed,
-      // One of these (from swal2): 
-      // 'top', 'top-start', 'top-end', 'center', 'center-start', 'center-end', 
+      // One of these (from swal2):
+      // 'top', 'top-start', 'top-end', 'center', 'center-start', 'center-end',
       // 'bottom', 'bottom-start', or 'bottom-end'.
       position: toastPosition,
       duration: toastDuration,
     };
     this.toastNotification = new ToastNotification(toastOptions);
 
-    this.inlineNotification = new InlineNotification(this.markAsDismissed);
+    this.inlineNotification = new InlineNotification(inlineClassname, inlinePlacement, this.markAsDismissed );
 
     const modalOptions: ModalNotificationOptions = {
       dismissCallback: this.markAsDismissed,
@@ -66,8 +73,8 @@ export class SDK {
     this.bannerNotification = new BannerNotification({ dismissCallback: this.markAsDismissed, duration: 5000 });
     this.displayMode = displayMode;
 
-    const pollingErrorHandler = (error: any) => { 
-      if (error !== null) { 
+    const pollingErrorHandler = (error: any) => {
+      if (error !== null) {
         console.log('Polling Error:', error);
       }
     };
@@ -103,7 +110,7 @@ export class SDK {
     const fetchOptions: RequestInit = {
       method: 'GET',
       headers: new Headers({
-        'Authorization': `Bearer ${this.apiKey}`, 
+        'Authorization': `Bearer ${this.apiKey}`,
         'Content-type': 'application/json' ,
         'X-Tinad-Source': 'vanillaJsSdk',
       }),
@@ -131,10 +138,10 @@ export class SDK {
   async displayNotification(notification: any, dismissCallback: () => void): Promise<void> {
     console.log('displayNotification');
     try {
-//      notification.content = notification.content + 
+//      notification.content = notification.content +
 //        'Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. ' +
 //        'Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus,'+
-//        ' iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet.'; 
+//        ' iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet.';
       //console.log('Content:', notification.content);
       switch (this.displayMode) {
         case 'toast':
@@ -162,11 +169,11 @@ export class SDK {
 
     const notification = this.notificationQueue.shift();  // Get the next notification
 
-    const dismissCallback = async () => { 
+    const dismissCallback = async () => {
       await this.markAsDismissed(notification.uuid);
     };
     this.displayNotification(notification, dismissCallback);
-  }  
+  }
 
   markAsDismissed = async (notificationUuid: string): Promise<void> => {
     try {
@@ -177,7 +184,7 @@ export class SDK {
           'Content-Type': 'application/json',
           'X-Tinad-Source': 'vanillaJsSdk',
         }),
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           notificationUuid,
           userId: this.userId,
         }),

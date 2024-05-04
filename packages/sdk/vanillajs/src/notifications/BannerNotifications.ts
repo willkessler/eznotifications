@@ -1,6 +1,7 @@
 import '../css/bannerNotifications.css';
 import { MarkdownLib } from '../lib/Markdown';
 import { SDKNotification } from '../../../react-core/src/types';
+import { InsertType } from '../lib/Markdown';
 
 export interface BannerOptions {
   onClose?: () => void;
@@ -56,7 +57,7 @@ export class BannerNotification {
     this.banner.innerHTML = '';
 
     // Insert content
-    await MarkdownLib.insertMarkdownInDOM(content, this.banner, 'div', 'content');
+    await MarkdownLib.insertMarkdownInDOM(content, this.banner, 'div', 'content', 'target-inside' as InsertType);
 
     // Create and insert "X" button for instant dismissal
     const dismissButtonX = document.createElement('button');

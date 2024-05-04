@@ -1,4 +1,4 @@
-.tinadNotification {
+.tinad-container {
   font-family: Arial, Helvetica;
   background-color: #fff;  /* Light background color */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Small shadow */
@@ -11,12 +11,7 @@
   min-height:100px;
 }
 
-.tinadNotification > div {
-  text-align: left;  /* Left-justify content */
-  margin-bottom: 10px;  /* Spacing between message and buttons */
-}
-
-.tinadNotification .dismiss-x {
+.tinad-container .dismiss-x {
   font-weight:800;
   color: #999;
   position: absolute;  /* Absolute position to place within its parent */
@@ -28,13 +23,13 @@
   cursor: pointer;  /* Pointer cursor to indicate clickable */
 }
 
-.tinadNotification .dismiss-x:hover {
+.tinad-container .dismiss-x:hover {
   border-radius: 2px;
   border: 1px solid #ddd;
   color: #000;
 }
 
-.tinadNotification .ok-button {
+.tinad-container .ok-button {
   position:absolute;
   bottom: 10px;
   right:10px;
@@ -47,6 +42,12 @@
   min-width:100px;
 }
 
-.tinadNotification .ok-button:hover {
+.tinad-container .ok-button:hover {
   border: 1px solid #000;
+}
+
+/* This is the actual div containing the notification text contents, and is a child of the container */
+.tinad-notification {
+  text-align: left;  /* Left-justify content */
+  margin-bottom: 10px;  /* Spacing between message and buttons */
 }
