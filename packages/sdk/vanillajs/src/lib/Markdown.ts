@@ -12,4 +12,5 @@ export class MarkdownLib {
     const rawMarkdown = await marked(markdownText);
     return DOMPurify.sanitize(rawMarkdown);
   }
+  
 }

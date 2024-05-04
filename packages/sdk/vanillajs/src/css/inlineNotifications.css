@@ -11,7 +11,7 @@
   min-height:100px;
 }
 
-.tinad-container .dismiss-x {
+.tinad-container .tinad-dismiss-x {
   font-weight:800;
   color: #999;
   position: absolute;  /* Absolute position to place within its parent */
@@ -23,13 +23,13 @@
   cursor: pointer;  /* Pointer cursor to indicate clickable */
 }
 
-.tinad-container .dismiss-x:hover {
+.tinad-container .tinad-dismiss-x:hover {
   border-radius: 2px;
   border: 1px solid #ddd;
   color: #000;
 }
 
-.tinad-container .ok-button {
+.tinad-container .tinad-ok-button {
   position:absolute;
   bottom: 10px;
   right:10px;
@@ -42,7 +42,7 @@
   min-width:100px;
 }
 
-.tinad-container .ok-button:hover {
+.tinad-container .tinad-ok-button:hover {
   border: 1px solid #000;
 }
 

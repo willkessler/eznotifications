@@ -14,18 +14,34 @@
 
     <div class="tinad-inline"></div>
 
-    <div class="banner-space">This is a space for an existing banner</div>
+    <div class="banner-space" style="padding:20px;border:2px dotted orange; width:100%;display:none">
+      <div class="my-content" style="color:blue;font-style:italic;"></div>
+      <button class="my-confirm">I got it already</button>
+      <div class="my-dismiss">X</div>
+    </div>
 
     <div>
 Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus, iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet. 
 </div>
+
 <div class="tinad-inline"></div>
+
+    <div class="banner-space" style="padding:20px;border:2px dotted orange; width:100%;display:none">
+      <div class="my-content" style="color:blue;font-style:italic;"></div>
+      <button class="my-confirm">I got it already</button>
+      <div class="my-dismiss">X</div>
+    </div>
 
     <script 
       src="/bundle.js" 
       data-api-display-mode='inline'
+      data-api-inline-custom-controls='{ 
+           "contentClassname": "my-content",
+           "confirmClassname": "my-confirm", 
+           "dismissClassname": "my-dismiss" 
+           }'
       data-api-inline-target-classname='banner-space'
-      data-api-inline-target-placement='target-after'
+      data-api-inline-target-placement='target-inside'
       data-api-toast-position='bottom-end'
       data-api-toast-duration="5000"
       data-api-key="C0N94F27" 

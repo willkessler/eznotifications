@@ -54,11 +54,9 @@ export class BannerNotification {
     }
     console.log(`Showing banner with content: ${content}`);
     // Clear previous contents
-    this.banner.innerHTML = '';
-
-    // Insert content
-    await MarkdownLib.insertMarkdownInDOM(content, this.banner, 'div', 'content', 'target-inside' as InsertType);
-
+    const markedContent =  await MarkdownLib.renderMarkdown(content);
+    this.banner.innerHTML = `<div>${markedContent}</div>`;
+    
     // Create and insert "X" button for instant dismissal
     const dismissButtonX = document.createElement('button');
     dismissButtonX.className = 'dismiss-x';

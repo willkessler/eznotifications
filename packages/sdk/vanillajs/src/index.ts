@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const displayMode = scriptTag.getAttribute('data-api-display-mode') || 'inline';
   const inlineTargetClassname = scriptTag.getAttribute('data-api-inline-target-classname') || null;
   const inlineTargetPlacement:InsertType = scriptTag.getAttribute('data-api-inline-target-placement') as InsertType || 'target-inside' as InsertType;
+  const inlineCustomControls:string = scriptTag.getAttribute('data-api-inline-custom-controls') || null;
 
   const toastPosition = scriptTag.getAttribute('data-api-toast-position') || 'top-left';
   const toastDuration = parseInt(scriptTag.getAttribute('data-api-toast-duration')) || 5000;
@@ -24,6 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                       displayMode,
                       inlineTargetClassname,
                       inlineTargetPlacement,
+                      inlineCustomControls,
                       toastPosition,
                       toastDuration,
                       userId );

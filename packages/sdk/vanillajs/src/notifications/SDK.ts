@@ -35,6 +35,7 @@ export class SDK {
   pollingInterval: number;
   notificationQueue: SDKNotification[] = [];
   currentlyDisplayedNotificationUuid: string;
+  customInlineControls: Object;
 
   constructor(apiEndpoint: string,
               apiKey: string,
@@ -43,6 +44,7 @@ export class SDK {
               displayMode: string,
               inlineClassname: string,
               inlinePlacement: InsertType,
+              inlineCustomControls:string | null,
               toastPosition: string,
               toastDuration: number,
               userId: string) {
@@ -63,14 +65,14 @@ export class SDK {
     };
     this.toastNotification = new ToastNotification(toastOptions);
 
-    this.inlineNotification = new InlineNotification(inlineClassname, inlinePlacement, this.markAsDismissed );
+    this.inlineNotification = new InlineNotification(inlineClassname, inlinePlacement, inlineCustomControls, this.markAsDismissed, );
 
     const modalOptions: ModalNotificationOptions = {
       dismissCallback: this.markAsDismissed,
     };
     this.modalNotification = new ModalNotification(modalOptions);
 
-    this.bannerNotification = new BannerNotification({ dismissCallback: this.markAsDismissed, duration: 5000 });
+    this.bannerNotification = new BannerNotification({ dismissCallback: this.markAsDismissed, duration: toastDuration });
     this.displayMode = displayMode;
 
     const pollingErrorHandler = (error: any) => {
