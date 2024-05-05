@@ -3,19 +3,21 @@
 // X pass eznotifications around
 // X create a src/lib directory
 // X generate on-demand user id, store in local storage
-// change script tags so they don't all start with 'data-api'
-// make sure users realize they have to create a div for the inline modal, or an existing target to insert as a child or right after: target-inside, target-before, target-after.
-//    allow definition of a "close" element and a callback function... how?
-//    can they target just a message element and a dismiss element as well, so it's entirely custom? provide: outer div classname, message div classname, dismiss div classname. they should set outer div display:none so TINAD can show it
+// x change script tags so they don't all start with 'data-api'
+// X make sure users realize they have to create a div for the inline modal, or an existing target to insert as a child or right after: target-inside, target-before, target-after.
+// X   allow definition of a "close" element and a callback function... how?
+// X   can they target just a message element and a dismiss element as well, so it's entirely custom? provide: outer div classname, message div classname, dismiss div classname. they should set outer div display:none so TINAD can show it
+// X Replace InsertType with something clearer; create a types.ts file
+// Figure out why a notif shows up twice after you reset the db
 // publish to npm
 // allow for a css url that would load css for the toasts and modals as users prefer
 // make it easy from the dashboard to configure these script snippets to drop into a page
 // test what happens if this snippet is dropped into the HEAD in Umso test site -- use "defer" keyword
 
 import { SDKNotification } from '../../../react-core/src/types';
-import { InsertType } from '../lib/Markdown';
+import { SDKConfiguration, TargetInsertType } from '../types';
 import { Poller } from '../lib/Poller';
-import { ToastNotification, ToastNotificationOptions } from './ToastNotifications';
+import { ToastNotification } from './ToastNotifications';
 import { InlineNotification } from './InlineNotifications';
 import { ModalNotification, ModalNotificationOptions } from './ModalNotifications';
 import { BannerNotification } from './BannerNotifications';
@@ -26,54 +28,20 @@ export class SDK {
   inlineNotification: InlineNotification;
   modalNotification: ModalNotification;
   bannerNotification: BannerNotification;
-  apiEndpoint: string;
-  apiKey: string;
-  apiEnvironments: string;
-  apiDomains: string;
-  displayMode: string;
-  userId: string;
+  configuration: SDKConfiguration;
   pollingInterval: number;
   notificationQueue: SDKNotification[] = [];
   currentlyDisplayedNotificationUuid: string;
-  customInlineControls: Object;
 
-  constructor(apiEndpoint: string,
-              apiKey: string,
-              apiEnvironments: string,
-              apiDomains: string,
-              displayMode: string,
-              inlineClassname: string,
-              inlinePlacement: InsertType,
-              inlineCustomControls:string | null,
-              toastPosition: string,
-              toastDuration: number,
-              userId: string) {
-    this.apiEndpoint = apiEndpoint;
-    this.apiKey = apiKey;
-    this.apiEnvironments = apiEnvironments;
-    this.apiDomains = apiDomains;
-    this.userId = userId;
+  constructor(configuration:SDKConfiguration) {
+    this.configuration = configuration;
+    this.configuration.api.dismissFunction = this.markAsDismissed;
     this.currentlyDisplayedNotificationUuid = null;
 
-    const toastOptions:ToastNotificationOptions = {
-      dismissCallback: this.markAsDismissed,
-      // One of these (from swal2):
-      // 'top', 'top-start', 'top-end', 'center', 'center-start', 'center-end',
-      // 'bottom', 'bottom-start', or 'bottom-end'.
-      position: toastPosition,
-      duration: toastDuration,
-    };
-    this.toastNotification = new ToastNotification(toastOptions);
-
-    this.inlineNotification = new InlineNotification(inlineClassname, inlinePlacement, inlineCustomControls, this.markAsDismissed, );
-
-    const modalOptions: ModalNotificationOptions = {
-      dismissCallback: this.markAsDismissed,
-    };
-    this.modalNotification = new ModalNotification(modalOptions);
-
-    this.bannerNotification = new BannerNotification({ dismissCallback: this.markAsDismissed, duration: toastDuration });
-    this.displayMode = displayMode;
+    this.toastNotification = new ToastNotification(this.configuration);
+    this.inlineNotification = new InlineNotification(this.configuration);
+    this.modalNotification = new ModalNotification(this.configuration);
+    this.bannerNotification = new BannerNotification(this.configuration);
 
     const pollingErrorHandler = (error: any) => {
       if (error !== null) {
@@ -112,14 +80,14 @@ export class SDK {
     const fetchOptions: RequestInit = {
       method: 'GET',
       headers: new Headers({
-        'Authorization': `Bearer ${this.apiKey}`,
+        'Authorization': `Bearer ${this.configuration.api.key}`,
         'Content-type': 'application/json' ,
         'X-Tinad-Source': 'vanillaJsSdk',
       }),
     }
 
     try {
-      const fullUrl = `${this.apiEndpoint}/notifications?userId=${this.userId}&environments=${this.apiEnvironments}`;
+      const fullUrl = `${this.configuration.api.endpoint}/notifications?userId=${this.configuration.api.userId}&environments=${this.configuration.api.environments}`;
       const response = await fetch(fullUrl, fetchOptions);
       const data = await response.json();
 
@@ -145,7 +113,7 @@ export class SDK {
 //        'Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus,'+
 //        ' iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet.';
       //console.log('Content:', notification.content);
-      switch (this.displayMode) {
+      switch (this.configuration.api.displayMode) {
         case 'toast':
           this.toastNotification.show(notification);
           break;
@@ -182,17 +150,17 @@ export class SDK {
       const fetchOptions: RequestInit = {
         method: 'POST',
         headers: new Headers({
-          'Authorization': `Bearer ${this.apiKey}`,
+          'Authorization': `Bearer ${this.configuration.api.key}`,
           'Content-Type': 'application/json',
           'X-Tinad-Source': 'vanillaJsSdk',
         }),
         body: JSON.stringify({
           notificationUuid,
-          userId: this.userId,
+          userId: this.configuration.api.userId,
         }),
       };
 
-      const response = await fetch(`${this.apiEndpoint}/notifications/dismiss`, fetchOptions);
+      const response = await fetch(`${this.configuration.api.endpoint}/notifications/dismiss`, fetchOptions);
       const data = await response.json();
       console.log('Notification dismissed:', data);
       this.currentlyDisplayedNotificationUuid = null;

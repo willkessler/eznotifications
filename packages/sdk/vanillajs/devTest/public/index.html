@@ -33,22 +33,32 @@ Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
     </div>
 
     <script 
+      id="tinad-sdk"
       src="/bundle.js" 
-      data-api-display-mode='inline'
-      data-api-inline-custom-controls='{ 
-           "contentClassname": "my-content",
-           "confirmClassname": "my-confirm", 
-           "dismissClassname": "my-dismiss" 
-           }'
-      data-api-inline-target-classname='banner-space'
-      data-api-inline-target-placement='target-inside'
-      data-api-toast-position='bottom-end'
-      data-api-toast-duration="5000"
-      data-api-key="C0N94F27" 
-      data-api-endpoint="http://localhost:8080"
-      data-api-environments='Development'
-      data-api-domains=''
-      id="api-script">
+      tinad-configuration="{
+          api: {
+            displayMode: 'toast',
+            userId: 'user-1',
+            key: 'C0N94F27',
+            endpoint: 'http://localhost:8080',
+            environments: [ 'Development' ],
+            domains: [],
+          },
+          inline: {
+            targetClassname: 'banner-space',
+            targetPlacement: 'inside',
+            customControlClasses: {
+              content: 'my-content',
+              confirm: 'my-confirm',
+              dismiss: 'my-dismiss',
+            },
+          },
+          toast: {
+            position: 'bottom-end',
+            duration: 5000,
+          },
+      }"
+    >
     </script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 import Swal, { SweetAlertResult } from 'sweetalert2';
 import '../css/modalAndToastNotifications.css';
+import { SDKConfiguration } from '../types';
 import { SDKNotification } from '../../../react-core/src/types';
 
 export interface ModalNotificationOptions {
@@ -7,11 +8,11 @@ export interface ModalNotificationOptions {
 }
 
 export class ModalNotification {
-  private dismissCallback: (notificationUuid: string) => void;
   private modalOn: boolean;
+  private configuration: SDKConfiguration;
 
-  constructor(options: ModalNotificationOptions) {
-    this.dismissCallback = options.dismissCallback;
+  constructor(configuration: SDKConfiguration) {
+    this.configuration = configuration;
     this.modalOn = false;
   }
   
@@ -40,7 +41,7 @@ export class ModalNotification {
       } else if (swalOutcome.dismiss) {
         console.log(`Dismissed by: ${swalOutcome.dismiss}`);
       }
-      await this.dismissCallback(uuid);
+      await this.configuration.api.dismissFunction(uuid);
       this.modalOn = false;
       return true;
     } catch (error) {

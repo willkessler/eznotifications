@@ -1,7 +1,7 @@
 import '../css/bannerNotifications.css';
 import { MarkdownLib } from '../lib/Markdown';
+import { SDKConfiguration } from '../types';
 import { SDKNotification } from '../../../react-core/src/types';
-import { InsertType } from '../lib/Markdown';
 
 export interface BannerOptions {
   onClose?: () => void;
@@ -13,12 +13,12 @@ export interface BannerOptions {
 export class BannerNotification {
   private banner: HTMLElement;
   private bannerOn: boolean;
-  private dismissCallback: (notificationUuid: string) => Promise<void>;
+  private configuration: SDKConfiguration;
   private currentNotificationUuid: string;
-  private duration: number;
   private content: string;
   
-  constructor(options: BannerOptions) {
+  constructor(configuration:SDKConfiguration) {
+    this.configuration = configuration;
     this.banner = document.getElementById('notification-banner');
     if (!this.banner) {
       this.banner = document.createElement('div');
@@ -31,13 +31,11 @@ export class BannerNotification {
         this.bannerOn = false;
         this.banner.style.display = 'none';
         console.log(`removeBanner calling dismiss on uuid: ${this.currentNotificationUuid}`);
-        this.dismissCallback(this.currentNotificationUuid);
+        this.configuration.api.dismissFunction(this.currentNotificationUuid);
       }
     });
 
     this.bannerOn = false;
-    this.duration = options.duration || 5000;
-    this.dismissCallback = options.dismissCallback;
   }
     
   removeBanner() {
@@ -73,7 +71,7 @@ export class BannerNotification {
     setTimeout(() => {
       this.removeBanner();
       // Listen for the end of the animation to hide the banner
-    }, this.duration);
+    }, this.configuration.banner.duration);
 
     return true;
   }

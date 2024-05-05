@@ -1,5 +1,6 @@
 import Swal, { SweetAlertResult, SweetAlertPosition } from 'sweetalert2';
 import '../css/modalAndToastNotifications.css';
+import { SDKConfiguration } from '../types';
 import { SDKNotification } from '../../../react-core/src/types';
 
 export interface ToastNotificationOptions {
@@ -26,16 +27,15 @@ const positionMap: Record<string, SweetAlertPosition> = {
 export class ToastNotification {
   private toastContainer: HTMLDivElement;
   private duration: number;
-  private dismissCallback: (notificationUuid: string) => void;
+  private configuration: SDKConfiguration;
   private position: SweetAlertPosition;
   private toastOn: boolean = false;
 
-  constructor(options: ToastNotificationOptions) {
+  constructor(configuration: SDKConfiguration) {
+    this.configuration = configuration;
+    
     this.toastContainer = document.createElement('div');
     this.toastContainer.className = 'toast-container';
-    this.duration = options.duration || 5000;
-    this.position = positionMap[options.position] || 'top-end';
-    this.dismissCallback = options.dismissCallback;
     document.body.appendChild(this.toastContainer);
   }
 
@@ -55,9 +55,9 @@ export class ToastNotification {
       const swalOutcome: SweetAlertResult = await Swal.fire({
         toast:true,
         title: content,
-        timer: this.duration,
+        timer: this.configuration.toast.duration,
         width: '20em',
-        position: this.position,
+        position: positionMap[this.configuration.toast.position],
         showCloseButton: true,
         showConfirmButton: false,
         didOpen: () => {
@@ -72,7 +72,7 @@ export class ToastNotification {
       } else if (swalOutcome.dismiss === Swal.DismissReason.cancel) {
         console.log(`Dismissed by : ${swalOutcome.dismiss}`);
       }
-      await this.dismissCallback(uuid);
+      await this.configuration.api.dismissFunction(uuid);
       this.toastOn = false;
       return true;
     } catch (error) {
