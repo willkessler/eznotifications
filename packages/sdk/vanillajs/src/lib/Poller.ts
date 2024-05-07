@@ -15,6 +15,8 @@ export class Poller {
   private initialBackoffInterval: number = 3000; // Initial backoff interval
   private pollingPaused: boolean = false; // Flag for polling state
   private POLLING_PAUSE_DELAY = 5000;
+  // If polling is paused with a passed ID, then it cannot be unpaused except by providing the same ID. Prevents race conditions
+  private pausePollingId:number = null; 
 
   private constructor() {}
 
@@ -72,23 +74,39 @@ export class Poller {
     this.intervalId = window.setInterval(this.executePollingFunction, this.pollingInterval);
   }
 
-  public pausePolling() {
+  public pausePolling(pauseId?: number) {
+    if (this.pausePollingId !== null || this.pollingPaused) {
+      return; // cannot pause because somebody paused already or paused with an ID
+    }
     this.pollingPaused = true;
-    console.log('paused polling');
+    if (pauseId !== null) {
+      this.pausePollingId = pauseId;
+      console.log(`Paused polling with pausePollingId: ${pauseId}`);
+    } else {
+      console.log('Paused polling, no Id');
+    }
   }
 
   public pausePollingDelayed(pollingPauseDelay: number) {
     this.pausePollingDelayTimeout = window.setTimeout(() => {
-      this.pausePolling();
+      this.pausePolling(null);
     }, pollingPauseDelay);
   }
 
-  public resumePolling() {
+  public resumePolling(pauseId?: number) {
+    if (this.pausePollingId !== null) {
+      if (pauseId !== this.pausePollingId) {
+        console.log('Not resuming since no pausePollingId match.');
+        return;
+      }
+    }
+        
     if (this.pausePollingDelayTimeout !== null) {
       clearTimeout(this.pausePollingDelayTimeout);
       this.pausePollingDelayTimeout = null;
     }
     this.pollingPaused = false;
+    this.pausePollingId = null;
     console.log('resume polling');
   }
 
@@ -123,8 +141,8 @@ export class Poller {
     if (overlay) {
       overlay.className = 'tinad-overlay';
       document.body.appendChild(overlay);
-      overlay.addEventListener('mouseenter', () => { this.resumePolling() }, true); // Capture phase
-      overlay.addEventListener('focus', () => { this.resumePolling() }, true); // Capture phase
+      overlay.addEventListener('mouseenter', () => { console.log('mouseenter'); this.resumePolling() }, true); // Capture phase
+      overlay.addEventListener('focus', () => { console.log('focus'); this.resumePolling() }, true); // Capture phase
       overlay.addEventListener('mouseleave', () => { this.pausePollingDelayed(this.POLLING_PAUSE_DELAY) }, true); // Capture phase
       overlay.addEventListener('focus', () => { this.pausePollingDelayed(this.POLLING_PAUSE_DELAY) }, true); // Capture phase
     }

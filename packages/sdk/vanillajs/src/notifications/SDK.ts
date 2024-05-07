@@ -8,11 +8,13 @@
 // X   allow definition of a "close" element and a callback function... how?
 // X   can they target just a message element and a dismiss element as well, so it's entirely custom? provide: outer div classname, message div classname, dismiss div classname. they should set outer div display:none so TINAD can show it
 // X Replace InsertType with something clearer; create a types.ts file
-// Figure out why a notif shows up twice after you reset the db
+// X Figure out why a notif shows up twice after you reset the db -- turn off polling during dismiss
+// Figure out a way to do a configurator with iframe into the same page? or two pages in a vertical format in stackblitz. nextjs? ideally, codepen
 // publish to npm
 // allow for a css url that would load css for the toasts and modals as users prefer
 // make it easy from the dashboard to configure these script snippets to drop into a page
 // test what happens if this snippet is dropped into the HEAD in Umso test site -- use "defer" keyword
+// can i make a demo in codepen.io work?
 
 import { SDKNotification } from '../../../react-core/src/types';
 import { SDKConfiguration, TargetInsertType } from '../types';
@@ -136,6 +138,7 @@ export class SDK {
   displayNextNotification = async () => {
     //console.log('displayNextNotification');
     if (this.notificationQueue.length === 0) return;  // Exit if no notifications in queue
+    if (this.currentlyDisplayedNotificationUuid) return; // don't try to display if something currently displayed
 
     const notification = this.notificationQueue.shift();  // Get the next notification
 
@@ -143,9 +146,14 @@ export class SDK {
       await this.markAsDismissed(notification.uuid);
     };
     this.displayNotification(notification, dismissCallback);
+    console.log('notificationQueue:');
+    console.log(JSON.stringify(this.notificationQueue, null,2));
   }
 
   markAsDismissed = async (notificationUuid: string): Promise<void> => {
+    console.log('markAsDismissed pausing polling.');
+    const pauseId = Math.random() * 10000;
+    this.poller.pausePolling(pauseId); // prevent race conditions by stopping polling during the dismiss process
     try {
       const fetchOptions: RequestInit = {
         method: 'POST',
@@ -167,6 +175,9 @@ export class SDK {
       this.poller.restartPolling();
     } catch (error) {
       console.error('Display notification error: ', error);
+    } finally {
+      console.log('markAsDismissed resuming polling.');
+      this.poller.resumePolling(pauseId);
     }
   }
 }
