@@ -7,10 +7,13 @@
     "packages/sdk/react-core",
     "packages/sdk/react-ui",
     "packages/sdk/vanillajs",
+    "packages/sdk/vanillajs-demo",
     "examples/react_sdk",
     "examples/sample-bank-app"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "yarn": "^1.22.22"
+  },
   "devDependencies": {
     "lerna": "^8.1.2"
   }
