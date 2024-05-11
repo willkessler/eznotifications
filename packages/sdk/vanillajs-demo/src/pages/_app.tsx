@@ -21,6 +21,8 @@ const dm_sans = DM_Sans({
 
 function Configurator({ Component, pageProps }) {
   const [isClient, setIsClient] = useState(false)
+  const [sdkConfig, setSdkConfig] = useState({}); // Initial state for the SDK config
+  const [code, setCode] = useState('');
  
   useEffect(() => {
     setIsClient(true)
@@ -28,7 +30,7 @@ function Configurator({ Component, pageProps }) {
 
   return (
     <Layout>
-      <Component {...pageProps} /> : 'nothing')
+      <Component {...pageProps} />
     </Layout>
   );
 }

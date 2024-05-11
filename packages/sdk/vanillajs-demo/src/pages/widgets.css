@@ -1,9 +1,9 @@
 .container {
   display: grid;
-  grid-template-rows: 40vh 60vh;
+  grid-template-rows: 50vh 50vh;
+  width:100vw;
   height: 100vh;
   max-width:none;
-  width:100vw;
 }
 
 .top-panel {
@@ -15,6 +15,7 @@
 
 .bottom-panel {
   width: 100%;
+  overflow:hidden;
 }
 
 .config-widget {
@@ -27,8 +28,5 @@
 }
 
 .copy-button {
-  position:relative;
-  left:10px;
-  top:10px;
-  z-index:100;
+  color:rgb(143, 144, 138);
 }

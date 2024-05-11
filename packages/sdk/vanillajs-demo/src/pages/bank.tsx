@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link"
+import { useEffect, useState } from 'react';
+import { TargetInsertType, SDKConfiguration } from '../vanillajs/src/types';
 
 /**
  * v0 by Vercel.
@@ -8,9 +10,68 @@ import Link from "next/link"
  */
 
 export default function Bank() {
+
+  const defaultConfiguration:SDKConfiguration = 
+    {
+      api: {
+        displayMode : 'inline',
+        userId: undefined, // will be set later by either the user or autoset
+        key: '',
+        endpoint: 'https://api.this-is-not-a-drill.com',
+        environments: [ 'Development' ],
+        domains: [],
+      },
+      inline: {
+        targetClassname: '',
+        targetPlacement: 'target-inside' as TargetInsertType,
+        customControlClasses: {
+          content: 'my-content',
+          confirm: 'my-confirm',
+          dismiss: 'my-dismiss',
+        },
+      },
+      toast: {
+        position: 'bottom-end',
+        duration: 5000,
+      },
+      banner: {
+        duration: 5000,
+      },
+      modal: {
+        confirmButtonLabel: 'OK',
+      }
+    };
+
+  const [sdkConfig, setSdkConfig] = useState<Object>(defaultConfiguration);
+  const handlePostMessage = (event:MessageEvent) => {
+    if (event.origin !== window.location.origin) {
+      return; // ignore unknown origin messages
+    }
+
+    if (event.data?.startsWith('RELOAD_SDK:')) {
+      const updatedSdkConfigStr = event.data.replace('RELOAD_SDK:', '');
+      const updatedSdkConfig = JSON.parse(updatedSdkConfigStr);
+      setSdkConfig(prevData => ({
+        ...prevData,
+        ...updatedSdkConfig,
+      }));
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('message', handlePostMessage);
+    return () => {
+      window.removeEventListener('message', handlePostMessage); // remove postMessage listener on component unmount
+    }
+  }, []);
+
+  useEffect(() => {
+      console.log('Latest bank side SDK config:', sdkConfig);
+  }, [sdkConfig]);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-12">
-      <div className="flex flex-col h-screen">
+    <main className="flex min-h-screen flex-col items-center justify-between p-7">
+      <div className="flex flex-col">
         <header className="bg-gray-900 text-white p-4 md:p-6">
           <div className="container mx-auto flex items-center justify-between">
             <h1 className="text-2xl font-bold">Commercial Savings and Loan</h1>
@@ -21,23 +82,23 @@ export default function Bank() {
         <div className="flex-1 bg-gray-100 p-6 md:p-8 md:flex">
           <div className="hidden md:block md:w-32 md:mr-8">
             <nav className="space-y-5 flex-1">
-              <a className="flex items-center hover:bg-gray-800 rounded-md p-2" href="#">
+              <a className="flex items-center hover:bg-gray-200 rounded-md p-2" href="#">
                 <HomeIcon className="h-5 w-5 mr-2" />
                 <span>Home</span>
               </a>
-              <a className="flex items-center hover:bg-gray-800 rounded-md p-2" href="#">
+              <a className="flex items-center hover:bg-gray-200 rounded-md p-2" href="#">
                 <WalletIcon className="h-5 w-5 mr-2" />
                 <span>Accounts</span>
               </a>
-              <a className="flex items-center hover:bg-gray-800 rounded-md p-2" href="#">
+              <a className="flex items-center hover:bg-gray-200 rounded-md p-2" href="#">
                 <CreditCardIcon className="h-5 w-5 mr-2" />
                 <span>Payments</span>
               </a>
-              <a className="flex items-center hover:bg-gray-800 rounded-md p-2" href="#">
+              <a className="flex items-center hover:bg-gray-200 rounded-md p-2" href="#">
                 <BarChartIcon className="h-5 w-5 mr-2" />
                 <span>Reporting</span>
               </a>
-              <a className="flex items-center hover:bg-gray-800 rounded-md p-2" href="#">
+              <a className="flex items-center hover:bg-gray-200 rounded-md p-2" href="#">
                 <SettingsIcon className="h-5 w-5 mr-2" />
                 <span>Settings</span>
               </a>

@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { useState } from 'react';
+import Configurator from './configurator';
 import Editor from './editor';
 import './widgets.css';
 
@@ -21,11 +22,7 @@ export default function Home() {
 
       <div className="top-panel">
         <div className="config-widget">
-          widget
-      <button class="copy-button" onClick={() => navigator.clipboard.writeText(code)}>
-        Copy Code
-      </button>
-
+          <Configurator />
         </div>
         <div className="code-editor">
           <Editor />
@@ -33,7 +30,7 @@ export default function Home() {
       </div>
 
       <div className="bottom-panel">
-        <iframe src="/bank"></iframe>
+        <iframe id="bank-app" src="/bank"></iframe>
       </div>
     </div>
   );
