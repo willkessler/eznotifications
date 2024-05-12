@@ -143,4 +143,14 @@ export class InlineNotification {
     this.inlineNotifOn = true;
   }
 
+  hide(): void {
+    if (this.inlineNotifOn) {
+      this.tinadNotificationElements.forEach(notificationElement => {
+        notificationElement.style.display = 'none';
+      });
+      this.inlineNotifOn = false;
+      console.log('Inline notifications programmatically hidden.');
+    }
+  }
+
 }

@@ -43,6 +43,7 @@ export default function Bank() {
     };
 
   const [sdkConfig, setSdkConfig] = useState<Object>(defaultConfiguration);
+/*
   const handlePostMessage = (event:MessageEvent) => {
     if (event.origin !== window.location.origin) {
       return; // ignore unknown origin messages
@@ -64,6 +65,7 @@ export default function Bank() {
       window.removeEventListener('message', handlePostMessage); // remove postMessage listener on component unmount
     }
   }, []);
+  */
 
   useEffect(() => {
       console.log('Latest bank side SDK config:', sdkConfig);

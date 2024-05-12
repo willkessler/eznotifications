@@ -75,4 +75,13 @@ export class BannerNotification {
 
     return true;
   }
+
+  hide(): void {
+    if (this.bannerOn) {
+      this.bannerOn = false;
+      this.banner.style.display = 'none';
+      console.log('Banner programmatically hidden.');
+    }
+  }
+  
 }

@@ -49,4 +49,13 @@ export class ModalNotification {
     }
     return false;
   }
+
+  hide(): void {
+    if (this.modalOn && Swal.isVisible()) {
+      Swal.close();
+      this.modalOn = false;
+      console.log('Modal programmatically hidden, but not dismissed.');
+    }
+  }
+
 }

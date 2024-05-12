@@ -80,4 +80,14 @@ export class ToastNotification {
     }
     return false;
   }
+  
+  hide(): void {
+    if (this.toastOn && Swal.isVisible()) {
+      Swal.close();
+      this.toastOn = false;
+      console.log('Toast programmatically hidden.');
+    }
+  }
+
+
 }

@@ -35,7 +35,7 @@ export class SDK {
   notificationQueue: SDKNotification[] = [];
   currentlyDisplayedNotificationUuid: string;
 
-  constructor(configuration:SDKConfiguration) {
+  constructor(configuration: SDKConfiguration) {
     this.configuration = configuration;
     this.configuration.api.dismissFunction = this.markAsDismissed;
     this.currentlyDisplayedNotificationUuid = null;
@@ -150,6 +150,10 @@ export class SDK {
     console.log(JSON.stringify(this.notificationQueue, null,2));
   }
 
+  clearNotificationQueue = () => {
+    this.notificationQueue = [];
+  }
+  
   markAsDismissed = async (notificationUuid: string): Promise<void> => {
     console.log('markAsDismissed pausing polling.');
     const pauseId = Math.random() * 10000;
@@ -180,4 +184,33 @@ export class SDK {
       this.poller.resumePolling(pauseId);
     }
   }
+
+  updateConfiguration = (configuration: SDKConfiguration) => {
+    this.poller.cancelPolling();
+    this.clearNotificationQueue();
+    switch (this.configuration.api.displayMode) {
+      case 'toast':
+        this.toastNotification.hide();
+        break;
+      case 'inline':
+        this.inlineNotification.hide();
+        break;
+      case 'modal':
+        this.modalNotification.hide();
+        break;
+      case 'banner':
+        this.bannerNotification.hide();
+        break;
+    }
+    this.currentlyDisplayedNotificationUuid = null;
+    this.configuration = configuration;
+
+    this.toastNotification = new ToastNotification(this.configuration);
+    this.inlineNotification = new InlineNotification(this.configuration);
+    this.modalNotification = new ModalNotification(this.configuration);
+    this.bannerNotification = new BannerNotification(this.configuration);
+    
+    this.poller.resumePolling();
+  }
+
 }

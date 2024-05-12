@@ -74,6 +74,16 @@ export class Poller {
     this.intervalId = window.setInterval(this.executePollingFunction, this.pollingInterval);
   }
 
+  // only used if the sdk configuration is dynamically changed; this will only happen with the demo site
+  public cancelPolling() {
+    if (this.intervalId !== null) clearInterval(this.intervalId);
+    if (this.pausePollingDelayTimeout !== null) {
+      clearTimeout(this.pausePollingDelayTimeout);
+      this.pausePollingDelayTimeout = null;
+    }
+    this.pollingPaused = true;
+  }
+
   public pausePolling(pauseId?: number) {
     if (this.pausePollingId !== null || this.pollingPaused) {
       return; // cannot pause because somebody paused already or paused with an ID

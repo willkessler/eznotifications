@@ -93,7 +93,7 @@ export default function Configurator() {
         </div>
         <div>
           {(sdkConfig.displayMode === 'toast' &&
-            <div className="flex-1 max-h-screen bg-gray-100 p-6 md:p-8 md:flex">
+            <div className="flex-1 bg-gray-100 p-6 sm:p-2 md:flex">
               <Select name="toast-position">
                 <SelectTrigger className="w-[250px]">
                   <SelectValue placeholder="Toast position" />
@@ -111,7 +111,7 @@ export default function Configurator() {
           )}
 
           {(sdkConfig.displayMode === 'modal' &&
-            <div>
+            <div className="sm:m-12 bg-gray-100">
               <Label htmlFor="confirm-button-label">Confirm Button Label</Label>
               <Input 
                 onChange={()=>{}}
