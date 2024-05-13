@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { SegmentedControl } from '@mantine/core';
 import classes from './css/GradientSegmentedControl.module.css';
+import { useSdkConfiguration } from './configuratorContext';
 
 const Configurator2 = () => {
+  const { getSdkConfiguration, setSdkConfiguration } = useSdkConfiguration();
   const [ sdkConfig, setSdkConfig ] = useState<Object>({
     displayMode: 'toast',
     toast: {
@@ -37,6 +39,9 @@ const Configurator2 = () => {
     switch (name) {
       case 'display-mode':
         newData = { displayMode: newValue };
+        const configUpdate = getSdkConfiguration();
+        configUpdate.api.displayMode = newValue.toLowerCase();
+        setSdkConfiguration(configUpdate);
         break;
       case 'toast-position':
         newData = { toast: { position: newValue } };

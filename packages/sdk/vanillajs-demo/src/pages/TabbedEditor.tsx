@@ -15,10 +15,10 @@ type FileData = {
 
 
 const TabbedEditor: React.FC = () => {
+  const { getSdkConfiguration, setSdkConfiguration, configurationChanged, setConfigurationChanged } = useSdkConfiguration();
   const [activeTab, setActiveTab] = useState<string | null>('snippet.js');
-  const [editorHeight, setEditorHeight] = useState('600px');
+  const [editorHeight, setEditorHeight ] = useState('600px');
   const containerRef = useRef(null);
-  const { getSdkConfiguration, setSdkConfiguration } = useSdkConfiguration();
   const initialFiles: FileData[] = [
     { filename: 'snippet.js', content: `//\n// SDK Initialization Code\n//\n\nconst sdk = initializeSDK(${JSON.stringify(getSdkConfiguration(), null, 2)});` },
     { filename: 'config.css', content: "\n\nconsole.log('Hello from file 2');\n" }
@@ -39,6 +39,20 @@ const TabbedEditor: React.FC = () => {
     return () => window.removeEventListener('resize', calculateHeight);
   }, []);
 
+  useEffect(() => {
+    const introPrefix =  "//\n// AUTO-GENERATED Configuration\n// Use configuration controls (at left) to update.\n//\n\n";
+    const currentConfig = getSdkConfiguration();
+    const editorContents = introPrefix + JSON.stringify(currentConfig, null,2);
+    //console.log(`currentconfig: ${JSON.stringify(currentConfig,null,2)}`);
+    setFiles(
+      [
+        { filename: 'snippet.js', content: editorContents },
+        { filename: 'config.css', content: files[1].content }
+      ]
+    );
+    setConfigurationChanged(false);
+  }, [configurationChanged]);
+  
   const handleEditorChange = (newContent: string, index: number) => {
     setFiles(currentFiles =>
       currentFiles.map((file, idx) => ({

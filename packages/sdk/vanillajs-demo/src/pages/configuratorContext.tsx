@@ -2,12 +2,19 @@ import React, { createContext, ReactNode, useState, useRef, useContext } from 'r
 
 const defaultSdkConfiguration = {
   api: {
-    displayMode : 'inline',
+    displayMode : 'toast',
     userId: undefined, // will be set later by either the user or autoset
     key: '',
     endpoint: 'https://api.this-is-not-a-drill.com',
     environments: [ 'Development' ],
     domains: [],
+  },
+  toast: {
+    position: 'bottom-end',
+    duration: 5000,
+  },
+  modal: {
+    confirmButtonLabel: 'OK',
   },
   inline: {
     targetClassname: '',
@@ -18,16 +25,9 @@ const defaultSdkConfiguration = {
       dismiss: 'my-dismiss',
     },
   },
-  toast: {
-    position: 'bottom-end',
-    duration: 5000,
-  },
   banner: {
     duration: 5000,
   },
-  modal: {
-    confirmButtonLabel: 'OK',
-  }
 };
 
 interface ConfigurationContextType {
@@ -44,6 +44,7 @@ const ConfigurationContext = createContext<ConfigurationContextType>({
 
 const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const sdkConfiguration = useRef<SDKConfiguration>(defaultSdkConfiguration);
+  const [ configurationChanged, setConfigurationChanged ] = useState<boolean>(false);
   const [ customCss, setCustomCss ] = useState<string | null>(null);
 
   const getSdkConfiguration = (): SDKConfiguration => {
@@ -52,12 +53,15 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
   
   const setSdkConfiguration = (newConfiguration: SDKConfiguration) => {
     sdkConfiguration.current = newConfiguration;
+    setConfigurationChanged(true);
   }
   
   return (
     <ConfigurationContext.Provider value={{
       getSdkConfiguration,
       setSdkConfiguration,
+      configurationChanged,
+      setConfigurationChanged,
       customCss,
       setCustomCss
       }}>
