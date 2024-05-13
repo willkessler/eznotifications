@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       confirmButtonLabel: 'OK',
     }
   };
-    
+  
   const constructConfiguration = (): SDKConfiguration => {
     const scriptTag = document.getElementById('tinad-sdk') as HTMLScriptElement;
     const userSuppliedConfiguration = scriptTag ? scriptTag.getAttribute('tinad-configuration') : null;

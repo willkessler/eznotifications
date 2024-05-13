@@ -1,8 +1,10 @@
 import Head from 'next/head';
 import { useState } from 'react';
-import Configurator from './configurator';
+import Configurator2 from './configurator2';
 import Editor from './editor';
-import './widgets.css';
+import CodeSnippet from './codeSnippet';
+import TabbedEditor from './TabbedEditor';
+import './css/widgets.css';
 
 export default function Home() {
   const [sdkConfig, setSdkConfig] = useState({});  // State to hold SDK configuration
@@ -22,10 +24,10 @@ export default function Home() {
 
       <div className="top-panel">
         <div className="config-widget">
-          <Configurator />
+          <Configurator2 />
         </div>
         <div className="code-editor">
-          <Editor />
+          <TabbedEditor />
         </div>
       </div>
 

@@ -20,11 +20,17 @@
 
 .config-widget {
   max-width:none;
+  height:100%;
+  background:white;
 }
 
 .code-editor {
   overflow:auto;
   overflow-x: hidden;
+}
+
+.code-editor .mantine-CodeHighlight-root {
+  height: 100%;
 }
 
 .copy-button {

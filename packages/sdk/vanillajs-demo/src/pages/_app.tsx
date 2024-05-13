@@ -2,22 +2,9 @@
 import Layout from '../app/layout.tsx';  // Adjust the path as necessary
 import '../app/globals.css'; // Global styles
 import { useState, useEffect } from 'react'
-
-/*
-import { Libre_Franklin } from 'next/font/google'
-import { DM_Sans } from 'next/font/google'
-
-const libre_franklin = Libre_Franklin({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-libre_franklin',
-})
-const dm_sans = DM_Sans({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-dm_sans',
-})
-*/
+import '@mantine/core/styles.css';
+import '@mantine/code-highlight/styles.css';
+import { MantineProvider } from '@mantine/core';
 
 function Configurator({ Component, pageProps }) {
   const [isClient, setIsClient] = useState(false)
@@ -29,9 +16,11 @@ function Configurator({ Component, pageProps }) {
   }, [])
 
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <MantineProvider defaultColorScheme="dark">
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </MantineProvider>
   );
 }
 
