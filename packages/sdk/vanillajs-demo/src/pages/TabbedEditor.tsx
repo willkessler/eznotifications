@@ -1,58 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
 import AceEditor from 'react-ace';
+import { useSdkConfiguration } from './configuratorContext';
 import { Tabs, rem } from '@mantine/core';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-monokai';
 
-import { TargetInsertType, SDKConfiguration } from './types';
+//import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
 
 type FileData = {
   filename: string;
   content: string;
 };
 
-const sdkConfig = {
-  api: {
-    displayMode : 'inline',
-    userId: undefined, // will be set later by either the user or autoset
-    key: '',
-    endpoint: 'https://api.this-is-not-a-drill.com',
-    environments: [ 'Development' ],
-    domains: [],
-  },
-      inline: {
-        targetClassname: '',
-        targetPlacement: 'target-inside' as TargetInsertType,
-        customControlClasses: {
-          content: 'my-content',
-          confirm: 'my-confirm',
-          dismiss: 'my-dismiss',
-        },
-      },
-      toast: {
-        position: 'bottom-end',
-        duration: 5000,
-      },
-      banner: {
-        duration: 5000,
-      },
-      modal: {
-        confirmButtonLabel: 'OK',
-      }
-};
-
-
-const initialFiles: FileData[] = [
-  { filename: 'config.js', content: `//\n// SDK Initialization Code\n//\n\nconst sdk = initializeSDK(${JSON.stringify(sdkConfig, null, 2)});` },
-  { filename: 'config.css', content: "\n\nconsole.log('Hello from file 2');\n" }
-];
 
 const TabbedEditor: React.FC = () => {
-  const [files, setFiles] = useState<FileData[]>(initialFiles);
-  const [activeTab, setActiveTab] = useState<string | null>('config.js');
+  const [activeTab, setActiveTab] = useState<string | null>('snippet.js');
   const [editorHeight, setEditorHeight] = useState('600px');
   const containerRef = useRef(null);
+  const { getSdkConfiguration, setSdkConfiguration } = useSdkConfiguration();
+  const initialFiles: FileData[] = [
+    { filename: 'snippet.js', content: `//\n// SDK Initialization Code\n//\n\nconst sdk = initializeSDK(${JSON.stringify(getSdkConfiguration(), null, 2)});` },
+    { filename: 'config.css', content: "\n\nconsole.log('Hello from file 2');\n" }
+  ];
+  const [files, setFiles] = useState<FileData[]>(initialFiles);
 
   useEffect(() => {
     const calculateHeight = () => {
@@ -100,6 +71,9 @@ const TabbedEditor: React.FC = () => {
               value={files[index].content}
               onChange={(newContent) => handleEditorChange(newContent, index)}
               name={`editor_${index}`}
+              fontSize={16}
+              fontFamily="Arial"
+              tabSize={2}
               showPrintMargin={false}
               editorProps={{ $blockScrolling: true }}
               width="100%"

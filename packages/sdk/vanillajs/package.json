@@ -1,5 +1,5 @@
 {
-  "name": "@this-is-not-a-0drill/vanillajs-sdk",
+  "name": "@this-is-not-a-drill/vanillajs-sdk",
   "version": "1.0.0",
   "main": "dist/index.js",
   "license": "MIT",

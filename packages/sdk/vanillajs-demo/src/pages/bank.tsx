@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link"
 import { useEffect, useState } from 'react';
-import { TargetInsertType, SDKConfiguration } from '../vanillajs/src/types';
+import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
 
 /**
  * v0 by Vercel.

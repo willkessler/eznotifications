@@ -10,7 +10,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   height: 100%;
-  border-bottom:1px solid #aaa;
+  border-bottom:4px solid #aaa;
 }
 
 .bottom-panel {

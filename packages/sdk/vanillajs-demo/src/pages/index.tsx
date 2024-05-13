@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { useState } from 'react';
+import ConfiguratorContext from './configuratorContext';
 import Configurator2 from './configurator2';
 import Editor from './editor';
 import CodeSnippet from './codeSnippet';
@@ -15,25 +16,27 @@ export default function Home() {
   };
 
   return (
-    <div className="container">
-      <Head>
-        <title>SDK Configurator</title>
-      </Head>
-      <style jsx>{`
-      `}</style>
+    <ConfiguratorContext>
+      <div className="container">
+        <Head>
+          <title>SDK Configurator</title>
+        </Head>
+        <style jsx>{`
+          `}</style>
 
-      <div className="top-panel">
-        <div className="config-widget">
-          <Configurator2 />
+        <div className="top-panel">
+          <div className="config-widget">
+            <Configurator2 />
+          </div>
+          <div className="code-editor">
+            <TabbedEditor />
+          </div>
         </div>
-        <div className="code-editor">
-          <TabbedEditor />
+
+        <div className="bottom-panel">
+          <iframe id="bank-app" src="/bank"></iframe>
         </div>
       </div>
-
-      <div className="bottom-panel">
-        <iframe id="bank-app" src="/bank"></iframe>
-      </div>
-    </div>
+    </ConfiguratorContext>
   );
 }
