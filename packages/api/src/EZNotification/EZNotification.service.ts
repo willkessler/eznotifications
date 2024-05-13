@@ -197,6 +197,33 @@ export class EZNotificationService {
         return null;
     }
 
+    async resetNotificationViewsForSingleUser(endUserId: string): Promise<boolean> {
+      console.log(`Resetting views for single end user, uuid: ${endUserId}.`);
+      const endUser = await this.endUserRepository.findOneBy({ endUserId: endUserId });
+      if (endUser) {
+        try {
+          const rightNow = new Date();
+          const endUserUuid = endUser.uuid;
+          const results = await this.endUsersServedRepository
+                                    .createQueryBuilder()
+                                    .update(EndUsersServed)
+                                    .set({
+                                      ignored: true,
+                                      dismissed: false,
+                                      updatedAt: rightNow
+                                    })
+                                    .where("end_user_uuid = :endUserUuid", { endUserUuid })
+                                    .andWhere("ignored = :ignored", { ignored: false })
+                                    .execute();
+          console.log(`Set ignored flag on: ${results.affected} end_users_served rows.`);
+          return true;
+        } catch (error) {
+          throw new NotFoundException(`Cannot update end_users_served rows for end user uuid: ${endUserId}, error: ${error}.`);
+        }
+      }
+      return false;
+    }
+
     async resetViewsForNonProductionNotifications(apiKeyString:string): Promise<boolean> {
         // Retrieve the organization UUID based on the API key
         const apiKeyDetails =
@@ -241,6 +268,7 @@ export class EZNotificationService {
         } catch (error) {
             throw new Error(`Cannot update EndUsersServed records to reset all views, error: ${error}.`);
         }
+      return false;
     }
 
     async findAllNotifications(queryParams: QueryParamProps): Promise<EZNotification[]> {

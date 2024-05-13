@@ -41,13 +41,22 @@ const devConfig = {
   mode: 'development',
   devServer: {
     static: {
-      directory: path.join(__dirname, 'devTest/public'),
+      directory: path.join(__dirname, 'dist'),
     },
-    port: 3500
+    port: 3500,
+    headers: {
+      'Content-Type' : 'application/javascript',
+      'Access-Control-Allow-Origin': 'http://localhost:3000',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
+    },
+    devMiddleware: {
+      publicPath: '/dist/'
+    },
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin()
-  ]
+  ],
 };
 
 module.exports = [

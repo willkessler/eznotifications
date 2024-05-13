@@ -9,9 +9,9 @@
 // X   can they target just a message element and a dismiss element as well, so it's entirely custom? provide: outer div classname, message div classname, dismiss div classname. they should set outer div display:none so TINAD can show it
 // X Replace InsertType with something clearer; create a types.ts file
 // X Figure out why a notif shows up twice after you reset the db -- turn off polling during dismiss
-// Figure out a way to do a configurator with iframe into the same page? or two pages in a vertical format in stackblitz. nextjs? ideally, codepen
+// X Figure out a way to do a configurator with iframe into the same page? or two pages in a vertical format in stackblitz. nextjs? ideally, codepen
 // publish to npm
-// allow for a css url that would load css for the toasts and modals as users prefer
+// allow for a css url that would load css for the toasts and modals as users prefer -- or inject the custom css from the editor!
 // make it easy from the dashboard to configure these script snippets to drop into a page
 // test what happens if this snippet is dropped into the HEAD in Umso test site -- use "defer" keyword
 // can i make a demo in codepen.io work?
@@ -185,7 +185,38 @@ export class SDK {
     }
   }
 
-  updateConfiguration = (configuration: SDKConfiguration) => {
+  resetViewsForCurrentEndUser = async (): Promise<void> => {
+    console.log(`resetViewsForSingleUser resetting views for user ${this.configuration.api.userId}.`);
+    try {
+      const fetchOptions: RequestInit = {
+        method: 'PUT',
+        headers: new Headers({
+          'Authorization': `Bearer ${this.configuration.api.key}`,
+          'Content-Type': 'application/json',
+          'X-Tinad-Source': 'vanillaJsSdk',
+        }),
+      };
+
+      const response = await fetch(`${this.configuration.api.endpoint}/notifications/reset-views/user/${this.configuration.api.userId}`, fetchOptions);
+      const data = await response.json();
+      console.log('End user reset results:', data);
+    } catch (error) {
+      console.error('End user reset views error: ', error);
+    }
+  }
+  
+  getStoredApiKey = ():string => {
+    const tinadConfigStr = localStorage.getItem('tinad');
+    if (tinadConfigStr) {
+      const tinadConfig = JSON.parse(tinadConfigStr);
+      if (tinadConfig.apiKey) {
+        return tinadConfig.apiKey;
+      }
+    }    
+    return null;
+  }
+  
+  updateConfiguration = (configuration: SDKConfiguration):void => {
     this.poller.cancelPolling();
     this.clearNotificationQueue();
     switch (this.configuration.api.displayMode) {
@@ -204,13 +235,16 @@ export class SDK {
     }
     this.currentlyDisplayedNotificationUuid = null;
     this.configuration = configuration;
+    this.configuration.api.dismissFunction = this.markAsDismissed;
 
     this.toastNotification = new ToastNotification(this.configuration);
     this.inlineNotification = new InlineNotification(this.configuration);
     this.modalNotification = new ModalNotification(this.configuration);
     this.bannerNotification = new BannerNotification(this.configuration);
-    
-    this.poller.resumePolling();
+
+    // Automatically reset views for the current (demo) user.
+    this.resetViewsForCurrentEndUser();
+    this.poller.restartPolling();
   }
 
 }

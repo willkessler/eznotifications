@@ -19,6 +19,7 @@ export class InlineNotification {
   constructor(configuration:SDKConfiguration ) {
     this.configuration = configuration;
     // Set up TINAD notifications in the dom, either before/inside/after containers defined by the user, or inside a .tinad-container element.
+    console.log(`constrcutor: ${this.configuration.inline.targetClassname}`);
     this.targetElementClassname = (this.configuration.inline.targetClassname !== null ? this.configuration.inline.targetClassname : this.TINAD_CONTAINER_DEFAULT_CLASSNAME);
 
     // if user passed a target class then we should make sure that target exists, and then create tinad containers before, inside, or after that target
@@ -26,7 +27,7 @@ export class InlineNotification {
     const targetContainers = Array.from(document.querySelectorAll('.' + this.targetElementClassname));
     if (targetContainers.length == 0) {
       this.foundTargetElements = false;
-      console.error(`TINAD: No target elements found with classname ${this.targetElementClassname} for placing inline notifications.`);
+      console.log(`TINAD: No target elements found with classname ${this.targetElementClassname} for placing inline notifications.`);
     } else {
         if (this.configuration.inline.customControlClasses) {
           // Set up sdk user's own custom mark up for running tinad

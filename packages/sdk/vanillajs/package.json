@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc && webpack --watch",
     "build:prod": "tsc && webpack --env production",
-    "build:dev": "tsc && webpack --env development --watch",
-    "start": "webpack server --mode development --env development"
+    "build:dev": "tsc && webpack --env development",
+    "start": "webpack serve --mode development --env development"
   },
   "devDependencies": {
     "ts-loader": "^9.5.1",

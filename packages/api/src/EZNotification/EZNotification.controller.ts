@@ -276,6 +276,14 @@ export class EZNotificationController {
         return this.EZNotificationService.resetNotificationViews(id);
     }
 
+    // This function can only be called by a development API key. Used in the demo sites
+    @Put('/notifications/reset-views/user/:id')
+    @ApiOperation({summary: 'Reset views on all notifications for a single user. (Not for direct client use)'})
+    @ApiResponse({ status: 200, description: 'Returns success.' })
+    @UseGuards(EitherJWTorDevApiKeyAuthGuard)
+    resetNotificationViewsForSingleUser(@Param('id') id: string): Promise<boolean> {
+        return this.EZNotificationService.resetNotificationViewsForSingleUser(id);
+    }
 }
 
 

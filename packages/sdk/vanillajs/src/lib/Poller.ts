@@ -123,6 +123,7 @@ export class Poller {
   public restartPolling(): void {
     if (this.intervalId !== null) clearInterval(this.intervalId);
     this.pollingPaused = false;
+    this.pausePollingId = null;
     this.startPolling();
   }
 

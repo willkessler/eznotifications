@@ -11,18 +11,17 @@ import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types
 
 export default function Bank() {
 
-  const defaultConfiguration:SDKConfiguration = 
+  const defaultConfiguration: SDKConfiguration = 
     {
       api: {
-        displayMode : 'inline',
-        userId: undefined, // will be set later by either the user or autoset
+        displayMode : 'toast',
         key: '',
-        endpoint: 'https://api.this-is-not-a-drill.com',
+        endpoint: 'http://localhost:8080',
         environments: [ 'Development' ],
         domains: [],
       },
       inline: {
-        targetClassname: '',
+        targetClassname: 'target-element',
         targetPlacement: 'target-inside' as TargetInsertType,
         customControlClasses: {
           content: 'my-content',
@@ -42,8 +41,41 @@ export default function Bank() {
       }
     };
 
-  const [sdkConfig, setSdkConfig] = useState<Object>(defaultConfiguration);
 /*
+
+  const generateQueryString = (params):string => {
+    let queryString = '?';
+    for (let key in params) {
+      queryString += encodeURIComponent(key) + '=' + encodeURIComponent(params[key]) + '&';
+    }
+    // Remove the trailing '&' character
+    queryString = queryString.slice(0, -1);
+    return queryString;
+  }
+
+  const injectScriptSnippet = (sdkConfig: SdkConfiguration):string => {
+    // Remove the existing script tag if it exists
+    const existingScript = document.getElementById('tinad-js-sdk');
+    if (existingScript) {      
+        existingScript.parentNode.removeChild(existingScript);
+    }
+
+    // Create a new script element
+    const script = document.createElement('script');
+    script.id = 'tinad-js-sdk';
+    script.src = 'http://localhost:3500/bundle.js';
+    script['tinad-configuration'] = JSON.stringify(sdkConfig,null,2);
+    script.async = true;
+
+    // Append the new script tag to the document
+    console.log('&***** appending new script');
+    const scriptContainer = document.getElementById('tinad-script-container');
+    scriptContainer.appendChild(script);
+  }
+
+  const [ sdkConfig, setSdkConfig ] = useState<SDKConfiguration>(defaultConfiguration);
+  const [ scriptSnippet, setScriptSnippet ] = useState<string>('hello');
+
   const handlePostMessage = (event:MessageEvent) => {
     if (event.origin !== window.location.origin) {
       return; // ignore unknown origin messages
@@ -56,8 +88,12 @@ export default function Bank() {
         ...prevData,
         ...updatedSdkConfig,
       }));
+      setScriptSnippet(updatedSdkConfig);
+      injectScriptSnippet(updatedSdkConfig);
+      console.log(`We set the banks config with ${JSON.stringify(updatedSdkConfig)}`);
     }
   }
+
 
   useEffect(() => {
     window.addEventListener('message', handlePostMessage);
@@ -65,14 +101,14 @@ export default function Bank() {
       window.removeEventListener('message', handlePostMessage); // remove postMessage listener on component unmount
     }
   }, []);
-  */
 
   useEffect(() => {
       console.log('Latest bank side SDK config:', sdkConfig);
   }, [sdkConfig]);
+*/
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-7">
+    <main className="flex min-h-screen flex-col items-center justify-between p-7" style={{color:'#333'}}>
       <div className="flex flex-col">
         <header className="bg-gray-900 text-white p-4 md:p-6">
           <div className="container mx-auto flex items-center justify-between">
@@ -146,6 +182,35 @@ export default function Bank() {
             </div>
           </div>
         </div>
+      </div>
+      <div id="tinad-script-container">
+        <script 
+          id="tinad-sdk"
+          src="http://localhost:3500/bundle.js" 
+          tinad-configuration="{
+            api: {
+              displayMode: 'toast',
+              key: 'C0N94F27',
+              endpoint: 'http://localhost:8080',
+              environments: [ 'Development' ],
+              domains: [],
+            },
+              inline: {
+                targetClassname: 'banner-space',
+                targetPlacement: 'inside',
+                customControlClasses: {
+                  content: 'my-content',
+                  confirm: 'my-confirm',
+                  dismiss: 'my-dismiss',
+                },
+              },
+              toast: {
+                position: 'bottom-end',
+                duration: 5000,
+              },
+          }"
+        >
+        </script>
       </div>
     </main>
   )

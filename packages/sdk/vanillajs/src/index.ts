@@ -6,8 +6,8 @@ import JSON5 from 'json5';
 
 // Adding event listener to initialize when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', async () => {
-  //console.log('DOMContentLoaded');
-  const tinadPrefixString = 'TINAD_RECONFIGURE';
+  console.log('DOMContentLoaded, initializing TINAD plainJS SDK');
+  const tinadMessageIdentifier = 'tinadReconfigure';
   const defaultConfiguration:SDKConfiguration = {
     api: {
       displayMode : 'inline',
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       domains: [],
     },
     inline: {
-      targetClassname: '',
+      targetClassname: 'target-element',
       targetPlacement: 'target-inside' as TargetInsertType,
       customControlClasses: {
         content: 'my-content',
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userConfiguration = userSuppliedConfiguration ? JSON5.parse(userSuppliedConfiguration) : {};
     userConfiguration.api.userId = UserIdGenerator.generate(userConfiguration.api.userId, userConfiguration.api.key);
     const finalConfiguration = { ...defaultConfiguration, ...userConfiguration };
-    console.log('Here is the final configuration: ', finalConfiguration);
+    console.log('Here we now really have the absolute, really, final configuration: ', finalConfiguration);
     return finalConfiguration;
   };  
 
@@ -63,12 +63,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       return; // ignore unknown origin messages
     }
 
-    if (event.data && typeof(event.data) === 'string' && event.data.startsWith(tinadPrefixString)) {
-      const updatedSdkConfigStr = event.data.replace(`${tinadPrefixString}:`, '');
-      const updatedSdkConfig = JSON.parse(updatedSdkConfigStr);
-      sdk.updateConfiguration(updatedSdkConfig);
+    console.log('Reinitializing tinad sdk');
+    if (event.data && typeof(event.data) === 'string') {
+      const receivedMessage = JSON.parse(event.data);
+      if (receivedMessage.name === 'tinadReconfigure') {
+        const updatedSdkConfig = receivedMessage.config;
+        console.log(`TINAD reconfiguring itself with this new config: ${JSON.stringify(updatedSdkConfig,null,2)}`);
+        updatedSdkConfig.api.userId = UserIdGenerator.generate(updatedSdkConfig.api.userId, updatedSdkConfig.api.key);
+        if (!updatedSdkConfig.api?.key) {
+          updatedSdkConfig.api.key = sdk.getStoredApiKey(); // continue using the previously set api key
+        }
+        sdk.updateConfiguration(updatedSdkConfig);
+      }
     }
   }
-  window.addEventListener('message', handlePostMessage);  // listen for post messages from the demo site
+  
+  console.log(`adding event listener for ${tinadMessageIdentifier}`);
+  window.addEventListener("message", handlePostMessage);  // listen for post messages from the demo site
 
 });

@@ -2,31 +2,23 @@ import { useState, useEffect } from 'react';
 import { SegmentedControl } from '@mantine/core';
 import classes from './css/GradientSegmentedControl.module.css';
 import { useSdkConfiguration } from './configuratorContext';
+import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
 
 const Configurator2 = () => {
   const { getSdkConfiguration, setSdkConfiguration } = useSdkConfiguration();
-  const [ sdkConfig, setSdkConfig ] = useState<Object>({
-    displayMode: 'toast',
-    toast: {
-      position: 'top-left',
-    },
-    inline: {
-      placement: 'target-inside',
-    },
-    modal: {
-      confirmButtonLabel: 'OK',
-    },
-  });
 
-  useEffect(() => {
+  const updateSampleApp = (sdkConfig: SDKConfiguration) => {
     console.log('sdkConfig:', sdkConfig);
     const bankIframe = document.getElementById('bank-app') as HTMLIFrameElement;
     if (bankIframe && bankIframe.contentWindow) {
-      const newConfig = `RELOAD_SDK:${JSON.stringify(sdkConfig)}`;
-      bankIframe.contentWindow.postMessage(newConfig, window.location.origin);
+      const newConfigMessage = {
+        name: 'tinadReconfigure',
+        config: sdkConfig,
+      };
+      const messageString = JSON.stringify(newConfigMessage);
+      bankIframe.contentWindow.postMessage(messageString, window.location.origin);
     }
-
-  }, [sdkConfig]);
+  }
 
   // Handler function for changes
   const handleSdkChange = (event) => {
@@ -42,6 +34,7 @@ const Configurator2 = () => {
         const configUpdate = getSdkConfiguration();
         configUpdate.api.displayMode = newValue.toLowerCase();
         setSdkConfiguration(configUpdate);
+        updateSampleApp(configUpdate);
         break;
       case 'toast-position':
         newData = { toast: { position: newValue } };
@@ -54,10 +47,6 @@ const Configurator2 = () => {
         newData = { modal: { confirmButtonLabel: newValue } };
         break;
     }
-    setSdkConfig(prevData => ({
-      ...prevData,
-      ...newData,
-    }));
   };
 
   return (

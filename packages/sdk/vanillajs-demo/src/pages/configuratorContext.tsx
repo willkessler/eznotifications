@@ -3,9 +3,7 @@ import React, { createContext, ReactNode, useState, useRef, useContext } from 'r
 const defaultSdkConfiguration = {
   api: {
     displayMode : 'toast',
-    userId: undefined, // will be set later by either the user or autoset
-    key: '',
-    endpoint: 'https://api.this-is-not-a-drill.com',
+    endpoint: 'http://localhost:8080',
     environments: [ 'Development' ],
     domains: [],
   },
@@ -17,7 +15,7 @@ const defaultSdkConfiguration = {
     confirmButtonLabel: 'OK',
   },
   inline: {
-    targetClassname: '',
+    targetClassname: 'target-element',
     targetPlacement: 'target-inside' as TargetInsertType,
     customControlClasses: {
       content: 'my-content',
