@@ -216,7 +216,7 @@ export class SDK {
     return null;
   }
   
-  updateConfiguration = (configuration: SDKConfiguration):void => {
+  updateConfiguration = async (configuration: SDKConfiguration):Promise<void> => {
     this.poller.cancelPolling();
     this.clearNotificationQueue();
     switch (this.configuration.api.displayMode) {
@@ -243,7 +243,7 @@ export class SDK {
     this.bannerNotification = new BannerNotification(this.configuration);
 
     // Automatically reset views for the current (demo) user.
-    this.resetViewsForCurrentEndUser();
+    await this.resetViewsForCurrentEndUser();
     this.poller.restartPolling();
   }
 

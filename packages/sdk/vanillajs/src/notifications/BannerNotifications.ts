@@ -26,12 +26,12 @@ export class BannerNotification {
       document.body.appendChild(this.banner);
     }
 
-    this.banner.addEventListener('animationend', () => {
+    this.banner.addEventListener('animationend', async () => {
       if (this.banner.className === 'slideUp') {
         this.bannerOn = false;
         this.banner.style.display = 'none';
         console.log(`removeBanner calling dismiss on uuid: ${this.currentNotificationUuid}`);
-        this.configuration.api.dismissFunction(this.currentNotificationUuid);
+        await this.configuration.api.dismissFunction(this.currentNotificationUuid);
       }
     });
 

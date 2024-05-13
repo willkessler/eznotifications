@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error(`Failed to poll TINAD API: ${error}`);
   }
 
-  const handlePostMessage = (event:MessageEvent) => {
+  const handlePostMessage = async (event:MessageEvent) => {
     if (event.origin !== window.location.origin) {
       return; // ignore unknown origin messages
     }
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!updatedSdkConfig.api?.key) {
           updatedSdkConfig.api.key = sdk.getStoredApiKey(); // continue using the previously set api key
         }
-        sdk.updateConfiguration(updatedSdkConfig);
+        await sdk.updateConfiguration(updatedSdkConfig);
       }
     }
   }
