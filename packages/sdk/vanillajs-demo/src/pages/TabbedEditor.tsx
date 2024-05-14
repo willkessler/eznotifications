@@ -21,7 +21,7 @@ const TabbedEditor: React.FC = () => {
   const containerRef = useRef(null);
   const initialFiles: FileData[] = [
     { filename: 'snippet.js', content: `//\n// SDK Initialization Code\n//\n\nconst sdk = initializeSDK(${JSON.stringify(getSdkConfiguration(), null, 2)});` },
-    { filename: 'config.css', content: "\n\nconsole.log('Hello from file 2');\n" }
+    { filename: 'custom.css', content: "\n\nconsole.log('Hello from file 2');\n" }
   ];
   const [files, setFiles] = useState<FileData[]>(initialFiles);
 
@@ -40,14 +40,25 @@ const TabbedEditor: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const introPrefix =  "//\n// AUTO-GENERATED Configuration\n// Use configuration controls (at left) to update.\n//\n\n";
+    const introPrefix =  "//\n// AUTO-GENERATED SCRIPT TAG\n" +
+                         "// The configuration controls at left\n" +
+                         "// update the script tag below.\n" +
+                         "// To go live, simply embed a snippet like this\n" +
+                         "// (along your API key) on your site/app.\n" +
+                         "//\n\n" +
+`<script 
+  id="tinad-sdk"
+  src="http://localhost:3500/bundle.js"
+  tinad-configuration=
+'`;    
     const currentConfig = getSdkConfiguration();
-    const editorContents = introPrefix + JSON.stringify(currentConfig, null,2);
+    const configStringified = JSON.stringify(currentConfig, null,2);
+    const editorContents = introPrefix + configStringified + "'\n>\n\n";
     //console.log(`currentconfig: ${JSON.stringify(currentConfig,null,2)}`);
     setFiles(
       [
         { filename: 'snippet.js', content: editorContents },
-        { filename: 'config.css', content: files[1].content }
+        { filename: 'custom.css', content: files[1].content }
       ]
     );
     setConfigurationChanged(false);

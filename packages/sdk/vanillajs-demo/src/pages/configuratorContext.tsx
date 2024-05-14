@@ -3,12 +3,13 @@ import React, { createContext, ReactNode, useState, useRef, useContext } from 'r
 const defaultSdkConfiguration = {
   api: {
     displayMode : 'toast',
-    endpoint: 'http://localhost:8080',
+    endpoint: process.env.NEXT_PUBLIC_TINAD_API_TARGET,
+    key: process.env.NEXT_PUBLIC_TINAD_API_KEY,
     environments: [ 'Development' ],
     domains: [],
   },
   toast: {
-    position: 'bottom-end',
+    position: 'top-end',
     duration: 5000,
   },
   modal: {

@@ -20,6 +20,27 @@ const Configurator2 = () => {
     }
   }
 
+  const getStoredApiKey = ():string => {
+    const tinadConfigStr = localStorage.getItem('tinad');
+    if (tinadConfigStr) {
+      const tinadConfig = JSON.parse(tinadConfigStr);
+      if (tinadConfig.apiKey) {
+        return tinadConfig.apiKey;
+      }
+    }    
+    return null;
+  }
+
+  useEffect(() => {
+    // first time we enter this demo, reset current user so you always see some notifs
+    const configUpdate = getSdkConfiguration();
+    configUpdate.api.displayMode = 'toast'
+    if (!configUpdate.api.key) {
+      configUpdate.api.key = getStoredApiKey();
+    }
+    updateSampleApp(configUpdate);
+  }, []);
+  
   // Handler function for changes
   const handleSdkChange = (event) => {
     console.log("event:", event);
@@ -33,6 +54,10 @@ const Configurator2 = () => {
         newData = { displayMode: newValue };
         const configUpdate = getSdkConfiguration();
         configUpdate.api.displayMode = newValue.toLowerCase();
+        console.log(JSON.stringify(configUpdate,null,2));
+        if (!configUpdate.api.key) {
+          configUpdate.api.key = getStoredApiKey();
+        }
         setSdkConfiguration(configUpdate);
         updateSampleApp(configUpdate);
         break;

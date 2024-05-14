@@ -14,9 +14,9 @@ export default function Bank() {
   const defaultConfiguration: SDKConfiguration = 
     {
       api: {
-        displayMode : 'toast',
-        key: '',
-        endpoint: 'http://localhost:8080',
+        displayMode: 'toast',
+        key: process.env.NEXT_PUBLIC_TINAD_API_KEY,
+        endpoint: process.env.NEXT_PUBLIC_TINAD_API_TARGET,
         environments: [ 'Development' ],
         domains: [],
       },
@@ -30,7 +30,7 @@ export default function Bank() {
         },
       },
       toast: {
-        position: 'bottom-end',
+        position: 'top-end',
         duration: 5000,
       },
       banner: {
@@ -40,72 +40,6 @@ export default function Bank() {
         confirmButtonLabel: 'OK',
       }
     };
-
-/*
-
-  const generateQueryString = (params):string => {
-    let queryString = '?';
-    for (let key in params) {
-      queryString += encodeURIComponent(key) + '=' + encodeURIComponent(params[key]) + '&';
-    }
-    // Remove the trailing '&' character
-    queryString = queryString.slice(0, -1);
-    return queryString;
-  }
-
-  const injectScriptSnippet = (sdkConfig: SdkConfiguration):string => {
-    // Remove the existing script tag if it exists
-    const existingScript = document.getElementById('tinad-js-sdk');
-    if (existingScript) {      
-        existingScript.parentNode.removeChild(existingScript);
-    }
-
-    // Create a new script element
-    const script = document.createElement('script');
-    script.id = 'tinad-js-sdk';
-    script.src = 'http://localhost:3500/bundle.js';
-    script['tinad-configuration'] = JSON.stringify(sdkConfig,null,2);
-    script.async = true;
-
-    // Append the new script tag to the document
-    console.log('&***** appending new script');
-    const scriptContainer = document.getElementById('tinad-script-container');
-    scriptContainer.appendChild(script);
-  }
-
-  const [ sdkConfig, setSdkConfig ] = useState<SDKConfiguration>(defaultConfiguration);
-  const [ scriptSnippet, setScriptSnippet ] = useState<string>('hello');
-
-  const handlePostMessage = (event:MessageEvent) => {
-    if (event.origin !== window.location.origin) {
-      return; // ignore unknown origin messages
-    }
-
-    if (event.data?.startsWith('RELOAD_SDK:')) {
-      const updatedSdkConfigStr = event.data.replace('RELOAD_SDK:', '');
-      const updatedSdkConfig = JSON.parse(updatedSdkConfigStr);
-      setSdkConfig(prevData => ({
-        ...prevData,
-        ...updatedSdkConfig,
-      }));
-      setScriptSnippet(updatedSdkConfig);
-      injectScriptSnippet(updatedSdkConfig);
-      console.log(`We set the banks config with ${JSON.stringify(updatedSdkConfig)}`);
-    }
-  }
-
-
-  useEffect(() => {
-    window.addEventListener('message', handlePostMessage);
-    return () => {
-      window.removeEventListener('message', handlePostMessage); // remove postMessage listener on component unmount
-    }
-  }, []);
-
-  useEffect(() => {
-      console.log('Latest bank side SDK config:', sdkConfig);
-  }, [sdkConfig]);
-*/
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-7" style={{color:'#333'}}>
@@ -187,28 +121,7 @@ export default function Bank() {
         <script 
           id="tinad-sdk"
           src="http://localhost:3500/bundle.js" 
-          tinad-configuration="{
-            api: {
-              displayMode: 'toast',
-              key: 'C0N94F27',
-              endpoint: 'http://localhost:8080',
-              environments: [ 'Development' ],
-              domains: [],
-            },
-              inline: {
-                targetClassname: 'banner-space',
-                targetPlacement: 'inside',
-                customControlClasses: {
-                  content: 'my-content',
-                  confirm: 'my-confirm',
-                  dismiss: 'my-dismiss',
-                },
-              },
-              toast: {
-                position: 'bottom-end',
-                duration: 5000,
-              },
-          }"
+          tinad-configuration={JSON.stringify(defaultConfiguration,null,2)}
         >
         </script>
       </div>

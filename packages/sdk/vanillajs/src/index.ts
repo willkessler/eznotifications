@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userConfiguration = userSuppliedConfiguration ? JSON5.parse(userSuppliedConfiguration) : {};
     userConfiguration.api.userId = UserIdGenerator.generate(userConfiguration.api.userId, userConfiguration.api.key);
     const finalConfiguration = { ...defaultConfiguration, ...userConfiguration };
-    console.log('Here we now really have the absolute, really, final configuration: ', finalConfiguration);
+    //console.log('Here we now really have the absolute, really, final configuration: ', finalConfiguration);
     return finalConfiguration;
   };  
 
