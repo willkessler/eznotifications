@@ -15,12 +15,12 @@ type FileData = {
 
 
 const TabbedEditor: React.FC = () => {
-  const { getSdkConfiguration, setSdkConfiguration, configurationChanged, setConfigurationChanged } = useSdkConfiguration();
+  const { getSdkConfiguration, setSdkConfiguration, getFilteredSdkConfiguration, configurationChanged, setConfigurationChanged } = useSdkConfiguration();
   const [activeTab, setActiveTab] = useState<string | null>('snippet.js');
   const [editorHeight, setEditorHeight ] = useState('600px');
   const containerRef = useRef(null);
   const initialFiles: FileData[] = [
-    { filename: 'snippet.js', content: `//\n// SDK Initialization Code\n//\n\nconst sdk = initializeSDK(${JSON.stringify(getSdkConfiguration(), null, 2)});` },
+    { filename: 'snippet.js', content: `//\n// SDK Initialization Code\n//\n\nconst sdk = initializeSDK(${JSON.stringify(getFilteredSdkConfiguration(), null, 2)});` },
     { filename: 'custom.css', content: "\n\nconsole.log('Hello from file 2');\n" }
   ];
   const [files, setFiles] = useState<FileData[]>(initialFiles);
@@ -51,7 +51,7 @@ const TabbedEditor: React.FC = () => {
   src="http://localhost:3500/bundle.js"
   tinad-configuration=
 '`;    
-    const currentConfig = getSdkConfiguration();
+    const currentConfig = getFilteredSdkConfiguration();
     const configStringified = JSON.stringify(currentConfig, null,2);
     const editorContents = introPrefix + configStringified + "'\n>\n\n";
     //console.log(`currentconfig: ${JSON.stringify(currentConfig,null,2)}`);

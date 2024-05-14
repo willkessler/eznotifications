@@ -1,6 +1,6 @@
+import { useEffect, useState } from 'react';
 import Image from "next/image";
 import Link from "next/link"
-import { useEffect, useState } from 'react';
 import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
 import './css/bank.css';
 
@@ -13,7 +13,13 @@ import './css/bank.css';
 
 export default function Bank() {
 
-  const defaultConfiguration: SDKConfiguration =
+  const [ isMounted, setIsMounted ] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  
+  const initialConfiguration: SDKConfiguration =
     {
       api: {
         displayMode: 'toast',
@@ -24,7 +30,7 @@ export default function Bank() {
       },
       inline: {
         targetClassname: 'banner-space',
-        targetPlacement: 'target-inside' as TargetInsertType,
+        targetPlacement: 'target-before' as TargetInsertType,
         customControlClasses: {
           content: 'my-content',
           confirm: 'my-confirm',
@@ -81,12 +87,13 @@ export default function Bank() {
           <div className="flex-1">
             <div className="flex flex-col items-left justify-between mb-8">
               <h1 className="text-2xl font-bold">Welcome to Commercial Savings & Loan!</h1>
-              <div className="tinad-target-element"></div>
-              <div className="banner-space">
-                <div className="my-content"></div>
-                <button className="my-confirm">I got it</button>
-                <div className="my-dismiss">X</div>
-              </div>
+              { isMounted && 
+                <div className="banner-space">
+                  <div className="my-content"></div>
+                  <button className="my-confirm">I got it</button>
+                  <div className="my-dismiss">X</div>
+                </div>
+              }
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               <div className="bg-white rounded-lg shadow-md p-6 min-w-min">
@@ -129,7 +136,7 @@ export default function Bank() {
         <script
           id="tinad-sdk"
           src={process.env.NEXT_PUBLIC_TINAD_SOURCE_SCRIPT_URL}
-          tinad-configuration={JSON.stringify(defaultConfiguration,null,2)}
+          tinad-configuration={JSON.stringify(initialConfiguration,null,2)}
         >
         </script>
       </div>

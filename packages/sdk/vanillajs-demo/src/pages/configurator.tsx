@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Group, Paper,Radio, SegmentedControl, TextInput } from '@mantine/core';
+import { Checkbox, Group, Paper,Radio, SegmentedControl, TextInput } from '@mantine/core';
 import classes from './css/GradientSegmentedControl.module.css';
 import { useSdkConfiguration } from './configuratorContext';
 import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
 
 const Configurator = () => {
   const [ currentDisplayMode, setCurrentDisplayMode ] = useState<string>('toast');
+  const [ customInlineDiv, setCustomInlineDiv ] = useState<boolean>(false);  
   const { getSdkConfiguration, setSdkConfiguration } = useSdkConfiguration();
 
   const updateSampleApp = (sdkConfig: SDKConfiguration) => {
@@ -57,6 +58,7 @@ const Configurator = () => {
     if (!configUpdate.api.key) {
       configUpdate.api.key = getStoredApiKey();
     }
+    setSdkConfiguration(configUpdate);
     updateSampleApp(configUpdate);
   }, []);
   
@@ -98,6 +100,13 @@ const Configurator = () => {
       case 'modal-confirm-button-label':
         console.log(`setting confirm button label to ${newValue}`);
         currentConfig.modal.confirmButtonLabel = newValue;
+        break;
+      case 'use-inline-custom-div':
+        if (checked) {
+          currentConfig.inline.targetClassname = 'banner-space';
+        } else {
+          currentConfig.inline.targetClassname = 'tinad-target-element';
+        }
         break;
     }
 
@@ -154,6 +163,17 @@ const Configurator = () => {
             label="Confirm Button Label"
             description="What you want the modal confirm button to say."
             placeholder="OK"
+          />
+        </Paper>
+      }
+      { (currentDisplayMode === 'inline') &&
+        <Paper className="p-6 m-6">
+          <Checkbox
+            label="Use custom inline notification styling"
+            description="Check this box to see how custom styling of inline notifications can be done. Modify the custom.css file in the editor to the right to see changes applied to the custom notification. On your own app you have total freedom to use any styling you prefer."
+            name="use-inline-custom-div"
+            value={customInlineDiv}
+            onChange={formNoOp}
           />
         </Paper>
       }
