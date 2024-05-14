@@ -30,25 +30,18 @@ export class InlineNotification {
       console.log(`TINAD: No target elements found with classname ${this.targetElementClassname} for placing inline notifications.`);
     } else {
         if (this.configuration.inline.customControlClasses) {
-          // Set up sdk user's own custom mark up for running tinad
+          console.log('Setting up custom control classes');
           const customControlClasses = this.configuration.inline.customControlClasses;
-          let elements;
-          elements = Array.from(document.querySelectorAll('.' + this.targetElementClassname));
-          for (const element of elements) {
-            element.className += ' ' + this.TINAD_CONTAINER_DEFAULT_CLASSNAME;
-          }
-          elements = Array.from(document.querySelectorAll('.' + customControlClasses.content));
-          for (const element of elements) {
-            element.className += ' ' + this.TINAD_NOTIFICATION_DEFAULT_CLASSNAME;
-          }
-          elements = Array.from(document.querySelectorAll('.' + customControlClasses.confirm));
-          for (const element of elements) {
-            element.className += ' ' + this.TINAD_OKBUTTON_CLASSNAME;
+          // Set up sdk user's own custom mark up for running tinad
+          this.tinadNotificationElements = Array.from(document.querySelectorAll('.' + this.targetElementClassname));
+          this.tinadNotificationContentElements = Array.from(document.querySelectorAll('.' + customControlClasses.content));
+
+          const confirmElements = Array.from(document.querySelectorAll('.' + customControlClasses.confirm)) as HTMLElement[];
+          for (const element of confirmElements) {
             element.onclick = async () => { await this.hideContainers(); };
           }
-          elements = Array.from(document.querySelectorAll('.' + customControlClasses.dismiss));
-          for (const element of elements) {
-            element.className += ' ' + this.TINAD_DISMISSX_CLASSNAME;
+          const dismissElements = Array.from(document.querySelectorAll('.' + customControlClasses.dismiss)) as HTMLElement[];
+          for (const element of dismissElements) {
             element.onclick = async () => { await this.hideContainers(); };
           }
         } else {
@@ -95,11 +88,11 @@ export class InlineNotification {
                 break;
             }
           }
+          this.tinadNotificationElements = Array.from(document.querySelectorAll('.' + this.TINAD_CONTAINER_DEFAULT_CLASSNAME));
+          this.tinadNotificationContentElements = Array.from(document.querySelectorAll('.' + this.TINAD_NOTIFICATION_DEFAULT_CLASSNAME));
         }
     }
     // Any div element inside the tinad-containers is for holding the content.
-    this.tinadNotificationElements = Array.from(document.querySelectorAll('.' + this.TINAD_CONTAINER_DEFAULT_CLASSNAME));
-    this.tinadNotificationContentElements = Array.from(document.querySelectorAll('.' + this.TINAD_NOTIFICATION_DEFAULT_CLASSNAME));
     this.inlineNotifOn = false;
     console.log('inline constructor done');
   }

@@ -44,6 +44,12 @@ const Configurator = () => {
     setSdkConfiguration(configUpdate);
   }
   
+  const formNoOp = (event:EventSource) => {
+    // since handling events at form level, this is just here to satisfy react's
+    // insistence that every controlled input (with a value prop) has to have a handler
+  }
+  
+
   useEffect(() => {
     // first time we enter this demo, reset current user so you always see some notifs
     const configUpdate = getSdkConfiguration();
@@ -132,26 +138,26 @@ const Configurator = () => {
             <TextInput className="pt-12"
               name="toast-duration"
               value={getSdkConfiguration().toast?.duration}
+              onChange={formNoOp}
               label="Toast duration"
               description="How long before a toast is auto-dismissed (milliseconds)."
               placeholder="5000"
-              onChange={(event) => {}}
             />
           </Paper>
         }
-      </form>
       { (currentDisplayMode === 'modal') &&
         <Paper className="p-6 m-6">
           <TextInput
             name="modal-confirm-button-label"
             value={getSdkConfiguration().modal?.confirmButtonLabel}
-            onChange={setConfirmButtonLabel}
+            onChange={formNoOp}
             label="Confirm Button Label"
             description="What you want the modal confirm button to say."
             placeholder="OK"
           />
         </Paper>
       }
+      </form>
     </div>
   );
 }
