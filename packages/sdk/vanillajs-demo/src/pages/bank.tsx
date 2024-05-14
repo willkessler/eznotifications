@@ -120,7 +120,7 @@ export default function Bank() {
       <div id="tinad-script-container">
         <script 
           id="tinad-sdk"
-          src="http://localhost:3500/bundle.js" 
+          src={process.env.NEXT_PUBLIC_TINAD_SOURCE_SCRIPT_URL}
           tinad-configuration={JSON.stringify(defaultConfiguration,null,2)}
         >
         </script>
