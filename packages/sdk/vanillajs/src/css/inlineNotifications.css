@@ -5,10 +5,10 @@
   border:1px solid #eee;
   border-radius: 10px;  /* Rounded corners */
   padding: 40px 20px 20px 20px;  /* Padding around content */
-  max-width: 90%;  /* Responsive width */
+  max-width: 98%;  /* Responsive width */
   margin: 15px 5px;  /* Centered in its container, with top/bottom spacing */
   position: relative;  /* Enable absolute positioning for child elements */
-  min-height:100px;
+  min-height:120px;
 }
 
 .tinad-container .tinad-dismiss-x {

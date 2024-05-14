@@ -153,7 +153,7 @@ export class SDK {
   clearNotificationQueue = () => {
     this.notificationQueue = [];
   }
-  
+
   markAsDismissed = async (notificationUuid: string): Promise<void> => {
     console.log('markAsDismissed pausing polling.');
     const pauseId = Math.random() * 10000;
@@ -204,7 +204,7 @@ export class SDK {
       console.error('End user reset views error: ', error);
     }
   }
-  
+
   getStoredApiKey = ():string => {
     const tinadConfigStr = localStorage.getItem('tinad');
     if (tinadConfigStr) {
@@ -212,10 +212,10 @@ export class SDK {
       if (tinadConfig.apiKey) {
         return tinadConfig.apiKey;
       }
-    }    
+    }
     return null;
   }
-  
+
   updateConfiguration = async (configuration: SDKConfiguration):Promise<void> => {
     this.poller.cancelPolling();
     this.clearNotificationQueue();

@@ -1,41 +1,59 @@
 import { useState, useEffect } from 'react';
+import { Group, Paper,Radio, SegmentedControl, TextInput } from '@mantine/core';
+import classes from './css/GradientSegmentedControl.module.css';
+import { useSdkConfiguration } from './configuratorContext';
+import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+const Configurator = () => {
+  const [ currentDisplayMode, setCurrentDisplayMode ] = useState<string>('toast');
+  const { getSdkConfiguration, setSdkConfiguration } = useSdkConfiguration();
 
-export default function Configurator() {
-  const [ sdkConfig, setSdkConfig ] = useState<Object>({
-    displayMode: 'toast',
-    toast: {
-      position: 'top-left',
-    },
-    inline: {
-      placement: 'target-inside',
-    },
-    modal: {
-      confirmButtonLabel: 'OK',
-    },
-  });
-
-  useEffect(() => {
+  const updateSampleApp = (sdkConfig: SDKConfiguration) => {
     console.log('sdkConfig:', sdkConfig);
     const bankIframe = document.getElementById('bank-app') as HTMLIFrameElement;
     if (bankIframe && bankIframe.contentWindow) {
-      const newConfig = `RELOAD_SDK:${JSON.stringify(sdkConfig)}`;
-      bankIframe.contentWindow.postMessage(newConfig, window.location.origin);
+      const newConfigMessage = {
+        name: 'tinadReconfigure',
+        config: sdkConfig,
+      };
+      const messageString = JSON.stringify(newConfigMessage);
+      bankIframe.contentWindow.postMessage(messageString, window.location.origin);
     }
+  }
 
-  }, [sdkConfig]);
+  const getStoredApiKey = ():string => {
+    const tinadConfigStr = localStorage.getItem('tinad');
+    if (tinadConfigStr) {
+      const tinadConfig = JSON.parse(tinadConfigStr);
+      if (tinadConfig.apiKey) {
+        return tinadConfig.apiKey;
+      }
+    }    
+    return null;
+  }
+
+  const setToastPosition = (valueStr: string) => {
+    const configUpdate = getSdkConfiguration();
+    configUpdate.toast.position = valueStr;
+    setSdkConfiguration(configUpdate);
+  }
+  
+  const setConfirmButtonLabel = (valueStr: string) => {
+    const configUpdate = getSdkConfiguration();
+    configUpdate.modal.confirmButtonLabel = valueStr;
+    setSdkConfiguration(configUpdate);
+  }
+  
+  useEffect(() => {
+    // first time we enter this demo, reset current user so you always see some notifs
+    const configUpdate = getSdkConfiguration();
+    configUpdate.api.displayMode = 'toast'
+    if (!configUpdate.api.key) {
+      configUpdate.api.key = getStoredApiKey();
+    }
+    updateSampleApp(configUpdate);
+  }, []);
+  
 
   // Handler function for changes
   const handleSdkChange = (event) => {
@@ -44,96 +62,98 @@ export default function Configurator() {
     // Check if the input is a checkbox and use the checked value; otherwise use value
     const newValue = type === 'checkbox' ? checked : value;
     console.log(`name: ${name}, newValue: ${newValue}`);
-    let newData = {};
+    const currentConfig = getSdkConfiguration();
+    console.log('currentConfig, ', currentConfig);
+    let newData = {
+      api: {
+        userId: currentConfig.api.userId,
+        endpoint: currentConfig.api.endpoint,
+        key: currentConfig.api.key,
+        environments: currentConfig.environments,
+        domains: currentConfig.domains,
+      }
+    };
+
     switch (name) {
       case 'display-mode':
-        newData = { displayMode: newValue };
+        const newMode = newValue.toLowerCase();
+        currentConfig.api.displayMode = newMode;
+        setCurrentDisplayMode(newMode);
         break;
       case 'toast-position':
-        newData = { toast: { position: newValue } };
+        currentConfig.toast.position = newValue;
+        break;
+      case 'toast-duration':
+        currentConfig.toast.duration = newValue;
         break;
       case 'inline-placement':
-        newData = { inline: { placement: newValue } };
+        currentConfig.inline.placement = newValue;
         break;
-      case 'confirm-button-label':
+      case 'modal-confirm-button-label':
         console.log(`setting confirm button label to ${newValue}`);
-        newData = { modal: { confirmButtonLabel: newValue } };
+        currentConfig.modal.confirmButtonLabel = newValue;
         break;
     }
-    setSdkConfig(prevData => ({
-      ...prevData,
-      ...newData,
-    }));
+
+    console.log(`currentConfig: ${JSON.stringify(currentConfig,null,2)}`);
+    setSdkConfiguration(currentConfig);
+    updateSampleApp(currentConfig);
   };
 
   return (
-    <div className="flex flex-col">
-      <header className="bg-gray-900 text-white p-4 md:p-6">
-        <div className="mx-auto flex items-center justify-between">
-          <h1 className="text-2xl font-bold">TINAD Configurator</h1>
-          <div className="hidden md:block">
-          </div>
-        </div>
-      </header>
+    <div style={{backgroundColor:'#000', height:'100%'}}>
       <form onChange={(event) => { handleSdkChange(event) }}>
-        <div className="flex-1 max-h-screen bg-gray-100 p-6 md:p-8 md:flex">
-          <Select name="display-mode">
-            <SelectTrigger className="w-[250px]">
-              <SelectValue placeholder="Notification display type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="toast">Toast</SelectItem>
-                <SelectItem value="modal">Modal</SelectItem>
-                <SelectItem value="inline">Inline</SelectItem>
-                <SelectItem value="banner">Banner</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          {(sdkConfig.displayMode === 'toast' &&
-            <div className="flex-1 bg-gray-100 p-6 sm:p-2 md:flex">
-              <Select name="toast-position">
-                <SelectTrigger className="w-[250px]">
-                  <SelectValue placeholder="Toast position" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="top-left">Top Left</SelectItem>
-                    <SelectItem value="top-right">Top Right</SelectItem>
-                    <SelectItem value="bottom-left">Bottom Left</SelectItem>
-                    <SelectItem value="bottom-right">Bottom Right</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {(sdkConfig.displayMode === 'modal' &&
-            <div className="sm:m-12 bg-gray-100">
-              <Label htmlFor="confirm-button-label">Confirm Button Label</Label>
-              <Input 
-                onChange={()=>{}}
-                id="confirm-button-label" 
-                name="confirm-button-label" 
-                type="text" 
-                value={sdkConfig.modal.confirmButtonLabel} 
-                placeholder="OK" 
-              />
-            </div>
-          )}
-
-          {(sdkConfig.displayMode === 'inline' &&
-            <h4>Inline</h4>
-          )}
-
-          {(sdkConfig.displayMode === 'banner' &&
-            <h4>Banner</h4>
-          )}
-          
-        </div>
+        <SegmentedControl
+          name="display-mode"
+          radius="xl"
+          size="md"
+          data={['Toast', 'Modal', 'Inline', 'Banner']}
+          style={{ width:'90%' }}
+          classNames={classes}
+        />
+        { (currentDisplayMode === 'toast') &&
+          <Paper className="p-6 m-6">
+            <Radio.Group
+              name="toast-position"
+              label="Select a toast position"
+              value={getSdkConfiguration().toast?.position}
+              onChange={setToastPosition}
+              description="This is where your toast will show on the browser screen."
+            >
+              <Group mt="sm">
+                <Radio value="top-start" label="Upper left" />
+                <Radio value="top-end" label="Upper right" />
+              </Group>
+              <Group mt="sm">
+                <Radio value="bottom-start" label="Lower left" />
+                <Radio value="bottom-end" label="Lower right" />
+              </Group>
+            </Radio.Group>
+            <TextInput className="pt-12"
+              name="toast-duration"
+              value={getSdkConfiguration().toast?.duration}
+              label="Toast duration"
+              description="How long before a toast is auto-dismissed (milliseconds)."
+              placeholder="5000"
+              onChange={(event) => {}}
+            />
+          </Paper>
+        }
       </form>
+      { (currentDisplayMode === 'modal') &&
+        <Paper className="p-6 m-6">
+          <TextInput
+            name="modal-confirm-button-label"
+            value={getSdkConfiguration().modal?.confirmButtonLabel}
+            onChange={setConfirmButtonLabel}
+            label="Confirm Button Label"
+            description="What you want the modal confirm button to say."
+            placeholder="OK"
+          />
+        </Paper>
+      }
     </div>
-  )
-};
+  );
+}
+
+export default Configurator;

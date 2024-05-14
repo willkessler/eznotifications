@@ -33,7 +33,7 @@ export class ModalNotification {
         text: content,
         showConfirmButton: true,
         showCloseButton: true,
-        confirmButtonText: 'OK',
+        confirmButtonText: this.configuration.modal.confirmButtonLabel,
       });
 
       if (swalOutcome.isConfirmed) {

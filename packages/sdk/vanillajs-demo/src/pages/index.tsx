@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import ConfiguratorContext from './configuratorContext';
-import Configurator2 from './configurator2';
+import Configurator from './configurator';
 import Editor from './editor';
 import CodeSnippet from './codeSnippet';
 import TabbedEditor from './TabbedEditor';
@@ -15,7 +15,7 @@ export default function Home() {
         </Head>
         <div className="top-panel">
           <div className="config-widget">
-            <Configurator2 />
+            <Configurator />
           </div>
           <div className="code-editor">
             <TabbedEditor />

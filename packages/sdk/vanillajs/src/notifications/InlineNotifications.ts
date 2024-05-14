@@ -101,6 +101,7 @@ export class InlineNotification {
     this.tinadNotificationElements = Array.from(document.querySelectorAll('.' + this.TINAD_CONTAINER_DEFAULT_CLASSNAME));
     this.tinadNotificationContentElements = Array.from(document.querySelectorAll('.' + this.TINAD_NOTIFICATION_DEFAULT_CLASSNAME));
     this.inlineNotifOn = false;
+    console.log('inline constructor done');
   }
 
 

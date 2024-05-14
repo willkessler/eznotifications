@@ -16,8 +16,8 @@ const defaultSdkConfiguration = {
     confirmButtonLabel: 'OK',
   },
   inline: {
-    targetClassname: 'target-element',
-    targetPlacement: 'target-inside' as TargetInsertType,
+    targetClassname: 'banner-space',
+    targetPlacement: 'inside' as TargetInsertType,
     customControlClasses: {
       content: 'my-content',
       confirm: 'my-confirm',

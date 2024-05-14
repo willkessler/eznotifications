@@ -1,0 +1,20 @@
+.tinad-target-element {
+  display:none;
+}
+
+.banner-space {
+  padding:20px;
+  border: 4px dashed orange;
+  background: #ff5;
+  width: 100%;
+  display:none;
+}
+
+.my-content {
+  color: blue;
+  font-style: italic;
+}
+
+.my-confirm {
+  margin-top:30px;
+}
