@@ -22,8 +22,10 @@ const TabbedEditor: React.FC = () => {
           getFilteredSdkConfiguration, 
           configurationChanged, 
           setConfigurationChanged,
+          activeTab,
+          setActiveTab,
   } = useSdkConfiguration();
-  const [activeTab, setActiveTab] = useState<string | null>('snippet.js');
+
   const [editorHeight, setEditorHeight ] = useState('400px');
   const initialFiles: FileData[] = [
     { filename: 'snippet.js', content: `//\n// SDK Initialization Code\n//\n\nconst sdk = initializeSDK(${JSON.stringify(getFilteredSdkConfiguration(), null, 2)});` },
@@ -74,7 +76,7 @@ const TabbedEditor: React.FC = () => {
       const cssUrl = '/bank.css';
       const response = await fetch(cssUrl);
       const rawCss = await response.text();
-      const finalCss = "/*\n * Edit this CSS to alter the custom\n * inline notification's styling.\n*/\n" + rawCss;
+      const finalCss = "/*\n * Edit the CSS below to see how to\n * customize the inline notification's styles.\n*/\n" + rawCss;
       setCustomCss(finalCss);
       updateFiles(
         { filename: 'snippet.js', content: getSdkConfiguration() },

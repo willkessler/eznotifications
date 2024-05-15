@@ -12,7 +12,10 @@ const Configurator = () => {
   const [ bannerDismissShown, setBannerDismissShown  ] = useState<boolean>(true);
   const [ modalDismissShown, setModalDismissShown  ] = useState<boolean>(true);
   const [ customBannerStyles, setCustomBannerStyles  ] = useState<boolean>(false);
-  const { getSdkConfiguration, setSdkConfiguration } = useSdkConfiguration();
+  const { getSdkConfiguration, 
+          setSdkConfiguration, 
+          activeTab, 
+          setActiveTab } = useSdkConfiguration();
   const debounceTimeout = useRef<number | null>(null);
 
   const updateSampleApp = (sdkConfig: SDKConfiguration) => {
@@ -152,6 +155,7 @@ const Configurator = () => {
             dismiss: 'my-dismiss',
           };
           setCustomInlineDiv(true);
+          setActiveTab('custom.css');
         } else {
           currentConfig.inline.target = 'default';
           setCustomInlineDiv(false);
@@ -167,6 +171,7 @@ const Configurator = () => {
             dismiss: 'dismiss',            
           };
           setCustomBannerStyles(true);
+          setActiveTab('custom.css');
         } else {
           currentConfig.banner.target = 'default';
           setCustomBannerStyles(false);

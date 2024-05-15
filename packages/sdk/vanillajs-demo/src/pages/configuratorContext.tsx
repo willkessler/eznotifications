@@ -51,6 +51,7 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
   const sdkConfiguration = useRef<SDKConfiguration>(defaultSdkConfiguration);
   const filteredSdkConfiguration = useRef<SDKConfiguration | null>(null);
   const [ configurationChanged, setConfigurationChanged ] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string | null>('snippet.js');
   const  customCss = useRef<string>('Custom css');
 
   const getSdkConfiguration = (): SDKConfiguration => {
@@ -116,8 +117,10 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
       configurationChanged,
       setConfigurationChanged,
       getCustomCss,
-      setCustomCss
-      }}>
+      setCustomCss,
+      activeTab,
+      setActiveTab,
+    }}>
       {children}
     </ConfigurationContext.Provider>
   );

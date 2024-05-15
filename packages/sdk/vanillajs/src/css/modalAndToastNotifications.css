@@ -38,3 +38,20 @@
   border: 2px solid #aaa !important;
   color: #999 !important;
 }
+
+
+.my-custom-container {
+  width:85%;
+}
+
+.my-custom-button {
+  padding: 20px !important;
+  font-size: 30px !important;
+  color: red !important;
+}
+
+.my-custom-title {
+  color: red;  /* Example: changing the title color to red */
+  font-size: 24px;  /* Example: changing the font size */
+  font-family: 'Comic Sans MS', cursive, sans-serif; /* Example: changing the font */
+}

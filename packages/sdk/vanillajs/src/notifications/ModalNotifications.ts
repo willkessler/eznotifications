@@ -46,6 +46,8 @@ export class ModalNotification {
         showConfirmButton: showConfirm,
         showCloseButton: showDismiss,
         confirmButtonText: this.configuration.modal.confirmButtonLabel,
+        customClass: {
+        },
       });
 
       if (swalOutcome.isConfirmed) {
