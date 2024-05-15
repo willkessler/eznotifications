@@ -15,12 +15,16 @@ export interface SDKConfiguration {
     dismissFunction?: (notificationUuid:string) => Promise<void>;
   };
   inline?: {
-    targetClassname: string;
-    targetPlacement: TargetInsertType;
-    customControlClasses?: {
+    target?: {
+      outer: string;
       content: string;
       confirm: string;
       dismiss: string;
+    },
+    show?: {
+      content: boolean;
+      dismiss: boolean;
+      confirm: boolean;
     },
   };
   toast?: {

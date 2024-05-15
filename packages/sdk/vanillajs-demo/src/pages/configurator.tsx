@@ -50,7 +50,6 @@ const Configurator = () => {
     // insistence that every controlled input (with a value prop) has to have a handler
   }
   
-
   useEffect(() => {
     // first time we enter this demo, reset current user so you always see some notifs
     const configUpdate = getSdkConfiguration();
@@ -101,11 +100,18 @@ const Configurator = () => {
         console.log(`setting confirm button label to ${newValue}`);
         currentConfig.modal.confirmButtonLabel = newValue;
         break;
-      case 'use-inline-custom-div':
+      case 'custom-inline-div':
         if (checked) {
-          currentConfig.inline.targetClassname = 'banner-space';
+          currentConfig.inline.target = {
+            outer: 'my-inline-container',
+            content: 'my-content',
+            confirm: 'my-confirm',
+            dismiss: 'my-dismiss',
+          };
+          setCustomInlineDiv(true);
         } else {
-          currentConfig.inline.targetClassname = 'tinad-target-element';
+          currentConfig.inline.target = 'default';
+          setCustomInlineDiv(false);
         }
         break;
     }
@@ -171,8 +177,8 @@ const Configurator = () => {
           <Checkbox
             label="Use custom inline notification styling"
             description="Check this box to see how custom styling of inline notifications can be done. Modify the custom.css file in the editor to the right to see changes applied to the custom notification. On your own app you have total freedom to use any styling you prefer."
-            name="use-inline-custom-div"
-            value={customInlineDiv}
+            name="custom-inline-div"
+            checked={customInlineDiv}
             onChange={formNoOp}
           />
         </Paper>

@@ -1,0 +1,50 @@
+.my-inline-container {
+  --light-grey: #D3D3D3;
+  --dark-grey: #505050;
+  background-image: linear-gradient(to right, var(--light-grey), var(--dark-grey));
+  display:none;
+  position:relative;
+  padding:20px;
+  font-family: Arial, Helvetica;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--light-grey);
+  border-radius: 15px;
+  width: 100%;
+}
+
+.my-content {
+  font-style: italic;
+  min-height:50px;
+}
+
+.my-confirm {
+  position:absolute;
+  bottom: 10px;
+  right:10px;
+  background-color: white;
+  color: black;
+  border-radius: 5px;
+  border:1px solid #999;
+  padding: 2px 20px 2px 20px;
+  cursor: pointer;
+  font-size:12px;
+}
+
+.my-dismiss {
+  color: #fff;
+  cursor: pointer;
+  border:none;
+  padding:2px 4px 2px 4px;
+  background: none;
+  position: absolute;  /* Absolute position to place within its parent */
+  top: 4px;            /* Adjust as needed for correct spacing from top */
+  right: 10px;         /* Adjust as needed for correct spacing from right */
+  font-size: 16px;     /* Font size for dismiss icon ("x") */
+}
+
+.my-dismiss:hover {
+  font-weight:800;
+  border-radius: 2px;
+  border: 1px solid #222;
+  color: #000;
+}

@@ -16,13 +16,7 @@ const defaultSdkConfiguration = {
     confirmButtonLabel: 'OK',
   },
   inline: {
-    targetClassname: 'banner-space',
-    targetPlacement: 'target-inside' as TargetInsertType,
-    customControlClasses: {
-      content: 'my-content',
-      confirm: 'my-confirm',
-      dismiss: 'my-dismiss',
-    },
+    target: 'default',
   },
   banner: {
     duration: 5000,
@@ -46,10 +40,18 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
   const sdkConfiguration = useRef<SDKConfiguration>(defaultSdkConfiguration);
   const filteredSdkConfiguration = useRef<SDKConfiguration | null>(null);
   const [ configurationChanged, setConfigurationChanged ] = useState<boolean>(false);
-  const [ customCss, setCustomCss ] = useState<string | null>(null);
+  const  customCss = useRef<string>('Custom css');
 
   const getSdkConfiguration = (): SDKConfiguration => {
     return sdkConfiguration.current;
+  }
+  
+  const getCustomCss = ():string => {
+    return customCss.current;
+  }
+  
+  const setCustomCss = (newCustomCss:string) => {
+    customCss.current = newCustomCss;
   }
   
   const createFilteredConfiguration = ():SDKConfiguration => {
@@ -74,10 +76,7 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
         newConfig.modal = modal;
         break;
       case 'inline':
-        newConfig.inline = { ...inline };
-        if (inline.targetClassname === 'tinad-container') {
-          newConfig.inline = {};
-        }
+        // do nothing, we can't configure this except with css
         break;
       case 'banner':
         newConfig.banner = banner;
@@ -105,7 +104,7 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
       getFilteredSdkConfiguration,
       configurationChanged,
       setConfigurationChanged,
-      customCss,
+      getCustomCss,
       setCustomCss
       }}>
       {children}

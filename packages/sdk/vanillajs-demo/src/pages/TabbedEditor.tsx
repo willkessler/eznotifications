@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import AceEditor from 'react-ace';
 import { useSdkConfiguration } from './configuratorContext';
 import { Tabs, rem } from '@mantine/core';
@@ -15,31 +15,35 @@ type FileData = {
 
 
 const TabbedEditor: React.FC = () => {
-  const { getSdkConfiguration, setSdkConfiguration, getFilteredSdkConfiguration, configurationChanged, setConfigurationChanged } = useSdkConfiguration();
+  const { getSdkConfiguration, 
+          setSdkConfiguration, 
+          getCustomCss,
+          setCustomCss,
+          getFilteredSdkConfiguration, 
+          configurationChanged, 
+          setConfigurationChanged,
+  } = useSdkConfiguration();
   const [activeTab, setActiveTab] = useState<string | null>('snippet.js');
-  const [editorHeight, setEditorHeight ] = useState('600px');
-  const containerRef = useRef(null);
+  const [editorHeight, setEditorHeight ] = useState('400px');
   const initialFiles: FileData[] = [
     { filename: 'snippet.js', content: `//\n// SDK Initialization Code\n//\n\nconst sdk = initializeSDK(${JSON.stringify(getFilteredSdkConfiguration(), null, 2)});` },
     { filename: 'custom.css', content: "\n\nconsole.log('Hello from file 2');\n" }
   ];
   const [files, setFiles] = useState<FileData[]>(initialFiles);
 
-  useEffect(() => {
-    const calculateHeight = () => {
-      if (containerRef.current) {
-        const totalHeight = containerRef.current.clientHeight;
-        const tabHeight = containerRef.current.firstChild.clientHeight;
-        setEditorHeight(`${totalHeight - tabHeight}px`);
-      }
-    };
+  const updateSampleAppCss = (newCss: string) => {
+    const bankIframe = document.getElementById('bank-app') as HTMLIFrameElement;
+    if (bankIframe && bankIframe.contentWindow) {
+      const newConfigMessage = {
+        name: 'updateCss',
+        css: newCss,
+      };
+      const messageString = JSON.stringify(newConfigMessage);
+      bankIframe.contentWindow.postMessage(messageString, window.location.origin);
+    }
+  }
 
-    calculateHeight();
-    window.addEventListener('resize', calculateHeight);
-    return () => window.removeEventListener('resize', calculateHeight);
-  }, []);
-
-  useEffect(() => {
+  const updateFiles = (file1:FileData, file2: FileData):void => {
     const introPrefix =  "//\n// AUTO-GENERATED SCRIPT TAG\n" +
                          "// The configuration controls at left\n" +
                          "// update the script tag below.\n" +
@@ -51,20 +55,72 @@ const TabbedEditor: React.FC = () => {
   src="http://localhost:3500/bundle.js"
   tinad-configuration=
 '`;    
-    const currentConfig = getFilteredSdkConfiguration();
+    const currentConfig = file1.content;
+    //console.log(`currentconfig: ${JSON.stringify(currentConfig,null,2)}`);
     const configStringified = JSON.stringify(currentConfig, null,2);
     const editorContents = introPrefix + configStringified + "'\n>\n\n";
-    //console.log(`currentconfig: ${JSON.stringify(currentConfig,null,2)}`);
+    const currentCustomCss = file2.content;
     setFiles(
       [
-        { filename: 'snippet.js', content: editorContents },
-        { filename: 'custom.css', content: files[1].content }
+        { filename: file1.filename, content: editorContents },
+        { filename: file2.filename, content: currentCustomCss }
       ]
+    );
+
+  }
+  
+  const fetchCustomCss = async ():void => {
+    try {
+      const cssUrl = '/bank.css';
+      const response = await fetch(cssUrl);
+      const rawCss = await response.text();
+      const finalCss = "/*\n * Edit this CSS to alter the custom\n * inline notification's styling.\n*/\n" + rawCss;
+      setCustomCss(finalCss);
+      updateFiles(
+        { filename: 'snippet.js', content: getSdkConfiguration() },
+        { filename: 'custom.css', content: getCustomCss() },
+      );
+    } catch(error) {
+      console.log(`Cannot fetch custom css: ${error}`);
+    }
+  }
+
+  useEffect(() => {
+    fetchCustomCss();
+  }, []);
+
+  useLayoutEffect(() => {
+    const calculateHeight = () => {
+      setTimeout(() => {
+        const codeEditorElement = document.getElementById('code-editor');
+        const totalHeight = codeEditorElement.clientHeight;
+        const tabsElement = document.getElementById('editor-tabs');
+        const tabHeight = tabsElement.clientHeight;
+        console.log(`calculated heights: total: ${totalHeight} tabs: ${tabHeight}`);
+        setEditorHeight(`${totalHeight - tabHeight}px`);
+      },0);
+    };
+
+    calculateHeight();
+    window.addEventListener('resize', calculateHeight);
+    return () => {
+      window.removeEventListener('resize', calculateHeight);
+    }
+  }, []);
+  
+  useEffect(() => {
+    updateFiles( 
+      { filename: 'snippet.js', content: getFilteredSdkConfiguration() },
+      { filename: 'custom.css', content: getCustomCss() }
     );
     setConfigurationChanged(false);
   }, [configurationChanged]);
   
   const handleEditorChange = (newContent: string, index: number) => {
+    if (index === 1) {
+      console.log('Updating bank app CSS.');
+      updateSampleAppCss(newContent);
+    }
     setFiles(currentFiles =>
       currentFiles.map((file, idx) => ({
         ...file,
@@ -74,22 +130,24 @@ const TabbedEditor: React.FC = () => {
   };
 
   return (
-    <div ref={containerRef} 
-      style={{ display: 'flex', flexDirection: 'column', height: '100%', position:'relative', overflow:'hidden' }}> {/* Set the height as needed */}    
-      <Tabs variant="outline" value={activeTab} onChange={setActiveTab} orientation="horizontal" style={{ height: '100%' }}>
-        <Tabs.List>
+    <div id="editors-container" className="editors-container">
+      <Tabs
+        variant="outline" value={activeTab} onChange={setActiveTab} orientation="horizontal" style={{ height: '100%' }}>
+        <Tabs.List id="editor-tabs">
           {files.map((file, index) => (
             <Tabs.Tab 
               key={file.filename} 
               value={file.filename}
-              style={{ fontWeight: activeTab === file.filename ? 'bold' : 'normal', color: activeTab === file.filename ? '#eee' : '#666' }}
+              style={{ fontWeight: activeTab === file.filename ? 'bold' : 'normal', 
+                       color: activeTab === file.filename ? '#eee' : '#666' }}
             >
               {file.filename}
             </Tabs.Tab>
           ))}
         </Tabs.List>
         {files.map((file, index) => (
-          <Tabs.Panel key={file.filename} value={file.filename} style={{flex:1, minHeight: 0, height:'100%', position:'relative', overflow:'auto'}}>
+          <Tabs.Panel key={file.filename} value={file.filename} 
+            style={{flex:1, minHeight: 0, height:'100%', position:'relative', overflow:'auto'}}>
             <AceEditor
               mode="javascript"
               theme="monokai"

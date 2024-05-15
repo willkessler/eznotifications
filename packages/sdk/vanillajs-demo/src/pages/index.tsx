@@ -17,7 +17,7 @@ export default function Home() {
           <div className="config-widget">
             <Configurator />
           </div>
-          <div className="code-editor">
+          <div id="code-editor" className="code-editor">
             <TabbedEditor />
           </div>
         </div>

@@ -36,3 +36,11 @@
 .copy-button {
   color:rgb(143, 144, 138);
 }
+
+.editors-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  overflow:hidden;
+}

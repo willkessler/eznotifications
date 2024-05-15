@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import Image from "next/image";
 import Link from "next/link"
 import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
-import './css/bank.css';
-
+import '../../public/bank.css'; // note that the bank css file is now in the public dir so we can fetch and store in Ace editor
 
 /**
  * v0 by Vercel.
@@ -14,9 +13,33 @@ import './css/bank.css';
 export default function Bank() {
 
   const [ isMounted, setIsMounted ] = useState(false);
+  
+  const handlePostMessage = async (event:MessageEvent) => {
+    if (event.origin !== window.location.origin) {
+      return; // ignore unknown origin messages
+    }
+
+    if (event.data && typeof(event.data) === 'string') {
+      const receivedMessage = JSON.parse(event.data);
+      if (receivedMessage.name === 'updateCss') {
+        const newCss = receivedMessage.css;
+        const previousStyle = document.getElementById('tinad-custom-styles');
+        if (previousStyle) {
+          previousStyle.remove();
+        }
+        const newStyle = document.createElement('style');
+        newStyle.id='tinad-custom-styles';
+        newStyle.textContent = newCss;
+        document.head.appendChild(newStyle);
+      }
+    }
+  }
+  
 
   useEffect(() => {
     setIsMounted(true);
+    console.log(`adding event listener for css updates.`);
+    window.addEventListener("message", handlePostMessage);  // listen for post messages from the tabbed editor
   }, []);
   
   const initialConfiguration: SDKConfiguration =
@@ -29,13 +52,7 @@ export default function Bank() {
         domains: [],
       },
       inline: {
-        targetClassname: 'banner-space',
-        targetPlacement: 'target-before' as TargetInsertType,
-        customControlClasses: {
-          content: 'my-content',
-          confirm: 'my-confirm',
-          dismiss: 'my-dismiss',
-        },
+        target: 'default',
       },
       toast: {
         position: 'top-end',
@@ -48,6 +65,8 @@ export default function Bank() {
         confirmButtonLabel: 'OK',
       }
     };
+
+
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-7" style={{color:'#333'}}>
@@ -88,11 +107,18 @@ export default function Bank() {
             <div className="flex flex-col items-left justify-between mb-8">
               <h1 className="text-2xl font-bold">Welcome to Commercial Savings & Loan!</h1>
               { isMounted && 
-                <div className="banner-space">
-                  <div className="my-content"></div>
-                  <button className="my-confirm">I got it</button>
-                  <div className="my-dismiss">X</div>
+                <>
+                <div className="tinad-inline-container">
+                  <div className="tinad-inline-content"></div>
+                  <button className="tinad-inline-confirm">OK</button>
+                  <div className="tinad-inline-dismiss"></div>
                 </div>
+                <div className="my-inline-container">
+                  <div className="my-content"></div>
+                  <button className="my-confirm">OK</button>
+                  <div className="my-dismiss">x</div>
+                </div>
+                </>
               }
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">

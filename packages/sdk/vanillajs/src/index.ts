@@ -18,12 +18,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       domains: [],
     },
     inline: {
-      targetClassname: 'target-element',
-      targetPlacement: 'target-inside' as TargetInsertType,
-      customControlClasses: {
-        content: 'my-content',
-        confirm: 'my-confirm',
-        dismiss: 'my-dismiss',
+      target: {
+        outer: 'tinad-inline-container',
+        content: 'tinad-inline-content',
+        confirm: 'tinad-inline-confirm',
+        dismiss: 'tinad-inline-dismiss',
       },
     },
     toast: {
