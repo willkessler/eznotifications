@@ -3,16 +3,19 @@
   box-shadow: var(--mantine-shadow-md);
   border: rem(1px) solid light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-4));
   padding:2px;
-  margin-top:16px;
-  margin-left:16px;
+  margin-top:26px;
+  margin-left:10px;
 }
 
 .indicator {
+  background-color: rgb(3, 172, 202);
+/*
   background-image: linear-gradient(
     to right,
     var(--mantine-color-pink-filled),
     var(--mantine-color-orange-filled)
   );
+*/
 }
 
 .control {
@@ -29,4 +32,3 @@
     }
   }
 }
-

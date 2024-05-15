@@ -22,6 +22,7 @@
   max-width:none;
   height:100%;
   background:white;
+  position:relative;
 }
 
 .code-editor {
@@ -43,4 +44,26 @@
   height: 100%;
   position: relative;
   overflow:hidden;
+}
+
+.dashboard-drawer-button {
+  position:absolute;
+  left:  10px;
+  bottom:15px;
+  background-color: rgb(3, 172, 202);
+}
+
+.dashboard-drawer-button:hover {
+  background-color: rgb(3, 172, 202);
+}
+
+.mantine-Drawer-body {
+  height: 90%; /* Make sure the content takes up full available height */
+  overflow:hidden;
+}
+
+.mantine-Drawer-title {
+  font-size: 20px;
+  font-weight:800;
+  font-style:italic;
 }
