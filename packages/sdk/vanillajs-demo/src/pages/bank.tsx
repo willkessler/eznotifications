@@ -14,6 +14,42 @@ export default function Bank() {
 
   const [ isMounted, setIsMounted ] = useState(false);
   
+  const initialConfiguration: SDKConfiguration =
+    {
+      api: {
+        displayMode: 'toast',
+        key: process.env.NEXT_PUBLIC_TINAD_API_KEY,
+        endpoint: process.env.NEXT_PUBLIC_TINAD_API_TARGET,
+        environments: [ 'Development' ],
+        domains: [],
+      },
+      toast: {
+        position: 'top-end',
+        duration: 5000,
+      },
+      modal: {
+        confirmButtonLabel: 'OK',
+        show: {
+          dismiss: true,
+        },
+      },
+      inline: {
+        target: 'default',
+        show: {
+          confirm: true,
+          dismiss: true,
+        },
+      },
+      banner: {
+        duration: 5000,
+        target: 'default',
+        show: {
+          dismiss: true,
+        },
+      },
+    };
+
+
   const handlePostMessage = async (event:MessageEvent) => {
     if (event.origin !== window.location.origin) {
       return; // ignore unknown origin messages
@@ -42,31 +78,6 @@ export default function Bank() {
     window.addEventListener("message", handlePostMessage);  // listen for post messages from the tabbed editor
   }, []);
   
-  const initialConfiguration: SDKConfiguration =
-    {
-      api: {
-        displayMode: 'toast',
-        key: process.env.NEXT_PUBLIC_TINAD_API_KEY,
-        endpoint: process.env.NEXT_PUBLIC_TINAD_API_TARGET,
-        environments: [ 'Development' ],
-        domains: [],
-      },
-      inline: {
-        target: 'default',
-      },
-      toast: {
-        position: 'top-end',
-        duration: 5000,
-      },
-      banner: {
-        duration: 5000,
-      },
-      modal: {
-        confirmButtonLabel: 'OK',
-      }
-    };
-
-
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-7" style={{color:'#333'}}>
@@ -111,7 +122,7 @@ export default function Bank() {
                 <div className="tinad-inline-container">
                   <div className="tinad-inline-content"></div>
                   <button className="tinad-inline-confirm">OK</button>
-                  <div className="tinad-inline-dismiss"></div>
+                  <div className="tinad-inline-dismiss">x</div>
                 </div>
                 <div className="my-inline-container">
                   <div className="my-content"></div>

@@ -16,18 +16,52 @@ export class BannerNotification {
   private configuration: SDKConfiguration;
   private currentNotificationUuid: string;
   private content: string;
+  private bannerTargets: {
+    outer: string;
+    slideDown: string;
+    slideUp: string;
+    content: string;
+    dismiss: string;
+  };
   
   constructor(configuration:SDKConfiguration) {
     this.configuration = configuration;
-    this.banner = document.getElementById('notification-banner');
-    if (!this.banner) {
-      this.banner = document.createElement('div');
-      this.banner.id = 'notification-banner';
-      document.body.appendChild(this.banner);
+    this.bannerTargets = {
+      outer: 'notification-banner',
+      slideDown: 'slideDown',
+      slideUp: 'slideUp',
+      content: 'content',
+      dismiss: 'dismiss',
     }
 
+    if (this.configuration.banner.target) {
+      if (this.configuration.banner.target.outer) {
+        this.bannerTargets.outer = this.configuration.banner.target.outer;
+      }
+      if (this.configuration.banner.target.outer) {
+        this.bannerTargets.slideDown = this.configuration.banner.target.slideDown;
+      }
+      if (this.configuration.banner.target.outer) {
+        this.bannerTargets.slideUp = this.configuration.banner.target.slideUp;
+      }
+      if (this.configuration.banner.target.outer) {
+        this.bannerTargets.content = this.configuration.banner.target.content;
+      }
+      if (this.configuration.banner.target.dismiss) {
+        this.bannerTargets.dismiss = this.configuration.banner.target.dismiss;
+      }
+    }
+
+    this.banner = document.getElementById('notification-banner');
+    if (this.banner) {
+      this.banner.remove(); // remove element if previously existing
+    }
+    this.banner = document.createElement('div');
+    this.banner.id = this.bannerTargets.outer;
+    document.body.appendChild(this.banner);
+
     this.banner.addEventListener('animationend', async () => {
-      if (this.banner.className === 'slideUp') {
+      if (this.banner.className === this.bannerTargets.slideUp) {
         this.bannerOn = false;
         this.banner.style.display = 'none';
         console.log(`removeBanner calling dismiss on uuid: ${this.currentNotificationUuid}`);
@@ -39,7 +73,7 @@ export class BannerNotification {
   }
     
   removeBanner() {
-    this.banner.className = 'slideUp';
+    this.banner.className = this.bannerTargets.slideUp;
   }
 
   public show = async (notification:SDKNotification):Promise<boolean> => {
@@ -55,14 +89,17 @@ export class BannerNotification {
     const markedContent =  await MarkdownLib.renderMarkdown(content);
     this.banner.innerHTML = `<div>${markedContent}</div>`;
     
-    // Create and insert "X" button for instant dismissal
-    const dismissButtonX = document.createElement('button');
-    dismissButtonX.className = 'dismiss-x';
-    dismissButtonX.textContent = 'x';
-    dismissButtonX.onclick = () => this.removeBanner();
-    this.banner.appendChild(dismissButtonX);
+    // Create and insert "X" button for instant dismissal, if active
+    if ((this.configuration.banner.show?.dismiss) ||
+      (!this.configuration.banner.show)) {
+      const dismissButton = document.createElement('button');
+      dismissButton.className = this.bannerTargets.dismiss;
+      dismissButton.textContent = 'x';
+      dismissButton.onclick = () => this.removeBanner();
+      this.banner.appendChild(dismissButton);
+    }
     
-    this.banner.className = 'slideDown';
+    this.banner.className = this.bannerTargets.slideDown;
     this.banner.style.display = 'flex';
 
     this.currentNotificationUuid = uuid;

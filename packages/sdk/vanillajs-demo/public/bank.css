@@ -48,3 +48,54 @@
   border: 1px solid #222;
   color: #000;
 }
+
+/*
+  If you want to override banner styles, you can modify 
+  the styles below and turn on custom banner styling.
+*/
+
+#my-notification-banner {
+  font-family: Arial, Helvetica;
+  min-height:75px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: auto;
+  padding: 10px 0;
+  background-color: #9a0;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  z-index: 10000;
+  opacity:95%;
+  animation: slideDown 0.25s ease-out forwards; /* Adjust time as needed */
+  display: none;
+  align-items: center; /* Vertically center items */
+  justify-content: center; /* Center content horizontally */
+}
+
+#my-notification-banner.slideDown {
+  display: flex;  /* Flexbox layout for internal alignment */
+  animation: slideDown 0.25s ease-out forwards;
+}
+
+#my-notification-banner.slideUp {
+  display:flex;
+  animation: slideUp 0.25s ease-out forwards;
+}
+
+#my-notification-banner .content {
+  flex-grow: 1;
+  text-align: center;
+  padding-right:40px;
+}
+
+#my-notification-banner .dismiss {
+  position: absolute; /* Absolute position to the upper right */
+  top: 10px; /* Adjust for spacing */
+  right: 30px; /* Adjust for spacing */
+  background: none; /* Remove background styling */
+  border: none; /* Remove border styling */
+  font-size: 20px; /* Font size for "X" */
+  cursor: pointer; /* Pointer cursor for interactivity */
+}

@@ -26,13 +26,25 @@ export class ModalNotification {
 
     try {
       this.modalOn = true;
+      console.log(`Inside ModalNotification constructor we have configuration: ${JSON.stringify(this.configuration,null,2)}`);
+      let showConfirm = true;
+      let showDismiss = true;
+      if (this.configuration.modal.show) {
+        if (this.configuration.modal.show.confirm == false) {
+          showConfirm = false;
+        }
+        if (this.configuration.modal.show.dismiss == false) {
+          showDismiss = false;
+        }
+      }
+        
       const swalOutcome: SweetAlertResult = await Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: true,
         allowEnterKey: true,
-        text: content,
-        showConfirmButton: true,
-        showCloseButton: true,
+        html: content,
+        showConfirmButton: showConfirm,
+        showCloseButton: showDismiss,
         confirmButtonText: this.configuration.modal.confirmButtonLabel,
       });
 

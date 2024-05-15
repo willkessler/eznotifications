@@ -17,6 +17,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       environments: [ 'Development' ],
       domains: [],
     },
+    toast: {
+      position: 'bottom-end',
+      duration: 5000,
+    },
+    modal: {
+      confirmButtonLabel: 'OK',
+      show: {
+        confirm: true,
+        dismiss: true,
+      },
+    },
     inline: {
       target: {
         outer: 'tinad-inline-container',
@@ -24,17 +35,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         confirm: 'tinad-inline-confirm',
         dismiss: 'tinad-inline-dismiss',
       },
-    },
-    toast: {
-      position: 'bottom-end',
-      duration: 5000,
+      show: {
+        confirm: true,
+        dismiss: true,
+      },
     },
     banner: {
       duration: 5000,
+      show: {
+        dismiss: true,
+      },
     },
-    modal: {
-      confirmButtonLabel: 'OK',
-    }
   };
   
   const constructConfiguration = (): SDKConfiguration => {

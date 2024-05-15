@@ -82,6 +82,21 @@ export class InlineNotification {
     this.notificationElements.outer.forEach(notificationElement => {
       notificationElement.style.display = 'block';
     });
+    this.notificationElements.confirm.forEach(notificationElement => {
+      if (this.configuration.inline?.show?.confirm) {
+        notificationElement.style.display = 'block';
+      } else {
+        notificationElement.style.display = 'none';
+      }
+    });
+    this.notificationElements.dismiss.forEach(notificationElement => {
+      if (this.configuration.inline?.show?.dismiss) {
+        notificationElement.style.display = 'block';
+      } else {
+        notificationElement.style.display = 'none';
+      }
+    });
+
   }
 
   public show = async (notification:SDKNotification):Promise<void> => {

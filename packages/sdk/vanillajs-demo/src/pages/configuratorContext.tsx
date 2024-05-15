@@ -14,12 +14,23 @@ const defaultSdkConfiguration = {
   },
   modal: {
     confirmButtonLabel: 'OK',
+    show: {
+      dismiss: true,
+    },
   },
   inline: {
     target: 'default',
+    show: {
+      confirm: true,
+      dismiss: true,
+    },
   },
   banner: {
     duration: 5000,
+    target: 'default',
+    show: {
+      dismiss: true,
+    },
   },
 };
 

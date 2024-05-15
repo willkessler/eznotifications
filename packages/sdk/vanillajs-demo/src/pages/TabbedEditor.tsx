@@ -119,6 +119,7 @@ const TabbedEditor: React.FC = () => {
   const handleEditorChange = (newContent: string, index: number) => {
     if (index === 1) {
       console.log('Updating bank app CSS.');
+      setCustomCss(newContent);
       updateSampleAppCss(newContent);
     }
     setFiles(currentFiles =>

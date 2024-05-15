@@ -1,13 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Checkbox, Group, Paper,Radio, SegmentedControl, TextInput } from '@mantine/core';
-import classes from './css/GradientSegmentedControl.module.css';
 import { useSdkConfiguration } from './configuratorContext';
 import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
+import classes from './css/GradientSegmentedControl.module.css';
 
 const Configurator = () => {
   const [ currentDisplayMode, setCurrentDisplayMode ] = useState<string>('toast');
-  const [ customInlineDiv, setCustomInlineDiv ] = useState<boolean>(false);  
+  const [ customInlineDiv, setCustomInlineDiv ] = useState<boolean>(false);
+  const [ inlineConfirmShown, setInlineConfirmShown  ] = useState<boolean>(true);
+  const [ inlineDismissShown, setInlineDismissShown  ] = useState<boolean>(true);
+  const [ bannerDismissShown, setBannerDismissShown  ] = useState<boolean>(true);
+  const [ modalDismissShown, setModalDismissShown  ] = useState<boolean>(true);
+  const [ customBannerStyles, setCustomBannerStyles  ] = useState<boolean>(false);
   const { getSdkConfiguration, setSdkConfiguration } = useSdkConfiguration();
+  const debounceTimeout = useRef<number | null>(null);
 
   const updateSampleApp = (sdkConfig: SDKConfiguration) => {
     console.log('sdkConfig:', sdkConfig);
@@ -29,7 +35,7 @@ const Configurator = () => {
       if (tinadConfig.apiKey) {
         return tinadConfig.apiKey;
       }
-    }    
+    }
     return null;
   }
 
@@ -38,18 +44,18 @@ const Configurator = () => {
     configUpdate.toast.position = valueStr;
     setSdkConfiguration(configUpdate);
   }
-  
+
   const setConfirmButtonLabel = (valueStr: string) => {
     const configUpdate = getSdkConfiguration();
     configUpdate.modal.confirmButtonLabel = valueStr;
     setSdkConfiguration(configUpdate);
   }
-  
+
   const formNoOp = (event:EventSource) => {
     // since handling events at form level, this is just here to satisfy react's
     // insistence that every controlled input (with a value prop) has to have a handler
   }
-  
+
   useEffect(() => {
     // first time we enter this demo, reset current user so you always see some notifs
     const configUpdate = getSdkConfiguration();
@@ -60,7 +66,13 @@ const Configurator = () => {
     setSdkConfiguration(configUpdate);
     updateSampleApp(configUpdate);
   }, []);
-  
+
+  const formFieldDebounce = (executor:any) => {
+    if (debounceTimeout.current != null) {
+      clearTimeout(debounceTimeout.current);
+    }
+    debounceTimeout.current = setTimeout(executor, 2500);
+  }
 
   // Handler function for changes
   const handleSdkChange = (event) => {
@@ -81,6 +93,8 @@ const Configurator = () => {
       }
     };
 
+    let mustDebounce = false;
+    let newDuration;
     switch (name) {
       case 'display-mode':
         const newMode = newValue.toLowerCase();
@@ -91,14 +105,43 @@ const Configurator = () => {
         currentConfig.toast.position = newValue;
         break;
       case 'toast-duration':
-        currentConfig.toast.duration = newValue;
+        newDuration = parseInt(newValue);
+        if (newValue.length < 1) {
+          newDuration = 0;
+        }
+        currentConfig.toast.duration = newDuration;
+        mustDebounce = true;
+        break;
+      case 'banner-duration':
+        newDuration = parseInt(newValue);
+        if (newValue.length < 1) {
+          newDuration = 0;
+        }
+        currentConfig.banner.duration = newDuration;
+        mustDebounce = true;
         break;
       case 'inline-placement':
         currentConfig.inline.placement = newValue;
         break;
       case 'modal-confirm-button-label':
-        console.log(`setting confirm button label to ${newValue}`);
         currentConfig.modal.confirmButtonLabel = newValue;
+        mustDebounce = true;
+        break;
+      case 'show-modal-dismiss':
+        currentConfig.modal.show.dismiss = newValue;
+        setModalDismissShown(newValue);
+        break;
+      case 'show-inline-confirm':
+        currentConfig.inline.show.confirm = newValue;
+        setInlineConfirmShown(newValue);
+        break;
+      case 'show-inline-dismiss':
+        currentConfig.inline.show.dismiss = newValue;
+        setInlineDismissShown(newValue);
+        break;
+      case 'show-banner-dismiss':
+        currentConfig.banner.show.dismiss = newValue;
+        setBannerDismissShown(newValue);
         break;
       case 'custom-inline-div':
         if (checked) {
@@ -114,11 +157,33 @@ const Configurator = () => {
           setCustomInlineDiv(false);
         }
         break;
+      case 'custom-banner-styles':
+        if (checked) {
+          currentConfig.banner.target = {
+            outer: 'my-notification-banner',
+            slideDown: 'slideDown',
+            slideUp: 'slideUp',
+            content: 'content',
+            dismiss: 'dismiss',            
+          };
+          setCustomBannerStyles(true);
+        } else {
+          currentConfig.banner.target = 'default';
+          setCustomBannerStyles(false);
+        }
+        break;
     }
 
     console.log(`currentConfig: ${JSON.stringify(currentConfig,null,2)}`);
     setSdkConfiguration(currentConfig);
-    updateSampleApp(currentConfig);
+    const doUpdates = () => {
+      updateSampleApp(currentConfig);
+    }
+    if (mustDebounce) {
+      formFieldDebounce(doUpdates);
+    } else {
+      doUpdates();
+    }
   };
 
   return (
@@ -150,7 +215,7 @@ const Configurator = () => {
                 <Radio value="bottom-end" label="Lower right" />
               </Group>
             </Radio.Group>
-            <TextInput className="pt-12"
+            <TextInput className="pt-6"
               name="toast-duration"
               value={getSdkConfiguration().toast?.duration}
               onChange={formNoOp}
@@ -170,16 +235,67 @@ const Configurator = () => {
             description="What you want the modal confirm button to say."
             placeholder="OK"
           />
+          <Checkbox
+            className="pt-6"
+            label="Show dismiss control"
+            description="Uncheck this to remove the 'x' dismiss control on modal notifications."
+            name="show-modal-dismiss"
+            checked={modalDismissShown}
+            onChange={formNoOp}
+          />
         </Paper>
       }
       { (currentDisplayMode === 'inline') &&
         <Paper className="p-6 m-6">
           <Checkbox
-            label="Use custom inline notification styling"
-            description="Check this box to see how custom styling of inline notifications can be done. Modify the custom.css file in the editor to the right to see changes applied to the custom notification. On your own app you have total freedom to use any styling you prefer."
+            label="Show confirm button"
+            description="Uncheck this to remove the Confirm button inline notifications."
+            name="show-inline-confirm"
+            checked={inlineConfirmShown}
+            onChange={formNoOp}
+          />
+          <Checkbox
+            className="pt-6"
+            label="Show dismiss control"
+            description="Uncheck this to remove the 'x' dismiss control on inline notifications."
+            name="show-inline-dismiss"
+            checked={inlineDismissShown}
+            onChange={formNoOp}
+          />
+          <Checkbox
+            className="pt-6"
+            label="Custom styling"
+            description="Check this box to see custom styles applied to inline notifications. (Modify the custom.css file in the editor to the right to see how this works)."
             name="custom-inline-div"
             checked={customInlineDiv}
             onChange={formNoOp}
+          />
+        </Paper>
+      }
+      { (currentDisplayMode === 'banner') &&
+        <Paper className="p-6 m-6">
+          <Checkbox
+            label="Show dismiss control"
+            description="Uncheck this to remove the 'x' dismiss control on inline notifications."
+            name="show-banner-dismiss"
+            checked={bannerDismissShown}
+            onChange={formNoOp}
+          />
+          <Checkbox
+            className="pt-6"
+            label="Custom styling"
+            description="Check this box to see custom styles applied to banners. (Modify the custom.css file in the editor to the right to see how this works)."
+            name="custom-banner-styles"
+            checked={customBannerStyles}
+            onChange={formNoOp}
+          />
+          <TextInput className="pt-6"
+            name="banner-duration"
+            value={getSdkConfiguration().banner?.duration}
+            onChange={formNoOp}
+            label="Banner duration"
+            description="How long before a banner is auto-dismissed (milliseconds)."
+            placeholder="5000"
           />
         </Paper>
       }

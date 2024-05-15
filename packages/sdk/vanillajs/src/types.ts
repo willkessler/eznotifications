@@ -14,6 +14,20 @@ export interface SDKConfiguration {
     domains?: string[];
     dismissFunction?: (notificationUuid:string) => Promise<void>;
   };
+  toast?: {
+    // One of these (from swal2):
+    // 'top', 'top-start', 'top-end', 'center', 'center-start', 'center-end',
+    // 'bottom', 'bottom-start', or 'bottom-end'.
+    position?: string;
+    duration?: number;
+  };
+  modal?: {
+    confirmButtonLabel? : string;
+    show?: {
+      confirm: boolean;
+      dismiss: boolean;
+    },
+  };
   inline?: {
     target?: {
       outer: string;
@@ -22,22 +36,21 @@ export interface SDKConfiguration {
       dismiss: string;
     },
     show?: {
-      content: boolean;
-      dismiss: boolean;
       confirm: boolean;
+      dismiss: boolean;
     },
-  };
-  toast?: {
-    // One of these (from swal2):
-    // 'top', 'top-start', 'top-end', 'center', 'center-start', 'center-end',
-    // 'bottom', 'bottom-start', or 'bottom-end'.
-    position?: string;
-    duration?: number;
   };
   banner?: {
     duration?: 5000,
+    target?: {
+      outer: string;
+      slideDown: string;
+      slideUp: string;
+      content: string;
+      dismiss: string;
+    },
+    show: {
+      dismiss: boolean;
+    },
   };
-  modal?: {
-    confirmButtonLabel? : string;
-  }
 };

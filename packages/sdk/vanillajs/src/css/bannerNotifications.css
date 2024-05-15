@@ -1,4 +1,3 @@
-
 @keyframes slideDown {
   from {
     transform: translateY(-100%); /* Start from above the top */
@@ -46,18 +45,18 @@
   animation: slideDown 0.25s ease-out forwards;
 }
 
+#notification-banner.slideUp {
+  display:flex;
+  animation: slideUp 0.25s ease-out forwards;
+}
+
 #notification-banner .content {
   flex-grow: 1;
   text-align: center;
   padding-right:40px;
 }
 
-#notification-banner.slideUp {
-  display:flex;
-  animation: slideUp 0.25s ease-out forwards;
-}
-
-#notification-banner .dismiss-x {
+#notification-banner .dismiss {
   position: absolute; /* Absolute position to the upper right */
   top: 10px; /* Adjust for spacing */
   right: 30px; /* Adjust for spacing */
