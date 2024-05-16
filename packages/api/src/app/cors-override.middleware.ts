@@ -19,10 +19,10 @@ export class CorsOverrideMiddleware implements NestMiddleware {
             credentials: true,
         };
 
-        console.log(`method: ${req.method}`);
+        //console.log(`method: ${req.method}`);
         if (req.method === 'OPTIONS') {
             // Apply a broad CORS policy to satisfy preflight requests
-            console.log(`********* IMPLEMENTING preflight CORS for req: ${req.baseUrl}, method: ${req.method}`);
+            // console.log(`********* IMPLEMENTING preflight CORS for req: ${req.baseUrl}, method: ${req.method}`);
             cors(preflightCorsOptions)(req, res, next);
         } else {
             const specialTinadHeader = req.headers['x-tinad-source'];
@@ -39,7 +39,7 @@ export class CorsOverrideMiddleware implements NestMiddleware {
             ];
             // Apply the appropriate CORS policy based on the request path
             const validApiAccess = globalAccessPrefixes.some(prefix => pathStartsWith(req.baseUrl, prefix));
-            console.log(`validApiAccess: ${validApiAccess}`);
+            // console.log(`validApiAccess: ${validApiAccess}`);
             let allowedOrigins = '*';
             if (sourceIsDashboard) {
                 allowedOrigins = process.env.DASHBOARD_HOST;
@@ -52,10 +52,12 @@ export class CorsOverrideMiddleware implements NestMiddleware {
                 exposedHeaders: ['X-Tinad-Poll-Interval'],
             };
             if (sourceIsDashboard || validApiAccess) {
+/*
                 console.log(sourceIsDashboard ?
                     "********* CORS: VALID DASHBOARD ACCESS" :
                     "********* CORS: VALID API ACCESS"
                            );
+*/
                 cors(specificCorsOptions)(req, res, next);
             } else {
                 console.log(`********* DENYING ACCESS for req: ${req.baseUrl}, method: ${req.method}`);

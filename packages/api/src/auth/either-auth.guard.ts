@@ -33,9 +33,9 @@ export class EitherAuthGuard implements CanActivate {
 
             if (jwtSuccess || apiKeySuccess) {
                 if (jwtSuccess) {
-                    console.log('EitherAuthGuard: JWT auth method succeeded.');
+                  // console.log('EitherAuthGuard: JWT auth method succeeded.');
                 } else {
-                    console.log('EitherAuthGuard: API key auth method succeeded.');
+                  // console.log('EitherAuthGuard: API key auth method succeeded.');
                 }
                 resolve(true);
                 return;
