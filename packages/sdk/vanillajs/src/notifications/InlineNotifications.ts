@@ -75,8 +75,9 @@ export class InlineNotification {
     console.log('setAndShowNotifications');
     // Insert content.
     const markedContent = await MarkdownLib.renderMarkdown(content);
+    const protectedContent = MarkdownLib.protectMdStyles(markedContent);
     for (const notificationContentElement of this.notificationElements.content) {
-      notificationContentElement.innerHTML = markedContent;
+      notificationContentElement.innerHTML = protectedContent;
     }
     // Show all containers.
     this.notificationElements.outer.forEach(notificationElement => {
