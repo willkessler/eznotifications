@@ -5,6 +5,11 @@ import { useSdkConfiguration } from './configuratorContext';
 import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
 import classes from './css/configurator.module.css';
 
+interface CheckForIntegerResult {
+  value: number;
+  success: boolean;
+}
+
 const Configurator = () => {
   const [ currentDisplayMode, setCurrentDisplayMode ] = useState<string>('toast');
   const [ customInlineDiv, setCustomInlineDiv ] = useState<boolean>(false);
@@ -12,14 +17,35 @@ const Configurator = () => {
   const [ inlineDismissShown, setInlineDismissShown  ] = useState<boolean>(true);
   const [ bannerDismissShown, setBannerDismissShown  ] = useState<boolean>(true);
   const [ modalDismissShown, setModalDismissShown  ] = useState<boolean>(true);
+  const [ bannerDuration, setBannerDuration ] = useState<number>(5000);
   const [ customBannerStyles, setCustomBannerStyles  ] = useState<boolean>(false);
   const [opened, { open, close }] = useDisclosure(false);
 
   const { getSdkConfiguration, 
           setSdkConfiguration, 
-          activeTab, 
+          activeTab,
           setActiveTab } = useSdkConfiguration();
   const debounceTimeout = useRef<number | null>(null);
+
+  const [ toastDurationInputValue, setToastDurationInputValue] = useState<string>(getSdkConfiguration().toast?.duration?.toString());
+
+  const checkForInteger = (input: string): CheckForIntegerResult => {
+    if (/^\d*$/.test(input)) {
+      if (input.length < 1) {
+        return { value: null, success: true};
+      }
+        
+      const value = parseInt(input, 10);
+      return { value, success: !isNaN(value) };
+    }
+    return { value: null, success: false };
+  };
+
+  const fixBlankEntry = (event:EventSource, newValue:string | number) => {
+    if (event.target.value.length == 0) {
+      event.target.value = newValue;
+    }
+  }
 
   const updateSampleApp = (sdkConfig: SDKConfiguration) => {
     console.log('sdkConfig:', sdkConfig);
@@ -86,6 +112,8 @@ const Configurator = () => {
     const { name, type, value, checked } = event.target;
     // Check if the input is a checkbox and use the checked value; otherwise use value
     const newValue = type === 'checkbox' ? checked : value;
+    const { value: newDuration, success } = checkForInteger(newValue);
+
     console.log(`name: ${name}, newValue: ${newValue}`);
     const currentConfig = getSdkConfiguration();
     console.log('currentConfig, ', currentConfig);
@@ -100,7 +128,8 @@ const Configurator = () => {
     };
 
     let mustDebounce = false;
-    let newDuration;
+    let mustUpdate = true;
+
     switch (name) {
       case 'display-mode':
         const newMode = newValue.toLowerCase();
@@ -111,20 +140,26 @@ const Configurator = () => {
         currentConfig.toast.position = newValue;
         break;
       case 'toast-duration':
-        newDuration = parseInt(newValue);
-        if (newValue.length < 1) {
-          newDuration = 0;
+        mustUpdate = false;
+        if (success) {
+          setToastDurationInputValue(newValue);
+          if (newDuration !== null) {
+            currentConfig.toast.duration = newDuration;
+            mustDebounce = true;
+            mustUpdate = true;
+          }
         }
-        currentConfig.toast.duration = newDuration;
-        mustDebounce = true;
         break;
       case 'banner-duration':
-        newDuration = parseInt(newValue);
-        if (newValue.length < 1) {
-          newDuration = 0;
+        mustUpdate = false;
+        if (success) {
+          setBannerDuration(newDuration);
+          if (newDuration !== null) {
+            currentConfig.banner.duration = newDuration;
+            mustDebounce = true;
+            mustUpdate = true;
+          }
         }
-        currentConfig.banner.duration = newDuration;
-        mustDebounce = true;
         break;
       case 'inline-placement':
         currentConfig.inline.placement = newValue;
@@ -182,21 +217,23 @@ const Configurator = () => {
         break;
     }
 
-    console.log(`currentConfig: ${JSON.stringify(currentConfig,null,2)}`);
-    setSdkConfiguration(currentConfig);
-    const doUpdates = () => {
-      updateSampleApp(currentConfig);
-    }
-    if (mustDebounce) {
-      formFieldDebounce(doUpdates);
-    } else {
-      doUpdates();
+    if (mustUpdate) {
+      //console.log(`currentConfig: ${JSON.stringify(currentConfig,null,2)}`);
+      setSdkConfiguration(currentConfig);
+      const doUpdates = () => {
+        updateSampleApp(currentConfig);
+      }
+      if (mustDebounce) {
+        formFieldDebounce(doUpdates);
+      } else {
+        doUpdates();
+      }
     }
   };
 
   return (
     <>
-      <Drawer opened={opened} onClose={close} title="Add or edit notifications below:" size="lg">
+      <Drawer opened={opened} onClose={close} size="xl">
         <iframe src="http://localhost:5173/demo-dashboard" />
       </Drawer>
 
@@ -230,8 +267,9 @@ const Configurator = () => {
               </Radio.Group>
               <TextInput className="pt-6"
                 name="toast-duration"
-                value={getSdkConfiguration().toast?.duration}
+                value={toastDurationInputValue}
                 onChange={formNoOp}
+                onBlur={(event) => { fixBlankEntry(event, 5000) }}
                 label="Toast duration"
                 description="How long before a toast is auto-dismissed (milliseconds)."
                 placeholder="5000"
@@ -304,8 +342,9 @@ const Configurator = () => {
               />
               <TextInput className="pt-6"
                 name="banner-duration"
-                value={getSdkConfiguration().banner?.duration}
+                value={bannerDuration}
                 onChange={formNoOp}
+                onBlur={(event) => { fixBlankEntry(event, 5000) }}
                 label="Banner duration"
                 description="How long before a banner is auto-dismissed (milliseconds)."
                 placeholder="5000"

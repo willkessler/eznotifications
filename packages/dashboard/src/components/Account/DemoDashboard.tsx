@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useUser, useSignIn, SignIn } from "@clerk/clerk-react";
 import AuthLayout from './AuthLayout';
 import { useSettings } from './SettingsContext';
-import { Title, Text, Button } from '@mantine/core';
+import { Card, Image, Group, Title, Text, Button } from '@mantine/core';
 import LogRocket from 'logrocket';
 
 interface ClerkSigninError extends Error {
@@ -86,7 +86,21 @@ const DemoDashboardComponent = () => {
 
   return (
     <>
-        <Button style={{marginLeft: '10px'}} size="lg" onClick={doSignIn}>{loginButtonTitle}</Button>
+      <Card>
+        <Group>
+          <Image src="/ThisIsNotADrill_cutout.png" w={100} />          
+          <Title order={3}><i>This Is Not A Drill!</i> &mdash; Dashboard Demo</Title>
+        </Group>
+        <Text style={{paddingTop:'20px', paddingBottom:'20px'}}>
+          You can create and edit any notifications for the demo bank site from the dashboard.
+          Click below to load the demo dashboard into this panel.
+        </Text>
+        <Button  size="lg" onClick={doSignIn}>{loginButtonTitle}</Button>
+        <Text size="sm" style={{paddingTop:'20px', paddingBottom:'10px'}}>
+          <i>Note: This will automatically log you into the dashboard as the shared demo user.  When you sign up for the service,
+            you get access to the dashboard under your own account.</i>
+        </Text>
+      </Card>
     </>
   );
 }
