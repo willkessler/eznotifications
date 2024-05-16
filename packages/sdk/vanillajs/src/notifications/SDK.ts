@@ -52,7 +52,6 @@ export class SDK {
     };
     this.pollingInterval = 1000; // ms
     this.poller = Poller.getInstance(this.pollApi, this.pollingInterval, pollingErrorHandler);  // Directly pass as arrow function
-
   }
 
   addToNotificationQueue(rawNotification: any): void {

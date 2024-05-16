@@ -1,4 +1,5 @@
 import Swal, { SweetAlertResult } from 'sweetalert2';
+import { MarkdownLib } from '../lib/Markdown';
 import '../css/modalAndToastNotifications.css';
 import { SDKConfiguration } from '../types';
 import { SDKNotification } from '../../../react-core/src/types';
@@ -15,7 +16,7 @@ export class ModalNotification {
     this.configuration = configuration;
     this.modalOn = false;
   }
-  
+
   async show(notification:SDKNotification):Promise<boolean> {
     const content = notification.content || 'Default text';
     const uuid = notification.uuid;
@@ -37,12 +38,15 @@ export class ModalNotification {
           showDismiss = false;
         }
       }
-        
-      const swalOutcome: SweetAlertResult = await Swal.fire({
+
+      const markedContent =  await MarkdownLib.renderMarkdown(content);
+      const protectedContent = MarkdownLib.protectMdStyles(markedContent);
+      console.log(`markedContent: ${markedContent}`);
+      const swalOutcome:SweetAlertResult = await Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: true,
         allowEnterKey: true,
-        html: content,
+        html: protectedContent,
         showConfirmButton: showConfirm,
         showCloseButton: showDismiss,
         confirmButtonText: this.configuration.modal.confirmButtonLabel,

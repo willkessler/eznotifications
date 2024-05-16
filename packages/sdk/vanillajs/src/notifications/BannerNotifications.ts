@@ -87,7 +87,8 @@ export class BannerNotification {
     console.log(`Showing banner with content: ${content}`);
     // Clear previous contents
     const markedContent =  await MarkdownLib.renderMarkdown(content);
-    this.banner.innerHTML = `<div>${markedContent}</div>`;
+    const protectedContent = MarkdownLib.protectMdStyles(markedContent);
+    this.banner.innerHTML = `<div>${protectedContent}</div>`;
     
     // Create and insert "X" button for instant dismissal, if active
     if ((this.configuration.banner.show?.dismiss) ||
