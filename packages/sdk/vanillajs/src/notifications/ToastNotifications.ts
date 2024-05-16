@@ -1,4 +1,5 @@
 import Swal, { SweetAlertResult, SweetAlertPosition } from 'sweetalert2';
+import { MarkdownLib } from '../lib/Markdown';
 import '../css/modalAndToastNotifications.css';
 import { SDKConfiguration } from '../types';
 import { SDKNotification } from '../../../react-core/src/types';
@@ -51,10 +52,12 @@ export class ToastNotification {
     }
 
     this.toastOn = true;
+    const markedContent = await MarkdownLib.renderMarkdown(content);
+    const protectedContent = MarkdownLib.protectMdStyles(markedContent);
     try {
       const swalOutcome: SweetAlertResult = await Swal.fire({
         toast:true,
-        title: content,
+        html: protectedContent,
         timer: this.configuration.toast.duration,
         width: '20em',
         position: positionMap[this.configuration.toast.position],
@@ -65,7 +68,7 @@ export class ToastNotification {
           if (closeBtn) {
             closeBtn.addEventListener('click', () => Swal.close());
           }
-        },
+        }
       });
       if (swalOutcome.dismiss === Swal.DismissReason.timer) {
         console.log("Closed by the timer");
