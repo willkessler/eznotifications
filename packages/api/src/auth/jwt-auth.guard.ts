@@ -11,7 +11,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     handleRequest(err, user, info, context, status) {
         if (err || !user) {
             // Log the error or handle it according to your application's needs
-            console.error('handleRequest: JWT Authentication did not pass.');
+            // console.error('handleRequest: JWT Authentication did not pass.');
             //console.log(`err: ${err}`);
             //console.log(`user: ${user}`);
             //console.log(`info: ${info}`);
@@ -27,7 +27,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
             // Instead of throwing here, you might choose to return an error response directly,
             // but throwing is the standard approach in NestJS for HTTP errors.
-            throw new UnauthorizedException('You are not authorized to perform this action');
+            throw new UnauthorizedException('You are not authorized to perform this action with that JWT');
         } else {
             console.log('JWT auth check succeeded.');
         }

@@ -319,7 +319,7 @@ export class EZNotificationService {
             const organizationUuid = organization.uuid;
             const alreadyViewedNotifications:string[] = [];
             const servedNotifications:EZNotification[] = [];
-            console.log('We found organization with uuid:', organization?.uuid);
+            // console.log('We found organization with uuid:', organization?.uuid);
 
           return this.connection.transaction(async transactionalEntityManager => {
             // Check if an EndUser record corresponding to the passed user id exists, and if not, create it.
@@ -349,10 +349,10 @@ export class EZNotificationService {
                 .getMany();
 
             // Persist the served notifications as EndUsersServed
-            if (eligibleNotifications.length > 0) {
-              console.log(`Persisting potentially ${eligibleNotifications.length} endUserServed records.`);
+            // if (eligibleNotifications.length > 0) {
+              // console.log(`Persisting potentially ${eligibleNotifications.length} endUserServed records.`);
               //console.log(`Eligible Notifications: ${JSON.stringify(eligibleNotifications,null,2)}`);
-            }
+            //}
 
             const rightNow = new Date();
             for (const notification of eligibleNotifications) {
@@ -731,7 +731,7 @@ export class EZNotificationService {
         console.log('getOrgConfiguration: finding permittedDomains');
 
         const permittedDomains = await this.permittedDomainsRepository.find({ where: { organizationUuid } });
-        console.log(`Query for permitted domains returned: ${JSON.stringify(permittedDomains)}, organizationUuid: ${organizationUuid}, clerkId: ${clerkId}`);
+        // console.log(`Query for permitted domains returned: ${JSON.stringify(permittedDomains)}, organizationUuid: ${organizationUuid}, clerkId: ${clerkId}`);
         let permittedDomainsString;
         if (permittedDomains) {
           permittedDomainsString = permittedDomains.map(pd => pd.domain).join('\n');

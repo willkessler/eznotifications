@@ -6,7 +6,7 @@ const AuthWrapper:React.FC<{ children: React.ReactNode}> = ({ children }) => {
   const { isSignedIn, user } = useUser();
   const { isLoaded } = useAuth();
   const location = useLocation();
-  const unprotectedRoutes = ['/login', '/demo-login', '/sign-up']; // List of routes that don't require authentication
+  const unprotectedRoutes = ['/login', '/demo-login', '/demo-dashboard', '/sign-up']; // List of routes that don't require authentication
 
   if (!isLoaded) {
     console.log('waiting for auth loading to complete');

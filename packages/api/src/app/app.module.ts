@@ -39,7 +39,7 @@ import { EZNotification } from '../EZNotification/entities/EZNotification.entity
             synchronize: false,
             migrationsRun: (process.env.RUN_DB_MIGRATIONS === 'true'),
             migrations: ["dist/migration/*.js"],
-            logging: process.env.NODE_ENV === 'production' ? ["error"] : ["query", "error"],
+            logging: process.env.NODE_ENV === 'production' ? ["error"] : [ "error"],
         }),
     ],
     controllers: [],

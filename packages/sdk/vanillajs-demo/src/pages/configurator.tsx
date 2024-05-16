@@ -197,7 +197,7 @@ const Configurator = () => {
   return (
     <>
       <Drawer opened={opened} onClose={close} title="Add or edit notifications below:" size="lg">
-        <iframe src="https://demo-dashboard.this-is-not-a-drill.com" />
+        <iframe src="http://localhost:5173/demo-dashboard" />
       </Drawer>
 
       <div style={{backgroundColor:'#000', height:'100%'}}>

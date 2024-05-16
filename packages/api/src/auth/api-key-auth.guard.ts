@@ -33,7 +33,7 @@ export class ApiKeyAuthGuard implements CanActivate {
 
     private extractApiKey(request: CustomRequest): string | null {
         const authHeader = request.headers.authorization;
-        return authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
+        return authHeader && authHeader.startsWith('Bearer ') ? authHeader.substr(7,8) : null;
     }
 
     private isFrontendRequest(request: CustomRequest): boolean {
@@ -74,7 +74,7 @@ export class ApiKeyAuthGuard implements CanActivate {
     private async validateFrontendApiKey(apiKey: string, request: CustomRequest): Promise<boolean> {
         const referer = new URL(request.headers.referer);
         const domain = referer.hostname;
-        console.log(`validator referer domain:${domain}`);
+        // console.log(`validator referer domain:${domain}`);
 
         const apiKeyEntity = await this.apiKeyRepository.findOne({ 
             where: { 
@@ -86,7 +86,11 @@ export class ApiKeyAuthGuard implements CanActivate {
         });
         // Look up the api key's permitted domains via their common organization_uuid.
         // If the domain from the referrer header isn't among the permitted domains, reject.
-      console.log(`We got this apiKey uuid: ${apiKeyEntity.uuid}.`);
+        if (apiKeyEntity === null) {
+          console.log(`No api key record found for api key string:${apiKey}`);
+          return false;
+        }
+        //console.log(`We got this apiKey uuid: ${apiKeyEntity.uuid}.`);
         const apiKeyValue = apiKeyEntity.apiKey;
         const queryBuilder = this.apiKeyRepository
             .createQueryBuilder('api_key')
@@ -101,12 +105,11 @@ export class ApiKeyAuthGuard implements CanActivate {
         //console.log('We got these results from getRawMany:', JSON.stringify(results));
         const domains = results.map(result => result.domain);
 
-        console.log(process.env.NODE_ENV);
         if (process.env.NODE_ENV && process.env.NODE_ENV === 'development' && process.env.DOMAIN_OVERRIDE) {
             domains.push(process.env.DOMAIN_OVERRIDE);
         }
 
-        console.log(`validateFrontendApiKey, domains: ${domains}, seeking domain: ${domain}`);
+        // console.log(`validateFrontendApiKey, domains: ${domains}, seeking domain: ${domain}`);
 
         if (!apiKeyEntity || !apiKeyEntity.isActive || !this.isDomainAuthorized(apiKeyEntity, domains, domain)) {
             throw new UnauthorizedException('Invalid API key or domain');
@@ -114,7 +117,7 @@ export class ApiKeyAuthGuard implements CanActivate {
 
         // Add the Organization to the request so we can use it down the line in the controllers.
         request.organization = apiKeyEntity.organization;
-        console.log(`In validator, organization= ${JSON.stringify(request.organization)}`);
+        // console.log(`In validator, organization= ${JSON.stringify(request.organization)}`);
         return true;
     }
 
@@ -126,7 +129,7 @@ export class ApiKeyAuthGuard implements CanActivate {
         if (!apiKeyEntity) {
             throw new UnauthorizedException('Unknown API key');
         }
-        console.log(`Found valid api key:${apiKeyEntity.apiKey}`);
+        // console.log(`Found valid api key:${apiKeyEntity.apiKey}`);
         // Now attach the org to the request so the API can use it later
         request.organization = apiKeyEntity.organization;
 

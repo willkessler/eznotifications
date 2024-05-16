@@ -9,6 +9,7 @@ import Settings from './Account/Settings';
 import Statistics from './Account/Statistics';
 import LoginComponent from './Account/LoginComponent'; 
 import DemoLoginComponent from './Account/DemoLoginComponent'; 
+import DemoDashboardComponent from './Account/DemoDashboard'; 
 import SignUpComponent from './Account/SignUpComponent'; 
 import OnboardComponent from './Account/OnboardComponent';
 import PlaygroundComponent from './Account/PlaygroundComponent'; 
@@ -37,6 +38,7 @@ const RouterComponent = () => {
               <Routes>
                 <Route path="/login" element={<LoginComponent />} />
                 <Route path="/demo-login" element={<DemoLoginComponent />} />
+                <Route path="/demo-dashboard" element={<DemoDashboardComponent />} />
                 <Route path="/sign-up" element={<SignUpComponent />} />
                 <Route path="/" element={<MainLayout />} >
                   <Route index element={<Notifications />} />

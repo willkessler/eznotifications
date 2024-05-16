@@ -11,7 +11,7 @@ const LoginComponent = () => {
     return <Navigate to="/" replace />;
   } else if (import.meta.env.VITE_IS_DEMO_SITE === 'true') {
     // If not logged in and this is the demo site, send users to the special demo login page.
-    return <Navigate to="/demo-login" replace />;
+    return <Navigate to="/demo-dashboard" replace />;
   }
   
   return (
