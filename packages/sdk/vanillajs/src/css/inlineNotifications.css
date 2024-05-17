@@ -7,8 +7,8 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Small shadow */
   border:1px solid #eee;
   border-radius: 10px;  /* Rounded corners */
-  max-width: 98%;  /* Responsive width */
-  margin: 15px 10px;  /* Centered in its container, with top/bottom spacing */
+  max-width: 100%;  /* Responsive width */
+  margin: 10px 0 10px 0;  /* Centered in its container, with top/bottom spacing */
   min-height: 90px;
 }
 
@@ -37,8 +37,8 @@
   font-weight:800;
   color: #999;
   position: absolute;  /* Absolute position to place within its parent */
-  top: 12px;  /* Adjust as needed for correct spacing from top */
-  right: 12px;  /* Adjust as needed for correct spacing from right */
+  top: 8px;  /* Adjust as needed for correct spacing from top */
+  right: 10px;  /* Adjust as needed for correct spacing from right */
   background: none;  /* Remove background styling */
   border: 1px solid #fff;
   font-size: 16px;  /* Font size for "X" */

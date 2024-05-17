@@ -350,7 +350,7 @@ const Configurator = () => {
             </Paper>
           }
         </form>
-        <Button size="xs" className="dashboard-drawer-button" onClick={open}>Manage Notifications ></Button>
+        <Button size="xs" className="dashboard-drawer-button" onClick={open}>Manage Notifications >></Button>
       </div>
     </>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import Image from "next/image";
+//import Image from "next/image";
 import Link from "next/link"
+import { Anchor, Image } from '@mantine/core';
 import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
 import '../../public/bank.css'; // note that the bank css file is now in the public dir so we can fetch and store in Ace editor
 
@@ -89,6 +90,9 @@ export default function Bank() {
           <div className="container mx-auto flex items-center justify-between">
             <h1 className="text-2xl font-bold">Commercial Savings and Loan</h1>
             <div className="hidden md:block">
+              <Anchor href="/bank" >
+                <Image src="/ThisIsNotADrill_cutout.png" w={50} />
+              </Anchor>              
             </div>
           </div>
         </header>
@@ -118,7 +122,7 @@ export default function Bank() {
             </nav>
           </div>
           <div className="flex-1">
-            <div className="flex flex-col items-left justify-between mb-8">
+            <div className="flex flex-col items-left justify-between mb-1">
               <h1 className="text-2xl font-bold">Welcome to Commercial Savings & Loan!</h1>
               { isMounted && 
                 <>

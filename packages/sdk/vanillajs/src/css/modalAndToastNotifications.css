@@ -7,21 +7,39 @@
 }
 
 .swal2-html-container {
-  padding-top: 30px;
+/*  padding-top: 30px;*/
 }
 
-.swal2-close {
-  font-size: 1.75em;
+.swal2-html-container p {
+  margin:0 !important;
+}
+
+.swal2-modal .swal2-html-container {
+  margin:10px;
+}
+
+.swal2-modal > .swal2-close {
+  font-size:1.5em;
   position:absolute;
-  top:0px;
-  right:0px;
+  top:10px;
+  right:8px;
+}
+
+.swal2-toast > .swal2-close {
+  font-size:1.5em !important;
+  position:absolute;
+  top: -4px;
+  right: -5px;
+}
+
+.swal2-title {
+  padding-bottom:1em;
 }
 
 .swal2-title, .swal2-html-container {
   font-weight: normal;
   font-family: Arial, Helvetica;
   text-align: left !important;
-  padding-bottom:1em;
 }
 
 .swal2-actions {
@@ -31,14 +49,12 @@
 }
 
 .swal2-actions button {
-  margin-right: 10px;
-  margin-top: 10px;
-  padding: 5px 30px;
+  font-size: 0.8em !important;
+  padding: 2px 30px;
   background-color: #eee !important;
   border: 2px solid #aaa !important;
   color: #999 !important;
 }
-
 
 .my-custom-container {
   width:85%;
