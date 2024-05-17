@@ -1,6 +1,7 @@
 # Ignore source files
 /src
 /tests
+/devTest
 
 # Ignore configuration files
 /webpack.config.js
@@ -19,3 +20,5 @@
 
 # Ignore node_modules
 /node_modules
+
+*~
