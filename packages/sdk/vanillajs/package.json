@@ -1,9 +1,17 @@
 {
   "name": "@this-is-not-a-drill/vanillajs-sdk",
+  "description": "Core vanilla js SDK for deploying the This is Not A Drill! service in client apps.",
   "version": "1.0.0",
   "main": "dist/index.js",
+  "module": "dist/bundle.esm.js",
+  "repository": {
+    "url": "https://github.com/willkessler/eznotifications",
+    "type": "git"
+  },
+  "author": "Will Kessler <willkessler@this-is-not-a-drill.com> (https://this-is-not-a-drill.com)",
   "license": "MIT",
   "scripts": {
+    "clean": "rm -rf dist && mkdir dist",
     "build": "tsc && webpack --watch",
     "build:prod": "tsc && webpack --env production",
     "build:dev": "tsc && webpack --env development",

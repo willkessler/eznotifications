@@ -30,13 +30,10 @@ export class ModalNotification {
       console.log(`Inside ModalNotification constructor we have configuration: ${JSON.stringify(this.configuration,null,2)}`);
       let showConfirm = true;
       let showDismiss = true;
-      if (this.configuration.modal.show) {
-        if (this.configuration.modal.show.confirm == false) {
-          showConfirm = false;
-        }
-        if (this.configuration.modal.show.dismiss == false) {
-          showDismiss = false;
-        }
+      const { modal } = this.configuration;
+      if (modal?.show) {
+        showConfirm = modal.show.confirm ?? showConfirm;
+        showDismiss = modal.show.dismiss ?? showDismiss;
       }
 
       const markedContent =  await MarkdownLib.renderMarkdown(content);
@@ -49,7 +46,7 @@ export class ModalNotification {
         html: protectedContent,
         showConfirmButton: showConfirm,
         showCloseButton: showDismiss,
-        confirmButtonText: this.configuration.modal.confirmButtonLabel,
+        confirmButtonText: (modal?.confirmButtonLabel ? modal.confirmButtonLabel : 'OK'),
         customClass: {
         },
       });
@@ -59,7 +56,7 @@ export class ModalNotification {
       } else if (swalOutcome.dismiss) {
         console.log(`Dismissed by: ${swalOutcome.dismiss}`);
       }
-      await this.configuration.api.dismissFunction(uuid);
+      uuid && await this.configuration?.api?.dismissFunction?.(uuid);
       this.modalOn = false;
       return true;
     } catch (error) {

@@ -13,7 +13,7 @@ export class InlineNotification {
     confirm: HTMLElement[],
     dismiss: HTMLElement[],
   };
-  private currentNotificationUuid: string;
+  private currentNotificationUuid: string | null;
   private TINAD_CONTAINER_CLASSNAME            = 'tinad-inline-container';
   private TINAD_NOTIFICATION_CONTENT_CLASSNAME = 'tinad-inline-content';
   private TINAD_CONFIRM_CLASSNAME              = 'tinad-inline-confirm';
@@ -29,11 +29,12 @@ export class InlineNotification {
       confirm: [],
       dismiss: [],
     };
+    this.currentNotificationUuid = null;
     // Set up TINAD notifications in the dom, either before/inside/after containers defined by the user, 
     // or inside a .tinad-container element.
     console.log(`Tinad inline constructor: ${JSON.stringify(this.configuration.inline,null,2)}`);
     const inlineConfig = configuration.inline;
-    if (inlineConfig.target && inlineConfig.target.outer !== null) {
+    if (inlineConfig && inlineConfig.target && inlineConfig.target.outer !== null) {
       if (typeof(inlineConfig.target) === 'string' && inlineConfig.target === 'default') {
         // if user just passed our default container class, then we assume all the rest are defaults
         this.notificationElements.outer =   Array.from(document.querySelectorAll(`.${this.TINAD_CONTAINER_CLASSNAME}`));
@@ -42,8 +43,9 @@ export class InlineNotification {
         this.notificationElements.dismiss = Array.from(document.querySelectorAll(`.${this.TINAD_CONTAINER_CLASSNAME} > .${this.TINAD_DISMISS_CLASSNAME}`));
         this.cannotRender = false;
       } else {
-        const target = inlineConfig.target;
-        if (target.outer &&
+        const target = inlineConfig?.target;
+        if (target && 
+            target.outer &&
             target.confirm &&
             target.dismiss) {
           this.notificationElements.outer   = Array.from(document.querySelectorAll(`.${target.outer}`));
@@ -68,10 +70,10 @@ export class InlineNotification {
       notificationElement.style.display = 'none';
     });
     this.inlineNotifOn = false;
-    await this.configuration.api.dismissFunction(this.currentNotificationUuid);
+    this.currentNotificationUuid && await this.configuration?.api?.dismissFunction?.(this.currentNotificationUuid);
   }
 
-  private async setAndShowNotifications(content):Promise<void> {
+  private async setAndShowNotifications(content:string):Promise<void> {
     console.log('setAndShowNotifications');
     // Insert content.
     const markedContent = await MarkdownLib.renderMarkdown(content);

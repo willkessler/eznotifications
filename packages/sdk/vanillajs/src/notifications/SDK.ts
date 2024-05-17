@@ -33,7 +33,7 @@ export class SDK {
   configuration: SDKConfiguration;
   pollingInterval: number;
   notificationQueue: SDKNotification[] = [];
-  currentlyDisplayedNotificationUuid: string;
+  currentlyDisplayedNotificationUuid: string | null;
 
   constructor(configuration: SDKConfiguration) {
     this.configuration = configuration;
@@ -142,7 +142,7 @@ export class SDK {
     const notification = this.notificationQueue.shift();  // Get the next notification
 
     const dismissCallback = async () => {
-      await this.markAsDismissed(notification.uuid);
+      notification && notification.uuid && await this.markAsDismissed(notification.uuid);
     };
     this.displayNotification(notification, dismissCallback);
     console.log('notificationQueue:');
@@ -204,7 +204,7 @@ export class SDK {
     }
   }
 
-  getStoredApiKey = ():string => {
+  getStoredApiKey = ():string|null => {
     const tinadConfigStr = localStorage.getItem('tinad');
     if (tinadConfigStr) {
       const tinadConfig = JSON.parse(tinadConfigStr);

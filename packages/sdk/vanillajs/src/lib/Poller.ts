@@ -16,7 +16,7 @@ export class Poller {
   private pollingPaused: boolean = false; // Flag for polling state
   private POLLING_PAUSE_DELAY = 5000;
   // If polling is paused with a passed ID, then it cannot be unpaused except by providing the same ID. Prevents race conditions
-  private pausePollingId:number = null; 
+  private pausePollingId:number|null = null; 
 
   private constructor() {}
 
@@ -31,6 +31,7 @@ export class Poller {
       Poller.instance.handlePollingError = errorHandler;
       Poller.instance.initialPollInterval = initialPollInterval;
       Poller.instance.pollingInterval = Poller.instance.initialPollInterval;
+      Poller.instance.pausePollingId = null;
       Poller.instance.setupPollerMouseEvents();
       Poller.instance.startPolling();
     }
@@ -84,7 +85,11 @@ export class Poller {
     this.pollingPaused = true;
   }
 
-  public pausePolling(pauseId?: number) {
+  public pausePolling(pauseId?: number | null | undefined) {
+    if (pauseId === undefined) {
+      console.log('pausePolling: pauseId is required');
+      return;
+    }
     if (this.pausePollingId !== null || this.pollingPaused) {
       return; // cannot pause because somebody paused already or paused with an ID
     }
@@ -93,7 +98,7 @@ export class Poller {
       this.pausePollingId = pauseId;
       console.log(`Paused polling with pausePollingId: ${pauseId}`);
     } else {
-      console.log('Paused polling, no Id');
+      console.log('Paused polling, no pausePollingId provided.');
     }
   }
 

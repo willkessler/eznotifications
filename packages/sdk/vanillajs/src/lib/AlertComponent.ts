@@ -23,10 +23,10 @@ export class AlertComponent extends HTMLElement {
     `;
   }
 
-  public static createAlertContainer():HTMLElement {
+  public static createAlertContainer():HTMLElement | null{
     const alertComponent = document.createElement('tinad-alert-component');
     document.body.appendChild(alertComponent);
-    return alertComponent.shadowRoot.getElementById('tinad-alert-container');
+    return alertComponent.shadowRoot?.getElementById('tinad-alert-container') ?? null;
   }
 
 }

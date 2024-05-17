@@ -27,9 +27,7 @@ const positionMap: Record<string, SweetAlertPosition> = {
 
 export class ToastNotification {
   private toastContainer: HTMLDivElement;
-  private duration: number;
   private configuration: SDKConfiguration;
-  private position: SweetAlertPosition;
   private toastOn: boolean = false;
 
   constructor(configuration: SDKConfiguration) {
@@ -58,13 +56,13 @@ export class ToastNotification {
       const swalOutcome: SweetAlertResult = await Swal.fire({
         toast:true,
         html: protectedContent,
-        timer: this.configuration.toast.duration,
+        timer: this.configuration?.toast?.duration ?? 5000,
         width: '20em',
-        position: positionMap[this.configuration.toast.position],
+        position: positionMap[this.configuration?.toast?.position ?? 'top-right'],
         showCloseButton: true,
         showConfirmButton: false,
         didOpen: () => {
-          const closeBtn = Swal.getPopup().querySelector('.close-btn');
+          const closeBtn = Swal.getPopup()?.querySelector('.close-btn') as HTMLElement | null;
           if (closeBtn) {
             closeBtn.addEventListener('click', () => Swal.close());
           }
@@ -75,7 +73,7 @@ export class ToastNotification {
       } else if (swalOutcome.dismiss === Swal.DismissReason.cancel) {
         console.log(`Dismissed by : ${swalOutcome.dismiss}`);
       }
-      await this.configuration.api.dismissFunction(uuid);
+      uuid && await this.configuration?.api?.dismissFunction?.(uuid);
       this.toastOn = false;
       return true;
     } catch (error) {

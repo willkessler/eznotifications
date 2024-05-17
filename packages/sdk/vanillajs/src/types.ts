@@ -7,7 +7,7 @@ export enum TargetInsertType {
 export interface SDKConfiguration {
   api: {
     displayMode : string;
-    userId: string;
+    userId: string | undefined;
     key: string;
     endpoint: string;
     environments?: string[];

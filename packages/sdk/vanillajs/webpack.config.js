@@ -33,6 +33,7 @@ const distConfig = {
     libraryTarget: 'umd',
     library: 'ThisIsNotADrillSDK'
   },
+  mode: 'production',
 };
 
 // Configuration for testing

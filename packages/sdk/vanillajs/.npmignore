@@ -1,0 +1,21 @@
+# Ignore source files
+/src
+/tests
+
+# Ignore configuration files
+/webpack.config.js
+/tsconfig.json
+/.eslintrc
+/.prettierrc
+/.gitignore
+/.npmignore
+
+# Ignore development build output
+/dist/*.hot-update.js
+/dist/*.hot-update.js.map
+
+# Include the types directory
+!dist/types
+
+# Ignore node_modules
+/node_modules
