@@ -2,7 +2,7 @@
   "name": "@this-is-not-a-drill/vanillajs-sdk",
   "private": false,
   "description": "Core vanilla js SDK for deploying the This is Not A Drill! service in client apps.",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "dist/index.js",
   "module": "dist/bundle.esm.js",
   "repository": {
