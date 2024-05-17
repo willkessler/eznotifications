@@ -232,7 +232,7 @@ const Configurator = () => {
   return (
     <>
       <Drawer opened={opened} onClose={close} size="xl">
-        <iframe src={process.env.NEXT_PUBLIC_TINAD_DASHBOARD_URL}" />
+        <iframe src={process.env.NEXT_PUBLIC_TINAD_DASHBOARD_URL} />
       </Drawer>
 
       <div style={{backgroundColor:'#000', height:'100%'}}>
