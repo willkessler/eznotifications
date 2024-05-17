@@ -54,7 +54,8 @@ const TabbedEditor: React.FC = () => {
                          "//\n\n" +
 `<script 
   id="tinad-sdk"
-  src="http://localhost:3500/bundle.js"
+  src="${process.env.NEXT_PUBLIC_TINAD_SOURCE_SCRIPT_URL}"
+  defer
   tinad-configuration=
 '`;    
     const currentConfig = file1.content;

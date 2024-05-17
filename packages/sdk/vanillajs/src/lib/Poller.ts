@@ -157,10 +157,20 @@ export class Poller {
     if (overlay) {
       overlay.className = 'tinad-overlay';
       document.body.appendChild(overlay);
-      overlay.addEventListener('mouseenter', () => { console.log('mouseenter'); this.resumePolling() }, true); // Capture phase
-      overlay.addEventListener('focus', () => { console.log('focus'); this.resumePolling() }, true); // Capture phase
-      overlay.addEventListener('mouseleave', () => { this.pausePollingDelayed(this.POLLING_PAUSE_DELAY) }, true); // Capture phase
-      overlay.addEventListener('focus', () => { this.pausePollingDelayed(this.POLLING_PAUSE_DELAY) }, true); // Capture phase
+      overlay.addEventListener('mouseenter', () => { 
+        // console.log('mouseenter'); 
+        this.resumePolling() 
+      }, true);
+      overlay.addEventListener('focus', () => { 
+        //console.log('focus'); 
+        this.resumePolling() 
+      }, true); 
+      overlay.addEventListener('mouseleave', () => { 
+        this.pausePollingDelayed(this.POLLING_PAUSE_DELAY) 
+      }, true);
+      overlay.addEventListener('focus', () => { 
+        this.pausePollingDelayed(this.POLLING_PAUSE_DELAY) 
+      }, true);
     }
   }
   

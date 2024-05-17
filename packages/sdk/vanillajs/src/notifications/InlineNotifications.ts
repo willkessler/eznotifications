@@ -32,7 +32,7 @@ export class InlineNotification {
     this.currentNotificationUuid = null;
     // Set up TINAD notifications in the dom, either before/inside/after containers defined by the user, 
     // or inside a .tinad-container element.
-    console.log(`Tinad inline constructor: ${JSON.stringify(this.configuration.inline,null,2)}`);
+    // console.log(`Tinad inline constructor: ${JSON.stringify(this.configuration.inline,null,2)}`);
     const inlineConfig = configuration.inline;
     if (inlineConfig && inlineConfig.target && inlineConfig.target.outer !== null) {
       if (typeof(inlineConfig.target) === 'string' && inlineConfig.target === 'default') {
@@ -62,7 +62,7 @@ export class InlineNotification {
         container.onclick = async () => { await this.hideContainers(); };
       }
     }
-    console.log('Tinad inline: constructor done');
+    // console.log('Tinad inline: constructor done');
   }
 
   private async hideContainers() {

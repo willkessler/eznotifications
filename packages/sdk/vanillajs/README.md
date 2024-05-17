@@ -1,6 +1,6 @@
 # This is Not A Drill! Client SDKs -- Plain JS
 
-<img src="./packages/dashboard/public/ThisIsNotADrill_cutout.png" width="250" height="250">
+<a href="https://this-is-not-a-drill.com"><img src="./packages/dashboard/public/ThisIsNotADrill_cutout.png" width="250" height="250"></a>
 
 ## Purpose
 
@@ -17,7 +17,7 @@ as toasts might be:
   "api": {
     "displayMode": "toast",
     "endpoint": "https://api.this-is-not-a-drill.com",
-    "key": "<your_public_api_key",
+    "key": "`your_public_api_key`",
     "environments": [
       "Development"
     ],
@@ -31,13 +31,13 @@ as toasts might be:
 >
 ```
 
-Learn about TINAD at (this-is-not-a-drill.com)[https://this-is-not-a-drill.com]
+Learn about TINAD at [this-is-not-a-drill.com](https://this-is-not-a-drill.com)
 
 Learn how to install the service by visiting the documentation at 
-(docs.this-is-not-a-drill.com)[https://docs.this-is-not-a-drill.com]
+[docs.this-is-not-a-drill.com](https://docs.this-is-not-a-drill.com)
 
 If you're looking for a React SDK, you can find that here:
 
-* (@this-is-not-a-drill/react-core)[https://www.npmjs.com/package/@this-is-not-a-drill/react-core]
-* (@this-is-not-a-drill/react-ui)[https://www.npmjs.com/package/@this-is-not-a-drill/react-ui]
+* [@this-is-not-a-drill/react-core](https://www.npmjs.com/package/@this-is-not-a-drill/react-core)
+* [@this-is-not-a-drill/react-ui](https://www.npmjs.com/package/@this-is-not-a-drill/react-ui)
 

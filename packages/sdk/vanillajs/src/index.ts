@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const constructConfiguration = (): SDKConfiguration => {
     const scriptTag = document.getElementById('tinad-sdk') as HTMLScriptElement;
     const userSuppliedConfiguration = scriptTag ? scriptTag.getAttribute('tinad-configuration') : null;
-    console.log(userSuppliedConfiguration);
+    // console.log(`userSuppliedConfiguration: ${JSON.stringify(userSuppliedConfiguration,null,2)});
     const userConfiguration = userSuppliedConfiguration ? JSON5.parse(userSuppliedConfiguration) : {};
     userConfiguration.api.userId = UserIdGenerator.generate(userConfiguration.api.userId, userConfiguration.api.key);
     const finalConfiguration = { ...defaultConfiguration, ...userConfiguration };
@@ -73,7 +73,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       return; // ignore unknown origin messages
     }
 
-    console.log('Reinitializing tinad sdk');
     if (event.data && typeof(event.data) === 'string') {
       const receivedMessage = JSON.parse(event.data);
       if (receivedMessage.name === 'tinadReconfigure') {
