@@ -23,6 +23,7 @@ const Configurator = () => {
 
   const { getSdkConfiguration, 
           setSdkConfiguration, 
+          postMessageViaQueue,
           activeTab,
           setActiveTab } = useSdkConfiguration();
   const debounceTimeout = useRef<number | null>(null);
@@ -49,15 +50,11 @@ const Configurator = () => {
 
   const updateSampleApp = (sdkConfig: SDKConfiguration) => {
     console.log('sdkConfig:', sdkConfig);
-    const bankIframe = document.getElementById('bank-app') as HTMLIFrameElement;
-    if (bankIframe && bankIframe.contentWindow) {
       const newConfigMessage = {
         name: 'tinadReconfigure',
         config: sdkConfig,
       };
-      const messageString = JSON.stringify(newConfigMessage);
-      bankIframe.contentWindow.postMessage(messageString, window.location.origin);
-    }
+    postMessageViaQueue(newConfigMessage);
   }
 
   const getStoredApiKey = ():string => {
@@ -86,12 +83,13 @@ const Configurator = () => {
   const formNoOp = (event:EventSource) => {
     // since handling events at form level, this is just here to satisfy react's
     // insistence that every controlled input (with a value prop) has to have a handler
-  }
+  };
 
   useEffect(() => {
     // first time we enter this demo, reset current user so you always see some notifs
     const configUpdate = getSdkConfiguration();
-    configUpdate.api.displayMode = 'toast'
+    // console.log(`configurator useEffect, configUpdate: ${JSON.stringify(configUpdate,null,2)}`);
+    configUpdate.api.displayMode = 'toast';
     if (!configUpdate.api.key) {
       configUpdate.api.key = getStoredApiKey();
     }

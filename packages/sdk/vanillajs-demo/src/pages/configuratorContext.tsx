@@ -1,4 +1,5 @@
-import React, { createContext, ReactNode, useState, useRef, useContext } from 'react';
+"use client";
+import React, { createContext, ReactNode, useEffect, useState, useRef, useContext } from 'react';
 
 const defaultSdkConfiguration = {
   api: {
@@ -37,6 +38,7 @@ const defaultSdkConfiguration = {
 interface ConfigurationContextType {
   config: SDKConfiguration;
   customCss: string;
+  setBankIframeIsReadyState: (ready:boolean) => void;
 }
 
 const ConfigurationContext = createContext<ConfigurationContextType>({
@@ -45,6 +47,8 @@ const ConfigurationContext = createContext<ConfigurationContextType>({
   getFilteredSdkConfiguration: () => SDKConfiguration,
   getCustomCss: () => string,
   setCustomCss: (newCss: string) => {},
+  setBankIframeIsReadyState: () => { console.log('placeholder for setBankIframeIsReadyState'); },
+  postMessageViaQueue: (newMessage:any) => {},
 });
 
 const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -52,7 +56,9 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
   const filteredSdkConfiguration = useRef<SDKConfiguration | null>(null);
   const [ configurationChanged, setConfigurationChanged ] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string | null>('snippet.js');
-  const  customCss = useRef<string>('Custom css');
+  const customCss = useRef<string>('Custom css');
+  const [ bankIframeIsReadyState, setBankIframeIsReadyState ] = useState<boolean>(false);
+  const messageQueue = useRef<string[]>([]);
 
   const getSdkConfiguration = (): SDKConfiguration => {
     return sdkConfiguration.current;
@@ -66,6 +72,36 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
     customCss.current = newCustomCss;
   }
   
+  const postMessageViaQueue = (message:any) => {
+    const messageString = JSON.stringify(message);
+    if (bankIframeIsReadyState) {
+      // you can post directly to the iframe, we've received ready state
+      const bankIframeElement = document.getElementById('bank-app') as HTMLIFrameElement;
+      if (bankIframeElement) {
+        bankIframeElement.contentWindow.postMessage(messageString, window.location.origin);
+      }
+    } else {
+      // queue for later
+      messageQueue.current.push(messageString);
+    }
+  }
+  
+  const processMessageQueue = ():void => {
+    const bankIframeElement = document.getElementById('bank-app') as HTMLIFrameElement;
+    if (bankIframeElement) {
+      while (messageQueue.current.length > 0) {
+        const messageString = messageQueue.current.shift();
+        bankIframeElement.contentWindow.postMessage(messageString, window.location.origin);
+      }
+    }
+  }
+  
+  useEffect(() => {
+    if (bankIframeIsReadyState) {
+      processMessageQueue();
+    }
+  }, [bankIframeIsReadyState]);
+
   const createFilteredConfiguration = ():SDKConfiguration => {
     // Destructuring extracts displayMode, inline, etc from the top level of config
     const config = sdkConfiguration.current;
@@ -120,6 +156,8 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
       setCustomCss,
       activeTab,
       setActiveTab,
+      setBankIframeIsReadyState,
+      postMessageViaQueue,
     }}>
       {children}
     </ConfigurationContext.Provider>
@@ -127,6 +165,12 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
 
 };
 
-export default ConfigurationContextProvider;
+export { ConfigurationContextProvider, ConfigurationContext };
 
-export const useSdkConfiguration = () => useContext(ConfigurationContext);
+export const useSdkConfiguration = () => {
+  const context = useContext(ConfigurationContext);
+  if (!context) {
+    throw new Error('useSdkConfiguration must be used within a ConfigurationContextProvider');
+  }
+  return context;
+};

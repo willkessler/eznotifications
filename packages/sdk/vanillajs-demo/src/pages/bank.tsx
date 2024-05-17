@@ -74,8 +74,11 @@ export default function Bank() {
 
   useEffect(() => {
     setIsMounted(true);
-    console.log(`adding event listener for css updates.`);
-    window.addEventListener("message", handlePostMessage);  // listen for post messages from the tabbed editor
+    window.addEventListener("message", handlePostMessage);  // listen for post messages from the configurator
+    window.parent.postMessage('tinad-iframe-ready', '*'); // tell parent that we're ready to process msgs
+    return () => {
+      window.removeEventListener('message', handlePostMessage);
+    };
   }, []);
   
 

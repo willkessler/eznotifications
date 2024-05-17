@@ -16,11 +16,11 @@ function Configurator({ Component, pageProps }) {
   }, [])
 
   return (
-    <MantineProvider defaultColorScheme="dark">
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </MantineProvider>
+      <MantineProvider defaultColorScheme="dark">
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </MantineProvider>
   );
 }
 

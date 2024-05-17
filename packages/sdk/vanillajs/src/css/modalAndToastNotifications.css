@@ -2,9 +2,8 @@
 
 .swal2-popup {
   padding: 20px 10px 10px 10px;
-  width: 25%;
-  min-width: 16em;
   font-size: 1em;
+  position:relative;
 }
 
 .swal2-html-container {
@@ -13,8 +12,9 @@
 
 .swal2-close {
   font-size: 1.75em;
-  margin-top: -12px;
-  margin-right: -5px;
+  position:absolute;
+  top:0px;
+  right:0px;
 }
 
 .swal2-title, .swal2-html-container {
