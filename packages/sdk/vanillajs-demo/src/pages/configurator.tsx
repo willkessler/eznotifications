@@ -232,7 +232,7 @@ const Configurator = () => {
   return (
     <>
       <Drawer opened={opened} onClose={close} size="xl">
-        <iframe src="http://localhost:5173/demo-dashboard" />
+        <iframe src={process.env.NEXT_PUBLIC_TINAD_DASHBOARD_URL}" />
       </Drawer>
 
       <div style={{backgroundColor:'#000', height:'100%'}}>
@@ -246,7 +246,7 @@ const Configurator = () => {
             classNames={classes}
           />
           { (currentDisplayMode === 'toast') &&
-            <Paper className="p-6 m-6">
+            <Paper className="p-6 m-6 max-w-lg">
               <Radio.Group
                 name="toast-position"
                 label="Select a toast position"
@@ -263,7 +263,7 @@ const Configurator = () => {
                   <Radio value="bottom-end" label="Lower right" />
                 </Group>
               </Radio.Group>
-              <TextInput className="pt-6"
+              <TextInput className="pt-6 max-w-xs"
                 name="toast-duration"
                 value={toastDurationInputValue}
                 onChange={formNoOp}
@@ -275,7 +275,7 @@ const Configurator = () => {
             </Paper>
           }
           { (currentDisplayMode === 'modal') &&
-            <Paper className="p-6 m-6">
+            <Paper className="p-6 m-6 max-w-lg">
               <TextInput
                 name="modal-confirm-button-label"
                 value={getSdkConfiguration().modal?.confirmButtonLabel}
@@ -295,7 +295,7 @@ const Configurator = () => {
             </Paper>
           }
           { (currentDisplayMode === 'inline') &&
-            <Paper className="p-6 m-6">
+            <Paper className="p-6 m-6 max-w-lg">
               <Checkbox
                 label="Show confirm button"
                 description="Uncheck this to remove the Confirm button inline notifications."
@@ -322,7 +322,7 @@ const Configurator = () => {
             </Paper>
           }
           { (currentDisplayMode === 'banner') &&
-            <Paper className="p-6 m-6">
+            <Paper className="p-6 m-6 max-w-lg">
               <Checkbox
                 label="Show dismiss control"
                 description="Uncheck this to remove the 'x' dismiss control on inline notifications."

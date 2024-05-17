@@ -20,7 +20,7 @@ export default function Bank() {
       api: {
         displayMode: 'toast',
         key: process.env.NEXT_PUBLIC_TINAD_API_KEY,
-        endpoint: process.env.NEXT_PUBLIC_TINAD_API_TARGET,
+        endpoint: process.env.NEXT_PUBLIC_TINAD_API_BASEURL,
         environments: [ 'Development' ],
         domains: [],
       },

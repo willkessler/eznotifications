@@ -4,7 +4,7 @@ import React, { createContext, ReactNode, useEffect, useState, useRef, useContex
 const defaultSdkConfiguration = {
   api: {
     displayMode : 'toast',
-    endpoint: process.env.NEXT_PUBLIC_TINAD_API_TARGET,
+    endpoint: process.env.NEXT_PUBLIC_TINAD_API_BASEURL,
     key: process.env.NEXT_PUBLIC_TINAD_API_KEY,
     environments: [ 'Development' ],
     domains: [],

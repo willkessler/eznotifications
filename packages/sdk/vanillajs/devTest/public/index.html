@@ -37,14 +37,14 @@ Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
     </div>
 
     <!-- src="https://cdn.jsdelivr.net/npm/@this-is-not-a-drill/vanillajs-sdk@latest/dist/bundle.js" -->
-
+<!--       src="http://localhost:3500/bundle.js" -->
     <script 
       id="tinad-sdk"
-      src="http://localhost:3500/bundle.js"
+      src="https://cdn.jsdelivr.net/npm/@this-is-not-a-drill/vanillajs-sdk@latest/dist/bundle.js"
       defer
       tinad-configuration="{
           api: {
-            displayMode: 'banner',
+            displayMode: 'modal',
             userId: 'user-1',
             key: 'C0N94F27',
             endpoint: 'http://localhost:8080',
@@ -52,9 +52,9 @@ Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
             domains: [],
           },
           modal: {
-            confirmButtonLabel: 'wow',
+            confirmButtonLabel: 'Okay',
             show: {
-              dismiss: false
+              dismiss: true
             },
           },
           inline: {
@@ -65,7 +65,7 @@ Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
             },
           },
           toast: {
-            position: 'bottom-end',
+            position: 'top-end',
             duration: 5000,
           },
       }"
