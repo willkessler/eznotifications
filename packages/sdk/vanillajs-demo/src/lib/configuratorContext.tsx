@@ -1,6 +1,6 @@
 "use client";
 import React, { createContext, ReactNode, useEffect, useState, useRef, useContext } from 'react';
-import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
+import { TargetInsertType, SDKConfiguration } from '@sdk/types';
 
 const defaultSdkConfiguration:SDKConfiguration = {
   api: {
