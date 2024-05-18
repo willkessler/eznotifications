@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import AceEditor from 'react-ace';
-import { useSdkConfiguration } from './configuratorContext';
+import { useSdkConfiguration } from '../lib/configuratorContext';
 import { Tabs, rem } from '@mantine/core';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/theme-github';
@@ -72,35 +72,37 @@ const TabbedEditor: React.FC = () => {
 
   }
   
-  const fetchCustomCss = async ():void => {
-    try {
-      const cssUrl = '/bank.css';
-      const response = await fetch(cssUrl);
-      const rawCss = await response.text();
-      const finalCss = "/*\n * Edit the CSS below to see how to\n * customize the inline notification's styles.\n*/\n" + rawCss;
-      setCustomCss(finalCss);
-      updateFiles(
-        { filename: 'snippet.js', content: getSdkConfiguration() },
-        { filename: 'custom.css', content: getCustomCss() },
-      );
-    } catch(error) {
-      console.log(`Cannot fetch custom css: ${error}`);
-    }
-  }
-
   useEffect(() => {
+    const fetchCustomCss = async ():Promise<void> => {
+      try {
+        const cssUrl = '/bank.css';
+        const response = await fetch(cssUrl);
+        const rawCss = await response.text();
+        const finalCss = "/*\n * Edit the CSS below to see how to\n * customize the inline notification's styles.\n*/\n" + rawCss;
+        setCustomCss(finalCss);
+        updateFiles(
+          { filename: 'snippet.js', content: JSON.stringify(getSdkConfiguration()) },
+          { filename: 'custom.css', content: getCustomCss() },
+        );
+      } catch(error) {
+        console.log(`Cannot fetch custom css: ${error}`);
+      }
+    }
+
     fetchCustomCss();
-  }, []);
+  }, [getSdkConfiguration, getCustomCss, setCustomCss]);
 
   useLayoutEffect(() => {
     const calculateHeight = () => {
       setTimeout(() => {
         const codeEditorElement = document.getElementById('code-editor');
-        const totalHeight = codeEditorElement.clientHeight;
         const tabsElement = document.getElementById('editor-tabs');
-        const tabHeight = tabsElement.clientHeight;
-        console.log(`calculated heights: total: ${totalHeight} tabs: ${tabHeight}`);
-        setEditorHeight(`${totalHeight - tabHeight}px`);
+        if (codeEditorElement !== null && tabsElement !== null) {
+          const totalHeight = codeEditorElement.clientHeight;
+          const tabHeight = tabsElement.clientHeight;
+          console.log(`calculated heights: total: ${totalHeight} tabs: ${tabHeight}`);
+          setEditorHeight(`${totalHeight - tabHeight}px`);
+        }
       },0);
     };
 
@@ -113,11 +115,11 @@ const TabbedEditor: React.FC = () => {
   
   useEffect(() => {
     updateFiles( 
-      { filename: 'snippet.js', content: getFilteredSdkConfiguration() },
+      { filename: 'snippet.js', content: JSON.stringify(getFilteredSdkConfiguration()) },
       { filename: 'custom.css', content: getCustomCss() }
     );
     setConfigurationChanged(false);
-  }, [configurationChanged]);
+  }, [configurationChanged, getCustomCss, getFilteredSdkConfiguration, setConfigurationChanged]);
   
   const handleEditorChange = (newContent: string, index: number) => {
     if (index === 1) {
@@ -159,7 +161,6 @@ const TabbedEditor: React.FC = () => {
               onChange={(newContent) => handleEditorChange(newContent, index)}
               name={`editor_${index}`}
               fontSize={16}
-              fontFamily="Arial"
               tabSize={2}
               showPrintMargin={false}
               editorProps={{ $blockScrolling: true }}

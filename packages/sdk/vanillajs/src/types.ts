@@ -34,23 +34,23 @@ export interface SDKConfiguration {
       content: string;
       confirm: string;
       dismiss: string;
-    },
+    } | string,
     show?: {
       confirm: boolean;
       dismiss: boolean;
     },
   };
   banner?: {
-    duration?: 5000,
+    duration?: number;
     target?: {
       outer: string;
       slideDown: string;
       slideUp: string;
       content: string;
       dismiss: string;
-    },
-    show: {
-      dismiss: boolean;
+    } | string,
+    show?: {
+      dismiss?: boolean;
     },
   };
 };

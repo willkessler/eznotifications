@@ -19,8 +19,9 @@ export default function Bank() {
     {
       api: {
         displayMode: 'toast',
-        key: process.env.NEXT_PUBLIC_TINAD_API_KEY,
-        endpoint: process.env.NEXT_PUBLIC_TINAD_API_BASEURL,
+        userId: 'user-1',
+        key: (process.env.NEXT_PUBLIC_TINAD_API_KEY ? process.env.NEXT_PUBLIC_TINAD_API_KEY : 'defaultkey'),
+        endpoint: (process.env.NEXT_PUBLIC_TINAD_API_BASEURL ? process.env.NEXT_PUBLIC_TINAD_API_BASEURL : 'https://api.this-is-not-a-drill.com'),
         environments: [ 'Development' ],
         domains: [],
       },
@@ -31,6 +32,7 @@ export default function Bank() {
       modal: {
         confirmButtonLabel: 'OK',
         show: {
+          confirm: true,
           dismiss: true,
         },
       },
@@ -91,7 +93,7 @@ export default function Bank() {
             <h1 className="text-2xl font-bold">Commercial Savings and Loan</h1>
             <div className="hidden md:block">
               <Anchor href="/bank" >
-                <Image src="/ThisIsNotADrill_cutout.png" w={50} />
+                <Image src="/ThisIsNotADrill_cutout.png" w={50} alt="This Is Not A Drill! Logo"/>
               </Anchor>              
             </div>
           </div>
@@ -178,6 +180,7 @@ export default function Bank() {
       </div>
       <div id="tinad-script-container">
         <script
+          defer
           id="tinad-sdk"
           src={process.env.NEXT_PUBLIC_TINAD_SOURCE_SCRIPT_URL}
           tinad-configuration={JSON.stringify(initialConfiguration,null,2)}
@@ -188,7 +191,7 @@ export default function Bank() {
   )
 }
 
-function BarChartIcon(props) {
+function BarChartIcon(props:any) {
   return (
     <svg
       {...props}
@@ -210,7 +213,7 @@ function BarChartIcon(props) {
 }
 
 
-function ChevronRightIcon(props) {
+function ChevronRightIcon(props:any) {
   return (
     <svg
       {...props}
@@ -220,8 +223,7 @@ function ChevronRightIcon(props) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
+      strokeWidth="2" strokeLinecap="round"
       strokeLinejoin="round"
     >
       <path d="m9 18 6-6-6-6" />
@@ -230,7 +232,7 @@ function ChevronRightIcon(props) {
 }
 
 
-function CreditCardIcon(props) {
+function CreditCardIcon(props:any) {
   return (
     <svg
       {...props}
@@ -251,7 +253,7 @@ function CreditCardIcon(props) {
 }
 
 
-function HomeIcon(props) {
+function HomeIcon(props:any) {
   return (
     <svg
       {...props}
@@ -272,7 +274,7 @@ function HomeIcon(props) {
 }
 
 
-function MenuIcon(props) {
+function MenuIcon(props:any) {
   return (
     <svg
       {...props}
@@ -294,7 +296,7 @@ function MenuIcon(props) {
 }
 
 
-function SettingsIcon(props) {
+function SettingsIcon(props:any) {
   return (
     <svg
       {...props}
@@ -315,7 +317,7 @@ function SettingsIcon(props) {
 }
 
 
-function WalletIcon(props) {
+function WalletIcon(props:any) {
   return (
     <svg
       {...props}

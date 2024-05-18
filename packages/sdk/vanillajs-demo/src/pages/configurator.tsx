@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { ChangeEvent, FormEvent, useState, useEffect, useRef, useCallback } from 'react';
 import { Button, Checkbox, Drawer, Group, Paper,Radio, SegmentedControl, TextInput } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { useSdkConfiguration } from './configuratorContext';
+import { useSdkConfiguration } from '../lib/configuratorContext';
 import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
 import classes from './css/configurator.module.css';
 
 interface CheckForIntegerResult {
-  value: number;
+  value: number | null;
   success: boolean;
 }
 
@@ -17,7 +17,7 @@ const Configurator = () => {
   const [ inlineDismissShown, setInlineDismissShown  ] = useState<boolean>(true);
   const [ bannerDismissShown, setBannerDismissShown  ] = useState<boolean>(true);
   const [ modalDismissShown, setModalDismissShown  ] = useState<boolean>(true);
-  const [ bannerDuration, setBannerDuration ] = useState<number>(5000);
+  const [ bannerDuration, setBannerDuration ] = useState<number | null>(5000);
   const [ customBannerStyles, setCustomBannerStyles  ] = useState<boolean>(false);
   const [opened, { open, close }] = useDisclosure(false);
 
@@ -26,9 +26,10 @@ const Configurator = () => {
           postMessageViaQueue,
           activeTab,
           setActiveTab } = useSdkConfiguration();
-  const debounceTimeout = useRef<number | null>(null);
+  const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [ toastDurationInputValue, setToastDurationInputValue] = useState<string>(getSdkConfiguration().toast?.duration?.toString());
+  const initialToastDuration = getSdkConfiguration().toast?.duration?.toString() || '';
+  const [ toastDurationInputValue, setToastDurationInputValue] = useState<string>(initialToastDuration);
 
   const checkForInteger = (input: string): CheckForIntegerResult => {
     if (/^\d*$/.test(input)) {
@@ -41,23 +42,14 @@ const Configurator = () => {
     }
     return { value: null, success: false };
   };
-
-  const fixBlankEntry = (event:EventSource, newValue:string | number) => {
+  
+  const fixBlankEntry = (event:ChangeEvent<HTMLInputElement>, newValue:string) => {
     if (event.target.value.length == 0) {
       event.target.value = newValue;
     }
   }
 
-  const updateSampleApp = (sdkConfig: SDKConfiguration) => {
-    console.log('sdkConfig:', sdkConfig);
-      const newConfigMessage = {
-        name: 'tinadReconfigure',
-        config: sdkConfig,
-      };
-    postMessageViaQueue(newConfigMessage);
-  }
-
-  const getStoredApiKey = ():string => {
+  const getStoredApiKey = ():string | null => {
     const tinadConfigStr = localStorage.getItem('tinad');
     if (tinadConfigStr) {
       const tinadConfig = JSON.parse(tinadConfigStr);
@@ -70,20 +62,33 @@ const Configurator = () => {
 
   const setToastPosition = (valueStr: string) => {
     const configUpdate = getSdkConfiguration();
-    configUpdate.toast.position = valueStr;
+    if (configUpdate.toast) {
+      configUpdate.toast.position = (valueStr ? valueStr : 'top-end');
+    }
     setSdkConfiguration(configUpdate);
   }
 
   const setConfirmButtonLabel = (valueStr: string) => {
     const configUpdate = getSdkConfiguration();
-    configUpdate.modal.confirmButtonLabel = valueStr;
+    if (configUpdate.modal) {
+      configUpdate.modal.confirmButtonLabel = (valueStr ? valueStr : 'OK');
+    }
     setSdkConfiguration(configUpdate);
   }
 
-  const formNoOp = (event:EventSource) => {
+  const formNoOp = (event:ChangeEvent<HTMLInputElement>) => {
     // since handling events at form level, this is just here to satisfy react's
     // insistence that every controlled input (with a value prop) has to have a handler
   };
+
+  const updateSampleApp = useCallback((sdkConfig: SDKConfiguration) => {
+    console.log('sdkConfig:', sdkConfig);
+    const newConfigMessage = {
+      name: 'tinadReconfigure',
+      config: sdkConfig,
+    };
+    postMessageViaQueue(newConfigMessage);
+  }, [postMessageViaQueue]);
 
   useEffect(() => {
     // first time we enter this demo, reset current user so you always see some notifs
@@ -91,11 +96,12 @@ const Configurator = () => {
     // console.log(`configurator useEffect, configUpdate: ${JSON.stringify(configUpdate,null,2)}`);
     configUpdate.api.displayMode = 'toast';
     if (!configUpdate.api.key) {
-      configUpdate.api.key = getStoredApiKey();
+      const assignableKey = getStoredApiKey();
+      configUpdate.api.key = (assignableKey !== null ? assignableKey : 'not set');
     }
     setSdkConfiguration(configUpdate);
     updateSampleApp(configUpdate);
-  }, []);
+  }, [getSdkConfiguration, setSdkConfiguration, postMessageViaQueue, updateSampleApp]);
 
   const formFieldDebounce = (executor:any) => {
     if (debounceTimeout.current != null) {
@@ -105,126 +111,133 @@ const Configurator = () => {
   }
 
   // Handler function for changes
-  const handleSdkChange = (event) => {
-    console.log("event:", event);
-    const { name, type, value, checked } = event.target;
-    // Check if the input is a checkbox and use the checked value; otherwise use value
-    const newValue = type === 'checkbox' ? checked : value;
-    const { value: newDuration, success } = checkForInteger(newValue);
+  const handleSdkChange = (event:FormEvent<HTMLFormElement>) => {
+    const target = event.target as HTMLInputElement;
+    if (target instanceof HTMLInputElement) {
+      const { name, type, value, checked } = target;
+      // Check if the input is a checkbox and use the checked value; otherwise use value
+      const newValue = type === 'checkbox' ? (checked ? '1' : '0') : value;
+      const { value: newDuration, success } = checkForInteger(newValue);
 
-    console.log(`name: ${name}, newValue: ${newValue}`);
-    const currentConfig = getSdkConfiguration();
-    console.log('currentConfig, ', currentConfig);
-    let newData = {
-      api: {
-        userId: currentConfig.api.userId,
-        endpoint: currentConfig.api.endpoint,
-        key: currentConfig.api.key,
-        environments: currentConfig.environments,
-        domains: currentConfig.domains,
-      }
-    };
+      console.log(`name: ${name}, newValue: ${newValue}`);
+      const currentConfig = getSdkConfiguration();
+      console.log('currentConfig, ', currentConfig);
+      let newData = {
+        api: {
+          userId: currentConfig.api.userId,
+          endpoint: currentConfig.api.endpoint,
+          key: currentConfig.api.key,
+          environments: currentConfig.api.environments,
+          domains: currentConfig.api.domains,
+        }
+      };
 
-    let mustDebounce = false;
-    let mustUpdate = true;
+      let mustDebounce = false;
+      let mustUpdate = true;
+      // Ensure banner and toast objects are initialized. I fu*** hate typescript today
+      currentConfig.toast = currentConfig.toast ?? { position: '', duration: 0 };
+      currentConfig.modal = currentConfig.modal ?? { confirmButtonLabel: '', show: { confirm: true, dismiss: true } };
+      currentConfig.modal.show = currentConfig.modal.show ?? { confirm: true, dismiss: true };
+      currentConfig.banner = currentConfig.banner ?? { duration: 5000, show: { dismiss: true } };
+      currentConfig.banner.show = currentConfig.banner.show ?? { dismiss: true };
+      currentConfig.inline = currentConfig.inline ?? { target: 'default', show: { confirm: true, dismiss: true } };
+      currentConfig.inline.show = currentConfig.inline.show ?? { confirm: true, dismiss: true };
 
-    switch (name) {
-      case 'display-mode':
-        const newMode = newValue.toLowerCase();
-        currentConfig.api.displayMode = newMode;
-        setCurrentDisplayMode(newMode);
-        break;
-      case 'toast-position':
-        currentConfig.toast.position = newValue;
-        break;
-      case 'toast-duration':
-        mustUpdate = false;
-        if (success) {
-          setToastDurationInputValue(newValue);
-          if (newDuration !== null) {
-            currentConfig.toast.duration = newDuration;
-            mustDebounce = true;
-            mustUpdate = true;
+      switch (name) {
+        case 'display-mode':
+          const newMode = newValue.toLowerCase();
+          currentConfig.api.displayMode = newMode;
+          setCurrentDisplayMode(newMode);
+          break;
+        case 'toast-position':
+          currentConfig.toast.position = newValue;
+          break;
+        case 'toast-duration':
+          mustUpdate = false;
+          if (success) {
+            setToastDurationInputValue(newValue);
+            if (newDuration !== null) {
+              currentConfig.toast.duration = newDuration;
+              mustDebounce = true;
+              mustUpdate = true;
+            }
           }
-        }
-        break;
-      case 'banner-duration':
-        mustUpdate = false;
-        if (success) {
-          setBannerDuration(newDuration);
-          if (newDuration !== null) {
-            currentConfig.banner.duration = newDuration;
-            mustDebounce = true;
-            mustUpdate = true;
+          break;
+        case 'banner-duration':
+          mustUpdate = false;
+          if (success) {
+            setBannerDuration(newDuration);
+            if (newDuration !== null) {
+              currentConfig.banner.duration = newDuration;
+              mustDebounce = true;
+              mustUpdate = true;
+            }
           }
-        }
-        break;
-      case 'inline-placement':
-        currentConfig.inline.placement = newValue;
-        break;
-      case 'modal-confirm-button-label':
-        currentConfig.modal.confirmButtonLabel = newValue;
-        mustDebounce = true;
-        break;
-      case 'show-modal-dismiss':
-        currentConfig.modal.show.dismiss = newValue;
-        setModalDismissShown(newValue);
-        break;
-      case 'show-inline-confirm':
-        currentConfig.inline.show.confirm = newValue;
-        setInlineConfirmShown(newValue);
-        break;
-      case 'show-inline-dismiss':
-        currentConfig.inline.show.dismiss = newValue;
-        setInlineDismissShown(newValue);
-        break;
-      case 'show-banner-dismiss':
-        currentConfig.banner.show.dismiss = newValue;
-        setBannerDismissShown(newValue);
-        break;
-      case 'custom-inline-div':
-        if (checked) {
-          currentConfig.inline.target = {
-            outer: 'my-inline-container',
-            content: 'my-content',
-            confirm: 'my-confirm',
-            dismiss: 'my-dismiss',
-          };
-          setCustomInlineDiv(true);
-          setActiveTab('custom.css');
-        } else {
-          currentConfig.inline.target = 'default';
-          setCustomInlineDiv(false);
-        }
-        break;
-      case 'custom-banner-styles':
-        if (checked) {
-          currentConfig.banner.target = {
-            outer: 'my-notification-banner',
-            slideDown: 'slideDown',
-            slideUp: 'slideUp',
-            content: 'content',
-            dismiss: 'dismiss',            
-          };
-          setCustomBannerStyles(true);
-          setActiveTab('custom.css');
-        } else {
-          currentConfig.banner.target = 'default';
-          setCustomBannerStyles(false);
-        }
-        break;
-    }
-
-    if (mustUpdate) {
-      //console.log(`currentConfig: ${JSON.stringify(currentConfig,null,2)}`);
-      setSdkConfiguration(currentConfig);
-      const doUpdates = () => {
-        updateSampleApp(currentConfig);
+          break;
+        case 'modal-confirm-button-label':
+          currentConfig.modal.confirmButtonLabel = newValue;
+          mustDebounce = true;
+          break;
+        case 'show-modal-dismiss':
+          currentConfig.modal.show.dismiss = (newValue == '1');
+          setModalDismissShown(newValue === '1');
+          break;
+        case 'show-inline-confirm':
+          currentConfig.inline.show.confirm = (newValue == '1');
+          setInlineConfirmShown(newValue === '1');
+          break;
+        case 'show-inline-dismiss':
+          currentConfig.inline.show.dismiss = (newValue == '1');
+          setInlineDismissShown(newValue === '1');
+          break;
+        case 'show-banner-dismiss':
+          currentConfig.banner.show.dismiss = (newValue === '1');
+          setBannerDismissShown(newValue === '1');
+          break;
+        case 'custom-inline-div':
+          if (checked) {
+            currentConfig.inline.target = {
+              outer: 'my-inline-container',
+              content: 'my-content',
+              confirm: 'my-confirm',
+              dismiss: 'my-dismiss',
+            };
+            setCustomInlineDiv(true);
+            setActiveTab('custom.css');
+          } else {
+            currentConfig.inline.target = 'default';
+            setCustomInlineDiv(false);
+          }
+          break;
+        case 'custom-banner-styles':
+          if (checked) {
+            currentConfig.banner.target = {
+              outer: 'my-notification-banner',
+              slideDown: 'slideDown',
+              slideUp: 'slideUp',
+              content: 'content',
+              dismiss: 'dismiss',            
+            };
+            setCustomBannerStyles(true);
+            setActiveTab('custom.css');
+          } else {
+            currentConfig.banner.target = 'default';
+            setCustomBannerStyles(false);
+          }
+          break;
       }
-      if (mustDebounce) {
-        formFieldDebounce(doUpdates);
-      } else {
-        doUpdates();
+
+      if (mustUpdate) {
+        //console.log(`currentConfig: ${JSON.stringify(currentConfig,null,2)}`);
+        setSdkConfiguration(currentConfig);
+        const doUpdates = () => {
+          updateSampleApp(currentConfig);
+        }
+        if (mustDebounce) {
+          formFieldDebounce(doUpdates);
+        } else {
+          doUpdates();
+        }
       }
     }
   };
@@ -267,7 +280,7 @@ const Configurator = () => {
                 name="toast-duration"
                 value={toastDurationInputValue}
                 onChange={formNoOp}
-                onBlur={(event) => { fixBlankEntry(event, 5000) }}
+                onBlur={(event) => { fixBlankEntry(event as ChangeEvent<HTMLInputElement>, '5000') }}
                 label="Toast duration"
                 description="How long before a toast is auto-dismissed (milliseconds)."
                 placeholder="5000"
@@ -340,9 +353,9 @@ const Configurator = () => {
               />
               <TextInput className="pt-6"
                 name="banner-duration"
-                value={bannerDuration}
+                value={bannerDuration !== null ? bannerDuration : ''}
                 onChange={formNoOp}
-                onBlur={(event) => { fixBlankEntry(event, 5000) }}
+                onBlur={(event) => { fixBlankEntry(event as ChangeEvent<HTMLInputElement>, '5000') }}
                 label="Banner duration"
                 description="How long before a banner is auto-dismissed (milliseconds)."
                 placeholder="5000"
@@ -350,7 +363,7 @@ const Configurator = () => {
             </Paper>
           }
         </form>
-        <Button size="xs" className="dashboard-drawer-button" onClick={open}>Manage Notifications >></Button>
+        <Button size="xs" className="dashboard-drawer-button" onClick={open}>Manage Notifications &gt;&gt;</Button>
       </div>
     </>
   );

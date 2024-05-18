@@ -1,11 +1,13 @@
 "use client";
 import React, { createContext, ReactNode, useEffect, useState, useRef, useContext } from 'react';
+import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
 
-const defaultSdkConfiguration = {
+const defaultSdkConfiguration:SDKConfiguration = {
   api: {
     displayMode : 'toast',
-    endpoint: process.env.NEXT_PUBLIC_TINAD_API_BASEURL,
-    key: process.env.NEXT_PUBLIC_TINAD_API_KEY,
+    endpoint: process.env.NEXT_PUBLIC_TINAD_API_BASEURL ?? 'https://demo-api.this-is-not-a-drill.com',
+    key: process.env.NEXT_PUBLIC_TINAD_API_KEY ?? 'notset',
+    userId: 'user-1',
     environments: [ 'Development' ],
     domains: [],
   },
@@ -16,6 +18,7 @@ const defaultSdkConfiguration = {
   modal: {
     confirmButtonLabel: 'OK',
     show: {
+      confirm: true,
       dismiss: true,
     },
   },
@@ -36,19 +39,31 @@ const defaultSdkConfiguration = {
 };
 
 interface ConfigurationContextType {
-  config: SDKConfiguration;
-  customCss: string;
+  configurationChanged: boolean;
+  setConfigurationChanged: (newValue:boolean) => void;
   setBankIframeIsReadyState: (ready:boolean) => void;
+  getSdkConfiguration: () => SDKConfiguration;
+  setSdkConfiguration: (newConfig: SDKConfiguration) => void;
+  getFilteredSdkConfiguration: () => SDKConfiguration | null;
+  getCustomCss: () => string;
+  setCustomCss: (newCss: string) => void;
+  postMessageViaQueue: (newMessage: any) => void;
+  activeTab: string | null;
+  setActiveTab: (tabId:string | null) => void;  
 }
 
 const ConfigurationContext = createContext<ConfigurationContextType>({
-  getSdkConfiguration: () => SDKConfiguration,
+  configurationChanged: false,
+  setConfigurationChanged: (newValue:boolean) => {},
+  getSdkConfiguration: () => defaultSdkConfiguration,
   setSdkConfiguration: (newConfig: SDKConfiguration) => {},
-  getFilteredSdkConfiguration: () => SDKConfiguration,
-  getCustomCss: () => string,
+  getFilteredSdkConfiguration: () => defaultSdkConfiguration,
+  getCustomCss: () => '',
   setCustomCss: (newCss: string) => {},
-  setBankIframeIsReadyState: () => { console.log('placeholder for setBankIframeIsReadyState'); },
+  setBankIframeIsReadyState: () => {},
   postMessageViaQueue: (newMessage:any) => {},
+  activeTab: 'snippet.js',
+  setActiveTab: (tabId:string | null) => {},
 });
 
 const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -78,7 +93,7 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
       // you can post directly to the iframe, we've received ready state
       const bankIframeElement = document.getElementById('bank-app') as HTMLIFrameElement;
       if (bankIframeElement) {
-        bankIframeElement.contentWindow.postMessage(messageString, window.location.origin);
+        bankIframeElement.contentWindow?.postMessage(messageString, window.location.origin);
       }
     } else {
       // queue for later
@@ -91,7 +106,7 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
     if (bankIframeElement) {
       while (messageQueue.current.length > 0) {
         const messageString = messageQueue.current.shift();
-        bankIframeElement.contentWindow.postMessage(messageString, window.location.origin);
+        bankIframeElement.contentWindow?.postMessage(messageString, window.location.origin);
       }
     }
   }
@@ -112,7 +127,7 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
     let newConfig: SDKConfiguration = {
       ...rest,
       api: { ...config.api },  // Copying api settings
-      [displayMode]: { ...config[displayMode] }  // Copying only the relevant display mode settings
+      [displayMode]: { ...(config[displayMode as keyof SDKConfiguration] as object) }  // Copying only the relevant display mode settings
     };
 
     // Check the displayMode and remove unnecessary properties
@@ -134,7 +149,7 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
     return newConfig;
   }
 
-  const getFilteredSdkConfiguration = (): SDKConfiguration => {
+  const getFilteredSdkConfiguration = (): SDKConfiguration|null => {
     return filteredSdkConfiguration.current;
   }
 
@@ -150,10 +165,10 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
       getSdkConfiguration,
       setSdkConfiguration,
       getFilteredSdkConfiguration,
-      configurationChanged,
-      setConfigurationChanged,
       getCustomCss,
       setCustomCss,
+      configurationChanged,
+      setConfigurationChanged,
       activeTab,
       setActiveTab,
       setBankIframeIsReadyState,

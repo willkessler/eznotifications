@@ -1,29 +1,27 @@
 import { useEffect } from 'react';
 import Head from 'next/head';
 import Configurator from './configurator';
-import Editor from './editor';
-import CodeSnippet from './codeSnippet';
 import TabbedEditor from './TabbedEditor';
-import { useSdkConfiguration } from './configuratorContext';
+import { useSdkConfiguration } from '../lib/configuratorContext';
 import './css/widgets.css';
 
 export default function Home() {
 
   const { setBankIframeIsReadyState } = useSdkConfiguration();
 
-  // Listen for a tinad-iframe-ready message from the bank iframe, and when we get it process all queued postmessages from configurator.
-  const handlePostMessage = (event: MessageEvent) => {
-    if (event.data === 'tinad-iframe-ready') {
-      setBankIframeIsReadyState(true);
-    }
-  };
-
   useEffect(() => {
+    // Listen for a tinad-iframe-ready message from the bank iframe, and when we get it process all queued postmessages from configurator.
+    const handlePostMessage = (event: MessageEvent) => {
+      if (event.data === 'tinad-iframe-ready') {
+        setBankIframeIsReadyState(true);
+      }
+    };
+
     window.addEventListener("message", handlePostMessage);  // listen for post messages from the tabbed editor
     return () => {
       window.removeEventListener('message', handlePostMessage);
     };
-  }, []);
+  }, [setBankIframeIsReadyState]);
 
   
   return (

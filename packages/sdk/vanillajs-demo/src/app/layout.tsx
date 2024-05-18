@@ -5,7 +5,7 @@
 
 import type { Metadata } from "next";
 import "./globals.css";
-import { ConfigurationContextProvider } from '../pages/configuratorContext';
+import { ConfigurationContextProvider } from '../lib/configuratorContext';
 
 export default function RootLayout({
   children,
