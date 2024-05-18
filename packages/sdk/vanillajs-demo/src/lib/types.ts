@@ -1,0 +1,1 @@
+../../../vanillajs/src/types.ts

@@ -40,6 +40,7 @@ const nextConfig = {
         return filteredEntries;
       };
 
+/*
       // Ensure the lib directory exists
       const libDir = path.resolve(process.cwd(), 'src/lib');
       if (!fs.existsSync(libDir)) {
@@ -59,6 +60,7 @@ const nextConfig = {
         console.error(`Failed to create symlink: ${error}`);
       }
     }
+*/
 
     return config;
   },
