@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 //import Image from "next/image";
 import Link from "next/link"
 import { Anchor, Image } from '@mantine/core';
-import { TargetInsertType, SDKConfiguration } from '@sdk/types';
+import { TargetInsertType, SDKConfiguration } from '../lib/types';
 import '../../public/bank.css'; // note that the bank css file is now in the public dir so we can fetch and store in Ace editor
 
 /**

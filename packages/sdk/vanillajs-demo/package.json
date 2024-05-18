@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall" : "cd src/lib && ln -s ../../../vanillajs/src/types.ts"
   },
   "dependencies": {
     "@mantine/code-highlight": "^7.9.1",
