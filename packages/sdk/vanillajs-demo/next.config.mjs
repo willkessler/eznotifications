@@ -39,6 +39,23 @@ const nextConfig = {
 
         return filteredEntries;
       };
+
+      // Ensure the directory exists
+      const libDir = path.resolve(process.cwd(), 'src/lib');
+      if (!fs.existsSync(libDir)) {
+        fs.mkdirSync(libDir, { recursive: true });
+      }
+
+      // Copy the file
+      const targetPath = path.resolve(process.cwd(), '../vanillajs/src/types.ts');
+      const copyPath = path.resolve(libDir, 'types.ts');
+
+      try {
+        console.log(`Copying file from ${targetPath} to ${copyPath}`);
+        fs.copyFileSync(targetPath, copyPath);
+      } catch (error) {
+        console.error(`Failed to copy file: ${error}`);
+      }
     }
     return config;
   }
