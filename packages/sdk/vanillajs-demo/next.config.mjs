@@ -40,30 +40,8 @@ const nextConfig = {
         return filteredEntries;
       };
 
-/*
-      // Ensure the lib directory exists
-      const libDir = path.resolve(process.cwd(), 'src/lib');
-      if (!fs.existsSync(libDir)) {
-        fs.mkdirSync(libDir, { recursive: true });
-      }
-
-      // Create the symlink
-      const targetPath = path.relative(libDir, path.resolve(process.cwd(), '../vanillajs/src/types.ts'));
-      const symlinkPath = path.resolve(libDir, 'types.ts');
-
-      try {
-        if (fs.existsSync(symlinkPath)) {
-          fs.unlinkSync(symlinkPath);
-        }
-        fs.symlinkSync(targetPath, symlinkPath);
-      } catch (error) {
-        console.error(`Failed to create symlink: ${error}`);
-      }
-    }
-*/
-
     return config;
-  },
+  }
 };
 
 export default nextConfig;
