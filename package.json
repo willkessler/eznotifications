@@ -12,6 +12,7 @@
     "examples/sample-bank-app"
   ],
   "dependencies": {
+    "postcss": "^8.2.15",
     "yarn": "^1.22.22"
   },
   "devDependencies": {
