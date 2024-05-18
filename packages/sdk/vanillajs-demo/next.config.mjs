@@ -39,7 +39,7 @@ const nextConfig = {
 
         return filteredEntries;
       };
-
+    }
     return config;
   }
 };
