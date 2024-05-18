@@ -20,7 +20,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@sdk/types": ["../../sdk/vanillajs/src/lib/types.ts"]
+      "@sdk/types": ["../../sdk/vanillajs/src/types.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
