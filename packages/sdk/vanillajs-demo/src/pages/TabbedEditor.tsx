@@ -6,8 +6,6 @@ import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-monokai';
 
-//import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
-
 type FileData = {
   filename: string;
   content: string;

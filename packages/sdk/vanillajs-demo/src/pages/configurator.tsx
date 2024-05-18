@@ -2,7 +2,7 @@ import React, { ChangeEvent, FormEvent, useState, useEffect, useRef, useCallback
 import { Button, Checkbox, Drawer, Group, Paper,Radio, SegmentedControl, TextInput } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useSdkConfiguration } from '../lib/configuratorContext';
-import { TargetInsertType, SDKConfiguration } from '../../../vanillajs/src/types';
+import { TargetInsertType, SDKConfiguration } from '@sdk/types';
 import classes from './css/configurator.module.css';
 
 interface CheckForIntegerResult {
