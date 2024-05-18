@@ -41,6 +41,18 @@ const nextConfig = {
       };
     }
 
+    // Ensure the lib directory exists
+    const libDir = path.resolve(process.cwd(), 'src/lib');
+    if (!fs.existsSync(libDir)) {
+      fs.mkdirSync(libDir, { recursive: true });
+    }
+
+    // Create the symlink
+    const targetPath = path.resolve(process.cwd(), '../vanillajs/src/types.ts');
+    const symlinkPath = path.resolve(libDir, 'types.ts');
+    if (!fs.existsSync(symlinkPath)) {
+      fs.symlinkSync(targetPath, symlinkPath);
+    }
     return config;
   },
 };
