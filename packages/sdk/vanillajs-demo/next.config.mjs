@@ -47,7 +47,7 @@ const nextConfig = {
       }
 
       // Create the symlink
-      const targetPath = path.resolve(process.cwd(), '../vanillajs/src/types.ts');
+      const targetPath = path.relative(libDir, path.resolve(process.cwd(), '../vanillajs/src/types.ts'));
       const symlinkPath = path.resolve(libDir, 'types.ts');
 
       try {
