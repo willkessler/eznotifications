@@ -40,17 +40,27 @@ export class CorsOverrideMiddleware implements NestMiddleware {
             // Apply the appropriate CORS policy based on the request path
             const validApiAccess = globalAccessPrefixes.some(prefix => pathStartsWith(req.baseUrl, prefix));
             // console.log(`validApiAccess: ${validApiAccess}`);
-            let allowedOrigins = '*';
+            let allowedOrigins = ['*']
             if (sourceIsDashboard) {
-                allowedOrigins = process.env.DASHBOARD_HOST;
+              allowedOrigins = process.env.DASHBOARD_HOSTS.split(',');
             }
-            const specificCorsOptions = {
-                origin:  allowedOrigins,
-                methods: 'OPTIONS,GET,HEAD,PUT,PATCH,POST,DELETE',
-                credentials: true,
-                allowedHeaders: [ 'Content-Type', 'Accept', 'Authorization', 'X-Tinad-Source'],
-                exposedHeaders: ['X-Tinad-Poll-Interval'],
-            };
+
+          // Dynamic origin checking function
+          const dynamicCorsOptions = {
+            origin: (origin, callback) => {
+              // Allow requests with no origin (like mobile apps or curl requests)
+              if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+                callback(null, true);
+              } else {
+                callback(new Error('Not allowed by CORS'));
+              }
+            },
+            methods: 'OPTIONS,GET,HEAD,PUT,PATCH,POST,DELETE',
+            credentials: true,
+            allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'X-Tinad-Source'],
+            exposedHeaders: ['X-Tinad-Poll-Interval'],
+          };
+
             if (sourceIsDashboard || validApiAccess) {
 /*
                 console.log(sourceIsDashboard ?
@@ -58,7 +68,7 @@ export class CorsOverrideMiddleware implements NestMiddleware {
                     "********* CORS: VALID API ACCESS"
                            );
 */
-                cors(specificCorsOptions)(req, res, next);
+                cors(dynamicCorsOptions)(req, res, next);
             } else {
                 console.log(`********* DENYING ACCESS for req: ${req.baseUrl}, method: ${req.method}`);
                 res.status(403).send('CORS : access denied');
