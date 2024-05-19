@@ -7,8 +7,8 @@ export enum TargetInsertType {
 export interface SDKConfiguration {
   api: {
     displayMode : string;
-    userId: string | undefined;
-    key: string;
+    userId?: string | undefined;
+    key?: string;
     endpoint: string;
     environments?: string[];
     domains?: string[];
@@ -29,12 +29,13 @@ export interface SDKConfiguration {
     },
   };
   inline?: {
-    target?: {
-      outer: string;
-      content: string;
-      confirm: string;
-      dismiss: string;
-    } | string,
+    target: {
+      useDefaults?: boolean;
+      outer?: string;
+      content?: string;
+      confirm?: string;
+      dismiss?: string;
+    },
     show?: {
       confirm: boolean;
       dismiss: boolean;
@@ -42,13 +43,14 @@ export interface SDKConfiguration {
   };
   banner?: {
     duration?: number;
-    target?: {
-      outer: string;
-      slideDown: string;
-      slideUp: string;
-      content: string;
-      dismiss: string;
-    } | string,
+    target: {
+      useDefaults?:boolean;
+      outer?: string;
+      slideDown?: string;
+      slideUp?: string;
+      content?: string;
+      dismiss?: string;
+    },
     show?: {
       dismiss?: boolean;
     },

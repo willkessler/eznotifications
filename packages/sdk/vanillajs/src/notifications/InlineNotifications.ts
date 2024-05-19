@@ -34,26 +34,21 @@ export class InlineNotification {
     // or inside a .tinad-container element.
     // console.log(`Tinad inline constructor: ${JSON.stringify(this.configuration.inline,null,2)}`);
     const inlineConfig = configuration.inline;
-    if (inlineConfig && inlineConfig.target && inlineConfig.target.outer !== null) {
-      if (typeof(inlineConfig.target) === 'string' && inlineConfig.target === 'default') {
-        // if user just passed our default container class, then we assume all the rest are defaults
-        this.notificationElements.outer =   Array.from(document.querySelectorAll(`.${this.TINAD_CONTAINER_CLASSNAME}`));
-        this.notificationElements.content = Array.from(document.querySelectorAll(`.${this.TINAD_CONTAINER_CLASSNAME} > .${this.TINAD_NOTIFICATION_CONTENT_CLASSNAME}`));
-        this.notificationElements.confirm = Array.from(document.querySelectorAll(`.${this.TINAD_CONTAINER_CLASSNAME} > .${this.TINAD_CONFIRM_CLASSNAME}`));
-        this.notificationElements.dismiss = Array.from(document.querySelectorAll(`.${this.TINAD_CONTAINER_CLASSNAME} > .${this.TINAD_DISMISS_CLASSNAME}`));
+    if (inlineConfig && inlineConfig.target && inlineConfig.target.useDefaults) {
+      // if user just passed our default container class, then we assume all the rest are defaults
+      this.notificationElements.outer   = Array.from(document.querySelectorAll(`.${this.TINAD_CONTAINER_CLASSNAME}`));
+      this.notificationElements.content = Array.from(document.querySelectorAll(`.${this.TINAD_CONTAINER_CLASSNAME} > .${this.TINAD_NOTIFICATION_CONTENT_CLASSNAME}`));
+      this.notificationElements.confirm = Array.from(document.querySelectorAll(`.${this.TINAD_CONTAINER_CLASSNAME} > .${this.TINAD_CONFIRM_CLASSNAME}`));
+      this.notificationElements.dismiss = Array.from(document.querySelectorAll(`.${this.TINAD_CONTAINER_CLASSNAME} > .${this.TINAD_DISMISS_CLASSNAME}`));
+      this.cannotRender = false;
+    } else {
+      const target = inlineConfig?.target;
+      if (target && target.outer && target.confirm && target.dismiss) {
+        this.notificationElements.outer   = Array.from(document.querySelectorAll(`.${target.outer}`));
+        this.notificationElements.content = Array.from(document.querySelectorAll(`.${target.outer} > .${target.content}`));
+        this.notificationElements.confirm = Array.from(document.querySelectorAll(`.${target.outer} > .${target.confirm}`));
+        this.notificationElements.dismiss = Array.from(document.querySelectorAll(`.${target.outer} > .${target.dismiss}`));
         this.cannotRender = false;
-      } else {
-        const target = inlineConfig?.target;
-        if (target && 
-            target.outer &&
-            target.confirm &&
-            target.dismiss) {
-          this.notificationElements.outer   = Array.from(document.querySelectorAll(`.${target.outer}`));
-          this.notificationElements.content = Array.from(document.querySelectorAll(`.${target.outer} > .${target.content}`));
-          this.notificationElements.confirm = Array.from(document.querySelectorAll(`.${target.outer} > .${target.confirm}`));
-          this.notificationElements.dismiss = Array.from(document.querySelectorAll(`.${target.outer} > .${target.dismiss}`));
-          this.cannotRender = false;
-        }
       }
       for (const container of this.notificationElements.dismiss) {
         container.onclick = async () => { await this.hideContainers(); };

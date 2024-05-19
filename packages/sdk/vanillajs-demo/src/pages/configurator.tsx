@@ -138,9 +138,9 @@ const Configurator = () => {
       currentConfig.toast = currentConfig.toast ?? { position: '', duration: 0 };
       currentConfig.modal = currentConfig.modal ?? { confirmButtonLabel: '', show: { confirm: true, dismiss: true } };
       currentConfig.modal.show = currentConfig.modal.show ?? { confirm: true, dismiss: true };
-      currentConfig.banner = currentConfig.banner ?? { duration: 5000, show: { dismiss: true } };
+      currentConfig.banner = currentConfig.banner ?? { duration: 5000, target: { useDefaults: true }, show: { dismiss: true } };
       currentConfig.banner.show = currentConfig.banner.show ?? { dismiss: true };
-      currentConfig.inline = currentConfig.inline ?? { target: 'default', show: { confirm: true, dismiss: true } };
+      currentConfig.inline = currentConfig.inline ?? { target: { useDefaults: true }, show: { confirm: true, dismiss: true } };
       currentConfig.inline.show = currentConfig.inline.show ?? { confirm: true, dismiss: true };
 
       switch (name) {
@@ -205,7 +205,7 @@ const Configurator = () => {
             setCustomInlineDiv(true);
             setActiveTab('custom.css');
           } else {
-            currentConfig.inline.target = 'default';
+            currentConfig.inline.target = { useDefaults: true };
             setCustomInlineDiv(false);
           }
           break;
@@ -221,7 +221,7 @@ const Configurator = () => {
             setCustomBannerStyles(true);
             setActiveTab('custom.css');
           } else {
-            currentConfig.banner.target = 'default';
+            currentConfig.banner.target = { useDefaults: true };
             setCustomBannerStyles(false);
           }
           break;

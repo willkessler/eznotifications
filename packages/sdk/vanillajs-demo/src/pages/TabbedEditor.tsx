@@ -56,9 +56,7 @@ const TabbedEditor: React.FC = () => {
   defer
   tinad-configuration=
 '`;    
-    const currentConfig = file1.content;
-    //console.log(`currentconfig: ${JSON.stringify(currentConfig,null,2)}`);
-    const configStringified = JSON.stringify(currentConfig, null,2);
+    const configStringified = file1.content;
     const editorContents = introPrefix + configStringified + "'\n>\n\n";
     const currentCustomCss = file2.content;
     setFiles(
@@ -79,7 +77,7 @@ const TabbedEditor: React.FC = () => {
         const finalCss = "/*\n * Edit the CSS below to see how to\n * customize the inline notification's styles.\n*/\n" + rawCss;
         setCustomCss(finalCss);
         updateFiles(
-          { filename: 'snippet.js', content: JSON.stringify(getSdkConfiguration()) },
+          { filename: 'snippet.js', content: JSON.stringify(getSdkConfiguration(), null, 2) },
           { filename: 'custom.css', content: getCustomCss() },
         );
       } catch(error) {
@@ -113,7 +111,7 @@ const TabbedEditor: React.FC = () => {
   
   useEffect(() => {
     updateFiles( 
-      { filename: 'snippet.js', content: JSON.stringify(getFilteredSdkConfiguration()) },
+      { filename: 'snippet.js', content: JSON.stringify(getFilteredSdkConfiguration(),null,2) },
       { filename: 'custom.css', content: getCustomCss() }
     );
     setConfigurationChanged(false);

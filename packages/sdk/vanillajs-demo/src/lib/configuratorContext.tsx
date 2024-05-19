@@ -5,9 +5,8 @@ import { TargetInsertType, SDKConfiguration } from './types';
 const defaultSdkConfiguration:SDKConfiguration = {
   api: {
     displayMode : 'toast',
-    endpoint: process.env.NEXT_PUBLIC_TINAD_API_BASEURL ?? 'https://demo-api.this-is-not-a-drill.com',
-    key: process.env.NEXT_PUBLIC_TINAD_API_KEY ?? 'notset',
-    userId: 'user-1',
+    endpoint: (process.env.NEXT_PUBLIC_TINAD_API_BASEURL ? process.env.NEXT_PUBLIC_TINAD_API_BASEURL : 'https://demo-api.this-is-not-a-drill.com'),
+    key: (process.env.NEXT_PUBLIC_TINAD_API_KEY ? process.env.NEXT_PUBLIC_TINAD_API_KEY : 'notset'),
     environments: [ 'Development' ],
     domains: [],
   },
@@ -23,7 +22,9 @@ const defaultSdkConfiguration:SDKConfiguration = {
     },
   },
   inline: {
-    target: 'default',
+    target: {
+      useDefaults: true,
+    },
     show: {
       confirm: true,
       dismiss: true,
@@ -31,7 +32,9 @@ const defaultSdkConfiguration:SDKConfiguration = {
   },
   banner: {
     duration: 5000,
-    target: 'default',
+    target: {
+      useDefaults: true,
+    },
     show: {
       dismiss: true,
     },

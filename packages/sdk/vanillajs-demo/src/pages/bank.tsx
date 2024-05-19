@@ -19,9 +19,8 @@ export default function Bank() {
     {
       api: {
         displayMode: 'toast',
-        userId: 'user-1',
         key: (process.env.NEXT_PUBLIC_TINAD_API_KEY ? process.env.NEXT_PUBLIC_TINAD_API_KEY : 'defaultkey'),
-        endpoint: (process.env.NEXT_PUBLIC_TINAD_API_BASEURL ? process.env.NEXT_PUBLIC_TINAD_API_BASEURL : 'https://api.this-is-not-a-drill.com'),
+        endpoint: (process.env.NEXT_PUBLIC_TINAD_API_BASEURL ? process.env.NEXT_PUBLIC_TINAD_API_BASEURL : 'https://demo-api.this-is-not-a-drill.com'),
         environments: [ 'Development' ],
         domains: [],
       },
@@ -37,7 +36,9 @@ export default function Bank() {
         },
       },
       inline: {
-        target: 'default',
+        target: {
+          useDefaults: true,
+        },
         show: {
           confirm: true,
           dismiss: true,
@@ -45,7 +46,9 @@ export default function Bank() {
       },
       banner: {
         duration: 5000,
-        target: 'default',
+        target: {
+          useDefaults: true,
+        },
         show: {
           dismiss: true,
         },
