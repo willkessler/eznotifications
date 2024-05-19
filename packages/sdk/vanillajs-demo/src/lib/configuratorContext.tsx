@@ -82,13 +82,13 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
     return sdkConfiguration.current;
   },[]);
   
-  const getCustomCss = ():string => {
+  const getCustomCss = useCallback(():string => {
     return customCss.current;
-  }
+  }, []);
   
-  const setCustomCss = (newCustomCss:string) => {
+  const setCustomCss = useCallback((newCustomCss:string) => {
     customCss.current = newCustomCss;
-  }
+  }, []);
   
   const postMessageViaQueue = useCallback((message:any) => {
     const messageString = JSON.stringify(message);
@@ -143,18 +143,20 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
         break;
       case 'inline':
         // do nothing, we can't configure this except with css
+        newConfig.inline = inline;
         break;
       case 'banner':
         newConfig.banner = banner;
         break;
     }
 
+    console.log(`createFilteredConfiguration: ${JSON.stringify(newConfig,null,2)}`);
     return newConfig;
   }
 
-  const getFilteredSdkConfiguration = (): SDKConfiguration|null => {
+  const getFilteredSdkConfiguration = useCallback((): SDKConfiguration|null => {
     return filteredSdkConfiguration.current;
-  }
+  }, []);
 
   const setSdkConfiguration = useCallback((newConfiguration: SDKConfiguration) => {
     sdkConfiguration.current = newConfiguration;

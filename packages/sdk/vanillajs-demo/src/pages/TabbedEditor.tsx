@@ -77,7 +77,7 @@ const TabbedEditor: React.FC = () => {
         const finalCss = "/*\n * Edit the CSS below to see how to\n * customize the inline notification's styles.\n*/\n" + rawCss;
         setCustomCss(finalCss);
         updateFiles(
-          { filename: 'snippet.js', content: JSON.stringify(getSdkConfiguration(), null, 2) },
+          { filename: 'snippet.js', content: JSON.stringify(getFilteredSdkConfiguration(), null, 2) },
           { filename: 'custom.css', content: getCustomCss() },
         );
       } catch(error) {
@@ -86,7 +86,7 @@ const TabbedEditor: React.FC = () => {
     }
 
     fetchCustomCss();
-  }, [getSdkConfiguration, getCustomCss, setCustomCss]);
+  }, [getFilteredSdkConfiguration, getCustomCss, setCustomCss]);
 
   useLayoutEffect(() => {
     const calculateHeight = () => {
