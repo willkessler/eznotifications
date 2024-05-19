@@ -92,7 +92,7 @@ export default function Bank() {
     <main className="flex min-h-screen flex-col items-center justify-between p-7" style={{color:'#333'}}>
       <div className="flex flex-col">
         <header className="bg-gray-900 text-white p-4 md:p-6">
-          <div className="container mx-auto flex items-center justify-between">
+          <div className="container flex items-center justify-between">
             <h1 className="text-2xl font-bold">Commercial Savings and Loan</h1>
             <div className="hidden md:block">
               <Anchor href="/bank" >
@@ -127,7 +127,7 @@ export default function Bank() {
             </nav>
           </div>
           <div className="flex-1">
-            <div className="flex flex-col items-left justify-between mb-1">
+            <div className="flex flex-col items-left justify-between mb-3">
               <h1 className="text-2xl font-bold">Welcome to Commercial Savings & Loan!</h1>
               { isMounted && 
                 <>

@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, ReactNode, useEffect, useState, useRef, useContext } from 'react';
+import React, { createContext, ReactNode, useEffect, useState, useRef, useContext, useCallback } from 'react';
 import { TargetInsertType, SDKConfiguration } from './types';
 
 const defaultSdkConfiguration:SDKConfiguration = {
@@ -78,9 +78,9 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
   const [ bankIframeIsReadyState, setBankIframeIsReadyState ] = useState<boolean>(false);
   const messageQueue = useRef<string[]>([]);
 
-  const getSdkConfiguration = (): SDKConfiguration => {
+  const getSdkConfiguration = useCallback((): SDKConfiguration => {
     return sdkConfiguration.current;
-  }
+  },[]);
   
   const getCustomCss = ():string => {
     return customCss.current;
@@ -90,7 +90,7 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
     customCss.current = newCustomCss;
   }
   
-  const postMessageViaQueue = (message:any) => {
+  const postMessageViaQueue = useCallback((message:any) => {
     const messageString = JSON.stringify(message);
     if (bankIframeIsReadyState) {
       // you can post directly to the iframe, we've received ready state
@@ -102,7 +102,7 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
       // queue for later
       messageQueue.current.push(messageString);
     }
-  }
+  }, [bankIframeIsReadyState]);
   
   const processMessageQueue = ():void => {
     const bankIframeElement = document.getElementById('bank-app') as HTMLIFrameElement;
@@ -156,12 +156,12 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
     return filteredSdkConfiguration.current;
   }
 
-  const setSdkConfiguration = (newConfiguration: SDKConfiguration) => {
+  const setSdkConfiguration = useCallback((newConfiguration: SDKConfiguration) => {
     sdkConfiguration.current = newConfiguration;
     const filteredConfig = createFilteredConfiguration();
     filteredSdkConfiguration.current = filteredConfig;
     setConfigurationChanged(true);
-  }
+  }, []);
 
   return (
     <ConfigurationContext.Provider value={{

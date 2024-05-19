@@ -42,6 +42,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     },
     banner: {
       duration: 5000,
+      target: {
+        useDefaults: true,
+      },
       show: {
         dismiss: true,
       },

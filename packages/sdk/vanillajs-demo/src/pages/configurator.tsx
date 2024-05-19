@@ -93,7 +93,7 @@ const Configurator = () => {
   useEffect(() => {
     // first time we enter this demo, reset current user so you always see some notifs
     const configUpdate = getSdkConfiguration();
-    // console.log(`configurator useEffect, configUpdate: ${JSON.stringify(configUpdate,null,2)}`);
+    console.log(`configurator useEffect, configUpdate: ${JSON.stringify(configUpdate,null,2)}`);
     configUpdate.api.displayMode = 'toast';
     if (!configUpdate.api.key) {
       const assignableKey = getStoredApiKey();

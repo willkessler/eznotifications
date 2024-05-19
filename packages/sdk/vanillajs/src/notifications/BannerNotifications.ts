@@ -38,13 +38,13 @@ export class BannerNotification {
       if (this.configuration.banner.target.outer) {
         this.bannerTargets.outer = this.configuration.banner.target.outer;
       }
-      if (this.configuration.banner.target.outer) {
+      if (this.configuration.banner.target.slideDown) {
         this.bannerTargets.slideDown = this.configuration.banner.target.slideDown;
       }
-      if (this.configuration.banner.target.outer) {
+      if (this.configuration.banner.target.slideUp) {
         this.bannerTargets.slideUp = this.configuration.banner.target.slideUp;
       }
-      if (this.configuration.banner.target.outer) {
+      if (this.configuration.banner.target.content) {
         this.bannerTargets.content = this.configuration.banner.target.content;
       }
       if (this.configuration.banner.target.dismiss) {
