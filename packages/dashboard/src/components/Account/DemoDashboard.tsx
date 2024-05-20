@@ -17,8 +17,7 @@ const DemoDashboardComponent = () => {
   const { getSigninTicket } = useSettings();
   const [ loginButtonTitle,  setLoginButtonTitle ] = useState<string>(defaultButtonTitle);
   const redirectUrl = (import.meta.env.VITE_IS_DEMO_SITE === 'true' ? import.meta.env.VITE_TINAD_DEMOPANEL_URL + '/demo' : '/');
-  //const demoPanelsUrl = import.meta.env.VITE_TINAD_DEMOPANEL_URL + '/demo';
-  const demoPanelsUrl = import.meta.env.VITE_TINAD_DEMOPANEL_URL;
+  const dashboardPanelUrl = import.meta.env.VITE_TINAD_DASHBOARDPANEL_URL;
   
   if (!isLoaded) {
     return null;
@@ -46,7 +45,7 @@ const DemoDashboardComponent = () => {
       } else {
         console.log('we signed in as demo user?');
         logRocketIdentifyDemoUser();
-        window.location = demoPanelsUrl;
+        window.location = dashboardPanelUrl;
         return true;
       }
     } catch(error) {
@@ -56,7 +55,7 @@ const DemoDashboardComponent = () => {
         if (errorCode === 'session_exists') {
           console.log('session exists');
           logRocketIdentifyDemoUser();
-          window.location = demoPanelsUrl;
+          window.location = dashboardPanelUrl;
           return true;
         } else {
           setLoginButtonTitle(defaultButtonTitle);
@@ -72,7 +71,7 @@ const DemoDashboardComponent = () => {
     logRocketIdentifyDemoUser();
     if (import.meta.env.VITE_IS_DEMO_SITE === 'true') {
       // on the demo site, if you land at the login page and you're already logged in, then go to the demo app
-      window.location.href = demoPanelsUrl;
+      window.location.href = dashboardPanelUrl;
       return null;
     } else {
       return <Navigate to="/" replace />;
