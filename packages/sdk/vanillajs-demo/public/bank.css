@@ -1,9 +1,3 @@
-.container {
-  width:100%;
-  max-width:100%;
-  margin:0 auto;
-}
-
 .my-inline-container-1 {
   --light-grey: #D3D3D3;
   --dark-grey: #505050;
@@ -152,4 +146,14 @@
   border-radius: 2px;
   border: 1px solid #aaa;
   color: #000;
+}
+
+/* 
+ * Style for modals and toasts generally
+ */
+
+.container {
+  width:100%;
+  max-width:100%;
+  margin:0 auto;
 }

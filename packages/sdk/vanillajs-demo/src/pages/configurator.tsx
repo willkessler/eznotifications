@@ -1,5 +1,7 @@
 import React, { ChangeEvent, FormEvent, useState, useEffect, useRef, useCallback } from 'react';
-import { Button, Checkbox, Drawer, Group, Paper, RadioGroup, Radio, SegmentedControl, Select, TextInput, Tooltip } from '@mantine/core';
+import { Anchor, Button, Checkbox, Drawer, Group, Image, Modal, Paper, 
+         RadioGroup, Radio, SegmentedControl, Select, Stack, Text, 
+         TextInput, Title, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconHelp } from '@tabler/icons-react';
 import { useSdkConfiguration } from '../lib/configuratorContext';
@@ -19,6 +21,7 @@ const Configurator = () => {
   const [ inlineCustomStyleChoice, setInlineCustomStyleChoice ] = useState<string>("inline-custom-style:1");
   const [ bannerDismissShown, setBannerDismissShown  ] = useState<boolean>(true);
   const [ modalDismissShown, setModalDismissShown  ] = useState<boolean>(true);
+  const [ helpModalOpen, setHelpModalOpen ] = useState<boolean>(true);
   const [ bannerDuration, setBannerDuration ] = useState<number | null>(5000);
   const [ customBannerStyles, setCustomBannerStyles  ] = useState<boolean>(false);
   const [opened, { open, close }] = useDisclosure(false);
@@ -268,10 +271,6 @@ const Configurator = () => {
     }
   };
 
-  const getHelp = ():void => {
-    console.log('ehlp');
-  }
-
   return (
     <>
       <Drawer opened={opened} onClose={close} size="xl">
@@ -404,9 +403,36 @@ const Configurator = () => {
             </Paper>
           }
         </form>
+        <Modal
+          opened={helpModalOpen}
+          onClose={() => setHelpModalOpen(false)}
+          size="95%"
+        >
+          <Paper className="p-8">
+            <Stack>
+              <Group>
+                <Anchor href="https://this-is-not-a-drill.com" target="_blank" >
+                  <Image src="/ThisIsNotADrill_cutout.png" w={50} alt="This Is Not A Drill! Logo" className="w-12 h-auto" />
+                </Anchor>              
+                <Title order={3}>Using the TINAD Demo Configurator</Title>
+              </Group>
+              <Text>
+                Watch the quick video below to learn how this demo works.
+              </Text>
+              <div style={{ position: 'relative', paddingTop: '56.25%' }}>
+                <iframe 
+                  src="https://www.loom.com/embed/4922508649134ecd92665bbd28ff5a6f?sid=5eb729bd-cf4e-4b7c-9f4b-5e86e45c6bb1" 
+                  frameBorder="0" 
+                  allowFullScreen 
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} 
+                ></iframe>
+              </div>
+            </Stack>
+          </Paper>
+        </Modal>
         <Button size="xs" className="dashboard-drawer-button" onClick={open}>Manage Notifications &gt;&gt;</Button>
         <Tooltip label="Click to get help" withArrow>
-          <Button size="xs" className="help-button" onClick={getHelp}>
+          <Button size="xs" className="help-button" onClick={() => { setHelpModalOpen(true) }}>
             <IconHelp size={20} style={{color:'#ff0'}} />
           </Button>
         </Tooltip>
