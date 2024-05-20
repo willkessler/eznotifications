@@ -21,7 +21,7 @@ const Configurator = () => {
   const [ inlineCustomStyleChoice, setInlineCustomStyleChoice ] = useState<string>("inline-custom-style:1");
   const [ bannerDismissShown, setBannerDismissShown  ] = useState<boolean>(true);
   const [ modalDismissShown, setModalDismissShown  ] = useState<boolean>(true);
-  const [ helpModalOpen, setHelpModalOpen ] = useState<boolean>(true);
+  const [ helpModalOpen, setHelpModalOpen ] = useState<boolean>(false);
   const [ bannerDuration, setBannerDuration ] = useState<number | null>(5000);
   const [ customBannerStyles, setCustomBannerStyles  ] = useState<boolean>(false);
   const [opened, { open, close }] = useDisclosure(false);
@@ -406,7 +406,7 @@ const Configurator = () => {
         <Modal
           opened={helpModalOpen}
           onClose={() => setHelpModalOpen(false)}
-          size="95%"
+          size="70%"
         >
           <Paper className="p-8">
             <Stack>
@@ -417,7 +417,7 @@ const Configurator = () => {
                 <Title order={3}>Using the TINAD Demo Configurator</Title>
               </Group>
               <Text>
-                Watch the quick video below to learn how this demo works.
+                Watch the 1 minute below to learn how this demo works.
               </Text>
               <div style={{ position: 'relative', paddingTop: '56.25%' }}>
                 <iframe 
@@ -430,10 +430,10 @@ const Configurator = () => {
             </Stack>
           </Paper>
         </Modal>
-        <Button size="xs" className="dashboard-drawer-button" onClick={open}>Manage Notifications &gt;&gt;</Button>
+        <Button size="xs" className="dashboard-drawer-button" onClick={open}>&gt;&gt;&nbsp;Manage Notifications</Button>
         <Tooltip label="Click to get help" withArrow>
           <Button size="xs" className="help-button" onClick={() => { setHelpModalOpen(true) }}>
-            <IconHelp size={20} style={{color:'#ff0'}} />
+            <IconHelp size={20} style={{color:'#fff'}} />&nbsp;Help
           </Button>
         </Tooltip>
       </div>

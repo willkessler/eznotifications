@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import AceEditor from 'react-ace';
 import { useSdkConfiguration } from '../lib/configuratorContext';
-import { Tabs, rem } from '@mantine/core';
+import { useClipboard } from '@mantine/hooks';
+import { Button, Group, Tabs, Tooltip, rem } from '@mantine/core';
+import { IconCopy, IconCheck } from '@tabler/icons-react';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-monokai';
@@ -30,7 +32,15 @@ const TabbedEditor: React.FC = () => {
     { filename: 'custom.css', content: "\n\nconsole.log('Hello from file 2');\n" }
   ];
   const [files, setFiles] = useState<FileData[]>(initialFiles);
+  const clipboard = useClipboard({ timeout: 1000 });
+  const [copiedFile, setCopiedFile] = useState<string | null>(null);
 
+  const handleCopyToClipboard = (content:string, filename:string):void => {
+    clipboard?.copy(content);
+    setCopiedFile(filename);
+    setTimeout(() => setCopiedFile(null), 1000);
+  }
+    
   const updateSampleAppCss = (newCss: string) => {
     const bankIframe = document.getElementById('bank-app') as HTMLIFrameElement;
     if (bankIframe && bankIframe.contentWindow) {
@@ -134,16 +144,42 @@ const TabbedEditor: React.FC = () => {
   return (
     <div id="editors-container" className="editors-container">
       <Tabs
-        variant="outline" value={activeTab} onChange={setActiveTab} orientation="horizontal" style={{ height: '100%' }}>
+        variant="outline"
+        value={activeTab} 
+        onChange={setActiveTab} 
+        orientation="horizontal" 
+        style={{ height: '100%' }}
+      >
         <Tabs.List id="editor-tabs">
           {files.map((file, index) => (
             <Tabs.Tab 
               key={file.filename} 
               value={file.filename}
-              style={{ fontWeight: activeTab === file.filename ? 'bold' : 'normal', 
-                       color: activeTab === file.filename ? '#eee' : '#666' }}
+              style={{
+                  fontWeight: activeTab === file.filename ? 'bold' : 'normal', 
+                  color: activeTab === file.filename ? '#eee' : '#666',
+                  display:'flex',
+                  alignItems: 'center',
+                  justyContent: 'space-between',
+              }}
             >
-              {file.filename}
+              <Group>
+                <div>{file.filename}</div>
+              <Tooltip
+                label={copiedFile === file.filename ? 'Copied!' : 'Copy'}
+                position="bottom"
+                withArrow
+                color={copiedFile === file.filename ? 'teal' : 'gray'}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  {copiedFile === file.filename ? (
+                    <IconCheck size={16} color="teal" />
+                  ) : (
+                    <IconCopy size={16} onClick={() => handleCopyToClipboard(files[index].content, file.filename)} />
+                  )}
+                </div>
+              </Tooltip>
+              </Group>
             </Tabs.Tab>
           ))}
         </Tabs.List>
