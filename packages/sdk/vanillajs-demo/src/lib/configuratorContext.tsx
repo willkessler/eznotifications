@@ -11,7 +11,7 @@ const defaultSdkConfiguration:SDKConfiguration = {
     domains: [],
   },
   toast: {
-    position: 'top-end',
+    position: 'top-right',
     duration: 5000,
   },
   modal: {

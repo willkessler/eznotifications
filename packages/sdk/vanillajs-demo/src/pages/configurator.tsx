@@ -68,7 +68,7 @@ const Configurator = () => {
   const setToastPosition = (valueStr: string) => {
     const configUpdate = getSdkConfiguration();
     if (configUpdate.toast) {
-      configUpdate.toast.position = (valueStr ? valueStr : 'top-end');
+      configUpdate.toast.position = (valueStr ? valueStr : 'top-right');
     }
     setSdkConfiguration(configUpdate);
   }
@@ -296,14 +296,35 @@ const Configurator = () => {
                 onChange={setToastPosition}
                 description="This is where your toast will show on the browser screen."
               >
-                <Group mt="sm">
-                  <Radio value="top-start" label="Upper left" />
-                  <Radio value="top-end" label="Upper right" />
-                </Group>
-                <Group mt="sm">
-                  <Radio value="bottom-start" label="Lower left" />
-                  <Radio value="bottom-end" label="Lower right" />
-                </Group>
+                <div className="toast-position-grid-container">
+                  <div className="toast-position-grid-item" style={{borderBottom: '1px dotted #666', borderRight: '1px dotted #666'}} >
+                    <Radio value="top-left" label="Top left" />
+                  </div>
+                  <div className="toast-position-grid-item" style={{borderBottom: '1px dotted #666', borderRight: '1px dotted #666'}} >
+                    <Radio value="top" label="Top center" />
+                  </div>
+                  <div className="toast-position-grid-item" style={{borderBottom: '1px dotted #666'}} >
+                    <Radio value="top-right" label="Top right" />
+                  </div>
+                  <div className="toast-position-grid-item" style={{borderRight: '1px dotted #666'}} >
+                    <Radio value="center-left" label="Left center" />
+                  </div>
+                  <div className="toast-position-grid-item"  style={{borderRight: '1px dotted #666'}} >
+                    <Radio value="center" label="Screen center" />
+                  </div>
+                  <div className="toast-position-grid-item">
+                    <Radio value="center-right" label="Right center" />
+                  </div>
+                  <div className="toast-position-grid-item" style={{borderTop: '1px dotted #666',borderRight: '1px dotted #666'}} >
+                    <Radio value="bottom-left" label="Bottom left" />
+                  </div>
+                  <div className="toast-position-grid-item" style={{borderTop: '1px dotted #666',borderRight: '1px dotted #666'}} >
+                    <Radio value="bottom" label="Bottom center" />
+                  </div>
+                  <div className="toast-position-grid-item" style={{borderTop: '1px dotted #666'}} >
+                    <Radio value="bottom-right" label="Bottom right" />
+                  </div>
+                </div>
               </Radio.Group>
               <TextInput className="pt-6 max-w-xs"
                 name="toast-duration"

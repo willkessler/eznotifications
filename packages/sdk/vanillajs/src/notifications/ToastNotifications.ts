@@ -15,14 +15,14 @@ export interface ToastNotificationOptions {
 
 const positionMap: Record<string, SweetAlertPosition> = {
   "top": "top",
-  "top-start": "top-start",
-  "top-end": "top-end",
+  "top-left": "top-start",
+  "top-right": "top-end",
   "center": "center",
-  "center-start": "center-start",
-  "center-end": "center-end",
+  "center-left": "center-start",
+  "center-right": "center-end",
   "bottom": "bottom",
-  "bottom-start": "bottom-start",
-  "bottom-end": "bottom-end",
+  "bottom-left": "bottom-start",
+  "bottom-right": "bottom-end",
 };
 
 export class ToastNotification {

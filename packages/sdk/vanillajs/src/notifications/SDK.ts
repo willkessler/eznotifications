@@ -50,7 +50,7 @@ export class SDK {
         console.log('Polling Error:', error);
       }
     };
-    this.pollingInterval = 1000; // ms
+    this.pollingInterval = 1000; // ms, start as soon as possible, but then ease up
     this.poller = Poller.getInstance(this.pollApi, this.pollingInterval, pollingErrorHandler);  // Directly pass as arrow function
   }
 
@@ -90,6 +90,7 @@ export class SDK {
     try {
       const fullUrl = `${this.configuration.api.endpoint}/notifications?userId=${this.configuration.api.userId}&environments=${this.configuration.api.environments}`;
       const response = await fetch(fullUrl, fetchOptions);
+      const newPollInterval = response.headers.get('x-tinad-poll-interval');
       const data = await response.json();
 
       if (data && Array.isArray(data)) {
@@ -100,7 +101,11 @@ export class SDK {
 
       // Display the next notification if there is one and nothing is currently displayed
       await this.displayNextNotification();
-      return this.pollingInterval;  // Return updated interval if applicable
+      if (newPollInterval) {
+        const numericPollInterval = parseInt(newPollInterval) * 1000;
+        return numericPollInterval;   // Return updated interval if applicable
+      }        
+      return this.pollingInterval;
     } catch (error) {
       return -1;
     }

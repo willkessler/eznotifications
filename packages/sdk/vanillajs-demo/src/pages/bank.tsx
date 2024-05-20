@@ -25,7 +25,7 @@ export default function Bank() {
         domains: [],
       },
       toast: {
-        position: 'top-end',
+        position: 'top-right',
         duration: 5000,
       },
       modal: {

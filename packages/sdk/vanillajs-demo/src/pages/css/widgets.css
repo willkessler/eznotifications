@@ -85,3 +85,17 @@
   top:5px;
   right:10px;
 }
+
+.toast-position-grid-container {
+  margin-top:15px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.toast-position-grid-item {
+  padding:10px 0 10px 10px;
+  margin:0px;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}

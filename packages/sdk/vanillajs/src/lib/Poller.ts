@@ -43,6 +43,7 @@ export class Poller {
       if (this.pollingFunction && !this.pollingPaused) {
         try {
           const updatedPollingInterval = await this.pollingFunction();
+          console.log(`Got updatedPollingInterval ${updatedPollingInterval} vs current ${this.pollingInterval}`);
           if (updatedPollingInterval === -1) {
             // network error caught in the fetch to the API. implement backoff.
             this.applyBackoff();
