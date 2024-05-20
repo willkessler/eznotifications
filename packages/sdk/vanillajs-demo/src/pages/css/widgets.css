@@ -67,3 +67,15 @@
   font-weight:800;
   font-style:italic;
 }
+
+.help-button {
+  position:absolute;
+  right:  10px;
+  bottom:15px;
+  background-color: #ccc;
+  min-width:40px;
+}
+
+.help-button:hover {
+  background-color: #999;
+}

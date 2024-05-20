@@ -1,6 +1,7 @@
 import React, { ChangeEvent, FormEvent, useState, useEffect, useRef, useCallback } from 'react';
-import { Button, Checkbox, Drawer, Group, Paper, RadioGroup, Radio, SegmentedControl, Select, TextInput } from '@mantine/core';
+import { Button, Checkbox, Drawer, Group, Paper, RadioGroup, Radio, SegmentedControl, Select, TextInput, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { IconHelp } from '@tabler/icons-react';
 import { useSdkConfiguration } from '../lib/configuratorContext';
 import { TargetInsertType, SDKConfiguration } from '../lib/types';
 import classes from './css/configurator.module.css';
@@ -112,7 +113,7 @@ const Configurator = () => {
   }
 
   // Handler function for Select changes
-  const handleSelectChange = (value) => {
+  const handleSelectChange = (value:any) => {
     console.log('Select changed:', value);
     const [name, actualValue] = value.split(':');
 
@@ -210,7 +211,6 @@ const Configurator = () => {
           break;
         case 'custom-inline-div':
           if (checked) {
-          setInlineCustomStyleChoice('inline-custom-style:1');
             currentConfig.inline.target = {
               outer: 'my-inline-container-1',
               content: 'my-content',
@@ -227,14 +227,12 @@ const Configurator = () => {
         case 'inline-custom-style':
           setInlineCustomStyleChoice(`inline-custom-style:${newValue}`);
           currentConfig.inline.target = {
-            outer: `my-notification-banner-${newValue}`,
-            slideDown: 'slideDown',
-            slideUp: 'slideUp',
-            content: 'content',
-            dismiss: 'dismiss',            
+            outer: `my-inline-container-${newValue}`,
+            content: 'my-content',
+            confirm: 'my-confirm',
+            dismiss: 'my-dismiss',            
           };
           setCustomInlineDiv(true);
-          debugger;
           setActiveTabDelayed('custom.css'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
           break;
         case 'custom-banner-styles':
@@ -269,6 +267,10 @@ const Configurator = () => {
       }
     }
   };
+
+  const getHelp = ():void => {
+    console.log('ehlp');
+  }
 
   return (
     <>
@@ -352,25 +354,24 @@ const Configurator = () => {
                 checked={inlineDismissShown}
                 onChange={formNoOp}
               />
-              <Checkbox
+            <Checkbox
                 className="pt-6"
-                label="Custom styling"
+                label="Customize styles"
                 description="Check this box to see custom styles applied to inline notifications. (Modify the custom.css file in the editor to the right to see how this works)."
                 name="custom-inline-div"
                 checked={customInlineDiv}
                 onChange={formNoOp}
-              />
+            />
             <Select
-            className="pt-2 pl-8"
-            style={{width:'80%'}}
-            label="Choose a custom example"
-            value={inlineCustomStyleChoice}
-            onChange={handleSelectChange}
-            data={[
-              { value: 'inline-custom-style:1', label: 'Example 1: content in center of page' },
-              { value: 'inline-custom-style:2', label: 'Example 2: content in header' },
-              { value: 'inline-custom-style:3', label: 'Example 3: content in footer ' },
-            ]}
+              className="pt-2 pl-8"
+              label="Try a custom styles banner!"
+              value={inlineCustomStyleChoice}
+              onChange={handleSelectChange}
+              data={[
+                { value: 'inline-custom-style:1', label: 'Example 1: content in center of page' },
+                { value: 'inline-custom-style:2', label: 'Example 2: content in header' },
+                { value: 'inline-custom-style:3', label: 'Example 3: content in footer ' },
+              ]}
             />
             </Paper>
           }
@@ -404,6 +405,11 @@ const Configurator = () => {
           }
         </form>
         <Button size="xs" className="dashboard-drawer-button" onClick={open}>Manage Notifications &gt;&gt;</Button>
+        <Tooltip label="Click to get help" withArrow>
+          <Button size="xs" className="help-button" onClick={getHelp}>
+            <IconHelp size={20} style={{color:'#ff0'}} />
+          </Button>
+        </Tooltip>
       </div>
     </>
   );

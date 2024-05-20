@@ -50,12 +50,12 @@ export class InlineNotification {
         this.notificationElements.dismiss = Array.from(document.querySelectorAll(`.${target.outer} > .${target.dismiss}`));
         this.cannotRender = false;
       }
-      for (const container of this.notificationElements.dismiss) {
-        container.onclick = async () => { await this.hideContainers(); };
-      }
-      for (const container of this.notificationElements.confirm) {
-        container.onclick = async () => { await this.hideContainers(); };
-      }
+    }
+    for (const container of this.notificationElements.confirm) {
+      container.onclick = async () => { await this.hideContainers(); };
+    }
+    for (const container of this.notificationElements.dismiss) {
+      container.onclick = async () => { await this.hideContainers(); };
     }
     // console.log('Tinad inline: constructor done');
   }

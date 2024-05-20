@@ -89,18 +89,18 @@ export default function Bank() {
   
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-7" style={{color:'#333'}}>
+    <main id="gradient-wrapper" className="flex min-h-screen flex-col items-center justify-between p-7" >
       <div className="flex flex-col w-full">
         <header className="bg-gray-900 text-white p-4 md:p-6 w-full">
           <div className="container mx-auto flex items-center justify-between">
             <h1 className="text-2xl font-bold">Commercial Savings and Loan</h1>
-                <div className="my-inline-container-2">
-                  <div className="my-content"></div>
-                  <button className="my-confirm">OK</button>
-                  <div className="my-dismiss">x</div>
-                </div>
+            <div className="my-inline-container-2">
+              <div className="my-content"></div>
+              <button className="my-confirm">OK</button>
+              <div className="my-dismiss">x</div>
+            </div>
             <div className="hidden md:block">
-              <Anchor href="/bank" >
+              <Anchor href="https://this-is-not-a-drill.com" target="_blank" >
                 <Image src="/ThisIsNotADrill_cutout.png" w={50} alt="This Is Not A Drill! Logo" className="w-12 h-auto" />
               </Anchor>              
             </div>
