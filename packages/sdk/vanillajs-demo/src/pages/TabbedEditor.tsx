@@ -65,7 +65,6 @@ const TabbedEditor: React.FC = () => {
         { filename: file2.filename, content: currentCustomCss }
       ]
     );
-
   }
   
   useEffect(() => {
@@ -110,6 +109,7 @@ const TabbedEditor: React.FC = () => {
   }, []);
   
   useEffect(() => {
+    console.log(`calling updateFiles with ${JSON.stringify(getFilteredSdkConfiguration(),null,2)}`);
     updateFiles( 
       { filename: 'snippet.js', content: JSON.stringify(getFilteredSdkConfiguration(),null,2) },
       { filename: 'custom.css', content: getCustomCss() }

@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!updatedSdkConfig.api?.key) {
           updatedSdkConfig.api.key = sdk.getStoredApiKey(); // continue using the previously set api key
         }
+        debugger;
         await sdk.updateConfiguration(updatedSdkConfig);
       }
     }

@@ -203,7 +203,9 @@ const Configurator = () => {
               dismiss: 'my-dismiss',
             };
             setCustomInlineDiv(true);
-            setActiveTab('custom.css');
+            setTimeout(() => {
+              setActiveTab('custom.css'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            }, 10);
           } else {
             currentConfig.inline.target = { useDefaults: true };
             setCustomInlineDiv(false);
