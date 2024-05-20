@@ -2,7 +2,7 @@
   "name": "@this-is-not-a-drill/vanillajs-sdk",
   "private": false,
   "description": "Core vanilla js SDK for deploying the This is Not A Drill! service in client apps.",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "main": "dist/index.js",
   "module": "dist/bundle.esm.js",
   "repository": {
@@ -13,7 +13,8 @@
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf dist && mkdir dist",
-    "ship": "rm -rf dist && mkdir dist && tsc && webpack",
+    "bump-version": "node bump-version.js",
+    "ship": "yarn bump-version && rm -rf dist && mkdir dist && tsc && webpack",
     "build": "tsc && webpack --watch",
     "build:prod": "tsc && webpack --env production",
     "build:dev": "tsc && webpack --env development",

@@ -53,6 +53,7 @@ interface ConfigurationContextType {
   postMessageViaQueue: (newMessage: any) => void;
   activeTab: string | null;
   setActiveTab: (tabId:string | null) => void;  
+  setActiveTabDelayed: (tabId:string | null) => void;
 }
 
 const ConfigurationContext = createContext<ConfigurationContextType>({
@@ -67,6 +68,7 @@ const ConfigurationContext = createContext<ConfigurationContextType>({
   postMessageViaQueue: (newMessage:any) => {},
   activeTab: 'snippet.js',
   setActiveTab: (tabId:string | null) => {},
+  setActiveTabDelayed: (tabId:string | null) => {},
 });
 
 const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -89,6 +91,12 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
   const setCustomCss = useCallback((newCustomCss:string) => {
     customCss.current = newCustomCss;
   }, []);
+  
+  const setActiveTabDelayed = (tabId: string | null) => {
+    setTimeout(() => {
+      setActiveTab(tabId);
+    }, 10);
+  };
   
   const postMessageViaQueue = useCallback((message:any) => {
     const messageString = JSON.stringify(message);
@@ -176,6 +184,7 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
       setConfigurationChanged,
       activeTab,
       setActiveTab,
+      setActiveTabDelayed,
       setBankIframeIsReadyState,
       postMessageViaQueue,
     }}>

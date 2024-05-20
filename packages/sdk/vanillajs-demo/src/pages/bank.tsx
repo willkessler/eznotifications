@@ -94,6 +94,11 @@ export default function Bank() {
         <header className="bg-gray-900 text-white p-4 md:p-6 w-full">
           <div className="container mx-auto flex items-center justify-between">
             <h1 className="text-2xl font-bold">Commercial Savings and Loan</h1>
+                <div className="my-inline-container-2">
+                  <div className="my-content"></div>
+                  <button className="my-confirm">OK</button>
+                  <div className="my-dismiss">x</div>
+                </div>
             <div className="hidden md:block">
               <Anchor href="/bank" >
                 <Image src="/ThisIsNotADrill_cutout.png" w={50} alt="This Is Not A Drill! Logo" className="w-12 h-auto" />
@@ -136,7 +141,7 @@ export default function Bank() {
                   <button className="tinad-inline-confirm">OK</button>
                   <div className="tinad-inline-dismiss">x</div>
                 </div>
-                <div className="my-inline-container">
+                <div className="my-inline-container-1">
                   <div className="my-content"></div>
                   <button className="my-confirm">OK</button>
                   <div className="my-dismiss">x</div>
@@ -179,6 +184,11 @@ export default function Bank() {
               </div>
             </div>
           </div>
+        </div>
+        <div className="my-inline-container-3">
+          <div className="my-content"></div>
+          <button className="my-confirm">OK</button>
+          <div className="my-dismiss">x</div>
         </div>
       </div>
       <div id="tinad-script-container">

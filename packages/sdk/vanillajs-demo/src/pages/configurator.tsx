@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FormEvent, useState, useEffect, useRef, useCallback } from 'react';
-import { Button, Checkbox, Drawer, Group, Paper,Radio, SegmentedControl, TextInput } from '@mantine/core';
+import { Button, Checkbox, Drawer, Group, Paper, RadioGroup, Radio, SegmentedControl, Select, TextInput } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useSdkConfiguration } from '../lib/configuratorContext';
 import { TargetInsertType, SDKConfiguration } from '../lib/types';
@@ -15,6 +15,7 @@ const Configurator = () => {
   const [ customInlineDiv, setCustomInlineDiv ] = useState<boolean>(false);
   const [ inlineConfirmShown, setInlineConfirmShown  ] = useState<boolean>(true);
   const [ inlineDismissShown, setInlineDismissShown  ] = useState<boolean>(true);
+  const [ inlineCustomStyleChoice, setInlineCustomStyleChoice ] = useState<string>("inline-custom-style:1");
   const [ bannerDismissShown, setBannerDismissShown  ] = useState<boolean>(true);
   const [ modalDismissShown, setModalDismissShown  ] = useState<boolean>(true);
   const [ bannerDuration, setBannerDuration ] = useState<number | null>(5000);
@@ -25,7 +26,7 @@ const Configurator = () => {
           setSdkConfiguration, 
           postMessageViaQueue,
           activeTab,
-          setActiveTab } = useSdkConfiguration();
+          setActiveTabDelayed } = useSdkConfiguration();
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const initialToastDuration = getSdkConfiguration().toast?.duration?.toString() || '';
@@ -110,10 +111,31 @@ const Configurator = () => {
     debounceTimeout.current = setTimeout(executor, 2500);
   }
 
+  // Handler function for Select changes
+  const handleSelectChange = (value) => {
+    console.log('Select changed:', value);
+    const [name, actualValue] = value.split(':');
+
+    // Create a custom event
+    const customEvent = {
+      target: {
+        name,
+        type: 'select',
+        value: actualValue,
+        checked: false, // Select doesn't use checked, but we include it for completeness
+      },
+      type: 'change',
+    };
+
+    // Pass the custom event to handleSdkChange
+    handleSdkChange(customEvent as unknown as React.FormEvent<HTMLFormElement>);
+  };
+
   // Handler function for changes
   const handleSdkChange = (event:FormEvent<HTMLFormElement>) => {
+    console.log('handleSdkChange, event:', event);
     const target = event.target as HTMLInputElement;
-    if (target instanceof HTMLInputElement) {
+    if (target instanceof Object) {
       const { name, type, value, checked } = target;
       // Check if the input is a checkbox and use the checked value; otherwise use value
       const newValue = type === 'checkbox' ? (checked ? '1' : '0') : value;
@@ -122,15 +144,6 @@ const Configurator = () => {
       console.log(`name: ${name}, newValue: ${newValue}`);
       const currentConfig = getSdkConfiguration();
       console.log('currentConfig, ', currentConfig);
-      let newData = {
-        api: {
-          userId: currentConfig.api.userId,
-          endpoint: currentConfig.api.endpoint,
-          key: currentConfig.api.key,
-          environments: currentConfig.api.environments,
-          domains: currentConfig.api.domains,
-        }
-      };
 
       let mustDebounce = false;
       let mustUpdate = true;
@@ -143,6 +156,7 @@ const Configurator = () => {
       currentConfig.inline = currentConfig.inline ?? { target: { useDefaults: true }, show: { confirm: true, dismiss: true } };
       currentConfig.inline.show = currentConfig.inline.show ?? { confirm: true, dismiss: true };
 
+      console.log(`---> name=${name}`);
       switch (name) {
         case 'display-mode':
           const newMode = newValue.toLowerCase();
@@ -196,32 +210,44 @@ const Configurator = () => {
           break;
         case 'custom-inline-div':
           if (checked) {
+          setInlineCustomStyleChoice('inline-custom-style:1');
             currentConfig.inline.target = {
-              outer: 'my-inline-container',
+              outer: 'my-inline-container-1',
               content: 'my-content',
               confirm: 'my-confirm',
               dismiss: 'my-dismiss',
             };
             setCustomInlineDiv(true);
-            setTimeout(() => {
-              setActiveTab('custom.css'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
-            }, 10);
+            setActiveTabDelayed('custom.css'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
           } else {
             currentConfig.inline.target = { useDefaults: true };
             setCustomInlineDiv(false);
           }
           break;
+        case 'inline-custom-style':
+          setInlineCustomStyleChoice(`inline-custom-style:${newValue}`);
+          currentConfig.inline.target = {
+            outer: `my-notification-banner-${newValue}`,
+            slideDown: 'slideDown',
+            slideUp: 'slideUp',
+            content: 'content',
+            dismiss: 'dismiss',            
+          };
+          setCustomInlineDiv(true);
+          debugger;
+          setActiveTabDelayed('custom.css'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+          break;
         case 'custom-banner-styles':
           if (checked) {
             currentConfig.banner.target = {
-              outer: 'my-notification-banner',
+              outer: `my-notification-banner`,
               slideDown: 'slideDown',
               slideUp: 'slideUp',
               content: 'content',
               dismiss: 'dismiss',            
             };
             setCustomBannerStyles(true);
-            setActiveTab('custom.css');
+            setActiveTabDelayed('custom.css'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
           } else {
             currentConfig.banner.target = { useDefaults: true };
             setCustomBannerStyles(false);
@@ -334,6 +360,18 @@ const Configurator = () => {
                 checked={customInlineDiv}
                 onChange={formNoOp}
               />
+            <Select
+            className="pt-2 pl-8"
+            style={{width:'80%'}}
+            label="Choose a custom example"
+            value={inlineCustomStyleChoice}
+            onChange={handleSelectChange}
+            data={[
+              { value: 'inline-custom-style:1', label: 'Example 1: content in center of page' },
+              { value: 'inline-custom-style:2', label: 'Example 2: content in header' },
+              { value: 'inline-custom-style:3', label: 'Example 3: content in footer ' },
+            ]}
+            />
             </Paper>
           }
           { (currentDisplayMode === 'banner') &&
