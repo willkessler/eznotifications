@@ -7,7 +7,7 @@ const defaultSdkConfiguration:SDKConfiguration = {
     displayMode : 'toast',
     endpoint: (process.env.NEXT_PUBLIC_TINAD_API_BASEURL ? process.env.NEXT_PUBLIC_TINAD_API_BASEURL : 'https://demo-api.this-is-not-a-drill.com'),
     key: (process.env.NEXT_PUBLIC_TINAD_API_KEY ? process.env.NEXT_PUBLIC_TINAD_API_KEY : 'notset'),
-    environments: [ 'Development' ],
+    environments: [ 'Development', 'Staging', 'Production' ],
     domains: [],
   },
   toast: {

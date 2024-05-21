@@ -21,7 +21,7 @@ export default function Bank() {
         displayMode: 'toast',
         key: (process.env.NEXT_PUBLIC_TINAD_API_KEY ? process.env.NEXT_PUBLIC_TINAD_API_KEY : 'defaultkey'),
         endpoint: (process.env.NEXT_PUBLIC_TINAD_API_BASEURL ? process.env.NEXT_PUBLIC_TINAD_API_BASEURL : 'https://demo-api.this-is-not-a-drill.com'),
-        environments: [ 'Development' ],
+        environments: [ 'Development', 'Staging', 'Production' ],
         domains: [],
       },
       toast: {
