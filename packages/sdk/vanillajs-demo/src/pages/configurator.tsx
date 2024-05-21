@@ -239,11 +239,13 @@ const Configurator = () => {
               dismiss: 'my-dismiss',
             };
             setCustomInlineDiv(true);
-            setActiveTabDelayed('custom.css'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            // Need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            setActiveTabDelayed('custom.css', 'CUSTOM INLINE STYLES');
           } else {
             currentConfig.inline.target = { useDefaults: true };
             setCustomInlineDiv(false);
-            setActiveTabDelayed('snippet.js'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            // Need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            setActiveTabDelayed('snippet.js', null);
           }
           break;
         case 'inline-custom-style':
@@ -255,7 +257,8 @@ const Configurator = () => {
             dismiss: 'my-dismiss',            
           };
           setCustomInlineDiv(true);
-          setActiveTabDelayed('custom.css'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            // Need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+          setActiveTabDelayed('custom.css', `my-inline-container-${newValue}`);
           break;
         case 'custom-banner-styles':
           if (checked) {
@@ -267,11 +270,13 @@ const Configurator = () => {
               dismiss: 'dismiss',            
             };
             setCustomBannerStyles(true);
-            setActiveTabDelayed('custom.css'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            // Need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            setActiveTabDelayed('custom.css', 'CUSTOM BANNER STYLES'); 
           } else {
             currentConfig.banner.target = { useDefaults: true };
             setCustomBannerStyles(false);
-            setActiveTabDelayed('snippet.js'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            // Need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            setActiveTabDelayed('snippet.js',null);
           }
           break;
         case 'show-progress-bar': // toast progress bar
@@ -287,21 +292,25 @@ const Configurator = () => {
           if (checked) {
             currentConfig.toast.useCustomClasses = true;
             setUseCustomToastStyles(true);
-            setActiveTabDelayed('custom.css'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            // Need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            setActiveTabDelayed('custom.css', 'CUSTOM TOAST STYLES');
           } else {
             currentConfig.toast.useCustomClasses = false;
             setUseCustomToastStyles(false);
-            setActiveTabDelayed('snippet.js'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            // Need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            setActiveTabDelayed('snippet.js',null);
           }
           break;
         case 'use-custom-modal-styles':
           if (checked) {
             currentConfig.modal.useCustomClasses = true;
             setUseCustomModalStyles(true);
-            setActiveTabDelayed('custom.css'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            // Need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+            setActiveTabDelayed('custom.css', 'CUSTOM MODAL STYLES');
           } else {
             currentConfig.modal.useCustomClasses = false;
             setUseCustomModalStyles(false);
+            setActiveTabDelayed('snippet.js',null);
           }
           break;
       }

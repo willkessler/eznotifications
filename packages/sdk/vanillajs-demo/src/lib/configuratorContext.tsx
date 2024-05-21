@@ -55,8 +55,10 @@ interface ConfigurationContextType {
   setCustomCss: (newCss: string) => void;
   postMessageViaQueue: (newMessage: any) => void;
   activeTab: string | null;
+  activeTabJumpString: string | null;
   setActiveTab: (tabId:string | null) => void;  
-  setActiveTabDelayed: (tabId:string | null) => void;
+  setActiveTabJumpString: (jumpString: string | null) => void;
+  setActiveTabDelayed: (tabId:string | null, jumpString: string | null) => void;
 }
 
 const ConfigurationContext = createContext<ConfigurationContextType>({
@@ -70,8 +72,10 @@ const ConfigurationContext = createContext<ConfigurationContextType>({
   setBankIframeIsReadyState: () => {},
   postMessageViaQueue: (newMessage:any) => {},
   activeTab: 'snippet.js',
+  activeTabJumpString: null,
   setActiveTab: (tabId:string | null) => {},
-  setActiveTabDelayed: (tabId:string | null) => {},
+  setActiveTabJumpString: (jumpString:string | null) => {},
+  setActiveTabDelayed: (tabId:string | null, jumpString: string | null) => {},
 });
 
 const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -79,6 +83,7 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
   const filteredSdkConfiguration = useRef<SDKConfiguration | null>(null);
   const [ configurationChanged, setConfigurationChanged ] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string | null>('snippet.js');
+  const [activeTabJumpString, setActiveTabJumpString] = useState<string | null>('');
   const customCss = useRef<string>('Custom css');
   const [ bankIframeIsReadyState, setBankIframeIsReadyState ] = useState<boolean>(false);
   const messageQueue = useRef<string[]>([]);
@@ -95,9 +100,10 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
     customCss.current = newCustomCss;
   }, []);
   
-  const setActiveTabDelayed = (tabId: string | null) => {
+  const setActiveTabDelayed = (tabId: string | null, jumpString: string | null) => {
     setTimeout(() => {
       setActiveTab(tabId);
+      setActiveTabJumpString(jumpString); // if provided, also jump to a specific line contaning a search string.
     }, 10);
   };
   
@@ -187,6 +193,8 @@ const ConfigurationContextProvider: React.FC<{ children: ReactNode }> = ({ child
       setConfigurationChanged,
       activeTab,
       setActiveTab,
+      activeTabJumpString,
+      setActiveTabJumpString,
       setActiveTabDelayed,
       setBankIframeIsReadyState,
       postMessageViaQueue,
