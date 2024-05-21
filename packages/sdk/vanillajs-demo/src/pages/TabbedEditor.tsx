@@ -45,8 +45,26 @@ const TabbedEditor: React.FC = () => {
     editorRefs.current.set(name, editor);
   };
 
+  const cleanScriptSnippet = (snippet: string): string => {
+    let cleanedSnippet = snippet
+      .split('\n') // Split the string into lines
+      .filter(line => line.trim() !== '' && !line.trim().startsWith('//')) // Remove blank and comment lines
+      .join('\n'); // Join the lines back together, preserving carriage returns
+
+    // Replace the endpoint value
+    cleanedSnippet = cleanedSnippet.replace(/"endpoint":\s*"[^"]*"/, '"endpoint": "https://api.this-is-not-a-drill.com"');
+    // Replace the API key
+    cleanedSnippet = cleanedSnippet.replace(/"key":\s*"C0N94F27"/, '"key": "<YOUR_API_KEY>"');
+
+    return cleanedSnippet;
+  }
+
   const handleCopyToClipboard = (content:string, filename:string):void => {
-    clipboard?.copy(content);
+    let cleanedContent = content;
+    if (filename === 'snippet.js') {
+      cleanedContent = cleanScriptSnippet(content);
+    }
+    clipboard?.copy(cleanedContent);
     setCopiedFile(filename);
     setTimeout(() => setCopiedFile(null), 1000);
   }
