@@ -11,8 +11,20 @@ function Configurator({ Component, pageProps }: AppProps) {
   const [sdkConfig, setSdkConfig] = useState({}); // Initial state for the SDK config
   const [code, setCode] = useState('');
  
+  // Because we want each time we enter the demo to be "starting fresh", we delete
+  // the tinad userId and apiKey in localstorage on first load.
+  const erasePreviousTinadLocalStorage = ():void => {
+    if (typeof window !== 'undefined') {
+      // Check and remove the 'tinad' item from localStorage
+      if (localStorage.getItem('tinad')) {
+        localStorage.removeItem('tinad');
+      }
+    }
+  }
+
   useEffect(() => {
     setIsClient(true)
+    erasePreviousTinadLocalStorage();
   }, [])
 
   return (

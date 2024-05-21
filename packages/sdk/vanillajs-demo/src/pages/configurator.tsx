@@ -353,7 +353,7 @@ const Configurator = () => {
                 label="Select a toast position"
                 value={getSdkConfiguration().toast?.position}
                 onChange={setToastPosition}
-                description="This is where your toast will show on the browser screen."
+                description="This is where toasts will show on the pages of your app."
               >
                 <div className="toast-position-grid-container">
                   <div className="toast-position-grid-item" style={{borderBottom: '1px dotted #666', borderRight: '1px dotted #666'}} >
@@ -385,31 +385,33 @@ const Configurator = () => {
                   </div>
                 </div>
               </Radio.Group>
-              <Checkbox
-                className="pt-6"
-                label="Display timer progress bar"
-                description="Uncheck this to remove the visual countdown of remaining display time."
-                name="show-progress-bar"
-                checked={showProgressBar}
-                onChange={formNoOp}
-              />
-              <Checkbox
-                className="pt-6"
-                label="Use custom toast styles"
-                description="Check this to apply custom toast styles."
-                name="use-custom-toast-styles"
-                checked={useCustomToastStyles}
-                onChange={formNoOp}
-              />
-              <TextInput className="pt-6 max-w-xs"
-                name="toast-duration"
-                value={toastDurationInputValue}
-                onChange={formNoOp}
-                onBlur={(event) => { fixBlankEntry(event as ChangeEvent<HTMLInputElement>, '5000') }}
-                label="Toast duration"
-                description="How long before a toast is auto-dismissed (milliseconds)."
-                placeholder="5000"
-              />
+              <Group grow align="flex-start" className="pt-6">
+                <Stack style={{flex:1}}>
+                  <Checkbox
+                    label="Display timer progress bar"
+                    description="Uncheck this to remove the visual countdown of remaining display time."
+                    name="show-progress-bar"
+                    checked={showProgressBar}
+                    onChange={formNoOp}
+                  />
+                  <Checkbox
+                    label="Use custom toast styles"
+                    description="Check this to apply custom toast styles."
+                    name="use-custom-toast-styles"
+                    checked={useCustomToastStyles}
+                    onChange={formNoOp}
+                  />
+                </Stack>
+                <TextInput
+                  name="toast-duration"
+                  value={toastDurationInputValue}
+                  onChange={formNoOp}
+                  onBlur={(event) => { fixBlankEntry(event as ChangeEvent<HTMLInputElement>, '5000') }}
+                  label="Toast duration"
+                  description="How long before toast auto-dismissal (milliseconds)."
+                  placeholder="5000"
+                />
+              </Group>
             </Paper>
           }
           { (currentDisplayMode === 'modal') &&

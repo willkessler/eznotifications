@@ -7,8 +7,7 @@
 }
 
 .top-panel {
-  display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
+  display: flex;
   height: 100%;
   border-bottom:4px solid #aaa;
 }
@@ -19,13 +18,16 @@
 }
 
 .config-widget {
+  flex: 1;
   max-width:none;
   height:100%;
   background:white;
+  overflow:auto;
   position:relative;
 }
 
 .code-editor {
+  flex:1;
   overflow:auto;
   overflow-x: hidden;
 }
