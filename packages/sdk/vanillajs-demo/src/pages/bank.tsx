@@ -27,9 +27,12 @@ export default function Bank() {
       toast: {
         position: 'top-right',
         duration: 5000,
+        progressBar: false,
+        useCustomClasses: false,
       },
       modal: {
         confirmButtonLabel: 'OK',
+        useCustomClasses: false,
         show: {
           confirm: true,
           dismiss: true,
@@ -69,10 +72,20 @@ export default function Bank() {
         if (previousStyle) {
           previousStyle.remove();
         }
+
+        // insert my custom stylesheet after all existing stylesheets
+        const head = document.head;
+        const stylesheets = head.querySelectorAll('style, link[rel="stylesheet"]');
         const newStyle = document.createElement('style');
         newStyle.id='tinad-custom-styles';
         newStyle.textContent = newCss;
-        document.head.appendChild(newStyle);
+
+        if (stylesheets.length > 0) {
+          const lastStylesheet = stylesheets[stylesheets.length - 1];
+          lastStylesheet.insertAdjacentElement('afterend', newStyle);
+        } else {
+          head.appendChild(newStyle); // Fallback if no stylesheets are found
+        }
       }
     }
   }

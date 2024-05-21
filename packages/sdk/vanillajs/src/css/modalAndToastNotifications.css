@@ -51,9 +51,9 @@
 .swal2-actions button {
   font-size: 0.8em !important;
   padding: 4px 30px;
-  background-color: #eee !important;
-  border: 2px solid #aaa !important;
-  color: #999 !important;
+  background-color: #eee;
+  border: 2px solid #aaa;
+  color: #999;
 }
 
 .my-custom-container {
@@ -70,4 +70,8 @@
   color: red;  /* Example: changing the title color to red */
   font-size: 24px;  /* Example: changing the font size */
   font-family: 'Comic Sans MS', cursive, sans-serif; /* Example: changing the font */
+}
+
+.tinad-timer-progress-bar {
+  background-color: orange;
 }

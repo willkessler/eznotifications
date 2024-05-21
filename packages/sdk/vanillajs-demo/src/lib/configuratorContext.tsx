@@ -13,9 +13,12 @@ const defaultSdkConfiguration:SDKConfiguration = {
   toast: {
     position: 'top-right',
     duration: 5000,
+    useCustomClasses: false,
+    progressBar: false,
   },
   modal: {
     confirmButtonLabel: 'OK',
+    useCustomClasses: false,
     show: {
       confirm: true,
       dismiss: true,

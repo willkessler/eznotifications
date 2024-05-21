@@ -23,6 +23,9 @@ const Configurator = () => {
   const [ modalDismissShown, setModalDismissShown  ] = useState<boolean>(true);
   const [ helpModalOpen, setHelpModalOpen ] = useState<boolean>(false);
   const [ bannerDuration, setBannerDuration ] = useState<number | null>(5000);
+  const [ showProgressBar, setShowProgressBar ] = useState<boolean>(false);
+  const [ useCustomToastStyles, setUseCustomToastStyles  ] = useState<boolean>(false);
+  const [ useCustomModalStyles, setUseCustomModalStyles  ] = useState<boolean>(false);
   const [ customBannerStyles, setCustomBannerStyles  ] = useState<boolean>(false);
   const [opened, { open, close }] = useDisclosure(false);
 
@@ -86,6 +89,21 @@ const Configurator = () => {
     // insistence that every controlled input (with a value prop) has to have a handler
   };
 
+  // not working right now... this attempted to force a reload when no obvious configuration
+  // changes have been made, via a user button
+
+  //<Tooltip label="Restart SDK on bank site (below)" withArrow>
+  //   <Button size="xs" className="reload-sdk-button" onClick={(event) => restartSdk(event) }>
+  //    <IconRecycle size={20} style={{color:'#fff'}} />
+  //  </Button>
+  // </Tooltip>
+  //const restartSdk = useCallback(() => {
+  //  const currentConfig = getSdkConfiguration();
+  //  setSdkConfiguration(currentConfig);
+  //  updateSampleApp(currentConfig);
+  //},[getSdkConfiguration]);
+
+  
   const updateSampleApp = useCallback((sdkConfig: SDKConfiguration) => {
     console.log('sdkConfig:', sdkConfig);
     const newConfigMessage = {
@@ -225,6 +243,7 @@ const Configurator = () => {
           } else {
             currentConfig.inline.target = { useDefaults: true };
             setCustomInlineDiv(false);
+            setActiveTabDelayed('snippet.js'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
           }
           break;
         case 'inline-custom-style':
@@ -252,6 +271,37 @@ const Configurator = () => {
           } else {
             currentConfig.banner.target = { useDefaults: true };
             setCustomBannerStyles(false);
+            setActiveTabDelayed('snippet.js'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+          }
+          break;
+        case 'show-progress-bar': // toast progress bar
+          if (checked) {
+            currentConfig.toast.progressBar = true;
+            setShowProgressBar(true);
+          } else {
+            currentConfig.toast.progressBar = false;
+            setShowProgressBar(false);
+          }
+          break;
+        case 'use-custom-toast-styles':
+          if (checked) {
+            currentConfig.toast.useCustomClasses = true;
+            setUseCustomToastStyles(true);
+            setActiveTabDelayed('custom.css'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+          } else {
+            currentConfig.toast.useCustomClasses = false;
+            setUseCustomToastStyles(false);
+            setActiveTabDelayed('snippet.js'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+          }
+          break;
+        case 'use-custom-modal-styles':
+          if (checked) {
+            currentConfig.modal.useCustomClasses = true;
+            setUseCustomModalStyles(true);
+            setActiveTabDelayed('custom.css'); // need to use timeout so that ace editor updates the snippet tab before switching to the css tab
+          } else {
+            currentConfig.modal.useCustomClasses = false;
+            setUseCustomModalStyles(false);
           }
           break;
       }
@@ -326,6 +376,22 @@ const Configurator = () => {
                   </div>
                 </div>
               </Radio.Group>
+              <Checkbox
+                className="pt-6"
+                label="Display timer progress bar"
+                description="Uncheck this to remove the visual countdown of remaining display time."
+                name="show-progress-bar"
+                checked={showProgressBar}
+                onChange={formNoOp}
+              />
+              <Checkbox
+                className="pt-6"
+                label="Use custom toast styles"
+                description="Check this to apply custom toast styles."
+                name="use-custom-toast-styles"
+                checked={useCustomToastStyles}
+                onChange={formNoOp}
+              />
               <TextInput className="pt-6 max-w-xs"
                 name="toast-duration"
                 value={toastDurationInputValue}
@@ -355,6 +421,14 @@ const Configurator = () => {
                 checked={modalDismissShown}
                 onChange={formNoOp}
               />
+              <Checkbox
+                className="pt-6"
+                label="Use custom modal styles"
+                description="Check this to apply any/all custom modal styles."
+                name="use-custom-modal-styles"
+                checked={useCustomModalStyles}
+                onChange={formNoOp}
+              />
             </Paper>
           }
           { (currentDisplayMode === 'inline') &&
@@ -376,8 +450,8 @@ const Configurator = () => {
               />
             <Checkbox
                 className="pt-6"
-                label="Customize styles"
-                description="Check this box to see custom styles applied to inline notifications. (Modify the custom.css file in the editor to the right to see how this works)."
+                label="Customize styles and placements"
+                description="Check this box to see custom styles applied to inline notifications and varying locations on the page. You can place inline notifications anywhere. (Modify the custom.css file in the editor to the right to see how this works)."
                 name="custom-inline-div"
                 checked={customInlineDiv}
                 onChange={formNoOp}
@@ -406,8 +480,8 @@ const Configurator = () => {
               />
               <Checkbox
                 className="pt-6"
-                label="Custom styling"
-                description="Check this box to see custom styles applied to banners. (Modify the custom.css file in the editor to the right to see how this works)."
+                label="Customize styles"
+                description="Check this box to see custom styles applied to banners. (Modify the 'custom.css' file in the editor to the right to try this)."
                 name="custom-banner-styles"
                 checked={customBannerStyles}
                 onChange={formNoOp}
@@ -451,12 +525,14 @@ const Configurator = () => {
             </Stack>
           </Paper>
         </Modal>
+        <Group>
         <Button size="xs" className="dashboard-drawer-button" onClick={open}>&gt;&gt;&nbsp;Manage Notifications</Button>
-        <Tooltip label="Click to get help" withArrow>
-          <Button size="xs" className="help-button" onClick={() => { setHelpModalOpen(true) }}>
-            <IconHelp size={20} style={{color:'#fff'}} />&nbsp;Help
-          </Button>
-        </Tooltip>
+          <Tooltip label="Click to get help" withArrow>
+            <Button size="xs" className="help-button" onClick={() => { setHelpModalOpen(true) }}>
+              <IconHelp size={20} style={{color:'#fff'}} />&nbsp;Help
+            </Button>
+          </Tooltip>
+        </Group>
       </div>
     </>
   );

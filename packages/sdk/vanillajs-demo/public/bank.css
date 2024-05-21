@@ -48,7 +48,8 @@
 }
 
 .my-content {
-  font-style: italic;
+/* Some options you can test out: */
+/* font-style: italic;*/
 /*  min-height:50px;*/
 }
 
@@ -93,6 +94,8 @@
 /*
   If you want to override banner styles, you can modify 
   the styles below and turn on custom banner styles.
+  An id selector is used because there is only ever
+  one banner present on the page.
 */
 
 #my-notification-banner {
@@ -157,3 +160,67 @@
   max-width:100%;
   margin:0 auto;
 }
+
+/*
+ **** TOAST CUSTOM STYLES ****
+ * Custom styles for certain aspects of the toasts display.  When
+ * customStyles are enabled on toasts, these styles will be applied.
+ * Just leave any blank you don't want to modify from the default.
+ */
+
+.tinad-custom-toast-htmlContainer {
+  background-color:light-orange;
+  color:white !important; /* !important required */
+}
+
+.tinad-custom-toast-container {
+  background-color:blue;
+  color:white;
+}
+
+.tinad-custom-toast-popup {
+  background-color:orange !important; /* !important required */
+}
+
+.tinad-custom-toast-closeButton {
+  background-color: #ff9900;
+  color:white;
+}
+
+.tinad-custom-toast-timerProgressBar {
+  background-color: red;
+}
+
+
+/*
+ **** MODAL CUSTOM STYLES ****
+ * Custom styles for certain aspects of the modals display.  When
+ * customStyles are enabled on modals, these styles will be applied.
+ * Just leave any blank you don't want to modify from the default.
+ */
+      
+.tinad-custom-modal-htmlContainer { 
+   /* these will need !important */
+}
+
+.tinad-custom-modal-popup {
+  background-color: orange;
+  color: #ff6600;
+  font-weight:bolder !important;
+}
+
+.tinad-custom-modal-title {
+  background-color: blue;
+}
+
+.tinad-custom-modal-closeButton {
+  color: #000 !important;
+  background-color: #ff9900;
+}
+
+.tinad-custom-modal-confirmButton {
+  background-color: #ff6633 !important;
+  font-weight: 800;
+  min-height:40px;
+}
+

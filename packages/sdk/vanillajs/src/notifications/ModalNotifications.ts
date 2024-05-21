@@ -39,16 +39,27 @@ export class ModalNotification {
       const markedContent =  await MarkdownLib.renderMarkdown(content);
       const protectedContent = MarkdownLib.protectMdStyles(markedContent);
       console.log(`markedContent: ${markedContent}`);
+      // these all come from swal2: https://sweetalert2.github.io/#customClass
+      const customClassObject = { 
+        container: 'tinad-custom-modal-container',
+        popup: 'tinad-custom-modal-popup',
+        header: 'tinad-custom-modal-header',
+        title: 'tinad-custom-modal-title',
+        closeButton: 'tinad-custom-modal-closeButton',
+        htmlContainer: 'tinad-custom-modal-htmlContainer',
+        confirmButton: 'tinad-custom-modal-confirmButton',
+        footer: 'tinad-custom-modal-footer',
+      };
+
       const swalOutcome:SweetAlertResult = await Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: true,
         allowEnterKey: true,
         html: protectedContent,
+        customClass: (this.configuration.modal?.useCustomClasses ? customClassObject : {}),
         showConfirmButton: showConfirm,
         showCloseButton: showDismiss,
         confirmButtonText: (modal?.confirmButtonLabel ? modal.confirmButtonLabel : 'OK'),
-        customClass: {
-        },
       });
 
       if (swalOutcome.isConfirmed) {

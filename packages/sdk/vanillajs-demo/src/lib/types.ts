@@ -20,9 +20,12 @@ export interface SDKConfiguration {
     // 'bottom', 'bottom-start', or 'bottom-end'.
     position?: string;
     duration?: number;
+    progressBar?: boolean;
+    useCustomClasses?: boolean;
   };
   modal?: {
     confirmButtonLabel? : string;
+    useCustomClasses?: boolean;
     show?: {
       confirm: boolean;
       dismiss: boolean;

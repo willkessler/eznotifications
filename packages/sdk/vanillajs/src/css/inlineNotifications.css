@@ -12,10 +12,6 @@
   min-height: 90px;
 }
 
-.tinad-inline-content {
-  font-style: italic;
-}
-
 .tinad-inline-container .tinad-inline-confirm {
   position:absolute;
   bottom: 10px;

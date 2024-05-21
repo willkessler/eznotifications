@@ -52,11 +52,28 @@ export class ToastNotification {
     this.toastOn = true;
     const markedContent = await MarkdownLib.renderMarkdown(content);
     const protectedContent = MarkdownLib.protectMdStyles(markedContent);
+    const customClassObject = { // these all come from swal2: https://sweetalert2.github.io/#customClass
+      container: 'tinad-custom-toast-container',
+      popup: 'tinad-custom-toast-popup',
+      header: 'tinad-custom-toast-header',
+      title: 'tinad-custom-toast-title',
+      closeButton: 'tinad-custom-toast-closeButton',
+      htmlContainer: 'tinad-custom-toast-htmlContainer',
+      actions: 'tinad-custom-toast-actions',
+      confirmButton: 'tinad-custom-toast-confirmButton',
+      denyButton: 'tinad-custom-toast-denyButton',
+      cancelButton: 'tinad-custom-toast-cancelButton',
+      footer: 'tinad-custom-toast-footer',
+      timerProgressBar: 'tinad-custom-toast-timerProgressBar',
+    };
+
     try {
       const swalOutcome: SweetAlertResult = await Swal.fire({
         toast:true,
         html: protectedContent,
         timer: this.configuration?.toast?.duration ?? 5000,
+        timerProgressBar: this.configuration.toast?.progressBar,
+        customClass: (this.configuration.toast?.useCustomClasses ? customClassObject : {}),
         width: '20em',
         position: positionMap[this.configuration?.toast?.position ?? 'top-right'],
         showCloseButton: true,
