@@ -356,6 +356,10 @@ const Configurator = () => {
     updateSampleApp(currentConfig);
   };
 
+  const jumpToDocsSite = ():void => {
+    window.open(process.env.NEXT_PUBLIC_TINAD_DOCS_URL, '_blank');
+  }
+  
   return (
     <>
       <Drawer opened={opened} onClose={close} size="xl">
@@ -549,9 +553,9 @@ const Configurator = () => {
               </Group>
               <Text>Welcome to our playground! Watch the video below for a quick introduction and how to use the demo.</Text>
               <div style={{ position: 'relative', paddingTop: '56.25%' }}>
-                <iframe
-                  src="https://www.loom.com/embed/4922508649134ecd92665bbd28ff5a6f?sid=5eb729bd-cf4e-4b7c-9f4b-5e86e45c6bb1"
-                  frameBorder="0"
+                <iframe 
+                  src={process.env.NEXT_PUBLIC_TINAD_INTRO_VIDEO_URL}
+                  frameBorder="0" 
                   allowFullScreen
                   style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
                 ></iframe>
@@ -593,7 +597,7 @@ const Configurator = () => {
         <Group>
         <Button size="xs" className="dashboard-drawer-button" onClick={open}>&gt;&gt;&nbsp;Manage Notifications</Button>
           <Tooltip label="Click to get help" withArrow>
-            <Button size="xs" className="help-button" onClick={() => { setHelpModalOpen(true) }}>
+            <Button size="xs" className="help-button" onClick={jumpToDocsSite}>
               <IconHelp size={20} style={{color:'#fff'}} />&nbsp;Help
             </Button>
           </Tooltip>
