@@ -16,8 +16,14 @@ function Configurator({ Component, pageProps }: AppProps) {
   const erasePreviousTinadLocalStorage = ():void => {
     if (typeof window !== 'undefined') {
       // Check and remove the 'tinad' item from localStorage
-      if (localStorage.getItem('tinad')) {
-        localStorage.removeItem('tinad');
+      const previousTinadConfigString = localStorage.getItem('tinad');
+      if (previousTinadConfigString) {
+        const previousTinadConfig = JSON.parse(previousTinadConfigString);
+        if (previousTinadConfig.userId) {
+          delete(previousTinadConfig.userId);
+        }
+        previousTinadConfig.firstLoad = true;
+        localStorage.setItem('tinad', JSON.stringify(previousTinadConfig));
       }
     }
   }

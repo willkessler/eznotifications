@@ -35,8 +35,8 @@
  * customStyles are enabled on modals, these styles will be applied.
  * Just leave any blank you don't want to modify from the default.
  */
-      
-.tinad-custom-modal-htmlContainer { 
+
+.tinad-custom-modal-htmlContainer {
    /* these will need !important */
 }
 
@@ -106,11 +106,13 @@
   --light-grey: #D3D3D3;
   --dark-grey: #505050;
   border-radius:0 0 10px 10px;
+  opacity:85%;
   background: #8af;
   color:#fff;
   border:1px #aaf;
   display:none;
   position:relative;
+  bottom:80px;
   padding:20px;
   font-family: Arial, Helvetica;
   width: 100%;
@@ -164,7 +166,7 @@
 
 /*
   CUSTOM BANNER STYLES
-  If you want to override banner styles, you can modify 
+  If you want to override banner styles, you can modify
   the styles below and turn on custom banner styles.
   An id selector is used because there is only ever
   one banner present on the page.
@@ -223,7 +225,7 @@
   color: #000;
 }
 
-/* 
+/*
  * Style for modals and toasts generally
  */
 
@@ -232,4 +234,3 @@
   max-width:100%;
   margin:0 auto;
 }
-

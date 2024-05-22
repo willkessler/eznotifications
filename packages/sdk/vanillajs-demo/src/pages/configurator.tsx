@@ -1,6 +1,6 @@
 import React, { ChangeEvent, FormEvent, useState, useEffect, useRef, useCallback } from 'react';
-import { Anchor, Button, Checkbox, Drawer, Group, Image, Modal, Paper, 
-         RadioGroup, Radio, SegmentedControl, Select, Stack, Text, 
+import { Anchor, Button, Checkbox, Drawer, Group, Image, Modal, Paper,
+         RadioGroup, Radio, SegmentedControl, Select, Stack, Text,
          TextInput, Title, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconHelp } from '@tabler/icons-react';
@@ -21,6 +21,7 @@ const Configurator = () => {
   const [ inlineCustomStyleChoice, setInlineCustomStyleChoice ] = useState<string>("inline-custom-style:1");
   const [ bannerDismissShown, setBannerDismissShown  ] = useState<boolean>(true);
   const [ modalDismissShown, setModalDismissShown  ] = useState<boolean>(true);
+  const [ introModalOpen, setIntroModalOpen ] = useState<boolean>(false);
   const [ helpModalOpen, setHelpModalOpen ] = useState<boolean>(false);
   const [ bannerDuration, setBannerDuration ] = useState<number | null>(5000);
   const [ showProgressBar, setShowProgressBar ] = useState<boolean>(false);
@@ -29,8 +30,8 @@ const Configurator = () => {
   const [ customBannerStyles, setCustomBannerStyles  ] = useState<boolean>(false);
   const [opened, { open, close }] = useDisclosure(false);
 
-  const { getSdkConfiguration, 
-          setSdkConfiguration, 
+  const { getSdkConfiguration,
+          setSdkConfiguration,
           postMessageViaQueue,
           activeTab,
           setActiveTabDelayed } = useSdkConfiguration();
@@ -44,13 +45,13 @@ const Configurator = () => {
       if (input.length < 1) {
         return { value: null, success: true};
       }
-        
+
       const value = parseInt(input, 10);
       return { value, success: !isNaN(value) };
     }
     return { value: null, success: false };
   };
-  
+
   const fixBlankEntry = (event:ChangeEvent<HTMLInputElement>, newValue:string) => {
     if (event.target.value.length == 0) {
       event.target.value = newValue;
@@ -103,7 +104,7 @@ const Configurator = () => {
   //  updateSampleApp(currentConfig);
   //},[getSdkConfiguration]);
 
-  
+
   const updateSampleApp = useCallback((sdkConfig: SDKConfiguration) => {
     console.log('sdkConfig:', sdkConfig);
     const newConfigMessage = {
@@ -112,6 +113,21 @@ const Configurator = () => {
     };
     postMessageViaQueue(newConfigMessage);
   }, [postMessageViaQueue]);
+
+  useEffect(() => {
+    const tinadLsString = localStorage.getItem('tinad');
+    if (tinadLsString) {
+      const tinadLs = JSON.parse(tinadLsString);
+      console.log(`On first entry, this is the localStorage: ${tinadLs}`);
+      if (tinadLs.firstLoad) {
+        setIntroModalOpen(true);
+        delete(tinadLs.firstLoad);
+        localStorage.setItem('tinad', JSON.stringify(tinadLs));
+      }
+    } else {
+      localStorage.setItem('tinad', JSON.stringify({ firstLoad: true }));
+    }
+  }, []);
 
   useEffect(() => {
     // first time we enter this demo, reset current user so you always see some notifs
@@ -254,7 +270,7 @@ const Configurator = () => {
             outer: `my-inline-container-${newValue}`,
             content: 'my-content',
             confirm: 'my-confirm',
-            dismiss: 'my-dismiss',            
+            dismiss: 'my-dismiss',
           };
           setCustomInlineDiv(true);
             // Need to use timeout so that ace editor updates the snippet tab before switching to the css tab
@@ -267,11 +283,11 @@ const Configurator = () => {
               slideDown: 'slideDown',
               slideUp: 'slideUp',
               content: 'content',
-              dismiss: 'dismiss',            
+              dismiss: 'dismiss',
             };
             setCustomBannerStyles(true);
             // Need to use timeout so that ace editor updates the snippet tab before switching to the css tab
-            setActiveTabDelayed('custom.css', 'CUSTOM BANNER STYLES'); 
+            setActiveTabDelayed('custom.css', 'CUSTOM BANNER STYLES');
           } else {
             currentConfig.banner.target = { useDefaults: true };
             setCustomBannerStyles(false);
@@ -328,6 +344,16 @@ const Configurator = () => {
         }
       }
     }
+  };
+
+  const startInteractivity = ():void => {
+    setIntroModalOpen(false);
+    // Restart the toasts that were running while the intro modal was open.
+    const currentConfig = getSdkConfiguration();
+    currentConfig.api.displayMode = 'toast';
+    setCurrentDisplayMode('toast');
+    setSdkConfiguration(currentConfig);
+    updateSampleApp(currentConfig);
   };
 
   return (
@@ -395,8 +421,7 @@ const Configurator = () => {
                     onChange={formNoOp}
                   />
                   <Checkbox
-                    label="Use custom toast styles"
-                    description="Check this to apply custom toast styles."
+                    label="Apply custom toast styles"
                     name="use-custom-toast-styles"
                     checked={useCustomToastStyles}
                     onChange={formNoOp}
@@ -510,6 +535,35 @@ const Configurator = () => {
           }
         </form>
         <Modal
+          opened={introModalOpen}
+          onClose={() => setIntroModalOpen(false)}
+          size="70%"
+        >
+          <Paper className="p-8">
+            <Stack>
+              <Group>
+                <Anchor href="https://this-is-not-a-drill.com" target="_blank" >
+                  <Image src="/ThisIsNotADrill_cutout.png" w={100} alt="This Is Not A Drill! Logo" className="w-12 h-auto" />
+                </Anchor>
+                <Title order={3}>Quick Intro: <i>This Is Not A Drill!</i></Title>
+              </Group>
+              <Text>Welcome to our playground! Watch the video below for a quick introduction and how to use the demo.</Text>
+              <div style={{ position: 'relative', paddingTop: '56.25%' }}>
+                <iframe
+                  src="https://www.loom.com/embed/4922508649134ecd92665bbd28ff5a6f?sid=5eb729bd-cf4e-4b7c-9f4b-5e86e45c6bb1"
+                  frameBorder="0"
+                  allowFullScreen
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                ></iframe>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <Button size="md" className="get-started-button" onClick={startInteractivity}>Get started</Button>
+              </div>
+            </Stack>
+          </Paper>
+        </Modal>
+
+        <Modal
           opened={helpModalOpen}
           onClose={() => setHelpModalOpen(false)}
           size="70%"
@@ -519,18 +573,18 @@ const Configurator = () => {
               <Group>
                 <Anchor href="https://this-is-not-a-drill.com" target="_blank" >
                   <Image src="/ThisIsNotADrill_cutout.png" w={50} alt="This Is Not A Drill! Logo" className="w-12 h-auto" />
-                </Anchor>              
+                </Anchor>
                 <Title order={3}>Using the TINAD Demo Configurator</Title>
               </Group>
               <Text>
                 Watch the 1 minute below to learn how this demo works.
               </Text>
               <div style={{ position: 'relative', paddingTop: '56.25%' }}>
-                <iframe 
-                  src="https://www.loom.com/embed/4922508649134ecd92665bbd28ff5a6f?sid=5eb729bd-cf4e-4b7c-9f4b-5e86e45c6bb1" 
-                  frameBorder="0" 
-                  allowFullScreen 
-                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} 
+                <iframe
+                  src="https://www.loom.com/embed/4922508649134ecd92665bbd28ff5a6f?sid=5eb729bd-cf4e-4b7c-9f4b-5e86e45c6bb1"
+                  frameBorder="0"
+                  allowFullScreen
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
                 ></iframe>
               </div>
             </Stack>

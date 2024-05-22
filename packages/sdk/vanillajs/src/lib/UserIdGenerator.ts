@@ -11,11 +11,14 @@ export class UserIdGenerator {
       tinadConfig = JSON.parse(tinadConfigStr);
     } else {
       tinadConfig = {
-        apiKey: apiKey,
         userId: 'placeholder',
+        apiKey: 'placeholder',
       }
     }
-      
+    // Immediately overwrite placeholder or previously stored api key
+    // with the one passed in to us.
+    tinadConfig.apiKey = apiKey;
+
     if (suppliedUserId && suppliedUserId.length > 0) {
       tinadConfig.userId = suppliedUserId;
     } else {

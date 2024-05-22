@@ -198,11 +198,6 @@ export default function Bank() {
             </div>
           </div>
         </div>
-        <div className="my-inline-container-3">
-          <div className="my-content"></div>
-          <button className="my-confirm">OK</button>
-          <div className="my-dismiss">x</div>
-        </div>
       </div>
       <div id="tinad-script-container">
         <script
@@ -213,6 +208,12 @@ export default function Bank() {
         >
         </script>
       </div>
+      <div className="my-inline-container-3">
+        <div className="my-content"></div>
+        <button className="my-confirm">OK</button>
+        <div className="my-dismiss">x</div>
+      </div>
+
     </main>
   )
 }
