@@ -334,10 +334,13 @@ const Configurator = () => {
   const restartSdk = () => {
     setCurrentDisplayMode('toast');
     const currentConfig = getSdkConfiguration();
-    currentConfig.api.displayMode = 'toast';
-    currentConfig.toast.position = 'top-right';
-    currentConfig.toast.useDefaults = true;
-    currentConfig.toast.useCustomClasses = false;
+    if (currentConfig.api) {
+      currentConfig.api.displayMode = 'toast';
+    }
+    if (currentConfig.toast) {
+      currentConfig.toast.position = 'top-right';
+      currentConfig.toast.useCustomClasses = false;
+    }
     setUseCustomToastStyles(false);
     setSdkConfiguration(currentConfig);
     updateSampleApp(currentConfig);
@@ -353,9 +356,8 @@ const Configurator = () => {
     window.open(process.env.NEXT_PUBLIC_TINAD_DOCS_URL, '_blank');
   }
   
-  const mapDisplayMode = ():void => {
-    const maps = { 'toast' : 'Toast', 'modal' : 'Modal', 'inline' : 'Inline', 'banner' : 'Banner' };
-    return maps[currentDisplayMode];
+  const mapDisplayMode = ():string => {
+    return currentDisplayMode.substr(0,1).toUpperCase() + currentDisplayMode.substring(1);
   }
 
   return (
@@ -613,7 +615,7 @@ const Configurator = () => {
           <Button size="xs" className="dashboard-drawer-button" onClick={open}>&gt;&gt;&nbsp;Manage Notifications</Button>
 
           <Tooltip label="Restart notifications on the sample site (below)" withArrow>
-            <Button size="xs" className="reload-sdk-button" onClick={(event) => restartSdk(event) }>
+            <Button size="xs" className="reload-sdk-button" onClick={restartSdk}>
               <IconRotate size={20} style={{color:'#fff'}} />&nbsp;Start over
           </Button>
          </Tooltip>
