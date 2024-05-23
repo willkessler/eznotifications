@@ -1,9 +1,23 @@
 /* Toast and Modal Styling */
 
+.swal2-container {
+  display: flex;
+  align-items: flex-start; /* Align at the top */
+  justify-content: center;
+  height: auto !important; /* Ensure height does not expand to full viewport */
+  max-height: none !important; /* Remove any maximum height constraints */
+  overflow: visible !important; /* Prevent overflow issues */
+}
+
 .swal2-popup {
   padding: 20px 10px 10px 10px;
   font-size: 1em;
   position:relative;
+  height: auto !important; /* Ensure height is based on content */
+  max-height: none !important; /* Remove any maximum height constraints */
+  overflow: visible !important; /* Ensure content is fully visible */
+  display: block !important; /* Ensure display is not overridden */
+  flex-direction: column;
 }
 
 .swal2-html-container {
@@ -21,15 +35,15 @@
 .swal2-modal > .swal2-close {
   font-size:1.5em;
   position:absolute;
-  top:10px;
+  top:5px;
   right:8px;
 }
 
 .swal2-toast > .swal2-close {
   font-size:1.5em !important;
   position:absolute;
-  top: -4px;
-  right: -5px;
+  top: 4px;
+  right: 4px;
 }
 
 .swal2-title {

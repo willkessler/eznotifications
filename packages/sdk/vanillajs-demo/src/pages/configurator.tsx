@@ -3,7 +3,7 @@ import { Anchor, Button, Checkbox, Drawer, Group, Image, Modal, Paper,
          RadioGroup, Radio, SegmentedControl, Select, Stack, Text,
          TextInput, Title, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconHelp } from '@tabler/icons-react';
+import { IconHelp, IconRotate } from '@tabler/icons-react';
 import { useSdkConfiguration } from '../lib/configuratorContext';
 import { TargetInsertType, SDKConfiguration } from '../lib/types';
 import classes from './css/configurator.module.css';
@@ -89,21 +89,6 @@ const Configurator = () => {
     // since handling events at form level, this is just here to satisfy react's
     // insistence that every controlled input (with a value prop) has to have a handler
   };
-
-  // not working right now... this attempted to force a reload when no obvious configuration
-  // changes have been made, via a user button
-
-  //<Tooltip label="Restart SDK on bank site (below)" withArrow>
-  //   <Button size="xs" className="reload-sdk-button" onClick={(event) => restartSdk(event) }>
-  //    <IconRecycle size={20} style={{color:'#fff'}} />
-  //  </Button>
-  // </Tooltip>
-  //const restartSdk = useCallback(() => {
-  //  const currentConfig = getSdkConfiguration();
-  //  setSdkConfiguration(currentConfig);
-  //  updateSampleApp(currentConfig);
-  //},[getSdkConfiguration]);
-
 
   const updateSampleApp = useCallback((sdkConfig: SDKConfiguration) => {
     console.log('sdkConfig:', sdkConfig);
@@ -346,20 +331,33 @@ const Configurator = () => {
     }
   };
 
+  const restartSdk = () => {
+    setCurrentDisplayMode('toast');
+    const currentConfig = getSdkConfiguration();
+    currentConfig.api.displayMode = 'toast';
+    currentConfig.toast.position = 'top-right';
+    currentConfig.toast.useDefaults = true;
+    currentConfig.toast.useCustomClasses = false;
+    setUseCustomToastStyles(false);
+    setSdkConfiguration(currentConfig);
+    updateSampleApp(currentConfig);
+  };
+
   const startInteractivity = ():void => {
     setIntroModalOpen(false);
     // Restart the toasts that were running while the intro modal was open.
-    const currentConfig = getSdkConfiguration();
-    currentConfig.api.displayMode = 'toast';
-    setCurrentDisplayMode('toast');
-    setSdkConfiguration(currentConfig);
-    updateSampleApp(currentConfig);
+    restartSdk();
   };
 
   const jumpToDocsSite = ():void => {
     window.open(process.env.NEXT_PUBLIC_TINAD_DOCS_URL, '_blank');
   }
   
+  const mapDisplayMode = ():void => {
+    const maps = { 'toast' : 'Toast', 'modal' : 'Modal', 'inline' : 'Inline', 'banner' : 'Banner' };
+    return maps[currentDisplayMode];
+  }
+
   return (
     <>
       <Drawer opened={opened} onClose={close} size="xl">
@@ -371,6 +369,7 @@ const Configurator = () => {
           <SegmentedControl
             name="display-mode"
             radius="xl"
+            value={mapDisplayMode()}
             size="md"
             data={['Toast', 'Modal', 'Inline', 'Banner']}
             style={{ width:'90%' }}
@@ -424,12 +423,15 @@ const Configurator = () => {
                     checked={showProgressBar}
                     onChange={formNoOp}
                   />
-                  <Checkbox
-                    label="Apply custom toast styles"
-                    name="use-custom-toast-styles"
-                    checked={useCustomToastStyles}
-                    onChange={formNoOp}
-                  />
+                  <div className="custom-class-checkbox">
+                    <Checkbox
+                      label="Apply custom styles"
+                      name="use-custom-toast-styles"
+                      checked={useCustomToastStyles}
+                      onChange={formNoOp}
+                      id="custom-toast-styles"
+                    />
+                  </div>
                 </Stack>
                 <TextInput
                   name="toast-duration"
@@ -461,14 +463,16 @@ const Configurator = () => {
                 checked={modalDismissShown}
                 onChange={formNoOp}
               />
-              <Checkbox
-                className="pt-6"
-                label="Use custom modal styles"
-                description="Check this to apply any/all custom modal styles."
-                name="use-custom-modal-styles"
-                checked={useCustomModalStyles}
-                onChange={formNoOp}
-              />
+              <div className="custom-class-checkbox">
+                <Checkbox
+                  className="pt-6"
+                  label="Apply custom styles"
+                  description="Check this to apply any/all custom modal styles."
+                  name="use-custom-modal-styles"
+                  checked={useCustomModalStyles}
+                  onChange={formNoOp}
+                />
+              </div>
             </Paper>
           }
           { (currentDisplayMode === 'inline') &&
@@ -488,14 +492,16 @@ const Configurator = () => {
                 checked={inlineDismissShown}
                 onChange={formNoOp}
               />
-            <Checkbox
-                className="pt-6"
-                label="Customize styles and placements"
-                description="Check this box to see custom styles applied to inline notifications and varying locations on the page. You can place inline notifications anywhere. (Modify the custom.css file in the editor to the right to see how this works)."
-                name="custom-inline-div"
-                checked={customInlineDiv}
-                onChange={formNoOp}
-            />
+              <div className="custom-class-checkbox">
+                <Checkbox
+                  className="pt-6"
+                  label="Apply custom styles & placements"
+                  description="Check this box to see custom styles applied to inline notifications and varying locations on the page. You can place inline notifications anywhere. (Modify the custom.css file in the editor to the right to see how this works)."
+                  name="custom-inline-div"
+                  checked={customInlineDiv}
+                  onChange={formNoOp}
+                />
+              </div>
             <Select
               className="pt-2 pl-8"
               label="Try a custom styles banner!"
@@ -518,14 +524,16 @@ const Configurator = () => {
                 checked={bannerDismissShown}
                 onChange={formNoOp}
               />
-              <Checkbox
-                className="pt-6"
-                label="Customize styles"
-                description="Check this box to see custom styles applied to banners. (Modify the 'custom.css' file in the editor to the right to try this)."
-                name="custom-banner-styles"
-                checked={customBannerStyles}
-                onChange={formNoOp}
-              />
+              <div className="custom-class-checkbox">
+                <Checkbox
+                  className="pt-6"
+                  label="Apply custom styles"
+                  description="Check this box to see custom styles applied to banners. (Modify the 'custom.css' file in the editor to the right to try this)."
+                  name="custom-banner-styles"
+                  checked={customBannerStyles}
+                  onChange={formNoOp}
+                />
+              </div>
               <TextInput className="pt-6"
                 name="banner-duration"
                 value={bannerDuration !== null ? bannerDuration : ''}
@@ -540,7 +548,7 @@ const Configurator = () => {
         </form>
         <Modal
           opened={introModalOpen}
-          onClose={() => setIntroModalOpen(false)}
+          onClose={() => startInteractivity() }
           size="70%"
         >
           <Paper className="p-8">
@@ -595,7 +603,14 @@ const Configurator = () => {
           </Paper>
         </Modal>
         <Group>
-        <Button size="xs" className="dashboard-drawer-button" onClick={open}>&gt;&gt;&nbsp;Manage Notifications</Button>
+          <Button size="xs" className="dashboard-drawer-button" onClick={open}>&gt;&gt;&nbsp;Manage Notifications</Button>
+
+          <Tooltip label="Restart notifications on bank site (below)" withArrow>
+            <Button size="xs" className="reload-sdk-button" onClick={(event) => restartSdk(event) }>
+              <IconRotate size={20} style={{color:'#fff'}} />&nbsp;Start over
+          </Button>
+         </Tooltip>
+
           <Tooltip label="Click to get help" withArrow>
             <Button size="xs" className="help-button" onClick={jumpToDocsSite}>
               <IconHelp size={20} style={{color:'#fff'}} />&nbsp;Help

@@ -116,3 +116,17 @@
   align-items: center;
   justify-content: left;
 }
+
+/* CSS for the gradient label specific to the checkboxes with an outer div of .custom-class-checkbox */
+/* This makes the checkboxes with "custom toast styles", "custom-modal-styles", "custom-banner-styles" stand out more */
+
+.custom-class-checkbox .mantine-Checkbox-labelWrapper label {
+  position: relative;
+  display: inline-block;
+  font-weight: bold;
+  font-family: Arial, Helvetica;
+  text-align: left !important;
+  background: linear-gradient(to right, #feb47b, #ff1e1f);
+  -webkit-background-clip: text;
+  color: transparent;
+}

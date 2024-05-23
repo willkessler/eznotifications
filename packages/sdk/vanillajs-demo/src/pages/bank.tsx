@@ -58,7 +58,6 @@ export default function Bank() {
       },
     };
 
-
   const handlePostMessage = async (event:MessageEvent) => {
     if (event.origin !== window.location.origin) {
       return; // ignore unknown origin messages
@@ -86,7 +85,7 @@ export default function Bank() {
         } else {
           head.appendChild(newStyle); // Fallback if no stylesheets are found
         }
-      }
+      }        
     }
   }
   
