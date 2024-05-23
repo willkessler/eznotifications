@@ -551,16 +551,18 @@ const Configurator = () => {
           onClose={() => startInteractivity() }
           size="70%"
         >
-          <Paper className="p-8">
+          <Paper 
+            className="p-8"
+            style={{overflow:'hidden'}}>
             <Stack>
               <Group>
                 <Anchor href="https://this-is-not-a-drill.com" target="_blank" >
-                  <Image src="/ThisIsNotADrill_cutout.png" w={100} alt="This Is Not A Drill! Logo" className="w-12 h-auto" />
+                  <Image src="/ThisIsNotADrill_cutout.png" w={25} alt="This Is Not A Drill! Logo" className="w-12 h-auto" />
                 </Anchor>
                 <Title order={3}>Quick Intro: <i>This Is Not A Drill!</i></Title>
               </Group>
               <Text>Welcome to our playground! Watch the video below for a quick introduction and how to use the demo.</Text>
-              <div style={{ position: 'relative', paddingTop: '56.25%' }}>
+              <div style={{ position: 'relative', paddingTop: '50%' }}>
                 <iframe 
                   src={process.env.NEXT_PUBLIC_TINAD_INTRO_VIDEO_URL}
                   frameBorder="0" 
@@ -569,7 +571,12 @@ const Configurator = () => {
                 ></iframe>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <Button size="md" className="get-started-button" onClick={startInteractivity}>Get started</Button>
+                <Button 
+                  size="md"
+                  data-autofocus
+                  className="get-started-button" 
+                  onClick={startInteractivity}>Get started
+                </Button>
               </div>
             </Stack>
           </Paper>
@@ -605,7 +612,7 @@ const Configurator = () => {
         <Group>
           <Button size="xs" className="dashboard-drawer-button" onClick={open}>&gt;&gt;&nbsp;Manage Notifications</Button>
 
-          <Tooltip label="Restart notifications on bank site (below)" withArrow>
+          <Tooltip label="Restart notifications on the sample site (below)" withArrow>
             <Button size="xs" className="reload-sdk-button" onClick={(event) => restartSdk(event) }>
               <IconRotate size={20} style={{color:'#fff'}} />&nbsp;Start over
           </Button>
