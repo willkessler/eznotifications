@@ -52,6 +52,7 @@ export default function Bank() {
     setIsMounted(true);
     window.addEventListener("message", handlePostMessage);  // listen for post messages from the configurator
     window.parent.postMessage('tinad-iframe-ready', '*'); // tell parent that we're ready to process msgs
+    console.log('*&*&*&*&*&*&*&*&*&*& BANK useEffect');
 
     const initialConfiguration: SDKConfiguration =
       {
@@ -100,6 +101,8 @@ export default function Bank() {
     const script = document.createElement('script');
     script.id = 'tinad-sdk';
     script.src = process.env.NEXT_PUBLIC_TINAD_SOURCE_SCRIPT_URL || 'http://localhost:3500';
+    console.log(`readystate=${document.readyState}`);
+    //script.src = 'https://unpkg.com/@this-is-not-a-drill/vanillajs-sdk@latest/dist/bundle.js';
     script.defer = true;
     script.setAttribute('tinad-configuration', configurationString);
     document.getElementById('tinad-script-container')?.appendChild(script);

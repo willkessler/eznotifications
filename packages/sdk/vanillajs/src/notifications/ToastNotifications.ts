@@ -33,9 +33,15 @@ export class ToastNotification {
   constructor(configuration: SDKConfiguration) {
     this.configuration = configuration;
     
-    this.toastContainer = document.createElement('div');
-    this.toastContainer.className = 'toast-container';
-    document.body.appendChild(this.toastContainer);
+    const elements = document.getElementsByClassName('tinad-toast-container');
+    const elementsArray = Array.from(elements) as HTMLDivElement[];
+    if (elementsArray.length === 0) {
+      this.toastContainer = document.createElement('div');
+      this.toastContainer.className = 'tinad-toast-container';
+      document.body.appendChild(this.toastContainer);
+    } else {
+      this.toastContainer = elementsArray[0];
+    }
   }
 
   

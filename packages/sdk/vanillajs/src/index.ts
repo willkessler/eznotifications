@@ -84,7 +84,6 @@ const initializeSDK = async () => {
         if (!updatedSdkConfig.api?.key) {
           updatedSdkConfig.api.key = sdk.getStoredApiKey(); // continue using the previously set api key
         }
-        debugger;
         await sdk.updateConfiguration(updatedSdkConfig);
       }
     }
@@ -97,9 +96,32 @@ const initializeSDK = async () => {
 
 // Make sure DOM is ready before initializing. If we somehow missed the DOMContentLoaded event, then just run the script.
 
+console.log('%%%%%%% TINAD SDK: running, document.readyState=', document.readyState);
+
+const initializeIfReady = ():void => {
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log('TINAD: Document is ready, initializing SDK');
+    initializeSDK();
+  } else {
+    console.log('TINAD: Waiting for DOMContentLoaded');
+    document.addEventListener('DOMContentLoaded', initializeSDK);
+  }
+}
+
+// Check if the script is running after DOMContentLoaded has fired
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  initializeIfReady();
+} else {
+  //console.log('Document not fully loaded yet');
+  document.addEventListener('DOMContentLoaded', initializeIfReady);
+}
+
 if (document.readyState === 'complete') {
+  //console.log('readyState==complete');
   initializeSDK();
 } else {
+  //console.log('wait for DOMContentLoaded');
   document.addEventListener('DOMContentLoaded', initializeSDK);
 }
 
+console.log('%%%%%%% TINAD SDK: done with initializer setup.');

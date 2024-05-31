@@ -57,6 +57,13 @@ const nextConfig = {
         console.error(`Failed to copy file: ${error}`);
       }
     }
+
+    if (!isServer) {
+      config.module.rules.push({
+        test: /\.worker\.(js|ts)$/,
+        use: { loader: 'worker-loader', options: { name: 'static/[hash].worker.js' } },
+      });
+    }
     return config;
   }
 };

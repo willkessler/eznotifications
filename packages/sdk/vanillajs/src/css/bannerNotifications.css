@@ -20,7 +20,7 @@
   }
 }
 
-#notification-banner {
+#tinad-notification-banner {
   font-family: Arial, Helvetica;
   min-height:70px;
   position: fixed;
@@ -40,23 +40,23 @@
   justify-content: center; /* Center content horizontally */
 }
 
-#notification-banner.slideDown {
+#tinad-notification-banner.slideDown {
   display: flex;  /* Flexbox layout for internal alignment */
   animation: slideDown 0.25s ease-out forwards;
 }
 
-#notification-banner.slideUp {
+#tinad-notification-banner.slideUp {
   display:flex;
   animation: slideUp 0.25s ease-out forwards;
 }
 
-#notification-banner .content {
+#tinad-notification-banner .content {
   flex-grow: 1;
   text-align: center;
   padding-right:40px;
 }
 
-#notification-banner .dismiss {
+#tinad-notification-banner .dismiss {
   position: absolute; /* Absolute position to the upper right */
   top: 10px; /* Adjust for spacing */
   right: 20px; /* Adjust for spacing */
@@ -67,7 +67,7 @@
   padding:2px 4px 2px 4px;
 }
 
-#notification-banner .dismiss:hover {
+#tinad-notification-banner .dismiss:hover {
   font-weight:800;
   border-radius: 2px;
   border: 1px solid #aaa;

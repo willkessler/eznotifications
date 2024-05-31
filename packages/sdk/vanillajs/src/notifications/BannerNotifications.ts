@@ -11,7 +11,7 @@ export interface BannerOptions {
 }
 
 export class BannerNotification {
-  private banner: HTMLElement | null;
+  private banner: HTMLDivElement | null;
   private bannerOn: boolean;
   private configuration: SDKConfiguration;
   private currentNotificationUuid: string | null;
@@ -27,7 +27,7 @@ export class BannerNotification {
   constructor(configuration:SDKConfiguration) {
     this.configuration = configuration;
     this.bannerTargets = {
-      outer: 'notification-banner',
+      outer: 'tinad-notification-banner',
       slideDown: 'slideDown',
       slideUp: 'slideUp',
       content: 'content',
@@ -52,13 +52,14 @@ export class BannerNotification {
       }
     }
 
-    this.banner = document.getElementById('notification-banner');
-    if (this.banner) {
-      this.banner.remove(); // remove element if previously existing
+    const existingBanner = document.getElementById(this.bannerTargets.outer);
+    if (existingBanner === null) {
+      this.banner = document.createElement('div');
+      this.banner.id = this.bannerTargets.outer;
+      document.body.appendChild(this.banner);
+    } else {
+      this.banner = existingBanner as HTMLDivElement;
     }
-    this.banner = document.createElement('div');
-    this.banner.id = this.bannerTargets.outer;
-    document.body.appendChild(this.banner);
 
     this.banner.addEventListener('animationend', async () => {
       if (this.banner && this.banner.style && this.configuration.api && (this.banner.className === this.bannerTargets.slideUp)) {
