@@ -8,22 +8,16 @@ import { MantineProvider } from '@mantine/core';
 
 function Configurator({ Component, pageProps }: AppProps) {
   const [isClient, setIsClient] = useState(false)
-  const [sdkConfig, setSdkConfig] = useState({}); // Initial state for the SDK config
-  const [code, setCode] = useState('');
- 
+  const [isLocalStorageChecked, setIsLocalStorageChecked ] = useState<boolean>(false);
+
   // Because we want each time we enter the demo to be "starting fresh", we delete
   // the tinad userId and apiKey in localstorage on first load.
   const erasePreviousTinadLocalStorage = ():void => {
     if (typeof window !== 'undefined') {
-      // Check and remove the 'tinad' item from localStorage
-      const previousTinadConfigString = localStorage.getItem('tinad');
-      if (previousTinadConfigString) {
-        const previousTinadConfig = JSON.parse(previousTinadConfigString);
-        if (previousTinadConfig.userId) {
-          delete(previousTinadConfig.userId);
-        }
-        previousTinadConfig.firstLoad = true;
-        localStorage.setItem('tinad', JSON.stringify(previousTinadConfig));
+      const previousFirstLoad = localStorage.getItem('tinadFirstLoad');
+      // Check and remove the 'tinad' item from localStorage so userId is regenerated
+      if (!previousFirstLoad) {
+        localStorage.setItem('tinadFirstLoad', 'true');
       }
     }
   }
@@ -31,7 +25,13 @@ function Configurator({ Component, pageProps }: AppProps) {
   useEffect(() => {
     setIsClient(true)
     erasePreviousTinadLocalStorage();
+    setIsLocalStorageChecked(true);
   }, [])
+
+  // Do not render main app until we've done all the work in erasePreviousTinadLocalStorage
+  if (!isLocalStorageChecked) {
+    return <div>Loading...</div>;
+  }
 
   return (
       <MantineProvider defaultColorScheme="dark">

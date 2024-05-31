@@ -15,53 +15,12 @@ export default function Bank() {
 
   const [ isMounted, setIsMounted ] = useState(false);
   
-  const initialConfiguration: SDKConfiguration =
-    {
-      api: {
-        displayMode: 'toast',
-        key: (process.env.NEXT_PUBLIC_TINAD_API_KEY ? process.env.NEXT_PUBLIC_TINAD_API_KEY : 'defaultkey'),
-        endpoint: (process.env.NEXT_PUBLIC_TINAD_API_BASEURL ? process.env.NEXT_PUBLIC_TINAD_API_BASEURL : 'https://demo-api.this-is-not-a-drill.com'),
-        environments: [ 'Development', 'Staging', 'Production' ],
-        domains: [],
-      },
-      toast: {
-        position: 'top-right',
-        duration: 5000,
-        progressBar: false,
-        useCustomClasses: false,
-      },
-      modal: {
-        confirmButtonLabel: 'OK',
-        useCustomClasses: false,
-        show: {
-          confirm: true,
-          dismiss: true,
-        },
-      },
-      inline: {
-        target: {
-          useDefaults: true,
-        },
-        show: {
-          confirm: true,
-          dismiss: true,
-        },
-      },
-      banner: {
-        duration: 5000,
-        target: {
-          useDefaults: true,
-        },
-        show: {
-          dismiss: true,
-        },
-      },
-    };
-
   const handlePostMessage = async (event:MessageEvent) => {
     if (event.origin !== window.location.origin) {
       return; // ignore unknown origin messages
     }
+
+    return;
 
     if (event.data && typeof(event.data) === 'string') {
       const receivedMessage = JSON.parse(event.data);
@@ -69,7 +28,7 @@ export default function Bank() {
         const newCss = receivedMessage.css;
         const previousStyle = document.getElementById('tinad-custom-styles');
         if (previousStyle) {
-          previousStyle.remove();
+          previousStyle?.remove();
         }
 
         // insert my custom stylesheet after all existing stylesheets
@@ -88,17 +47,68 @@ export default function Bank() {
       }        
     }
   }
-  
 
   useEffect(() => {
     setIsMounted(true);
     window.addEventListener("message", handlePostMessage);  // listen for post messages from the configurator
     window.parent.postMessage('tinad-iframe-ready', '*'); // tell parent that we're ready to process msgs
+
+    const initialConfiguration: SDKConfiguration =
+      {
+        api: {
+          displayMode: 'toast',
+          key: (process.env.NEXT_PUBLIC_TINAD_API_KEY ? process.env.NEXT_PUBLIC_TINAD_API_KEY : 'defaultkey'),
+          endpoint: (process.env.NEXT_PUBLIC_TINAD_API_BASEURL ? process.env.NEXT_PUBLIC_TINAD_API_BASEURL : 'https://demo-api.this-is-not-a-drill.com') as string,
+          environments: [ 'Development', 'Staging', 'Production' ],
+          domains: [],
+        },
+        toast: {
+          position: 'top-right',
+          duration: 5000,
+          progressBar: false,
+          useCustomClasses: false,
+        },
+        modal: {
+          confirmButtonLabel: 'OK',
+          useCustomClasses: false,
+          show: {
+            confirm: true,
+            dismiss: true,
+          },
+        },
+        inline: {
+          target: {
+            useDefaults: true,
+          },
+          show: {
+            confirm: true,
+            dismiss: true,
+          },
+        },
+        banner: {
+          duration: 5000,
+          target: {
+            useDefaults: true,
+          },
+          show: {
+            dismiss: true,
+          },
+        },
+      };
+
+    const configurationString = JSON.stringify(initialConfiguration, null, 2);
+    const script = document.createElement('script');
+    script.id = 'tinad-sdk';
+    script.src = process.env.NEXT_PUBLIC_TINAD_SOURCE_SCRIPT_URL || 'http://localhost:3500';
+    script.defer = true;
+    script.setAttribute('tinad-configuration', configurationString);
+    document.getElementById('tinad-script-container')?.appendChild(script);
+
     return () => {
       window.removeEventListener('message', handlePostMessage);
     };
+
   }, []);
-  
 
   return (
     <main id="gradient-wrapper" className="flex min-h-screen flex-col items-center justify-between p-7" >
@@ -199,13 +209,6 @@ export default function Bank() {
         </div>
       </div>
       <div id="tinad-script-container">
-        <script
-          defer
-          id="tinad-sdk"
-          src={process.env.NEXT_PUBLIC_TINAD_SOURCE_SCRIPT_URL}
-          tinad-configuration={JSON.stringify(initialConfiguration,null,2)}
-        >
-        </script>
       </div>
       <div className="my-inline-container-3">
         <div className="my-content"></div>

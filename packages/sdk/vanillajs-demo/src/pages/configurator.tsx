@@ -99,20 +99,39 @@ const Configurator = () => {
     postMessageViaQueue(newConfigMessage);
   }, [postMessageViaQueue]);
 
-  useEffect(() => {
-    const tinadLsString = localStorage.getItem('tinad');
-    if (tinadLsString) {
-      const tinadLs = JSON.parse(tinadLsString);
-      console.log(`On first entry, this is the localStorage: ${tinadLs}`);
-      if (tinadLs.firstLoad) {
-        setIntroModalOpen(true);
-        delete(tinadLs.firstLoad);
-        localStorage.setItem('tinad', JSON.stringify(tinadLs));
-      }
-    } else {
-      localStorage.setItem('tinad', JSON.stringify({ firstLoad: true }));
+  const clearFirstLoadFlag = ():void => {
+    const firstLoad = localStorage.getItem('tinadFirstLoad');
+    if (firstLoad && firstLoad === 'true') {
+      // We have now set things up to show the intro video, so change localstorage
+      // so we won't show it again on next page load.
+      localStorage.setItem('tinadFirstLoad', 'false');
     }
-  }, []);
+  }
+
+  const restartSdk = () => {
+    setCurrentDisplayMode('toast');
+    const currentConfig = getSdkConfiguration();
+    if (currentConfig.api) {
+      currentConfig.api.displayMode = 'toast';
+    }
+    if (currentConfig.toast) {
+      currentConfig.toast.position = 'top-right';
+      currentConfig.toast.useCustomClasses = false;
+    }
+    setUseCustomToastStyles(false);
+    setSdkConfiguration(currentConfig);
+    updateSampleApp(currentConfig);
+  };
+
+  useEffect(() => {
+    const firstLoad = localStorage.getItem('tinadFirstLoad');
+    if (firstLoad && firstLoad === 'true') {
+      setIntroModalOpen(true);
+    } else {
+      // Always restart the sdk on page load in this demo site
+      restartSdk();
+    }
+  }, [restartSdk]);
 
   useEffect(() => {
     // first time we enter this demo, reset current user so you always see some notifs
@@ -331,23 +350,9 @@ const Configurator = () => {
     }
   };
 
-  const restartSdk = () => {
-    setCurrentDisplayMode('toast');
-    const currentConfig = getSdkConfiguration();
-    if (currentConfig.api) {
-      currentConfig.api.displayMode = 'toast';
-    }
-    if (currentConfig.toast) {
-      currentConfig.toast.position = 'top-right';
-      currentConfig.toast.useCustomClasses = false;
-    }
-    setUseCustomToastStyles(false);
-    setSdkConfiguration(currentConfig);
-    updateSampleApp(currentConfig);
-  };
-
   const startInteractivity = ():void => {
     setIntroModalOpen(false);
+    clearFirstLoadFlag();
     // Restart the toasts that were running while the intro modal was open.
     restartSdk();
   };
@@ -355,7 +360,7 @@ const Configurator = () => {
   const jumpToDocsSite = ():void => {
     window.open(process.env.NEXT_PUBLIC_TINAD_DOCS_URL, '_blank');
   }
-  
+
   const mapDisplayMode = ():string => {
     return currentDisplayMode.substr(0,1).toUpperCase() + currentDisplayMode.substring(1);
   }
@@ -553,7 +558,7 @@ const Configurator = () => {
           onClose={() => startInteractivity() }
           size="70%"
         >
-          <Paper 
+          <Paper
             className="p-8"
             style={{overflow:'hidden'}}>
             <Stack>
@@ -565,18 +570,18 @@ const Configurator = () => {
               </Group>
               <Text>Welcome to our playground! Watch the video below for a quick introduction and how to use the demo.</Text>
               <div style={{ position: 'relative', paddingTop: '50%' }}>
-                <iframe 
+                <iframe
                   src={process.env.NEXT_PUBLIC_TINAD_INTRO_VIDEO_URL}
-                  frameBorder="0" 
+                  frameBorder="0"
                   allowFullScreen
                   style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
                 ></iframe>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <Button 
+                <Button
                   size="md"
                   data-autofocus
-                  className="get-started-button" 
+                  className="get-started-button"
                   onClick={startInteractivity}>Get started
                 </Button>
               </div>

@@ -3,9 +3,8 @@ import { UserIdGenerator } from './lib/UserIdGenerator';
 import { TargetInsertType, SDKConfiguration } from './types';
 import JSON5 from 'json5';
 
-
 // Adding event listener to initialize when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', async () => {
+const initializeSDK = async () => {
   console.log('DOMContentLoaded, initializing TINAD plainJS SDK');
   const tinadMessageIdentifier = 'tinadReconfigure';
   const defaultConfiguration:SDKConfiguration = {
@@ -94,4 +93,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log(`adding event listener for ${tinadMessageIdentifier}`);
   window.addEventListener("message", handlePostMessage);  // listen for post messages from the demo site
 
-});
+};
+
+// Make sure DOM is ready before initializing. If we somehow missed the DOMContentLoaded event, then just run the script.
+
+if (document.readyState === 'complete') {
+  initializeSDK();
+} else {
+  document.addEventListener('DOMContentLoaded', initializeSDK);
+}
+
