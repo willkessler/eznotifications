@@ -19,6 +19,15 @@ function Configurator({ Component, pageProps }: AppProps) {
       if (!previousFirstLoad) {
         localStorage.setItem('tinadFirstLoad', 'true');
       }
+      // Clear user id so notifs will start from scratch
+      const previousTinadConfigString = localStorage.getItem('tinad');
+      if (previousTinadConfigString) {
+        const previousTinadConfig = JSON.parse(previousTinadConfigString);
+        if (previousTinadConfig['userId'] !== undefined) {
+          delete(previousTinadConfig.userId);
+          localStorage.setItem('tinad', JSON.stringify(previousTinadConfig));
+        }
+      }
     }
   }
 

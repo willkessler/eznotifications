@@ -127,11 +127,8 @@ const Configurator = () => {
     const firstLoad = localStorage.getItem('tinadFirstLoad');
     if (firstLoad && firstLoad === 'true') {
       setIntroModalOpen(true);
-    } else {
-      // Always restart the sdk on page load in this demo site
-      restartSdk();
     }
-  }, [restartSdk]);
+  }, []);
 
   useEffect(() => {
     // first time we enter this demo, reset current user so you always see some notifs
