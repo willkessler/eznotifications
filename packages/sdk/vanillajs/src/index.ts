@@ -14,10 +14,7 @@ const kickOffPolling = async () => {
   }
 }
 
-// Adding event listener to initialize when the DOM is fully loaded
-const initializeSDK = async () => {
-  console.log('DOMContentLoaded, initializing TINAD plainJS SDK');
-  const tinadMessageIdentifier = 'tinadReconfigure';
+const createDefaultConfiguration = () => {
   const defaultConfiguration:SDKConfiguration = {
     api: {
       displayMode : 'toast',
@@ -60,6 +57,18 @@ const initializeSDK = async () => {
       },
     },
   };
+  return defaultConfiguration;
+}
+
+// Adding event listener to initialize when the DOM is fully loaded
+const initializeSDK = async () => {
+  if (sdkInstance != null) {
+    console.log('TINAD: Cannot initialize, sdkInstance already initialized.');
+    return;
+  }
+
+  console.log('DOMContentLoaded, initializing TINAD plainJS SDK');
+  const tinadMessageIdentifier = 'tinadReconfigure';
   
   const constructConfiguration = (): SDKConfiguration => {
     const scriptTag = document.getElementById('tinad-sdk') as HTMLScriptElement;
@@ -67,6 +76,7 @@ const initializeSDK = async () => {
     // console.log(`userSuppliedConfiguration: ${JSON.stringify(userSuppliedConfiguration,null,2)});
     const userConfiguration = userSuppliedConfiguration ? JSON5.parse(userSuppliedConfiguration) : {};
     userConfiguration.api.userId = UserIdGenerator.generate(userConfiguration.api.userId, userConfiguration.api.key);
+    const defaultConfiguration = createDefaultConfiguration();
     const finalConfiguration = { ...defaultConfiguration, ...userConfiguration };
     //console.log('Here we now really have the absolute, really, final configuration: ', finalConfiguration);
     return finalConfiguration;
@@ -75,8 +85,9 @@ const initializeSDK = async () => {
   const initialConfiguration = constructConfiguration();
   // Store constructed configuration in localstorage for use by the
   // sdk from here on out.
-  ConfigStore.setConfiguration(initialConfiguration);
+  //ConfigStore.setConfiguration(initialConfiguration);
   sdkInstance = new SDK();
+  sdkInstance.updateConfiguration(initialConfiguration);
   await kickOffPolling();
 
   const handlePostMessage = async (event:MessageEvent) => {
@@ -115,11 +126,13 @@ console.log('%%%%%%% TINAD SDK: done with initializer setup.');
 // Export configure function so users can do
 // import { configureTinad } from '@this-is-not-a-drill/general';
 
-export const configureTinad = (config: SDKConfiguration) => {
+export const configureTinad = (userConfiguration: SDKConfiguration) => {
   if (sdkInstance) {
-    sdkInstance.updateConfiguration(config); // Update configuration if SDK is already initialized
+    sdkInstance.updateConfiguration(userConfiguration); // Update configuration if SDK is already initialized
   } else {
-    ConfigStore.setConfiguration(config);
+    const defaultConfiguration = createDefaultConfiguration();
+    const finalConfiguration = { ...defaultConfiguration, ...userConfiguration };
+    ConfigStore.setConfiguration(finalConfiguration);
     if (!sdkInstance) {
       sdkInstance = new SDK();
     }
