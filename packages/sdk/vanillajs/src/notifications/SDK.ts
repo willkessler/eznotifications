@@ -21,8 +21,9 @@ import { SDKConfiguration, TargetInsertType } from '../types';
 import { Poller } from '../lib/Poller';
 import { ToastNotification } from './ToastNotifications';
 import { InlineNotification } from './InlineNotifications';
-import { ModalNotification, ModalNotificationOptions } from './ModalNotifications';
+import { ModalNotification } from './ModalNotifications';
 import { BannerNotification } from './BannerNotifications';
+import { ConfigStore } from '../lib/ConfigStore';
 
 export class SDK {
   poller: Poller;
@@ -30,20 +31,16 @@ export class SDK {
   inlineNotification: InlineNotification;
   modalNotification: ModalNotification;
   bannerNotification: BannerNotification;
-  configuration: SDKConfiguration;
   pollingInterval: number;
   notificationQueue: SDKNotification[] = [];
-  currentlyDisplayedNotificationUuid: string | null;
 
-  constructor(configuration: SDKConfiguration) {
-    this.configuration = configuration;
-    this.configuration.api.dismissFunction = this.markAsDismissed;
-    this.currentlyDisplayedNotificationUuid = null;
+  constructor() {
+    const configuration = ConfigStore.getConfiguration();
 
-    this.toastNotification = new ToastNotification(this.configuration);
-    this.inlineNotification = new InlineNotification(this.configuration);
-    this.modalNotification = new ModalNotification(this.configuration);
-    this.bannerNotification = new BannerNotification(this.configuration);
+    this.toastNotification = new ToastNotification(this.markAsDismissed);
+    this.inlineNotification = new InlineNotification(this.markAsDismissed);
+    this.modalNotification = new ModalNotification(this.markAsDismissed);
+    this.bannerNotification = new BannerNotification(this.markAsDismissed);
 
     const pollingErrorHandler = (error: any) => {
       if (error !== null) {
@@ -55,8 +52,9 @@ export class SDK {
   }
 
   addToNotificationQueue(rawNotification: any): void {
+    const configuration = ConfigStore.getConfiguration();
     // Check for existing notification by UUID
-    const exists = this.notificationQueue.some(n => n.uuid === rawNotification.uuid) || (rawNotification.uuid === this.currentlyDisplayedNotificationUuid);
+    const exists = this.notificationQueue.some(n => n.uuid === rawNotification.uuid) || (rawNotification.uuid === configuration.api.currentNotificationUuid);
 
     if (!exists) {
       const newNotification:SDKNotification = {
@@ -72,23 +70,27 @@ export class SDK {
         live:             rawNotification.live,
         dismissed:        rawNotification.dismissed,
       }
+      console.log('addToNotificationQueue:', newNotification);
       this.notificationQueue.push(newNotification);  // Add if not a duplicate
     }
   }
 
   pollApi = async ():Promise<number> => {
     //console.log('pollApi running');
+    const configuration = ConfigStore.getConfiguration();
     const fetchOptions: RequestInit = {
       method: 'GET',
       headers: new Headers({
-        'Authorization': `Bearer ${this.configuration.api.key}`,
+        'Authorization': `Bearer ${configuration.api.key}`,
         'Content-type': 'application/json' ,
         'X-Tinad-Source': 'vanillaJsSdk',
       }),
     }
 
+    //this.inlineNotification.logNotificationUuid();
+
     try {
-      const fullUrl = `${this.configuration.api.endpoint}/notifications?userId=${this.configuration.api.userId}&environments=${this.configuration.api.environments}`;
+      const fullUrl = `${configuration.api.endpoint}/notifications?userId=${configuration.api.userId}&environments=${configuration.api.environments}`;
       const response = await fetch(fullUrl, fetchOptions);
       const newPollInterval = response.headers.get('x-tinad-poll-interval');
       const data = await response.json();
@@ -113,17 +115,19 @@ export class SDK {
 
   async displayNotification(notification: any, dismissCallback: () => void): Promise<void> {
     console.log('displayNotification');
+    const configuration = ConfigStore.getConfiguration();
     try {
 //      notification.content = notification.content +
 //        'Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. ' +
 //        'Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus,'+
 //        ' iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet.';
       //console.log('Content:', notification.content);
-      switch (this.configuration.api.displayMode) {
+      switch (configuration.api.displayMode) {
         case 'toast':
           this.toastNotification.show(notification);
           break;
         case 'inline':
+          console.log(`displayNotification displaying an inline notification: ${JSON.stringify(notification,null,2)}`);
           await this.inlineNotification.show(notification);
           break;
         case 'modal':
@@ -133,21 +137,23 @@ export class SDK {
           await this.bannerNotification.show(notification);
           break;
       }
-      this.currentlyDisplayedNotificationUuid = notification.uuid;
+      configuration.api.currentNotificationUuid = notification.uuid;
+      ConfigStore.setConfiguration(configuration);
     } catch (error) {
       console.error('Display notification error: ', error);
     }
   }
 
   displayNextNotification = async () => {
-    //console.log('displayNextNotification');
+    const configuration = ConfigStore.getConfiguration();
+    //console.log(`displayNextNotification configuration.api.currentNotificationUuid ${configuration.api.currentNotificationUuid}`);
     if (this.notificationQueue.length === 0) return;  // Exit if no notifications in queue
-    if (this.currentlyDisplayedNotificationUuid) return; // don't try to display if something currently displayed
+    if (configuration.api.currentNotificationUuid !== undefined) return; // don't try to display if something currently displayed
 
     const notification = this.notificationQueue.shift();  // Get the next notification
 
     const dismissCallback = async () => {
-      notification && notification.uuid && await this.markAsDismissed(notification.uuid);
+      notification && notification.uuid && await this.markAsDismissed();
     };
     this.displayNotification(notification, dismissCallback);
     console.log('notificationQueue:');
@@ -158,28 +164,35 @@ export class SDK {
     this.notificationQueue = [];
   }
 
-  markAsDismissed = async (notificationUuid: string): Promise<void> => {
+  markAsDismissed = async (): Promise<void> => {
     console.log('markAsDismissed pausing polling.');
+    const configuration = ConfigStore.getConfiguration();
+    const notificationUuid = configuration.api.currentNotificationUuid;
+    if (notificationUuid === undefined) {
+      console.log('markAsDismissed: returning early because no currentNotificationUuid set.');
+      return;
+    }
     const pauseId = Math.random() * 10000;
     this.poller.pausePolling(pauseId); // prevent race conditions by stopping polling during the dismiss process
     try {
       const fetchOptions: RequestInit = {
         method: 'POST',
         headers: new Headers({
-          'Authorization': `Bearer ${this.configuration.api.key}`,
+          'Authorization': `Bearer ${configuration.api.key}`,
           'Content-Type': 'application/json',
           'X-Tinad-Source': 'vanillaJsSdk',
         }),
         body: JSON.stringify({
           notificationUuid,
-          userId: this.configuration.api.userId,
+          userId: configuration.api.userId,
         }),
       };
 
-      const response = await fetch(`${this.configuration.api.endpoint}/notifications/dismiss`, fetchOptions);
+      const response = await fetch(`${configuration.api.endpoint}/notifications/dismiss`, fetchOptions);
       const data = await response.json();
       console.log('Notification dismissed:', data);
-      this.currentlyDisplayedNotificationUuid = null;
+      configuration.api.currentNotificationUuid = undefined;
+      ConfigStore.setConfiguration(configuration);
       this.poller.restartPolling();
     } catch (error) {
       console.error('Display notification error: ', error);
@@ -190,18 +203,19 @@ export class SDK {
   }
 
   resetViewsForCurrentEndUser = async (): Promise<void> => {
-    console.log(`resetViewsForSingleUser resetting views for user ${this.configuration.api.userId}.`);
+    const configuration = ConfigStore.getConfiguration();
+    console.log(`resetViewsForSingleUser resetting views for user ${configuration.api.userId}.`);
     try {
       const fetchOptions: RequestInit = {
         method: 'PUT',
         headers: new Headers({
-          'Authorization': `Bearer ${this.configuration.api.key}`,
+          'Authorization': `Bearer ${configuration.api.key}`,
           'Content-Type': 'application/json',
           'X-Tinad-Source': 'vanillaJsSdk',
         }),
       };
 
-      const response = await fetch(`${this.configuration.api.endpoint}/notifications/reset-views/user/${this.configuration.api.userId}`, fetchOptions);
+      const response = await fetch(`${configuration.api.endpoint}/notifications/reset-views/user/${configuration.api.userId}`, fetchOptions);
       const data = await response.json();
       console.log('End user reset results:', data);
     } catch (error) {
@@ -209,21 +223,11 @@ export class SDK {
     }
   }
 
-  getStoredApiKey = ():string|null => {
-    const tinadConfigStr = localStorage.getItem('tinad');
-    if (tinadConfigStr) {
-      const tinadConfig = JSON.parse(tinadConfigStr);
-      if (tinadConfig.apiKey) {
-        return tinadConfig.apiKey;
-      }
-    }
-    return null;
-  }
-
-  updateConfiguration = async (configuration: SDKConfiguration):Promise<void> => {
+  updateConfiguration = async (newConfiguration: SDKConfiguration):Promise<void> => {
     this.poller.cancelPolling();
     this.clearNotificationQueue();
-    switch (this.configuration.api.displayMode) {
+    const configuration = ConfigStore.getConfiguration();
+    switch (configuration.api.displayMode) {
       case 'toast':
         this.toastNotification.hide();
         break;
@@ -237,14 +241,11 @@ export class SDK {
         this.bannerNotification.hide();
         break;
     }
-    this.currentlyDisplayedNotificationUuid = null;
-    this.configuration = configuration;
-    this.configuration.api.dismissFunction = this.markAsDismissed;
-
-    this.toastNotification = new ToastNotification(this.configuration);
-    this.inlineNotification = new InlineNotification(this.configuration);
-    this.modalNotification = new ModalNotification(this.configuration);
-    this.bannerNotification = new BannerNotification(this.configuration);
+    configuration.api.currentNotificationUuid = undefined;
+    ConfigStore.setConfiguration(newConfiguration);
+    // Need to rebind the inline elements in case we switched from
+    // standard to custom div elements
+    this.inlineNotification.bindDomElements();
 
     // Automatically reset views for the current (demo) user.
     await this.resetViewsForCurrentEndUser();

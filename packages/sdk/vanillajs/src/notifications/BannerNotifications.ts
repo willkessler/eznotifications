@@ -2,6 +2,7 @@ import '../css/bannerNotifications.css';
 import { MarkdownLib } from '../lib/Markdown';
 import { SDKConfiguration } from '../types';
 import { SDKNotification } from '../../../react-core/src/types';
+import { ConfigStore } from '../lib/ConfigStore';
 
 export interface BannerOptions {
   onClose?: () => void;
@@ -13,8 +14,6 @@ export interface BannerOptions {
 export class BannerNotification {
   private banner: HTMLDivElement | null;
   private bannerOn: boolean;
-  private configuration: SDKConfiguration;
-  private currentNotificationUuid: string | null;
   //private content: string;
   private bannerTargets: {
     outer: string;
@@ -24,8 +23,8 @@ export class BannerNotification {
     dismiss: string;
   };
   
-  constructor(configuration:SDKConfiguration) {
-    this.configuration = configuration;
+  constructor(dismissFunction:() => Promise<void>) {
+    const configuration = ConfigStore.getConfiguration();
     this.bannerTargets = {
       outer: 'tinad-notification-banner',
       slideDown: 'slideDown',
@@ -34,21 +33,21 @@ export class BannerNotification {
       dismiss: 'dismiss',
     }
 
-    if (this.configuration && this.configuration.banner && this.configuration.banner.target) {
-      if (this.configuration.banner.target.outer) {
-        this.bannerTargets.outer = this.configuration.banner.target.outer;
+    if (configuration && configuration.banner && configuration.banner.target) {
+      if (configuration.banner.target.outer) {
+        this.bannerTargets.outer = configuration.banner.target.outer;
       }
-      if (this.configuration.banner.target.slideDown) {
-        this.bannerTargets.slideDown = this.configuration.banner.target.slideDown;
+      if (configuration.banner.target.slideDown) {
+        this.bannerTargets.slideDown = configuration.banner.target.slideDown;
       }
-      if (this.configuration.banner.target.slideUp) {
-        this.bannerTargets.slideUp = this.configuration.banner.target.slideUp;
+      if (configuration.banner.target.slideUp) {
+        this.bannerTargets.slideUp = configuration.banner.target.slideUp;
       }
-      if (this.configuration.banner.target.content) {
-        this.bannerTargets.content = this.configuration.banner.target.content;
+      if (configuration.banner.target.content) {
+        this.bannerTargets.content = configuration.banner.target.content;
       }
-      if (this.configuration.banner.target.dismiss) {
-        this.bannerTargets.dismiss = this.configuration.banner.target.dismiss;
+      if (configuration.banner.target.dismiss) {
+        this.bannerTargets.dismiss = configuration.banner.target.dismiss;
       }
     }
 
@@ -62,18 +61,15 @@ export class BannerNotification {
     }
 
     this.banner.addEventListener('animationend', async () => {
-      if (this.banner && this.banner.style && this.configuration.api && (this.banner.className === this.bannerTargets.slideUp)) {
+      if (this.banner && this.banner.style && configuration.api && (this.banner.className === this.bannerTargets.slideUp)) {
         this.bannerOn = false;
         this.banner.style.display = 'none';
-        console.log(`removeBanner calling dismiss on uuid: ${this.currentNotificationUuid}`);
-        if (this.configuration && this.configuration.api && this.configuration.api.dismissFunction && this.currentNotificationUuid) {
-          await this.configuration.api.dismissFunction(this.currentNotificationUuid);
-        }
+        console.log(`removeBanner calling dismiss on uuid: ${configuration.api.currentNotificationUuid}`);
+        await dismissFunction();
       }
     });
 
     this.bannerOn = false;
-    this.currentNotificationUuid = null;
   }
     
   removeBanner() {
@@ -83,6 +79,7 @@ export class BannerNotification {
   }
 
   public show = async (notification:SDKNotification):Promise<boolean> => {
+    const configuration = ConfigStore.getConfiguration();
     const content = notification.content || 'Default text';
     const uuid = notification.uuid;
 
@@ -99,7 +96,7 @@ export class BannerNotification {
     }
     
     // Create and insert "X" button for instant dismissal, if active
-    if (this.configuration.banner && this.configuration.banner.show && this.configuration.banner.show.dismiss) {
+    if (configuration.banner && configuration.banner.show && configuration.banner.show.dismiss) {
       const dismissButton = document.createElement('button');
       dismissButton.className = this.bannerTargets.dismiss;
       dismissButton.textContent = 'x';
@@ -114,13 +111,12 @@ export class BannerNotification {
       this.banner.style.display = 'flex';
     }
 
-    this.currentNotificationUuid = uuid;
     this.bannerOn = true;
 
     setTimeout(() => {
       this.removeBanner();
       // Listen for the end of the animation to hide the banner
-    }, this.configuration.banner?.duration);
+    }, configuration.banner?.duration);
 
     return true;
   }

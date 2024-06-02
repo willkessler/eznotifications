@@ -1,11 +1,10 @@
 import '../css/inlineNotifications.css';
 import { MarkdownLib } from '../lib/Markdown';
 import { SDKConfiguration, TargetInsertType } from '../types';
+import { ConfigStore } from '../lib/ConfigStore';
 import { SDKNotification } from '../../../react-core/src/types';
 
 export class InlineNotification {
-  private configuration:SDKConfiguration;
-  private inlineNotifOn:boolean;
   private cannotRender:boolean;
   private notificationElements: {
     outer: HTMLElement[],
@@ -13,26 +12,30 @@ export class InlineNotification {
     confirm: HTMLElement[],
     dismiss: HTMLElement[],
   };
-  private currentNotificationUuid: string | null;
   private TINAD_CONTAINER_CLASSNAME            = 'tinad-inline-container';
   private TINAD_NOTIFICATION_CONTENT_CLASSNAME = 'tinad-inline-content';
   private TINAD_CONFIRM_CLASSNAME              = 'tinad-inline-confirm';
   private TINAD_DISMISS_CLASSNAME              = 'tinad-inline-dismiss';
+  private dismissFunction:() => Promise<void>;
 
-  constructor(configuration:SDKConfiguration ) {
-    this.configuration = configuration;
+  constructor(dismissFunction:() => Promise<void>) {
+    this.dismissFunction = dismissFunction;
     this.cannotRender = true;
-    this.inlineNotifOn = false;
     this.notificationElements = {
       outer: [],
       content: [],
       confirm: [],
       dismiss: [],
     };
-    this.currentNotificationUuid = null;
-    // Set up TINAD notifications in the dom, either before/inside/after containers defined by the user, 
+    // console.log('Tinad inline: constructor done');
+    this.bindDomElements();
+  }
+
+  public bindDomElements():void {
+    // Set up TINAD notifications in the dom, either before/inside/after containers defined by the user,
     // or inside a .tinad-container element.
-    // console.log(`Tinad inline constructor: ${JSON.stringify(this.configuration.inline,null,2)}`);
+    // console.log(`Tinad inline constructor: ${JSON.stringify(configuration.inline,null,2)}`);
+    const configuration = ConfigStore.getConfiguration();
     const inlineConfig = configuration.inline;
     if (inlineConfig && inlineConfig.target && inlineConfig.target.useDefaults) {
       // if user just passed our default container class, then we assume all the rest are defaults
@@ -57,18 +60,20 @@ export class InlineNotification {
     for (const container of this.notificationElements.dismiss) {
       container.onclick = async () => { await this.hideContainers(); };
     }
-    // console.log('Tinad inline: constructor done');
   }
 
   private async hideContainers() {
+    const configuration = ConfigStore.getConfiguration();
+    console.log(`hideContainers, configuration=${JSON.stringify(configuration,null,2)}`);
     this.notificationElements?.outer?.forEach(notificationElement => {
       notificationElement.style.display = 'none';
     });
-    this.inlineNotifOn = false;
-    this.currentNotificationUuid && await this.configuration?.api?.dismissFunction?.(this.currentNotificationUuid);
+    console.log('inline hideContainers, currentNotificationUuid=', configuration.api.currentNotificationUuid);
+    configuration.api.currentNotificationUuid && await this.dismissFunction?.();
   }
 
   private async setAndShowNotifications(content:string):Promise<void> {
+    const configuration = ConfigStore.getConfiguration();
     console.log('setAndShowNotifications');
     // Insert content.
     const markedContent = await MarkdownLib.renderMarkdown(content);
@@ -81,14 +86,14 @@ export class InlineNotification {
       notificationElement.style.display = 'block';
     });
     this.notificationElements.confirm.forEach(notificationElement => {
-      if (this.configuration.inline?.show?.confirm) {
+      if (configuration.inline?.show?.confirm) {
         notificationElement.style.display = 'block';
       } else {
         notificationElement.style.display = 'none';
       }
     });
     this.notificationElements.dismiss.forEach(notificationElement => {
-      if (this.configuration.inline?.show?.dismiss) {
+      if (configuration.inline?.show?.dismiss) {
         notificationElement.style.display = 'block';
       } else {
         notificationElement.style.display = 'none';
@@ -98,26 +103,32 @@ export class InlineNotification {
   }
 
   public show = async (notification:SDKNotification):Promise<void> => {
+    const configuration = ConfigStore.getConfiguration();
     const content = notification.content || 'Default text';
     const uuid = notification.uuid;
 
-    if (this.inlineNotifOn) {
+    if (configuration.api.currentNotificationUuid) {
+      console.log('Already displaying a notification, show() returning early');
       return;
     }
-    
+
     // Fill all containers with the same content
-    this.currentNotificationUuid = uuid;
     await this.setAndShowNotifications(content);
 
-    this.inlineNotifOn = true;
+    console.log('inlineNotifications show: configuration.api.currentNotificationUuid=', configuration.api.currentNotificationUuid);
+
   }
 
   hide(): void {
     this.notificationElements?.outer?.forEach(notificationElement => {
       notificationElement.style.display = 'none';
     });
-    this.inlineNotifOn = false;
     console.log('Inline notifications programmatically hidden.');
+  }
+
+  public logNotificationUuid() {
+    const configuration = ConfigStore.getConfiguration();
+    console.log('inlineNotifications show: configuration.api.currentNotificationUuid=', configuration.api.currentNotificationUuid);
   }
 
 }

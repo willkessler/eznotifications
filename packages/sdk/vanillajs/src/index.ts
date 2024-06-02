@@ -1,5 +1,6 @@
 import { SDK } from './notifications/SDK';
 import { UserIdGenerator } from './lib/UserIdGenerator';
+import { ConfigStore } from './lib/ConfigStore';
 import { TargetInsertType, SDKConfiguration } from './types';
 import JSON5 from 'json5';
 
@@ -9,7 +10,7 @@ const initializeSDK = async () => {
   const tinadMessageIdentifier = 'tinadReconfigure';
   const defaultConfiguration:SDKConfiguration = {
     api: {
-      displayMode : 'inline',
+      displayMode : 'toast',
       userId: undefined, // will be set later by either the user or autoset
       key: '',
       endpoint: 'https://api.this-is-not-a-drill.com',
@@ -62,7 +63,10 @@ const initializeSDK = async () => {
   };  
 
   const initialConfiguration = constructConfiguration();
-  const sdk = new SDK(initialConfiguration);
+  // Store constructed configuration in localstorage for use by the
+  // sdk from here on out.
+  ConfigStore.setConfiguration(initialConfiguration);
+  const sdk = new SDK();
 
   try {
     await sdk.pollApi(); // kick off polling
@@ -81,9 +85,6 @@ const initializeSDK = async () => {
         const updatedSdkConfig = receivedMessage.config;
         console.log(`TINAD reconfiguring itself with this new config: ${JSON.stringify(updatedSdkConfig,null,2)}`);
         updatedSdkConfig.api.userId = UserIdGenerator.generate(updatedSdkConfig.api.userId, updatedSdkConfig.api.key);
-        if (!updatedSdkConfig.api?.key) {
-          updatedSdkConfig.api.key = sdk.getStoredApiKey(); // continue using the previously set api key
-        }
         await sdk.updateConfiguration(updatedSdkConfig);
       }
     }
@@ -125,3 +126,15 @@ if (document.readyState === 'complete') {
 }
 
 console.log('%%%%%%% TINAD SDK: done with initializer setup.');
+
+
+// Export configure function so users can do
+// import { configureTinad } from '@this-is-not-a-drill/general';
+
+export const configureTinad = (config: SDKConfiguration) => {
+  if (sdkInstance) {
+    sdkInstance.updateConfiguration(config); // Update configuration if SDK is already initialized
+  } else {
+    initializeIfReady(config); // Initialize SDK with new configuration
+  }
+};

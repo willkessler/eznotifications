@@ -3,6 +3,7 @@ import { MarkdownLib } from '../lib/Markdown';
 import '../css/modalAndToastNotifications.css';
 import { SDKConfiguration } from '../types';
 import { SDKNotification } from '../../../react-core/src/types';
+import { ConfigStore } from '../lib/ConfigStore';
 
 export interface ToastNotificationOptions {
   onClose?: () => void;
@@ -27,12 +28,11 @@ const positionMap: Record<string, SweetAlertPosition> = {
 
 export class ToastNotification {
   private toastContainer: HTMLDivElement;
-  private configuration: SDKConfiguration;
   private toastOn: boolean = false;
+  private dismissFunction:() => Promise<void>;
 
-  constructor(configuration: SDKConfiguration) {
-    this.configuration = configuration;
-    
+  constructor(dismissFunction:() => Promise<void>) {    
+    this.dismissFunction = dismissFunction;
     const elements = document.getElementsByClassName('tinad-toast-container');
     const elementsArray = Array.from(elements) as HTMLDivElement[];
     if (elementsArray.length === 0) {
@@ -43,9 +43,9 @@ export class ToastNotification {
       this.toastContainer = elementsArray[0];
     }
   }
-
-  
+ 
   async show( notification: SDKNotification ):Promise<boolean> {
+    const configuration = ConfigStore.getConfiguration();
     const content = notification.content || 'Default text';
     const uuid = notification.uuid;
     
@@ -77,11 +77,11 @@ export class ToastNotification {
       const swalOutcome: SweetAlertResult = await Swal.fire({
         toast:true,
         html: protectedContent,
-        timer: this.configuration?.toast?.duration ?? 5000,
-        timerProgressBar: this.configuration.toast?.progressBar,
-        customClass: (this.configuration.toast?.useCustomClasses ? customClassObject : {}),
+        timer: configuration?.toast?.duration ?? 5000,
+        timerProgressBar: configuration.toast?.progressBar,
+        customClass: (configuration.toast?.useCustomClasses ? customClassObject : {}),
         width: '20em',
-        position: positionMap[this.configuration?.toast?.position ?? 'top-right'],
+        position: positionMap[configuration?.toast?.position ?? 'top-right'],
         showCloseButton: true,
         showConfirmButton: false,
         didOpen: () => {
@@ -96,7 +96,7 @@ export class ToastNotification {
       } else if (swalOutcome.dismiss === Swal.DismissReason.cancel) {
         console.log(`Dismissed by : ${swalOutcome.dismiss}`);
       }
-      uuid && await this.configuration?.api?.dismissFunction?.(uuid);
+      uuid && await this.dismissFunction?.();
       this.toastOn = false;
       return true;
     } catch (error) {
