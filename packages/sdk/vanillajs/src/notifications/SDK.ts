@@ -227,6 +227,7 @@ export class SDK {
     this.poller.cancelPolling();
     this.clearNotificationQueue();
     const configuration = ConfigStore.getConfiguration();
+    console.log('We are in updateConfiguration, configuration=', configuration);
     switch (configuration.api.displayMode) {
       case 'toast':
         this.toastNotification.hide();
@@ -243,9 +244,10 @@ export class SDK {
     }
     configuration.api.currentNotificationUuid = undefined;
     ConfigStore.setConfiguration(newConfiguration);
-    // Need to rebind the inline elements in case we switched from
+    // Need to rebind the inline and banner elements in case we switched from
     // standard to custom div elements
     this.inlineNotification.bindDomElements();
+    this.bannerNotification.configureBannerDivs();
 
     // Automatically reset views for the current (demo) user.
     await this.resetViewsForCurrentEndUser();

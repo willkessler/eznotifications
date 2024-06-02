@@ -4,6 +4,16 @@ import { ConfigStore } from './lib/ConfigStore';
 import { TargetInsertType, SDKConfiguration } from './types';
 import JSON5 from 'json5';
 
+let sdkInstance: SDK | null = null;
+
+const kickOffPolling = async () => {
+  try {
+    await sdkInstance?.pollApi(); // kick off polling
+  } catch (error) {
+    console.error(`Failed to poll TINAD API: ${error}`);
+  }
+}
+
 // Adding event listener to initialize when the DOM is fully loaded
 const initializeSDK = async () => {
   console.log('DOMContentLoaded, initializing TINAD plainJS SDK');
@@ -66,13 +76,8 @@ const initializeSDK = async () => {
   // Store constructed configuration in localstorage for use by the
   // sdk from here on out.
   ConfigStore.setConfiguration(initialConfiguration);
-  const sdk = new SDK();
-
-  try {
-    await sdk.pollApi(); // kick off polling
-  } catch (error) {
-    console.error(`Failed to poll TINAD API: ${error}`);
-  }
+  sdkInstance = new SDK();
+  await kickOffPolling();
 
   const handlePostMessage = async (event:MessageEvent) => {
     if (event.origin !== window.location.origin) {
@@ -85,7 +90,7 @@ const initializeSDK = async () => {
         const updatedSdkConfig = receivedMessage.config;
         console.log(`TINAD reconfiguring itself with this new config: ${JSON.stringify(updatedSdkConfig,null,2)}`);
         updatedSdkConfig.api.userId = UserIdGenerator.generate(updatedSdkConfig.api.userId, updatedSdkConfig.api.key);
-        await sdk.updateConfiguration(updatedSdkConfig);
+        await sdkInstance?.updateConfiguration(updatedSdkConfig);
       }
     }
   }
@@ -96,35 +101,14 @@ const initializeSDK = async () => {
 };
 
 // Make sure DOM is ready before initializing. If we somehow missed the DOMContentLoaded event, then just run the script.
-
 console.log('%%%%%%% TINAD SDK: running, document.readyState=', document.readyState);
-
-const initializeIfReady = ():void => {
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    console.log('TINAD: Document is ready, initializing SDK');
-    initializeSDK();
-  } else {
-    console.log('TINAD: Waiting for DOMContentLoaded');
-    document.addEventListener('DOMContentLoaded', initializeSDK);
-  }
-}
-
-// Check if the script is running after DOMContentLoaded has fired
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
-  initializeIfReady();
-} else {
-  //console.log('Document not fully loaded yet');
-  document.addEventListener('DOMContentLoaded', initializeIfReady);
-}
-
-if (document.readyState === 'complete') {
-  //console.log('readyState==complete');
+  console.log('TINAD: Document is ready, initializing SDK');
   initializeSDK();
 } else {
-  //console.log('wait for DOMContentLoaded');
+  console.log('TINAD: Waiting for DOMContentLoaded');
   document.addEventListener('DOMContentLoaded', initializeSDK);
 }
-
 console.log('%%%%%%% TINAD SDK: done with initializer setup.');
 
 
@@ -135,6 +119,10 @@ export const configureTinad = (config: SDKConfiguration) => {
   if (sdkInstance) {
     sdkInstance.updateConfiguration(config); // Update configuration if SDK is already initialized
   } else {
-    initializeIfReady(config); // Initialize SDK with new configuration
+    ConfigStore.setConfiguration(config);
+    if (!sdkInstance) {
+      sdkInstance = new SDK();
+    }
+    kickOffPolling();
   }
 };

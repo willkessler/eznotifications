@@ -19,7 +19,8 @@
     "build:prod": "tsc && webpack --env production",
     "build:dev": "tsc && webpack --env development",
     "start": "webpack serve --mode development --env development",
-    "serve": "concurrently \"yarn build\" \"yarn start\""
+    "debug-build": "tsc && webpack --mode development",
+    "serve": "concurrently \"yarn debug-build\" \"yarn start\""
   },
   "devDependencies": {
     "ts-loader": "^9.5.1",

@@ -109,16 +109,7 @@ const Configurator = () => {
   }
 
   const restartSdk = () => {
-    setCurrentDisplayMode('toast');
     const currentConfig = getSdkConfiguration();
-    if (currentConfig.api) {
-      currentConfig.api.displayMode = 'toast';
-    }
-    if (currentConfig.toast) {
-      currentConfig.toast.position = 'top-right';
-      currentConfig.toast.useCustomClasses = false;
-    }
-    setUseCustomToastStyles(false);
     setSdkConfiguration(currentConfig);
     updateSampleApp(currentConfig);
   };

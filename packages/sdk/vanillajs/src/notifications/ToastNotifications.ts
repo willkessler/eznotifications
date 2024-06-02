@@ -106,6 +106,7 @@ export class ToastNotification {
   }
   
   hide(): void {
+    console.log('Toast hide()');
     if (this.toastOn && Swal.isVisible()) {
       Swal.close();
       this.toastOn = false;

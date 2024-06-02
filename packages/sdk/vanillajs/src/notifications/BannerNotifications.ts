@@ -22,16 +22,30 @@ export class BannerNotification {
     content: string;
     dismiss: string;
   };
+  private hideBannerTimeout: number | null = null;
+  private dismissFunction:() => Promise<void>;
   
   constructor(dismissFunction:() => Promise<void>) {
-    const configuration = ConfigStore.getConfiguration();
-    this.bannerTargets = {
+    this.bannerTargets = this.createDefaultBannerTargets();
+    this.dismissFunction = dismissFunction;
+    this.banner = this.configureBannerDivs();
+    this.hideBannerTimeout = null;    
+    this.bannerOn = false;
+  }
+    
+  private createDefaultBannerTargets() {
+    return {
       outer: 'tinad-notification-banner',
       slideDown: 'slideDown',
       slideUp: 'slideUp',
       content: 'content',
       dismiss: 'dismiss',
     }
+  }
+      
+  public configureBannerDivs() {
+    const configuration = ConfigStore.getConfiguration();
+    this.bannerTargets = this.createDefaultBannerTargets();
 
     if (configuration && configuration.banner && configuration.banner.target) {
       if (configuration.banner.target.outer) {
@@ -56,22 +70,21 @@ export class BannerNotification {
       this.banner = document.createElement('div');
       this.banner.id = this.bannerTargets.outer;
       document.body.appendChild(this.banner);
+      this.banner.addEventListener('animationend', async () => {
+        if (this.banner && this.banner.style && configuration.api && (this.banner.className === this.bannerTargets.slideUp)) {
+          this.bannerOn = false;
+          this.banner.style.display = 'none';
+          console.log(`removeBanner calling dismiss on uuid: ${configuration.api.currentNotificationUuid}`);
+          await this.dismissFunction();
+        }
+      });
     } else {
       this.banner = existingBanner as HTMLDivElement;
     }
 
-    this.banner.addEventListener('animationend', async () => {
-      if (this.banner && this.banner.style && configuration.api && (this.banner.className === this.bannerTargets.slideUp)) {
-        this.bannerOn = false;
-        this.banner.style.display = 'none';
-        console.log(`removeBanner calling dismiss on uuid: ${configuration.api.currentNotificationUuid}`);
-        await dismissFunction();
-      }
-    });
-
-    this.bannerOn = false;
+    return this.banner;
   }
-    
+
   removeBanner() {
     if (this.banner) {
       this.banner.className = this.bannerTargets.slideUp;
@@ -113,7 +126,11 @@ export class BannerNotification {
 
     this.bannerOn = true;
 
-    setTimeout(() => {
+    if (this.hideBannerTimeout !== null) {
+      clearTimeout(this.hideBannerTimeout);
+      this.hideBannerTimeout = null;
+    }
+    this.hideBannerTimeout = setTimeout(() => {
       this.removeBanner();
       // Listen for the end of the animation to hide the banner
     }, configuration.banner?.duration);
@@ -128,6 +145,10 @@ export class BannerNotification {
         this.banner.style.display = 'none';
       }
       console.log('Banner programmatically hidden.');
+    }
+    if (this.hideBannerTimeout !== null) {
+      clearTimeout(this.hideBannerTimeout);
+      this.hideBannerTimeout = null;
     }
   }
   

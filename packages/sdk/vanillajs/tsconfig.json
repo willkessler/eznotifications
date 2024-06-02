@@ -16,7 +16,8 @@
     "lib": ["dom", "esnext"],
     "moduleResolution": "node",
     "sourceMap": true,
-    "declaration": true
+    "declaration": true,
+    "removeComments":false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "tests"]

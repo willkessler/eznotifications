@@ -13,6 +13,7 @@ export interface SDKConfiguration {
     environments?: string[];
     domains?: string[];
     dismissFunction?: (notificationUuid:string) => Promise<void>;
+    currentNotificationUuid?: string;
   };
   toast?: {
     // One of these (from swal2):

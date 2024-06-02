@@ -29,7 +29,19 @@ const commonConfig = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: {
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: false,
+            compilerOptions: {
+              sourceMap: true,
+              preserveConstEnums: true,
+              removeComments: false,
+              inlineSourceMap: false,
+              inlineSources: true
+            }
+          }
+        },
         exclude: /node_modules/,
       },
       {
@@ -63,11 +75,18 @@ const distConfig = {
 
 // Log the applied plugins to ensure BannerPlugin is added
 console.log('distConfig plugins:', distConfig.plugins);
+console.log('Distribution Config Mode:', distConfig.mode);
 
 // Configuration for testing
 const devConfig = {
   ...commonConfig,
   mode: 'development',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+    libraryTarget: 'umd',
+    library: 'ThisIsNotADrillSDK'
+  },
   devServer: {
     static: {
       directory: path.join(__dirname, 'dist'),
@@ -87,6 +106,9 @@ const devConfig = {
     new webpack.HotModuleReplacementPlugin()
   ],
 };
+
+console.log('Development Config Mode:', devConfig.mode);
+
 
 module.exports = [
   distConfig,
