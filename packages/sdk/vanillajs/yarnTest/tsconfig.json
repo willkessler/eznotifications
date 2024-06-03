@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "module": "es6",
+    "target": "es5",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".", // Base directory for non-relative module names
+    "paths": {
+      "@this-is-not-a-drill/vanillajs-sdk": [
+        "../dist/bundle.js" // Adjust this path if necessary
+      ]
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "../dist/types"
+    ]
+  },
+  "include": [
+    "./**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

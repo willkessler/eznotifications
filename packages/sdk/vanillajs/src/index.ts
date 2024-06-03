@@ -139,3 +139,8 @@ export const configureTinad = (userConfiguration: SDKConfiguration) => {
     kickOffPolling();
   }
 };
+
+export const generateDefaultConfiguration = ():SDKConfiguration => {
+  const defaultConfigurationCopy = { ...createDefaultConfiguration() };
+  return defaultConfigurationCopy;
+}
