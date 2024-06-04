@@ -1,15 +1,20 @@
-// Replace your current import with the absolute path to the SDK
-//import { configureTinad } from '/home/will/Development/this-is-not-a-drill/packages/sdk/vanillajs/dist/bundle.js';
-import { configureTinad, generateDefaultConfiguration, SDKConfiguration } from '@this-is-not-a-drill/vanillajs-sdk';
+import dotenv from 'dotenv';
+import { configureTinad, 
+         generateDefaultConfiguration, 
+         getCurrentConfiguration, 
+         SDKConfiguration } from '@this-is-not-a-drill/vanillajs-sdk';
+
+dotenv.config();
 
 console.log('Configurating TINAD');
+const newConfig = generateDefaultConfiguration();
+newConfig.api.endpoint = process.env.API_ENDPOINT;
+newConfig.api.key = process.env.API_KEY;
+newConfig.api.displayMode = 'toast';
+console.log(`newConfig: ${JSON.stringify(newConfig,null,2)}`);
+configureTinad(newConfig);
 
-const defaultConfig = generateDefaultConfiguration();
-defaultConfig.api.endpoint = 'http://localhost:8080';
-defaultConfig.api.key = 'C0N94F27';
-defaultConfig.api.displayMode = 'toast';
-console.log(`defaultConfig: ${JSON.stringify(defaultConfig,null,2)}`);
-configureTinad(defaultConfig);
+const currentConfig = getCurrentConfiguration();
+console.log(`Current TINAD config: ${JSON.stringify(currentConfig,null,2)}`);
 
 console.log('TINAD Configuration done.');
-

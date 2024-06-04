@@ -130,8 +130,11 @@ export const configureTinad = (userConfiguration: SDKConfiguration) => {
   if (sdkInstance) {
     sdkInstance.updateConfiguration(userConfiguration); // Update configuration if SDK is already initialized
   } else {
-    const defaultConfiguration = createDefaultConfiguration();
-    const finalConfiguration = { ...defaultConfiguration, ...userConfiguration };
+    const startingConfiguration = createDefaultConfiguration();
+    // Create and set a random userId if the consumer neglects to provide one.
+    const providedUserId = userConfiguration.api?.userId;
+    userConfiguration.api.userId = UserIdGenerator.generate(providedUserId, userConfiguration.api.key as string);
+    const finalConfiguration = { ...startingConfiguration, ...userConfiguration };
     ConfigStore.setConfiguration(finalConfiguration);
     if (!sdkInstance) {
       sdkInstance = new SDK();
@@ -143,4 +146,9 @@ export const configureTinad = (userConfiguration: SDKConfiguration) => {
 export const generateDefaultConfiguration = ():SDKConfiguration => {
   const defaultConfigurationCopy = { ...createDefaultConfiguration() };
   return defaultConfigurationCopy;
+}
+
+export const getCurrentConfiguration = ():SDKConfiguration => {
+  const currentConfiguration = ConfigStore.getConfiguration();
+  return currentConfiguration;
 }
