@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "@this-is-not-a-drill/vanillajs-sdk": "file:../",
-    "webpack-dev-server": "^5.0.4"
+    "express": "^4.19.2",
+    "webpack-dev-middleware": "^7.2.1",
+    "webpack-dev-server": "^5.0.4",
+    "webpack-hot-middleware": "^2.26.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.6",

@@ -133,7 +133,7 @@ export class BannerNotification {
     this.hideBannerTimeout = setTimeout(() => {
       this.removeBanner();
       // Listen for the end of the animation to hide the banner
-    }, configuration.banner?.duration);
+    }, configuration.banner?.duration) as unknown as number;
 
     return true;
   }

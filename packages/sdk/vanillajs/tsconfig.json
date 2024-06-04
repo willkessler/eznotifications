@@ -4,12 +4,16 @@
     "paths" : {
       "*": [
         "src/*", 
-        "node_modules/*"
+        "node_modules/*",
+        "../react-core/src/*",
+      ],
+      "types": ["marked"],
+      "typeRoots": [
+        "../react-core/src",
+        "../../../node_modules/marked/lib",
+        "./node_modules/@types"
       ],
     },
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
     "declarationDir": "./dist/types",
     "outDir": "./dist",
     "strict": true,

@@ -1,30 +1,42 @@
-const config = require('./webpack.config.js'); // Update the path to your config file
 const express = require('express');
-const webpack = require('webpack');
-const webpackDevMiddleware = require('webpack-dev-middleware');
-const webpackHotMiddleware = require('webpack-hot-middleware');
-const config = require('../webpack.config.js'); // Adjust path as necessary
-const compiler = webpack(config);
-
 const path = require('path');
+
 const app = express();
-const port = 3500;  // Port number can be any number of your choice
+const port = 9000;  // You can adjust the port number as needed
 
-// Serve static files from a specified directory, e.g., 'public'
-app.use(express.static('public'));
-
-app.use(webpackDevMiddleware(compiler, {
-  publicPath: config.output.publicPath,
-}));
-
-app.use(webpackHotMiddleware(compiler));
-
-// Send HTML file to the client
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/index.html'));
-});
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Demo app listening at http://localhost:${port}`);
 });
+
+/*
+const webpack = require('webpack');
+const WebpackDevServer = require('webpack-dev-server');
+const config = require('../webpack.config.js');
+
+const devConfig = config.find(c => c.mode === 'development');
+
+if (!devConfig) {
+  throw new Error('Development configuration not found');
+}
+
+const compiler = webpack(devConfig);
+
+const server = new WebpackDevServer({
+  static: {
+    directory: './public'
+  },
+  port: devConfig.devServer.port,
+  headers: devConfig.devServer.headers,
+  devMiddleware: {
+    publicPath: devConfig.devServer.devMiddleware.publicPath,
+  },
+}, compiler);
+
+server.startCallback(() => {
+  console.log(`Server started on port ${devConfig.devServer.port}`);
+});
+*/

@@ -14,8 +14,8 @@
       ]
     },
     "typeRoots": [
-      "./node_modules/@types",
-      "../dist/types"
+      "../dist/types/vanillajs",
+      "../../node_modules/@types"
     ]
   },
   "include": [

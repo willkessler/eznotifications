@@ -2,7 +2,7 @@
   "name": "@this-is-not-a-drill/vanillajs-sdk",
   "private": false,
   "description": "Core vanilla js SDK for deploying the This is Not A Drill! service in client apps.",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "main": "dist/index.js",
   "module": "dist/bundle.esm.js",
   "repository": {
@@ -21,7 +21,8 @@
     "build:types": "node generateTypeIndex.js",
     "start": "webpack serve --mode development --env development",
     "debug-build": "tsc && yarn build:types && webpack --mode development",
-    "serve": "concurrently \"yarn debug-build\" \"yarn start\""
+    "serve": "concurrently \"yarn debug-build\" \"yarn start\"",
+    "prod-serve": "concurrently \"yarn build:prod\" \"yarn start\""
   },
   "devDependencies": {
     "@types/marked": "^6.0.0",
@@ -33,7 +34,6 @@
   },
   "dependencies": {
     "@types/dompurify": "^3.0.5",
-    "@types/marked": "^6.0.0",
     "concurrently": "^8.2.2",
     "css-loader": "^7.1.1",
     "dompurify": "^3.1.2",
@@ -44,5 +44,5 @@
     "uuidv4": "^6.2.13",
     "webpack-dev-server": "^5.0.4"
   },
-  "types": "dist/types/index.d.ts"
+  "types": "index.d.ts"
 }
