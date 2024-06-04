@@ -11,7 +11,10 @@ const envKeys = Object.keys(process.env).reduce((prev, next) => {
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.ts', // Adjust path as necessary
+  entry: [
+    'webpack-hot-middleware/client?reload=true',
+    './src/index.ts',
+  ],
   module: {
     rules: [
       {
@@ -21,6 +24,15 @@ module.exports = {
       },
     ],
   },
+    devServer: {
+      static: {
+        directory: path.join(__dirname, 'public'),
+      },
+      port: 9000,
+      hot: true, // Enable hot module replacement
+      historyApiFallback: true, // This setting is useful for single-page applications
+      open: true // Automatically open the browser
+    },
   resolve: {
     fallback: {
       path: require.resolve('path-browserify'),
@@ -43,6 +55,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       process: 'process/browser',  // Provide process wherever it's needed
     }),
-    new webpack.DefinePlugin(envKeys)
+    new webpack.DefinePlugin(envKeys),
+    new webpack.HotModuleReplacementPlugin(),
   ]
 };
