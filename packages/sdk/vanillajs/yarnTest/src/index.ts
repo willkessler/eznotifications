@@ -6,7 +6,7 @@ import { configureTinad,
 
 dotenv.config();
 
-console.log('Configurating TINAD');
+console.log('Configurating TINAD...');
 const newConfig = generateDefaultConfiguration();
 newConfig.api.endpoint = process.env.API_ENDPOINT;
 newConfig.api.key = process.env.API_KEY;
