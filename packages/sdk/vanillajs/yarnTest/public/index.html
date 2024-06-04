@@ -1,22 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SDK Test</title>
-</head>
-<body style="margin:0;padding:0">
-    <script src="bundle.js"></script>
+    <style>
+      .outer {
+        font-family:Arial, Helvetica;
+        font-size:20px;
+        padding-left:20px;
+      }
+     .title {
+       padding-top:10px;
+       font-size:40px;
+       font-weight:800;
+       color:#02b0de;
+     }
+     .subtitle {
+       color: #02b0de;
+     }
+     .reset {
+       margin-top:10px;
+       padding:6px;
+       font-size:14px;
+       border:1px solid grey;
+       border-radius:4px;
+       cursor:pointer;
+       width:400px;
+       margin-right:10px;
+     }
+     .instructions {
+       font-size:16px;
+       padding-top:20px;
+       margin-top:10px;
+       border-top:1px solid grey;
+       line-height:30px;
+       max-width:400px;
+     }
+     .help {
+       font-style:italic;
+       font-size:12px;
+       margin-top:5px;
+       max-width:400px;
+       margin-right:10px;
+     }
+     code {
+       background:#ffa;
+       border:1px dotted #aa0;
+       border-radius:4px;
+       padding:2px;
+     }
+    </style>
+  </head>
+  <body style="margin:0;padding:0">
     <img src="./ThisIsNotADrill_cutout.png" width="200" height="200" />
-    <div style="font-family:Arial, Helvetica;font-size:20px;padding-left:20px;">
-      Hello! This is a barebones demo for...
-      <div style="padding-top:20px;font-size:40px;">This Is Not A Drill!</div>
-      <div style="font-size:16px;padding-top:20px;margin-top:20px;border-top:1px solid grey">
+    <div class="outer">
+      <div class="title">This Is Not A Drill!</div>
+      <div class="subtitle">Barebones Demo</div>
+      <button class="reset" id="reset-notifications">
+        Reset notifications
+      </button>
+      <div class="help">Please note: this will reset notifications for the current user id.</div>
+      <div class="instructions">
         Update <code>src/index.ts</code> to add your API key and
         alter the configuration passed to <code>configureTinad()</code>
         with whatever settings you want to experiment with.
       </div>
     </div>
-    
-</body>
+    <script src="bundle.js"></script>
+  </body>
 </html>

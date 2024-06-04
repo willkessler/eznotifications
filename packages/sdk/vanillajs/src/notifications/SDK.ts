@@ -51,7 +51,7 @@ export class SDK {
     this.poller = Poller.getInstance(this.pollApi, this.pollingInterval, pollingErrorHandler);  // Directly pass as arrow function
   }
 
-  addToNotificationQueue(rawNotification: any): void {
+  private addToNotificationQueue(rawNotification: any): void {
     const configuration = ConfigStore.getConfiguration();
     // Check for existing notification by UUID
     const exists = this.notificationQueue.some(n => n.uuid === rawNotification.uuid) || (rawNotification.uuid === configuration.api.currentNotificationUuid);
@@ -75,7 +75,7 @@ export class SDK {
     }
   }
 
-  pollApi = async ():Promise<number> => {
+  public pollApi = async ():Promise<number> => {
     //console.log('pollApi running');
     const configuration = ConfigStore.getConfiguration();
     const fetchOptions: RequestInit = {
@@ -113,14 +113,10 @@ export class SDK {
     }
   }
 
-  async displayNotification(notification: any, dismissCallback: () => void): Promise<void> {
+  private async displayNotification(notification: any, dismissCallback: () => void): Promise<void> {
     console.log('displayNotification');
     const configuration = ConfigStore.getConfiguration();
     try {
-//      notification.content = notification.content +
-//        'Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. ' +
-//        'Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus,'+
-//        ' iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet.';
       //console.log('Content:', notification.content);
       switch (configuration.api.displayMode) {
         case 'toast':
@@ -144,7 +140,7 @@ export class SDK {
     }
   }
 
-  displayNextNotification = async () => {
+  private displayNextNotification = async () => {
     const configuration = ConfigStore.getConfiguration();
     //console.log(`displayNextNotification configuration.api.currentNotificationUuid ${configuration.api.currentNotificationUuid}`);
     if (this.notificationQueue.length === 0) return;  // Exit if no notifications in queue
@@ -164,7 +160,7 @@ export class SDK {
     this.notificationQueue = [];
   }
 
-  markAsDismissed = async (): Promise<void> => {
+  public markAsDismissed = async (): Promise<void> => {
     console.log('markAsDismissed pausing polling.');
     const configuration = ConfigStore.getConfiguration();
     const notificationUuid = configuration.api.currentNotificationUuid;
@@ -202,7 +198,7 @@ export class SDK {
     }
   }
 
-  resetViewsForCurrentEndUser = async (): Promise<void> => {
+  public resetViewsForCurrentEndUser = async (): Promise<void> => {
     const configuration = ConfigStore.getConfiguration();
     console.log(`resetViewsForSingleUser resetting views for user ${configuration.api.userId}.`);
     try {
@@ -223,7 +219,7 @@ export class SDK {
     }
   }
 
-  updateConfiguration = async (newConfiguration: SDKConfiguration):Promise<void> => {
+  public updateConfiguration = async (newConfiguration: SDKConfiguration):Promise<void> => {
     this.poller.cancelPolling();
     this.clearNotificationQueue();
     const configuration = ConfigStore.getConfiguration();
@@ -253,5 +249,6 @@ export class SDK {
     await this.resetViewsForCurrentEndUser();
     this.poller.restartPolling();
   }
+
 
 }

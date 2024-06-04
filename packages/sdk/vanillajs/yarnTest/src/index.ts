@@ -1,8 +1,10 @@
 import dotenv from 'dotenv';
-import { configureTinad, 
-         generateDefaultConfiguration, 
-         getCurrentConfiguration, 
-         SDKConfiguration } from '@this-is-not-a-drill/vanillajs-sdk';
+import { 
+  configureTinad, 
+  generateDefaultConfiguration, 
+  getCurrentConfiguration, 
+  SDKConfiguration
+} from '@this-is-not-a-drill/vanillajs-sdk';
 
 dotenv.config();
 
@@ -71,3 +73,15 @@ const currentConfig = getCurrentConfiguration();
 console.log(`Current TINAD config: ${JSON.stringify(currentConfig,null,2)}`);
 
 console.log('TINAD Configuration done.');
+
+const resetButton = document.getElementById('reset-notifications');
+
+// When you reconfigure TINAD with the current configuration, this has
+// the effect of resetting the views for the current userId (as well
+// as stopping any notification display in progress).
+
+resetButton.onclick = function() {
+  console.log ('Resetting views'); 
+  const currentConfig = getCurrentConfiguration();
+  configureTinad(currentConfig);
+};

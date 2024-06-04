@@ -152,3 +152,11 @@ export const getCurrentConfiguration = ():SDKConfiguration => {
   const currentConfiguration = ConfigStore.getConfiguration();
   return currentConfiguration;
 }
+
+export const resetViewsForCurrentEndUser = async ():Promise<void> => {
+  const currentConfiguration = ConfigStore.getConfiguration();
+  if (currentConfiguration.api?.userId && sdkInstance ) {
+    console.log(`Resetting views for user id: ${currentConfiguration.api?.userId}.`);
+    await sdkInstance.resetViewsForCurrentEndUser();
+  }
+}
