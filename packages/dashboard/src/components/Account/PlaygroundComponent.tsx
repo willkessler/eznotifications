@@ -209,7 +209,7 @@ export default environment;
       },
       {
         newWindow: true,
-        openFile: 'README.md',
+        openFile: 'this-is-not-a-drill-basic-example-main/src/README.md',
         showSidebar: true,
         theme: 'dark',
         view: 'default',
