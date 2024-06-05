@@ -44,7 +44,7 @@ module.exports = {
     },
     extensions: ['.tsx', '.ts', '.js'],
     alias: {
-      '@this-is-not-a-drill/vanillajs-sdk': path.resolve(__dirname, '../dist/bundle.js')  // Adjust this path if necessary
+      '@this-is-not-a-drill/vanillajs-sdk': path.resolve(__dirname, '../dist/index.js')
     },
   },
   output: {

@@ -102,7 +102,6 @@ export default function Bank() {
     script.id = 'tinad-sdk';
     script.src = process.env.NEXT_PUBLIC_TINAD_SOURCE_SCRIPT_URL || 'http://localhost:3500';
     console.log(`readystate=${document.readyState}`);
-    //script.src = 'https://unpkg.com/@this-is-not-a-drill/vanillajs-sdk@latest/dist/bundle.js';
     script.defer = true;
     script.setAttribute('tinad-configuration', configurationString);
     document.getElementById('tinad-script-container')?.appendChild(script);

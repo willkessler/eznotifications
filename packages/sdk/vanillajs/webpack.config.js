@@ -8,7 +8,7 @@ class AddBannerPlugin {
     compiler.hooks.emit.tapAsync('AddBannerPlugin', (compilation, callback) => {
       const banner = `// Version ${newVersion}\n`;
       for (const filename in compilation.assets) {
-        if (filename === 'bundle.js') {
+        if (filename === 'index.js') {
           const source = compilation.assets[filename].source();
           const newSource = banner + source;
           compilation.assets[filename] = {
@@ -61,7 +61,7 @@ const commonConfig = {
 const distConfig = {
   ...commonConfig,
   output: {
-    filename: 'bundle.js',
+    filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
     libraryTarget: 'umd',
     library: 'ThisIsNotADrillSDK'
@@ -82,7 +82,7 @@ const devConfig = {
   ...commonConfig,
   mode: 'development',
   output: {
-    filename: 'bundle.js',
+    filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
     libraryTarget: 'umd',
     library: 'ThisIsNotADrillSDK'
