@@ -122,12 +122,15 @@ const PlaygroundComponent = () => {
 
     // insert the environment file into the repo
     const envFileContents = `
-API_KEY=${temporaryAPIKeyValue.current}
-API_ENDPOINT=${import.meta.env.VITE_TINAD_API_BASEURL}
-`;
+const environment = {
+  API_KEY: '${temporaryAPIKeyValue.current}',
+  API_ENDPOINT: '${import.meta.env.VITE_TINAD_API_BASEURL}',
+};
+export default environment;
+`
 
     const repoPrefix = 'this-is-not-a-drill-basic-example-main';
-    filesObj.files['.env'] = envFileContents;
+    filesObj.files['environment.ts'] = envFileContents;
     filesObj.files['index.ts'] = filesObj.files[repoPrefix + '/src/index.ts'];
     filesObj.files['index.html'] = filesObj.files[repoPrefix + '/public/index.html'];
     filesObj.files['bundle.js'] = filesObj.files[repoPrefix + '/public/bundle.js'];
