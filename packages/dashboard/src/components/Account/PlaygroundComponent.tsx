@@ -134,6 +134,7 @@ export default environment;
     filesObj.files['index.ts'] = filesObj.files[repoPrefix + '/src/index.ts'];
     filesObj.files['index.html'] = filesObj.files[repoPrefix + '/public/index.html'];
     filesObj.files['bundle.js'] = filesObj.files[repoPrefix + '/public/bundle.js'];
+    filesObj.files['README.md'] = filesObj.files[repoPrefix + '/README.md'];
 
     console.log(filesObj.files);
     setRepoFiles(filesObj.files);
@@ -209,7 +210,7 @@ export default environment;
       },
       {
         newWindow: true,
-        openFile: 'this-is-not-a-drill-basic-example-main/src/README.md',
+        openFile: 'README.md',
         showSidebar: true,
         theme: 'dark',
         view: 'default',
