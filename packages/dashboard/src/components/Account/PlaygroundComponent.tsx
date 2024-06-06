@@ -128,7 +128,7 @@ const environment = {
 };
 export default environment;
 `
-    const simplifiedRepo = {};
+    const simplifiedRepo:any = {};
     const repoPrefix = 'this-is-not-a-drill-basic-example-main';
     simplifiedRepo['environment.ts'] = envFileContents;
     simplifiedRepo['index.ts'] = filesObj.files[repoPrefix + '/src/index.ts'];
