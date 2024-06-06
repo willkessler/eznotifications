@@ -18,14 +18,14 @@ const createDefaultConfiguration = () => {
   const defaultConfiguration:SDKConfiguration = {
     api: {
       displayMode : 'toast',
-      userId: undefined, // will be set later by either the user or autoset
+      userId: UserIdGenerator.generateUserId(), // start with an auto-generated user id; client can override w/their own
       key: '',
       endpoint: 'https://api.this-is-not-a-drill.com',
       environments: [ 'Development' ],
       domains: [],
     },
     toast: {
-      position: 'bottom-end',
+      position: 'top-right',
       duration: 5000,
     },
     modal: {

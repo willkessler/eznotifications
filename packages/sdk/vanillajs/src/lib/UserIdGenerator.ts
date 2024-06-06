@@ -3,6 +3,12 @@ import { SDKConfig } from '../../../react-core/src/types';
 import { ConfigStore } from './ConfigStore';
 
 export class UserIdGenerator {
+  public static generateUserId():string {
+    const newUuidParts = uuidv4().split('-');
+    const newUserId = 'user-' + newUuidParts[0];
+    return newUserId;
+  }
+  
   public static generate(suppliedUserId: string | undefined, apiKey:string): string {
     let latestUserId:string;
     let tinadConfig = ConfigStore.getConfiguration();
@@ -14,8 +20,7 @@ export class UserIdGenerator {
       tinadConfig.api.userId = suppliedUserId;
     } else {
       // If we were not provided a userId by the SDK, generate one and set it into local storage
-      const newUuidParts = uuidv4().split('-');
-      const newUserId = 'user-' + newUuidParts[0];
+      const newUserId = UserIdGenerator.generateUserId();
       if (!tinadConfig.api.userId) {
         tinadConfig.api.userId = newUserId;
       }
