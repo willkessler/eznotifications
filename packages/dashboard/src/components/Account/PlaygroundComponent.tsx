@@ -128,16 +128,15 @@ const environment = {
 };
 export default environment;
 `
-
+    const simplifiedRepo = {};
     const repoPrefix = 'this-is-not-a-drill-basic-example-main';
-    filesObj.files['environment.ts'] = envFileContents;
-    filesObj.files['index.ts'] = filesObj.files[repoPrefix + '/src/index.ts'];
-    filesObj.files['index.html'] = filesObj.files[repoPrefix + '/public/index.html'];
-    filesObj.files['bundle.js'] = filesObj.files[repoPrefix + '/public/bundle.js'];
-    filesObj.files['README.md'] = filesObj.files[repoPrefix + '/README.md'];
+    simplifiedRepo['environment.ts'] = envFileContents;
+    simplifiedRepo['index.ts'] = filesObj.files[repoPrefix + '/src/index.ts'];
+    simplifiedRepo['index.html'] = filesObj.files[repoPrefix + '/public/index.html'];
+    simplifiedRepo['bundle.js'] = filesObj.files[repoPrefix + '/public/bundle.js'];
+    simplifiedRepo['README.md'] = filesObj.files[repoPrefix + '/README.md'];
 
-    console.log(filesObj.files);
-    setRepoFiles(filesObj.files);
+    setRepoFiles(simplifiedRepo);
   }
 
 /*
@@ -210,8 +209,8 @@ export default environment;
       },
       {
         newWindow: true,
-        openFile: 'README.md',
-        showSidebar: true,
+        openFile: ['index.ts'],
+        showSidebar: false,
         theme: 'dark',
         view: 'default',
       },
