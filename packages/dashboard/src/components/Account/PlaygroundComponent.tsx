@@ -291,8 +291,8 @@ export default environment;
         </Stack>
       </Group>
       <div style={{marginTop:'10px',paddingTop:'10px', borderTop: '1px dotted #666' }}>
-        <Text size="sm" fs="italic" >Here is a preview of what the Stackblitz environment will contain.</Text>
-        <Anchor component="button" onClick={gotoPlayground}><Image src="/StackblitzExample.png" style={{paddingTop:'10px',width:'95%'}}/></Anchor>
+        <Text size="sm" fs="italic" >Here is a preview of what the Stackblitz environment contains.</Text>
+        <Anchor component="button" onClick={gotoPlayground}><Image src="/StackblitzExample2.png" style={{paddingTop:'15px',width:'100%'}}/></Anchor>
       </div>
     </Paper>
   );
