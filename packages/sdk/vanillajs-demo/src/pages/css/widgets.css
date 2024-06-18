@@ -1,9 +1,10 @@
 .container {
   display: grid;
-  grid-template-rows: 50vh 50vh;
+  grid-template-rows:50vh 51vh;
   width:100vw;
   height: 100vh;
   max-width:none;
+  overflow:hidden;
 }
 
 .top-panel {
@@ -21,15 +22,15 @@
   flex: 1;
   max-width:none;
   height:100%;
-  background:white;
+  background:black;
   overflow:auto;
   position:relative;
 }
 
 .code-editor {
   flex:1;
-  overflow:auto;
-  overflow-x: hidden;
+  height:100%;
+  overflow:hidden;
 }
 
 .code-editor .mantine-CodeHighlight-root {
@@ -43,22 +44,24 @@
 .editors-container {
   display: flex;
   flex-direction: column;
+  max-width:none;
   height: 100%;
+  overflow: none;
   position: relative;
-  overflow:hidden;
 }
 
 .dashboard-drawer-button {
-  position:absolute;
+/*  position:absolute;*/
   left:  -10px;
-  bottom:15px;
+  /*  bottom:15px;*/
+  margin-bottom:15px;
   background-color: rgb(3, 172, 202);
 }
 
 .dashboard-drawer-button:hover {
   background-color: rgb(3, 172, 202);
 }
-
+ 
 .mantine-Drawer-body {
   height: 90%; /* Make sure the content takes up full available height */
   overflow:hidden;
@@ -71,11 +74,9 @@
 }
 
 .help-button {
-  position:absolute;
-  right: 10px;
-  bottom:15px;
+/*  right: 10px;*/
+  margin-bottom:15px;
   background-color: #ccc;
-  min-width:40px;
 }
 
 .help-button:hover {
@@ -86,11 +87,8 @@
 }
 
 .reload-sdk-button {
-  position:absolute;
-  right: 100px;
-  bottom:15px;
+  margin-bottom:15px;
   background-color: #ccc;
-  min-width:40px;
 }
 
 .reload-sdk-button:hover {
@@ -115,10 +113,28 @@
   display: flex;
   align-items: center;
   justify-content: left;
+ }
+
+.side-tab {
+  position: fixed;
+  top: 50%;
+  padding: 10px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
 }
 
-/* CSS for the gradient label specific to the checkboxes with an outer div of .custom-class-checkbox */
-/* This makes the checkboxes with "custom toast styles", "custom-modal-styles", "custom-banner-styles" stand out more */
+.side-tab.left {
+  transform: translateY(-200%);
+  left: 0;
+}
+
+.side-tab.right {
+  transform: translateY(-200%);
+  right: 0;
+}
 
 .custom-class-checkbox .mantine-Checkbox-labelWrapper label {
   position: relative;
@@ -129,4 +145,57 @@
   background: linear-gradient(to right, #feb47b, #ff1e1f);
   -webkit-background-clip: text;
   color: transparent;
+}
+
+/* Style variations for laptop vs mobile... */
+
+
+@media (max-width: 767px) {
+  .top-panel {
+    flex-direction: column;
+    height: 50vh;
+  }
+
+  .config-widget,
+  .code-editor {
+    height: 50%;
+  }
+
+  .side-tab {
+    width: 50px; /* Add a fixed width */
+    text-orientation: mixed; /* Preserve text orientation */
+    writing-mode: vertical-lr; /* Rotate the text */
+    width:30px;
+    background-color: #ccc;
+    color:white;
+    border-radius:5px;
+  }
+
+  .side-tab.left {
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+    transform: translateY(-50%) ; /* Rotate the element 180 degrees */
+    left:-7px;
+    top:170px;
+  }
+
+  .side-tab.right {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: translateY(-50%) rotate(180deg); /* Rotate the element 180 degrees */
+    right:-7px;
+    top:170px;
+  }
+
+}
+
+@media (min-width: 768px) {
+  .top-panel {
+    flex-direction: row; /* Display panels side by side */
+  }
+
+  .config-widget,
+  .code-editor {
+    flex: 1; /* Equal width for both panels */
+  }
 }

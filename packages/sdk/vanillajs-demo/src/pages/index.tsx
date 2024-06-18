@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Configurator from './configurator';
 import TabbedEditor from './TabbedEditor';
@@ -9,6 +9,7 @@ import LogRocket from 'logrocket';
 export default function Home() {
 
   const { setBankIframeIsReadyState } = useSdkConfiguration();
+  const [ activePanel, setActivePanel ] = useState<string>('configurator');
 
   useEffect(() => {
     const isLocalhost = ():boolean => {
@@ -24,6 +25,27 @@ export default function Home() {
         LogRocket.identify(process.env.NEXT_PUBLIC_TINAD_CLERK_DEMO_USER_ID);
       }
     }
+    
+    // Set the initial value of activePanel based on the viewport size
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setActivePanel('both');
+      } else {
+        setActivePanel('configurator');
+      }
+    };
+
+    // Set the initial value on component mount
+    handleResize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', handleResize);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };    
+
   }, []);
 
   useEffect(() => {
@@ -47,17 +69,40 @@ export default function Home() {
         <title>SDK Configurator</title>
       </Head>
       <div className="top-panel">
-        <div className="config-widget">
-          <Configurator />
-        </div>
-        <div id="code-editor" className="code-editor">
-          <TabbedEditor />
-        </div>
+        {(activePanel === 'both' || window.innerWidth >= 768) && (
+          <>
+            <div className="config-widget">
+              <Configurator />
+            </div>
+            <div id="code-editor" className="code-editor">
+              <TabbedEditor />
+            </div>
+          </>
+        )}
+        {activePanel === 'configurator' && window.innerWidth < 768 && (
+          <div className="config-widget">
+            <Configurator />
+          </div>
+        )}
+        {activePanel === 'codeEditor' && window.innerWidth < 768 && (
+          <div id="code-editor" className="code-editor">
+            <TabbedEditor />
+          </div>
+        )}
       </div>
-
       <div className="bottom-panel">
         <iframe id="bank-app" src="/bank"></iframe>
       </div>
+      {window.innerWidth < 768 && (
+        <>
+          <div className="side-tab left" onClick={() => setActivePanel('configurator')}>
+            Configurator
+          </div>
+          <div className="side-tab right" onClick={() => setActivePanel('codeEditor')}>
+            Code Editor
+          </div>
+        </>
+      )}
     </div>
   );
 }

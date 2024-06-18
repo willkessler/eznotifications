@@ -28,6 +28,7 @@ const Configurator = () => {
   const [ useCustomToastStyles, setUseCustomToastStyles  ] = useState<boolean>(false);
   const [ useCustomModalStyles, setUseCustomModalStyles  ] = useState<boolean>(false);
   const [ customBannerStyles, setCustomBannerStyles  ] = useState<boolean>(false);
+
   const [opened, { open, close }] = useDisclosure(false);
 
   const { getSdkConfiguration,
@@ -371,7 +372,7 @@ const Configurator = () => {
             classNames={classes}
           />
           { (currentDisplayMode === 'toast') &&
-            <Paper className="p-6 m-6 max-w-lg">
+            <Paper className="p-5 m-6 max-w-lg">
               <Radio.Group
                 name="toast-position"
                 label="Select a toast position"
@@ -605,7 +606,9 @@ const Configurator = () => {
           </Paper>
         </Modal>
         <Group>
-          <Button size="xs" className="dashboard-drawer-button" onClick={open}>&gt;&gt;&nbsp;Manage Notifications</Button>
+          <Tooltip label="Manage notifications on the sample site (below)" withArrow>
+            <Button size="xs" className="dashboard-drawer-button" onClick={open}>&gt;&gt;&nbsp;Manage Alerts</Button>
+          </Tooltip>
 
           <Tooltip label="Restart notifications on the sample site (below)" withArrow>
             <Button size="xs" className="reload-sdk-button" onClick={restartSdk}>

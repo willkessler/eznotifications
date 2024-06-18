@@ -3,8 +3,8 @@
   box-shadow: var(--mantine-shadow-md);
   border: rem(1px) solid light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-4));
   padding:2px;
-  margin-top:26px;
-  margin-left:10px;
+  margin-top:16px;
+  margin-left:16px;
 }
 
 .indicator {
