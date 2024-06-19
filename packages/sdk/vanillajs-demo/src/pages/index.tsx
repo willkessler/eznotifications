@@ -71,23 +71,33 @@ export default function Home() {
       <div className="top-panel">
         {(activePanel === 'both' || window.innerWidth >= 768) && (
           <>
-            <div className="config-widget">
+            <div className="config-widget on-screen">
               <Configurator />
             </div>
-            <div id="code-editor" className="code-editor">
+            <div id="code-editor" className="code-editor on-screen">
               <TabbedEditor />
             </div>
           </>
         )}
         {activePanel === 'configurator' && window.innerWidth < 768 && (
-          <div className="config-widget">
-            <Configurator />
-          </div>
+          <>
+            <div className="config-widget on-screen">
+              <Configurator />
+            </div>
+            <div id="code-editor" className="code-editor off-screen">
+              <TabbedEditor />
+            </div>
+          </>
         )}
         {activePanel === 'codeEditor' && window.innerWidth < 768 && (
-          <div id="code-editor" className="code-editor">
-            <TabbedEditor />
-          </div>
+          <>
+            <div className="config-widget off-screen">
+              <Configurator />
+            </div>
+            <div id="code-editor" className="code-editor on-screen">
+              <TabbedEditor />
+            </div>
+          </>
         )}
       </div>
       <div className="bottom-panel">
@@ -95,12 +105,26 @@ export default function Home() {
       </div>
       {window.innerWidth < 768 && (
         <>
-          <div className="side-tab left" onClick={() => setActivePanel('configurator')}>
-            Configurator
-          </div>
-          <div className="side-tab right" onClick={() => setActivePanel('codeEditor')}>
-            Code Editor
-          </div>
+          {activePanel === 'configurator' && (
+            <>
+              <div className="side-tab left chosen" onClick={() => setActivePanel('configurator')}>
+                Configurator
+              </div>
+              <div className="side-tab right" onClick={() => setActivePanel('codeEditor')}>
+                Code Viewer
+              </div>
+            </>
+          )}
+          {activePanel === 'codeEditor' && (
+            <>
+              <div className="side-tab left" onClick={() => setActivePanel('configurator')}>
+                Configurator
+              </div>
+              <div className="side-tab right chosen" onClick={() => setActivePanel('codeEditor')}>
+                Code Viewer
+              </div>
+            </>
+          )}
         </>
       )}
     </div>

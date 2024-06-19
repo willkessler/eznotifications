@@ -119,11 +119,17 @@
   position: fixed;
   top: 50%;
   padding: 10px;
-  background-color: #f0f0f0;
+  background-color: #505050;
   cursor: pointer;
   z-index: 10;
   display: flex;
   align-items: center;
+}
+
+.side-tab.chosen {
+  color: rgb(3, 172, 202);
+  font-weight:800;
+  background:#666;
 }
 
 .side-tab.left {
@@ -149,6 +155,15 @@
 
 /* Style variations for laptop vs mobile... */
 
+.off-screen {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+}
+
+.on-screen {
+  position: static;
+}
 
 @media (max-width: 767px) {
   .top-panel {
@@ -175,7 +190,7 @@
     writing-mode: vertical-lr;
     text-orientation: mixed;
     transform: translateY(-50%) ; /* Rotate the element 180 degrees */
-    left:-7px;
+    left:-6px;
     top:170px;
   }
 
@@ -183,7 +198,7 @@
     writing-mode: vertical-rl;
     text-orientation: mixed;
     transform: translateY(-50%) rotate(180deg); /* Rotate the element 180 degrees */
-    right:-7px;
+    right:-6px;
     top:170px;
   }
 
